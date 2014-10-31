@@ -1,0 +1,82 @@
+
+
+############################
+# Compound number 1:
+############################
+LAT
+
+name = Cr-Cr-dimer
+file = in/Cr-Cr-dimer.lat
+elements = Cr
+
+# Desired physical properties:
+Ecoh     = -1.0
+  u_Ecoh   = 0.001  # uncertainty (indentation just for cosmetic reasons)
+
+# Using MD settings from specsfile for this compound,
+# or default ones if no settings in that file.
+
+
+############################
+# Compound number 2:
+############################
+LAT
+
+name     = Cr-BCC
+file     = in/Cr-BCC.lat
+elements = Cr
+csystem  = cubic
+
+# Desired physical properties:
+a        = 2.5255160248
+  u_a      = 0.025
+Ecoh       = 0.675319085
+  u_Ecoh     = 0.0068
+B        = 330.6192536394
+  u_B      = 3.3
+Bp       = 4.35018868
+  u_Bp     = 0.44
+
+Fmax = 1e-3
+  w_Fmax = 1e-3  # weight
+Pmax = 1e-3
+  w_Pmax = 1e-4
+displ_max = 1e-5
+  u_displ_max = 1e-5
+
+C11 = 487.083292353
+  u_C11 = 0.049
+C12 = 200.279243723
+  u_C12 = 0.020
+C44 = 149.052055099
+  u_C44 = 0.015
+
+option: no_heating
+# option: fixed_geometry
+option: quench_always
+
+# Compound-specific settings (specified ones overrides those in specsfile,
+# or the default ones if no settings in that file:
+
+mds_skint = 1.1
+mds_seed  = 12
+mds_ndump = 1
+
+mds_tstart  = 0.0
+mds_tend    = 50.0
+mds_dt      = 10.0
+mds_max_dt  = 10.0
+
+mds_Tstart  = 140.0
+
+mds_btc_tau =  35
+mds_btc_T0  = 290
+
+mds_bpc_tau   = 50
+mds_bpc_P0    = 0
+mds_bpc_scale = 50
+
+mds_quench_tstart = 30
+mds_quench_rate   = 1.0
+
+
