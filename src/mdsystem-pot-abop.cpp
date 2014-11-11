@@ -97,6 +97,12 @@ double MDSystem::force_ABOP(){
   int ivecij, ivecik, ivec_reppot, Nr;
   double Epij;
 
+
+  double frc_ij, frc_ik, frc_jk;
+
+
+
+
   // iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
   // Loop over atoms i
   // iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
@@ -337,9 +343,24 @@ double MDSystem::force_ABOP(){
       Ep_tot_local += Epij;
 
 
+
+
       // ################################################################
       // Two-body forces:
       // ################################################################
+      frc_ij = - 0.5 *
+	  ( dfcij * VRij
+	    + fcij * dVRij
+	    - bij * dfcij * VAij
+	    - bij * fcij * dVAij);
+
+      for (p=0; p<3; ++p){
+	frci[p] = frc_ij *   dposij[p]/rij;
+	frcj[p] = frc_ij * (-dposij[p]/rij);
+      }
+
+
+#if 0
       for (p=0; p<3; ++p){
 	frci[p] = - 0.5 *
 	  ( dfcij * VRij * dposij[p]/rij
@@ -355,6 +376,14 @@ double MDSystem::force_ABOP(){
 	    - bij * fcij * dVAij * (-dposij[p]/rij)
 	    );
       }
+#endif
+
+      for (int v1=0; v1<3; ++v1){
+	for (int v2=0; v2<3; ++v2){
+	  virials[i].elem(v1,v2) += (frc_ij * dposij[v1]/rij) * dposij[v2];
+	  //virials[j].elem(v1,v2) += frcj[v1] * pos[j][v2];
+	}
+      }
 
 
       for (p=0; p<3; ++p){
@@ -362,7 +391,6 @@ double MDSystem::force_ABOP(){
 	frc[j][p] += frcj[p];
       }
 
-    
 
 
 
@@ -433,6 +461,10 @@ double MDSystem::force_ABOP(){
 
 	gijk = gammaik * (1.0 + c2/d2 - c2 / (d2 + hcost2) );
 
+
+
+
+
 	for (p=0; p<3; ++p){
 	  dcost_i[p] = - cost/(rij*rij) *   dposij[p]
 	    - cost/(rik*rik) * dposik[p]
@@ -453,6 +485,9 @@ double MDSystem::force_ABOP(){
 	  dgijk_j[p] = dgijk * dcost_j[p];
 	  dgijk_k[p] = dgijk * dcost_k[p];
 	}
+
+
+
 
 	alphaijk = se_alphaijk;
 	if (! sys_single_elem)
@@ -500,6 +535,32 @@ double MDSystem::force_ABOP(){
 	    + threebodyfactor * fcik * dgijk_k[p] * expijk * omegaijk
 	    + threebodyfactor * fcik * gijk * dexpijk_k[p] * omegaijk;
 	}
+
+
+
+
+	
+	for (int v1=0; v1<3; ++v1){
+	  for (int v2=0; v2<3; ++v2){
+	    // ij contribution:
+	    virials[i].elem(v1,v2) += 
+	      ( threebodyfactor * fcik * dgijk * ( dposik[v1]/(rij*rik) - cost*dposij[v1]/(rij*rij))
+		* omegaijk * expijk
+		+
+		threebodyfactor * fcik * gijk * omegaijk * alphaijk * expijk * dposij[v1]/rij )
+	      * dposij[v2];
+	    // ik contribution:
+	    virials[i].elem(v1,v2) += 
+	      ( threebodyfactor * dfcik * dposik[v1]/rik * gijk * omegaijk * expijk
+		+
+		threebodyfactor * fcik * dgijk * ( dposij[v1]/(rij*rik) - cost*dposik[v1]/(rik*rik))
+		* omegaijk * expijk
+		+
+		threebodyfactor * fcik * gijk * omegaijk * (-alphaijk) * expijk * dposik[v1]/rik )
+	      * dposik[v2];
+	  }
+	}
+
 
 	for (p=0; p<3; ++p){
 	  frc[i][p] += frci[p];

@@ -127,6 +127,9 @@ public:
   void transform_cell(const Matrix<double> & alpha_cart,
 		      const double lowlim=-1);
 
+  void get_virials(int nat, Matrix<double> & W,
+		   double mux=1.0, double muy=1.0, double muz=1.0);
+
 } ;
 
 

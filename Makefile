@@ -9,11 +9,11 @@ include vars.mk
 # Settings:
 
 CC      = g++ 
-WARN    =  #-Wstrict-aliasing #-Wall -Wextra
+WARN    = #-Wall -Wextra #-Wstrict-aliasing 
 STD     = -ansi -pedantic -std=c++98 
 DEBUG   = -g 
 PROF    = -pg 
-OPT     = -O2 #-fstrict-aliasing 
+OPT     = -O3 #-fstrict-aliasing 
 OPENMP  = -fopenmp 
 CFLAGS  = -c $(WARN) $(STD) $(DEBUG) $(OPT) $(PROF) $(OPENMP)
 
