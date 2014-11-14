@@ -44,9 +44,11 @@ SpecsFitProp::SpecsFitProp(){
   BM_fmin = -1e-3;
   BM_fmax =  1e-3;
   BM_Nf   = 10;
+  BM_ef   = 0.01;
   C_fmin = -1e-3;
   C_fmax =  1e-3;
   C_Nf   = 10;
+  C_ef   = 0.01;
 
   mds_specs_common = MDSettings_common();
   mds_specs        = MDSettings();

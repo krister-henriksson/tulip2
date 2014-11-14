@@ -148,6 +148,28 @@ void PotentialInformationFit::read_specs(string filename){
 	strbuf >> specs_prop.lattol;
 	strbuf.clear();
       }
+
+      else if (args[1]=="BM_fmin"){
+	strbuf.str(args[2]);
+	strbuf >> specs_prop.BM_fmin;
+	strbuf.clear();
+      }
+      else if (args[1]=="BM_fmax"){
+	strbuf.str(args[2]);
+	strbuf >> specs_prop.BM_fmax;
+	strbuf.clear();
+      }
+      else if (args[1]=="BM_Nf"){
+	strbuf.str(args[2]);
+	strbuf >> specs_prop.BM_Nf;
+	strbuf.clear();
+      }
+      else if (args[1]=="BM_ef"){
+	strbuf.str(args[2]);
+	strbuf >> specs_prop.BM_ef;
+	strbuf.clear();
+      }
+
       else if (args[1]=="C_fmin"){
 	strbuf.str(args[2]);
 	strbuf >> specs_prop.C_fmin;
@@ -163,19 +185,9 @@ void PotentialInformationFit::read_specs(string filename){
 	strbuf >> specs_prop.C_Nf;
 	strbuf.clear();
       }
-      else if (args[1]=="BM_fmin"){
+      else if (args[1]=="C_ef"){
 	strbuf.str(args[2]);
-	strbuf >> specs_prop.BM_fmin;
-	strbuf.clear();
-      }
-      else if (args[1]=="BM_fmax"){
-	strbuf.str(args[2]);
-	strbuf >> specs_prop.BM_fmax;
-	strbuf.clear();
-      }
-      else if (args[1]=="BM_Nf"){
-	strbuf.str(args[2]);
-	strbuf >> specs_prop.BM_Nf;
+	strbuf >> specs_prop.C_ef;
 	strbuf.clear();
       }
 

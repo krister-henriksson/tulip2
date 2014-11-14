@@ -1,0 +1,721 @@
+mkdir obj
+mkdir: cannot create directory ‘obj’: File exists
+make: [dirs] Error 1 (ignored)
+mkdir -p /home/koehenri/include/libutils
+mkdir -p /home/koehenri/lib
+mkdir -p /home/koehenri/bin
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/compound.cpp -o obj/compound.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/compound-getprop.cpp -o obj/compound-getprop.o
+src/compound-getprop.cpp:274:6: warning: unused parameter ‘pos_bak’ [-Wunused-parameter]
+ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
+      ^
+src/compound-getprop.cpp:274:6: warning: unused parameter ‘boxdir_bak’ [-Wunused-parameter]
+src/compound-getprop.cpp:274:6: warning: unused parameter ‘boxlen_bak’ [-Wunused-parameter]
+In file included from src/compound-getprop.cpp:14:0:
+/home/koehenri/include/libutils/funcfit-conjgrad.hpp: In instantiation of ‘utils::Vector<double> funcfit::ConjGrad<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, bool) [with T = ChiSqFunc<Param, double, double>]’:
+src/compound-getprop.cpp:405:43:   required from here
+/home/koehenri/include/libutils/funcfit-conjgrad.hpp:139:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+In file included from src/compound-getprop.cpp:19:0:
+/home/koehenri/include/libutils/funcfit-powell.hpp: In instantiation of ‘utils::Vector<double> funcfit::Powell<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print) [with T = ChiSqFunc<Param, double, double>]’:
+src/compound-getprop.cpp:413:43:   required from here
+/home/koehenri/include/libutils/funcfit-powell.hpp:102:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+In file included from src/compound-getprop.cpp:16:0:
+/home/koehenri/include/libutils/funcfit-ls-gauss-newton.hpp: In instantiation of ‘utils::Vector<double> funcfit::GaussNewton<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print) [with T = ChiSqFunc<Param, double, double>]’:
+src/compound-getprop.cpp:421:43:   required from here
+/home/koehenri/include/libutils/funcfit-ls-gauss-newton.hpp:87:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+In file included from src/compound-getprop.cpp:20:0:
+/home/koehenri/include/libutils/funcfit-simplexfit.hpp: In instantiation of ‘utils::Vector<double> funcfit::SimplexFit<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print) [with T = ChiSqFunc<Param, double, double>]’:
+src/compound-getprop.cpp:452:43:   required from here
+/home/koehenri/include/libutils/funcfit-simplexfit.hpp:114:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+In file included from src/compound-getprop.cpp:21:0:
+/home/koehenri/include/libutils/funcfit-diffevol.hpp: In instantiation of ‘utils::Vector<double> funcfit::DiffEvol<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_DiffEvol) [with T = ChiSqFunc<Param, double, double>]’:
+src/compound-getprop.cpp:462:43:   required from here
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:161:18: warning: variable ‘ixmax’ set but not used [-Wunused-but-set-variable]
+       int ixmin, ixmax;
+                  ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:162:11: warning: unused variable ‘ixamin’ [-Wunused-variable]
+       int ixamin, ixamax;
+           ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:162:19: warning: unused variable ‘ixamax’ [-Wunused-variable]
+       int ixamin, ixamax;
+                   ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:163:58: warning: variable ‘oldfxmax’ set but not used [-Wunused-but-set-variable]
+       double fxmin, fxmax, absfxmin, absfxmax, oldfxmin, oldfxmax;
+                                                          ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:164:14: warning: unused variable ‘fxamin’ [-Wunused-variable]
+       double fxamin, fxamax, absfxamin, absfxamax, oldfxamin, oldfxamax;
+              ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:164:22: warning: unused variable ‘fxamax’ [-Wunused-variable]
+       double fxamin, fxamax, absfxamin, absfxamax, oldfxamin, oldfxamax;
+                      ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:164:30: warning: unused variable ‘absfxamin’ [-Wunused-variable]
+       double fxamin, fxamax, absfxamin, absfxamax, oldfxamin, oldfxamax;
+                              ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:164:41: warning: unused variable ‘absfxamax’ [-Wunused-variable]
+       double fxamin, fxamax, absfxamin, absfxamax, oldfxamin, oldfxamax;
+                                         ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:164:52: warning: unused variable ‘oldfxamin’ [-Wunused-variable]
+       double fxamin, fxamax, absfxamin, absfxamax, oldfxamin, oldfxamax;
+                                                    ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:164:63: warning: unused variable ‘oldfxamax’ [-Wunused-variable]
+       double fxamin, fxamax, absfxamin, absfxamax, oldfxamin, oldfxamax;
+                                                               ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:165:26: warning: unused variable ‘ratio2’ [-Wunused-variable]
+       double td, ratio1, ratio2;
+                          ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:197:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:198:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:210:14: warning: unused variable ‘td1’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+              ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:210:18: warning: unused variable ‘td2’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                  ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:210:22: warning: unused variable ‘td3’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                      ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:210:27: warning: unused variable ‘rtol’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                           ^
+In file included from src/compound-getprop.cpp:22:0:
+/home/koehenri/include/libutils/funcfit-partswarm.hpp: In instantiation of ‘utils::Vector<double> funcfit::PartSwarm<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_PartSwarm) [with T = ChiSqFunc<Param, double, double>]’:
+src/compound-getprop.cpp:472:43:   required from here
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:115:14: warning: unused variable ‘eps’ [-Wunused-variable]
+       double eps = numeric_limits<double>::epsilon();
+              ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:117:24: warning: unused variable ‘k’ [-Wunused-variable]
+       int niter=0, i,j,k, ixglobmin, ixglobmax;
+                        ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:145:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:146:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:158:29: warning: variable ‘fxglobmax_old’ set but not used [-Wunused-but-set-variable]
+       double fxglobmin_old, fxglobmax_old;
+                             ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:164:14: warning: unused variable ‘td1’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+              ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:164:18: warning: unused variable ‘td2’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                  ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:164:22: warning: unused variable ‘td3’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                      ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:164:27: warning: unused variable ‘rtol’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                           ^
+In file included from src/compound-getprop.cpp:23:0:
+/home/koehenri/include/libutils/funcfit-beecolony.hpp: In instantiation of ‘utils::Vector<double> funcfit::BeeColony<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_BeeColony) [with T = ChiSqFunc<Param, double, double>]’:
+src/compound-getprop.cpp:482:43:   required from here
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:125:14: warning: unused variable ‘eps’ [-Wunused-variable]
+       double eps = numeric_limits<double>::epsilon();
+              ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:127:33: warning: unused variable ‘i3’ [-Wunused-variable]
+       int niter=0, i,j,k, i1,i2,i3, ixglobmin, ixglobmax;
+                                 ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:128:14: warning: unused variable ‘vmax’ [-Wunused-variable]
+       double vmax, w;
+              ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:128:20: warning: unused variable ‘w’ [-Wunused-variable]
+       double vmax, w;
+                    ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:149:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:150:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:155:29: warning: variable ‘fxglobmax_old’ set but not used [-Wunused-but-set-variable]
+       double fxglobmin_old, fxglobmax_old;
+                             ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:168:14: warning: unused variable ‘td1’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+              ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:168:18: warning: unused variable ‘td2’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                  ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:168:22: warning: unused variable ‘td3’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                      ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:168:27: warning: unused variable ‘rtol’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                           ^
+In file included from src/compound-getprop.cpp:24:0:
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp: In instantiation of ‘utils::Vector<double> funcfit::GravSearch<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_GravSearch) [with T = ChiSqFunc<Param, double, double>]’:
+src/compound-getprop.cpp:492:43:   required from here
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:177:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:178:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:190:29: warning: variable ‘fxglobmax_old’ set but not used [-Wunused-but-set-variable]
+       double fxglobmin_old, fxglobmax_old;
+                             ^
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:198:37: warning: unused variable ‘td3’ [-Wunused-variable]
+       double masstot, dist, td1,td2,td3, rtol;
+                                     ^
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:198:42: warning: unused variable ‘rtol’ [-Wunused-variable]
+       double masstot, dist, td1,td2,td3, rtol;
+                                          ^
+In file included from src/compound-getprop.cpp:25:0:
+/home/koehenri/include/libutils/funcfit-simann.hpp: In instantiation of ‘utils::Vector<double> funcfit::SimAnn<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, utils::Vector<double>, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_SimAnn) [with T = ChiSqFunc<Param, double, double>]’:
+src/compound-getprop.cpp:512:43:   required from here
+/home/koehenri/include/libutils/funcfit-simann.hpp:135:14: warning: unused variable ‘small’ [-Wunused-variable]
+       double small = sqrt(eps);
+              ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:138:22: warning: unused variable ‘j’ [-Wunused-variable]
+       int niter=0, i,j,k;
+                      ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:138:24: warning: unused variable ‘k’ [-Wunused-variable]
+       int niter=0, i,j,k;
+                        ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:158:23: warning: variable ‘Te_star’ set but not used [-Wunused-but-set-variable]
+       double Te, Te0, Te_star;
+                       ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:160:11: warning: unused variable ‘NT’ [-Wunused-variable]
+       int NT = max((int)100, (int)5*D);
+           ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:168:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:169:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:174:47: warning: variable ‘fp_star’ set but not used [-Wunused-but-set-variable]
+       double fp, fp_try, dfp, fp_opt, fp_old, fp_star, hmagn, td;
+                                               ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:181:28: warning: unused variable ‘Nstoch’ [-Wunused-variable]
+       int Nfail=0, Nred=0, Nstoch=0;
+                            ^
+In file included from src/compound-getprop.cpp:11:0:
+/home/koehenri/include/libutils/chisq-basics.hpp: In instantiation of ‘utils::Vector<double> ChiSqFunc<S, T, U>::free_parameters_part(const utils::Vector<double>&) [with S = Param; T = double; U = double]’:
+/home/koehenri/include/libutils/chisq-basics.hpp:415:60:   required from ‘utils::Vector<double> ChiSqFunc<S, T, U>::free_parameters(const utils::Vector<double>&) [with S = Param; T = double; U = double]’
+/home/koehenri/include/libutils/funcfit-conjgrad.hpp:114:9:   required from ‘utils::Vector<double> funcfit::ConjGrad<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, bool) [with T = ChiSqFunc<Param, double, double>]’
+src/compound-getprop.cpp:405:43:   required from here
+/home/koehenri/include/libutils/chisq-basics.hpp:448:9: warning: unused variable ‘NXall’ [-Wunused-variable]
+     int NXall = mParam.X().size();
+         ^
+In file included from /home/koehenri/include/libutils/nr-linemethod.hpp:15:0,
+                 from /home/koehenri/include/libutils/funcfit-conjgrad.hpp:19,
+                 from src/compound-getprop.cpp:14:
+/home/koehenri/include/libutils/nr-golden.hpp: In instantiation of ‘void nr::Golden<T>::bracket(double, double, double, double, double, bool) [with T = nr::F1dim<ChiSqFunc<Param, double, double> >]’:
+/home/koehenri/include/libutils/nr-golden.hpp:86:51:   required from ‘double nr::Golden<T>::minimize(double, double, double, double, double, bool, bool) [with T = nr::F1dim<ChiSqFunc<Param, double, double> >]’
+/home/koehenri/include/libutils/nr-linemethod.hpp:160:10:   required from ‘double nr::Linemethod<T>::linmin(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, utils::Vector<double>&, double, bool, bool, bool, bool) [with T = ChiSqFunc<Param, double, double>]’
+/home/koehenri/include/libutils/funcfit-conjgrad.hpp:241:5:   required from ‘utils::Vector<double> funcfit::ConjGrad<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, bool) [with T = ChiSqFunc<Param, double, double>]’
+src/compound-getprop.cpp:405:43:   required from here
+/home/koehenri/include/libutils/nr-golden.hpp:166:10: warning: unused parameter ‘smin’ [-Wunused-parameter]
+     void bracket(const double a,
+          ^
+/home/koehenri/include/libutils/nr-golden.hpp:166:10: warning: unused parameter ‘smax’ [-Wunused-parameter]
+In file included from src/compound-getprop.cpp:24:0:
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp: In member function ‘utils::Vector<double> funcfit::GravSearch<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_GravSearch) [with T = ChiSqFunc<Param, double, double>]’:
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:409:4: warning: ‘td2’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    td2 = sqrt(td2);
+    ^
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:308:4: warning: ‘fxglobmin_old’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    if ( check_conv(x[ixglobmin], true,fxglobmin_old, true,fxglobmin, // use old and current function values
+    ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/compound-getprop.cpp:11:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixglobmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/compound-getprop.cpp:24:0:
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:151:27: note: ‘ixglobmin’ was declared here
+       int niter=0, i,j,k, ixglobmin, ixglobmax;
+                           ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/compound-getprop.cpp:11:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixglobmax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/compound-getprop.cpp:24:0:
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:151:38: note: ‘ixglobmax’ was declared here
+       int niter=0, i,j,k, ixglobmin, ixglobmax;
+                                      ^
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:446:2: warning: ‘fxglobmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  fmin = fxglobmin;
+  ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:19:0,
+                 from src/compound-getprop.cpp:11:
+/home/koehenri/include/libutils/utils-math.hpp: In member function ‘double nr::Linemethod<T>::linmin(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, utils::Vector<double>&, double, bool, bool, bool, bool) [with T = ChiSqFunc<Param, double, double>]’:
+/home/koehenri/include/libutils/utils-math.hpp:66:5: warning: ‘smin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+     if (x>=0 && y>=0 &&
+     ^
+In file included from /home/koehenri/include/libutils/funcfit-conjgrad.hpp:19:0,
+                 from src/compound-getprop.cpp:14:
+/home/koehenri/include/libutils/nr-linemethod.hpp:101:14: note: ‘smin’ was declared here
+       double smin, smax;
+              ^
+/home/koehenri/include/libutils/nr-linemethod.hpp:160:4: warning: ‘smax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    sxmin = golden.minimize(ax, xx, smin, smax, tol, debug_golden, debug_bracket);
+    ^
+In file included from src/compound-getprop.cpp:23:0:
+/home/koehenri/include/libutils/funcfit-beecolony.hpp: In member function ‘utils::Vector<double> funcfit::BeeColony<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_BeeColony) [with T = ChiSqFunc<Param, double, double>]’:
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:296:4: warning: ‘fxglobmin_old’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    if ( check_conv(x[ixglobmin], true,fxglobmin_old, true,fxglobmin, // use old and current function values
+    ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/compound-getprop.cpp:11:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixglobmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/compound-getprop.cpp:23:0:
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:127:37: note: ‘ixglobmin’ was declared here
+       int niter=0, i,j,k, i1,i2,i3, ixglobmin, ixglobmax;
+                                     ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/compound-getprop.cpp:11:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixglobmax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/compound-getprop.cpp:23:0:
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:127:48: note: ‘ixglobmax’ was declared here
+       int niter=0, i,j,k, i1,i2,i3, ixglobmin, ixglobmax;
+                                                ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:457:4: warning: ‘fxglobmax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    if (i==0 || (i>0 && fxglobmax<fx[i])){ ixglobmax = i; fxglobmax = fx[i]; }
+    ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:243:7: warning: ‘fxglobmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+       fmin = fxglobmin;
+       ^
+In file included from src/compound-getprop.cpp:22:0:
+/home/koehenri/include/libutils/funcfit-partswarm.hpp: In member function ‘utils::Vector<double> funcfit::PartSwarm<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_PartSwarm) [with T = ChiSqFunc<Param, double, double>]’:
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:290:4: warning: ‘fxglobmin_old’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    if ( check_conv(x[ixglobmin], true,fxglobmin_old, true,fxglobmin, // use old and current function values
+    ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/compound-getprop.cpp:11:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixglobmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/compound-getprop.cpp:22:0:
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:117:27: note: ‘ixglobmin’ was declared here
+       int niter=0, i,j,k, ixglobmin, ixglobmax;
+                           ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/compound-getprop.cpp:11:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixglobmax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/compound-getprop.cpp:22:0:
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:117:38: note: ‘ixglobmax’ was declared here
+       int niter=0, i,j,k, ixglobmin, ixglobmax;
+                                      ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:359:4: warning: ‘fxglobmax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    if (i==0 || (i>0 && fxglobmax<fx[i])){ ixglobmax = i; fxglobmax = fx[i]; }
+    ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:228:7: warning: ‘fxglobmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+       fmin = fxglobmin;
+       ^
+In file included from src/compound-getprop.cpp:21:0:
+/home/koehenri/include/libutils/funcfit-diffevol.hpp: In member function ‘utils::Vector<double> funcfit::DiffEvol<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_DiffEvol) [with T = ChiSqFunc<Param, double, double>]’:
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:326:4: warning: ‘oldfxmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    if ( check_conv(x[ixmin], true,oldfxmin, true,fxmin, // use old and current function values
+    ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/compound-getprop.cpp:11:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/compound-getprop.cpp:21:0:
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:161:11: note: ‘ixmin’ was declared here
+       int ixmin, ixmax;
+           ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:348:4: warning: ‘fxmax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    absfxmax = fxmax * ((fxmax < 0) ? -1: 1);
+    ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:269:2: warning: ‘fxmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  if (fx[i]<=fxmin) xmin_set_idx.push_back(i);
+  ^
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/elem-iacs.cpp -o obj/elem-iacs.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/helpfuns.cpp -o obj/helpfuns.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/latcalc.cpp -o obj/latcalc.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/mdsettings.cpp -o obj/mdsettings.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/mdsystem.cpp -o obj/mdsystem.o
+In file included from src/mdsystem.cpp:201:0:
+src/mdsystem-relax.cppinc: In member function ‘void MDSystem::relax(int&, int&, int&, bool)’:
+src/mdsystem-relax.cppinc:526:14: warning: unused variable ‘d’ [-Wunused-variable]
+       double d,dx,dy,dz,rx,ry,rz;
+              ^
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/mdsystem-pot-abop.cpp -o obj/mdsystem-pot-abop.o
+src/mdsystem-pot-abop.cpp: In member function ‘double MDSystem::force_ABOP()’:
+src/mdsystem-pot-abop.cpp:77:19: warning: unused variable ‘q’ [-Wunused-variable]
+   int ij,j,ik,k,p,q;
+                   ^
+src/mdsystem-pot-abop.cpp:101:18: warning: unused variable ‘frc_ik’ [-Wunused-variable]
+   double frc_ij, frc_ik, frc_jk;
+                  ^
+src/mdsystem-pot-abop.cpp:101:26: warning: unused variable ‘frc_jk’ [-Wunused-variable]
+   double frc_ij, frc_ik, frc_jk;
+                          ^
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/mdsystem-pot-eam.cpp -o obj/mdsystem-pot-eam.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/param-pot.cpp -o obj/param-pot.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/potclasses-pot-abop.cpp -o obj/potclasses-pot-abop.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/potclasses-pot-eam.cpp -o obj/potclasses-pot-eam.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/potclasses-reppot.cpp -o obj/potclasses-reppot.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/potinfo.cpp -o obj/potinfo.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/potinfo-readeam.cpp -o obj/potinfo-readeam.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/potinfo-readinfo.cpp -o obj/potinfo-readinfo.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/potinfo-readreppot.cpp -o obj/potinfo-readreppot.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/potinfo-readspecs.cpp -o obj/potinfo-readspecs.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/propfun.cpp -o obj/propfun.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/report.cpp -o obj/report.o
+src/report.cpp:62:6: warning: unused parameter ‘DY’ [-Wunused-parameter]
+ void report_pot_prop(ParamPot & param,
+      ^
+src/report.cpp:62:6: warning: unused parameter ‘MDY’ [-Wunused-parameter]
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/specs-fit-prop-pot.cpp -o obj/specs-fit-prop-pot.o
+g++  -I/home/koehenri/include/libutils -ansi -pedantic -std=c++98  -Wall -Wextra -Wstrict-aliasing  -g  -O3 -fstrict-aliasing  -pg  -fopenmp  -c  src/tulip.cpp -o obj/tulip.o
+In file included from src/tulip.cpp:18:0:
+/home/koehenri/include/libutils/funcfit-conjgrad.hpp: In instantiation of ‘utils::Vector<double> funcfit::ConjGrad<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, bool) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+src/tulip.cpp:1035:43:   required from here
+/home/koehenri/include/libutils/funcfit-conjgrad.hpp:139:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+In file included from src/tulip.cpp:23:0:
+/home/koehenri/include/libutils/funcfit-powell.hpp: In instantiation of ‘utils::Vector<double> funcfit::Powell<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+src/tulip.cpp:1043:43:   required from here
+/home/koehenri/include/libutils/funcfit-powell.hpp:102:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+In file included from src/tulip.cpp:20:0:
+/home/koehenri/include/libutils/funcfit-ls-gauss-newton.hpp: In instantiation of ‘utils::Vector<double> funcfit::GaussNewton<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+src/tulip.cpp:1051:43:   required from here
+/home/koehenri/include/libutils/funcfit-ls-gauss-newton.hpp:87:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+In file included from src/tulip.cpp:24:0:
+/home/koehenri/include/libutils/funcfit-simplexfit.hpp: In instantiation of ‘utils::Vector<double> funcfit::SimplexFit<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+src/tulip.cpp:1082:43:   required from here
+/home/koehenri/include/libutils/funcfit-simplexfit.hpp:114:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+In file included from src/tulip.cpp:25:0:
+/home/koehenri/include/libutils/funcfit-diffevol.hpp: In instantiation of ‘utils::Vector<double> funcfit::DiffEvol<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_DiffEvol) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+src/tulip.cpp:1092:43:   required from here
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:161:18: warning: variable ‘ixmax’ set but not used [-Wunused-but-set-variable]
+       int ixmin, ixmax;
+                  ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:162:11: warning: unused variable ‘ixamin’ [-Wunused-variable]
+       int ixamin, ixamax;
+           ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:162:19: warning: unused variable ‘ixamax’ [-Wunused-variable]
+       int ixamin, ixamax;
+                   ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:163:58: warning: variable ‘oldfxmax’ set but not used [-Wunused-but-set-variable]
+       double fxmin, fxmax, absfxmin, absfxmax, oldfxmin, oldfxmax;
+                                                          ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:164:14: warning: unused variable ‘fxamin’ [-Wunused-variable]
+       double fxamin, fxamax, absfxamin, absfxamax, oldfxamin, oldfxamax;
+              ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:164:22: warning: unused variable ‘fxamax’ [-Wunused-variable]
+       double fxamin, fxamax, absfxamin, absfxamax, oldfxamin, oldfxamax;
+                      ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:164:30: warning: unused variable ‘absfxamin’ [-Wunused-variable]
+       double fxamin, fxamax, absfxamin, absfxamax, oldfxamin, oldfxamax;
+                              ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:164:41: warning: unused variable ‘absfxamax’ [-Wunused-variable]
+       double fxamin, fxamax, absfxamin, absfxamax, oldfxamin, oldfxamax;
+                                         ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:164:52: warning: unused variable ‘oldfxamin’ [-Wunused-variable]
+       double fxamin, fxamax, absfxamin, absfxamax, oldfxamin, oldfxamax;
+                                                    ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:164:63: warning: unused variable ‘oldfxamax’ [-Wunused-variable]
+       double fxamin, fxamax, absfxamin, absfxamax, oldfxamin, oldfxamax;
+                                                               ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:165:26: warning: unused variable ‘ratio2’ [-Wunused-variable]
+       double td, ratio1, ratio2;
+                          ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:197:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:198:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:210:14: warning: unused variable ‘td1’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+              ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:210:18: warning: unused variable ‘td2’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                  ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:210:22: warning: unused variable ‘td3’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                      ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:210:27: warning: unused variable ‘rtol’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                           ^
+In file included from src/tulip.cpp:26:0:
+/home/koehenri/include/libutils/funcfit-partswarm.hpp: In instantiation of ‘utils::Vector<double> funcfit::PartSwarm<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_PartSwarm) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+src/tulip.cpp:1101:43:   required from here
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:115:14: warning: unused variable ‘eps’ [-Wunused-variable]
+       double eps = numeric_limits<double>::epsilon();
+              ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:117:24: warning: unused variable ‘k’ [-Wunused-variable]
+       int niter=0, i,j,k, ixglobmin, ixglobmax;
+                        ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:145:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:146:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:158:29: warning: variable ‘fxglobmax_old’ set but not used [-Wunused-but-set-variable]
+       double fxglobmin_old, fxglobmax_old;
+                             ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:164:14: warning: unused variable ‘td1’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+              ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:164:18: warning: unused variable ‘td2’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                  ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:164:22: warning: unused variable ‘td3’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                      ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:164:27: warning: unused variable ‘rtol’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                           ^
+In file included from src/tulip.cpp:27:0:
+/home/koehenri/include/libutils/funcfit-beecolony.hpp: In instantiation of ‘utils::Vector<double> funcfit::BeeColony<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_BeeColony) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+src/tulip.cpp:1110:43:   required from here
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:125:14: warning: unused variable ‘eps’ [-Wunused-variable]
+       double eps = numeric_limits<double>::epsilon();
+              ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:127:33: warning: unused variable ‘i3’ [-Wunused-variable]
+       int niter=0, i,j,k, i1,i2,i3, ixglobmin, ixglobmax;
+                                 ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:128:14: warning: unused variable ‘vmax’ [-Wunused-variable]
+       double vmax, w;
+              ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:128:20: warning: unused variable ‘w’ [-Wunused-variable]
+       double vmax, w;
+                    ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:149:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:150:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:155:29: warning: variable ‘fxglobmax_old’ set but not used [-Wunused-but-set-variable]
+       double fxglobmin_old, fxglobmax_old;
+                             ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:168:14: warning: unused variable ‘td1’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+              ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:168:18: warning: unused variable ‘td2’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                  ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:168:22: warning: unused variable ‘td3’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                      ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:168:27: warning: unused variable ‘rtol’ [-Wunused-variable]
+       double td1,td2,td3, rtol;
+                           ^
+In file included from src/tulip.cpp:28:0:
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp: In instantiation of ‘utils::Vector<double> funcfit::GravSearch<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_GravSearch) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+src/tulip.cpp:1119:43:   required from here
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:177:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:178:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:190:29: warning: variable ‘fxglobmax_old’ set but not used [-Wunused-but-set-variable]
+       double fxglobmin_old, fxglobmax_old;
+                             ^
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:198:37: warning: unused variable ‘td3’ [-Wunused-variable]
+       double masstot, dist, td1,td2,td3, rtol;
+                                     ^
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:198:42: warning: unused variable ‘rtol’ [-Wunused-variable]
+       double masstot, dist, td1,td2,td3, rtol;
+                                          ^
+In file included from src/tulip.cpp:29:0:
+/home/koehenri/include/libutils/funcfit-simann.hpp: In instantiation of ‘utils::Vector<double> funcfit::SimAnn<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, utils::Vector<double>, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_SimAnn) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+src/tulip.cpp:1138:43:   required from here
+/home/koehenri/include/libutils/funcfit-simann.hpp:135:14: warning: unused variable ‘small’ [-Wunused-variable]
+       double small = sqrt(eps);
+              ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:138:22: warning: unused variable ‘j’ [-Wunused-variable]
+       int niter=0, i,j,k;
+                      ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:138:24: warning: unused variable ‘k’ [-Wunused-variable]
+       int niter=0, i,j,k;
+                        ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:158:23: warning: variable ‘Te_star’ set but not used [-Wunused-but-set-variable]
+       double Te, Te0, Te_star;
+                       ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:160:11: warning: unused variable ‘NT’ [-Wunused-variable]
+       int NT = max((int)100, (int)5*D);
+           ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:168:12: warning: unused variable ‘report_warn’ [-Wunused-variable]
+       bool report_warn    = cond_print.report_warn;
+            ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:169:12: warning: unused variable ‘report_error’ [-Wunused-variable]
+       bool report_error   = cond_print.report_error;
+            ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:174:47: warning: variable ‘fp_star’ set but not used [-Wunused-but-set-variable]
+       double fp, fp_try, dfp, fp_opt, fp_old, fp_star, hmagn, td;
+                                               ^
+/home/koehenri/include/libutils/funcfit-simann.hpp:181:28: warning: unused variable ‘Nstoch’ [-Wunused-variable]
+       int Nfail=0, Nred=0, Nstoch=0;
+                            ^
+In file included from src/tulip.cpp:15:0:
+/home/koehenri/include/libutils/chisq-basics.hpp: In instantiation of ‘utils::Vector<double> ChiSqFunc<S, T, U>::free_parameters_part(const utils::Vector<double>&) [with S = ParamPot; T = CompoundStructureFit; U = double]’:
+/home/koehenri/include/libutils/chisq-basics.hpp:415:60:   required from ‘utils::Vector<double> ChiSqFunc<S, T, U>::free_parameters(const utils::Vector<double>&) [with S = ParamPot; T = CompoundStructureFit; U = double]’
+/home/koehenri/include/libutils/funcfit-conjgrad.hpp:114:9:   required from ‘utils::Vector<double> funcfit::ConjGrad<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, bool) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’
+src/tulip.cpp:1035:43:   required from here
+/home/koehenri/include/libutils/chisq-basics.hpp:448:9: warning: unused variable ‘NXall’ [-Wunused-variable]
+     int NXall = mParam.X().size();
+         ^
+In file included from /home/koehenri/include/libutils/nr-linemethod.hpp:15:0,
+                 from /home/koehenri/include/libutils/funcfit-conjgrad.hpp:19,
+                 from src/tulip.cpp:18:
+/home/koehenri/include/libutils/nr-golden.hpp: In instantiation of ‘void nr::Golden<T>::bracket(double, double, double, double, double, bool) [with T = nr::F1dim<ChiSqFunc<ParamPot, CompoundStructureFit, double> >]’:
+/home/koehenri/include/libutils/nr-golden.hpp:86:51:   required from ‘double nr::Golden<T>::minimize(double, double, double, double, double, bool, bool) [with T = nr::F1dim<ChiSqFunc<ParamPot, CompoundStructureFit, double> >]’
+/home/koehenri/include/libutils/nr-linemethod.hpp:160:10:   required from ‘double nr::Linemethod<T>::linmin(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, utils::Vector<double>&, double, bool, bool, bool, bool) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’
+/home/koehenri/include/libutils/funcfit-conjgrad.hpp:241:5:   required from ‘utils::Vector<double> funcfit::ConjGrad<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, bool) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’
+src/tulip.cpp:1035:43:   required from here
+/home/koehenri/include/libutils/nr-golden.hpp:166:10: warning: unused parameter ‘smin’ [-Wunused-parameter]
+     void bracket(const double a,
+          ^
+/home/koehenri/include/libutils/nr-golden.hpp:166:10: warning: unused parameter ‘smax’ [-Wunused-parameter]
+In file included from src/tulip.cpp:25:0:
+/home/koehenri/include/libutils/funcfit-diffevol.hpp: In member function ‘utils::Vector<double> funcfit::DiffEvol<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_DiffEvol) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:326:4: warning: ‘oldfxmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    if ( check_conv(x[ixmin], true,oldfxmin, true,fxmin, // use old and current function values
+    ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/tulip.cpp:15:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/tulip.cpp:25:0:
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:161:11: note: ‘ixmin’ was declared here
+       int ixmin, ixmax;
+           ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:348:4: warning: ‘fxmax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    absfxmax = fxmax * ((fxmax < 0) ? -1: 1);
+    ^
+/home/koehenri/include/libutils/funcfit-diffevol.hpp:269:2: warning: ‘fxmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  if (fx[i]<=fxmin) xmin_set_idx.push_back(i);
+  ^
+In file included from src/tulip.cpp:26:0:
+/home/koehenri/include/libutils/funcfit-partswarm.hpp: In member function ‘utils::Vector<double> funcfit::PartSwarm<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_PartSwarm) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:290:4: warning: ‘fxglobmin_old’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    if ( check_conv(x[ixglobmin], true,fxglobmin_old, true,fxglobmin, // use old and current function values
+    ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/tulip.cpp:15:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixglobmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/tulip.cpp:26:0:
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:117:27: note: ‘ixglobmin’ was declared here
+       int niter=0, i,j,k, ixglobmin, ixglobmax;
+                           ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/tulip.cpp:15:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixglobmax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/tulip.cpp:26:0:
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:117:38: note: ‘ixglobmax’ was declared here
+       int niter=0, i,j,k, ixglobmin, ixglobmax;
+                                      ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:359:4: warning: ‘fxglobmax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    if (i==0 || (i>0 && fxglobmax<fx[i])){ ixglobmax = i; fxglobmax = fx[i]; }
+    ^
+/home/koehenri/include/libutils/funcfit-partswarm.hpp:228:7: warning: ‘fxglobmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+       fmin = fxglobmin;
+       ^
+In file included from src/tulip.cpp:27:0:
+/home/koehenri/include/libutils/funcfit-beecolony.hpp: In member function ‘utils::Vector<double> funcfit::BeeColony<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_BeeColony) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:296:4: warning: ‘fxglobmin_old’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    if ( check_conv(x[ixglobmin], true,fxglobmin_old, true,fxglobmin, // use old and current function values
+    ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/tulip.cpp:15:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixglobmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/tulip.cpp:27:0:
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:127:37: note: ‘ixglobmin’ was declared here
+       int niter=0, i,j,k, i1,i2,i3, ixglobmin, ixglobmax;
+                                     ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/tulip.cpp:15:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixglobmax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/tulip.cpp:27:0:
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:127:48: note: ‘ixglobmax’ was declared here
+       int niter=0, i,j,k, i1,i2,i3, ixglobmin, ixglobmax;
+                                                ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:457:4: warning: ‘fxglobmax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    if (i==0 || (i>0 && fxglobmax<fx[i])){ ixglobmax = i; fxglobmax = fx[i]; }
+    ^
+/home/koehenri/include/libutils/funcfit-beecolony.hpp:243:7: warning: ‘fxglobmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+       fmin = fxglobmin;
+       ^
+In file included from src/tulip.cpp:28:0:
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp: In member function ‘utils::Vector<double> funcfit::GravSearch<T>::minimize(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, int, funcfit::Cond_Conv, funcfit::Cond_Debug, funcfit::Cond_Print, funcfit::Cond_GravSearch) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:409:4: warning: ‘td2’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    td2 = sqrt(td2);
+    ^
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:308:4: warning: ‘fxglobmin_old’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    if ( check_conv(x[ixglobmin], true,fxglobmin_old, true,fxglobmin, // use old and current function values
+    ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/tulip.cpp:15:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixglobmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/tulip.cpp:28:0:
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:151:27: note: ‘ixglobmin’ was declared here
+       int niter=0, i,j,k, ixglobmin, ixglobmax;
+                           ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:20:0,
+                 from src/tulip.cpp:15:
+/home/koehenri/include/libutils/utils-vector.hpp:393:14: warning: ‘ixglobmax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   return mvec[i];
+              ^
+In file included from src/tulip.cpp:28:0:
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:151:38: note: ‘ixglobmax’ was declared here
+       int niter=0, i,j,k, ixglobmin, ixglobmax;
+                                      ^
+/home/koehenri/include/libutils/funcfit-gravsearch.hpp:446:2: warning: ‘fxglobmin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  fmin = fxglobmin;
+  ^
+In file included from /home/koehenri/include/libutils/chisq-basics.hpp:19:0,
+                 from src/tulip.cpp:15:
+/home/koehenri/include/libutils/utils-math.hpp: In member function ‘double nr::Linemethod<T>::linmin(utils::Vector<double>&, utils::Vector<double>&, utils::Vector<double>&, utils::Vector<parametertype>&, utils::Vector<double>&, double, bool, bool, bool, bool) [with T = ChiSqFunc<ParamPot, CompoundStructureFit, double>]’:
+/home/koehenri/include/libutils/utils-math.hpp:66:5: warning: ‘smin’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+     if (x>=0 && y>=0 &&
+     ^
+In file included from /home/koehenri/include/libutils/funcfit-conjgrad.hpp:19:0,
+                 from src/tulip.cpp:18:
+/home/koehenri/include/libutils/nr-linemethod.hpp:101:14: note: ‘smin’ was declared here
+       double smin, smax;
+              ^
+/home/koehenri/include/libutils/nr-linemethod.hpp:160:4: warning: ‘smax’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+    sxmin = golden.minimize(ax, xx, smin, smax, tol, debug_golden, debug_bracket);
+    ^
+g++  obj/compound.o obj/compound-getprop.o obj/elem-iacs.o obj/helpfuns.o obj/latcalc.o obj/mdsettings.o obj/mdsystem.o obj/mdsystem-pot-abop.o obj/mdsystem-pot-eam.o obj/param-pot.o obj/potclasses-pot-abop.o obj/potclasses-pot-eam.o obj/potclasses-reppot.o obj/potinfo.o obj/potinfo-readeam.o obj/potinfo-readinfo.o obj/potinfo-readreppot.o obj/potinfo-readspecs.o obj/propfun.o obj/report.o obj/specs-fit-prop-pot.o obj/tulip.o -fopenmp  -o tulip  -L/home/koehenri/lib -lrt -lm -lutils -pg 
+#strip -s tulip
+cp tulip /home/koehenri/bin/

@@ -11,20 +11,22 @@ using namespace utils;
 
 // Birch-Murnaghan EOS
 Vector<double> fun_bmeos(Param & P, Vector<double> & DX){
-  Vector<double> DY(DX);
+  Vector<double> DY = DX;
   double E0, V0, B0, Bp0;
     
   E0  = P.X(0);
   V0  = P.X(1);
   B0  = P.X(2);
   Bp0 = P.X(3);
+
+  double f23, f;
     
-  for (int i=0; i<DX.size(); ++i)
-    DY[i] = E0 + 9.0*V0*B0/16.0 * pow( pow(V0/DX[i], 2.0/3.0) - 1.0, 2 )
-      * (
-	 ( pow(V0/DX[i], 2.0/3.0) - 1.0 ) * Bp0
-	 + 6.0 - 4.0 * pow(V0/DX[i], 2.0/3.0)
-	 );
+  for (int i=0; i<DX.size(); ++i){
+    f23 = pow(V0/DX[i], 2.0/3.0);
+    f   = f23 - 1.0;
+
+    DY[i] = E0 + 9.0*V0*B0/16.0 * ( f*f*f * Bp0 + f*f * (6 - 4*f23) );
+  }
   return DY;
 }
 

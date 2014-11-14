@@ -51,7 +51,7 @@ double MDSystem::force_EAM(){
   double dF_s_i, dF_p_i, dF_d_i;
   double drsq, rcutsq;
   double td, dx,dy,dz, eps=numeric_limits<double>::epsilon(), dr_ij, dx_ij, dy_ij, dz_ij;
-  int ivec;
+  int ivec=-1;
   Vector<double> pos1(3,0.0), pos2(3,0.0), drvec(3,0.0);
   Vector<double> dF_drho_d(natoms(), 0), dF_drho_p(natoms(), 0), dF_drho_s(natoms(), 0);
   string s1, s2;

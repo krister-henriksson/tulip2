@@ -55,9 +55,11 @@ public:
   double   BM_fmin;
   double   BM_fmax;
   double   BM_Nf;
+  double   BM_ef;
   double   C_fmin;
   double   C_fmax;
   double   C_Nf;
+  double   C_ef;
   // ***********************************
   MDSettings_common mds_specs_common;
   // ***********************************

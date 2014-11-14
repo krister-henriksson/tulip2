@@ -125,8 +125,6 @@ Vector<double> latcalc(ParamPot & param, Vector<CompoundStructureFit> & DX){
     aborterror("Warning: Debugging of forces done, performing quick and dirty exit.");
   
 
-
-
   return MDY;
 }
 

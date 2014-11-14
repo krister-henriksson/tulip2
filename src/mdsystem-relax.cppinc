@@ -532,9 +532,6 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
       dy = s * by;
       dz = s * bz;
 
-      cout << "Debugging pressure ... dxi " << dx
-	   << " scaling of coords " << dx/bx << endl;
-
       // Point 1:
       boxlen[0] += dx;
       boxlen[1] += dy;
@@ -782,8 +779,10 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
     Pz = stresstensor_xyz.elem(2,2) = W.elem(2,2);  /* Unit now: GPa. */
     P = 1.0/3.0 * (Px + Py + Pz);
 
-    cout << "Virial matrix: " << W << endl;
-  
+    if (specs_common.debug_pressure){
+      cout << "Virial matrix: " << W << endl;
+    }
+
     /* Get pressure components in skewed system: */
     double td0,td1,td2;
     double te0,te1,te2;
@@ -880,16 +879,17 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
 	*/
 
 	td = third * (dt / (specs.bpc_scale * specs.bpc_tau ));
-	cout << "dt / (specs.bpc_scale * specs.bpc_tau ) " << td << endl;
+	//cout << "dt / (specs.bpc_scale * specs.bpc_tau ) " << td << endl;
 	mu[0] = pow( 1.0 - td * (specs.bpc_P0 - stresstensor_xyz.elem(0,0)), 1.0/3.0);
 	mu[1] = pow( 1.0 - td * (specs.bpc_P0 - stresstensor_xyz.elem(1,1)), 1.0/3.0);
 	mu[2] = pow( 1.0 - td * (specs.bpc_P0 - stresstensor_xyz.elem(2,2)), 1.0/3.0);
 	//cout << "mu(0,1,2): " << mu[0] << " " << mu[1] << " " << mu[2] << endl;
 
 	//printf("Inside pressure control: Px Py Pz:  %15.10e  %15.10e  %15.10e\n", Px, Py, Pz);
-	printf("Inside pressure control: mx my mz:  %15.10e  %15.10e  %15.10e\n", mu[0], mu[1], mu[2]);
-	fflush(stdout);
-
+	if (specs_common.debug_pressure){
+	  printf("Inside pressure control: mx my mz:  %15.10e  %15.10e  %15.10e\n", mu[0], mu[1], mu[2]);
+	  fflush(stdout);
+	}
 
 	//#pragma omp parallel for schedule(static)
 	for (i=0; i<nat; ++i){
@@ -986,8 +986,10 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
 	Pz = stresstensor_xyz.elem(2,2) = W.elem(2,2);  /* Unit now: GPa. */
 	P = 1.0/3.0 * (Px + Py + Pz);
 
-	cout << "After P control: Virial matrix: " << W << endl;
-	
+	if (specs_common.debug_pressure){
+	  cout << "After P control: Virial matrix: " << W << endl;
+	}
+
 	//cout << "Stress tensor (Cartesian system): " << stresstensor_xyz << endl;
 	//printf("Px Py Pz:  %15.10e  %15.10e  %15.10e\n", Px, Py, Pz);
 	//  fflush(stdout);
@@ -1039,7 +1041,7 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
 
 
 
-
+	/*
 	cout << "After calc_volume():" << endl;
 	printf("boxlen([0]: %15.10f\n", boxlen[0]);
 	printf("boxlen([1]: %15.10f\n", boxlen[1]);
@@ -1047,7 +1049,7 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
 	cout << "boxdir([0]: " << boxdir.col(0) << endl;
 	cout << "boxdir([1]: " << boxdir.col(1) << endl;
 	cout << "boxdir([2]: " << boxdir.col(2) << endl;
-
+	*/
 
 	/* Guard against box becoming too large when relaxing: */
 	for (i=0; i<3; ++i){
@@ -1176,6 +1178,9 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
      #############################################################
      #############################################################
      ############################################################# */
+
+
+  //exit(1);
 
   {
     ofstream fdump;

@@ -279,22 +279,25 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 				    double & E0,
 				    double & V0
 				    ){
-		
+
   int j,k,p,Nf;
   Matrix<double> alpha(3,3,0);
-  double fmin, fmax, df, f, g;
-  double td;
+  double fmin, fmax, ef, f, df, g, td;
   Vector<double> xp, yp, dyp;
   Vector<double> Xopt;
   double B0, Bp0, dV;
   double d2E, d3E;
   bool fit_OK;
-  double small = sqrt( std::numeric_limits<double>::epsilon() );
   double min_V=V0, min_E=E0, guess_B, guess_Bp;
+  double eps = std::numeric_limits<double>::epsilon();
+  double small = sqrt(eps);
+
+
 
   fmin = param.p_potinfo->specs_prop.BM_fmin;
   fmax = param.p_potinfo->specs_prop.BM_fmax;
   Nf   = param.p_potinfo->specs_prop.BM_Nf;
+  ef   = param.p_potinfo->specs_prop.BM_ef;
   if (Nf<3) Nf=3;
   df   = (fmax - fmin)/Nf;
   xp.resize(Nf); yp.resize(Nf); dyp.resize(Nf);
@@ -305,6 +308,9 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 
   // Loop over particular symmetry changes
   // (only one => no loop)
+
+
+
 
   // Loop over differential changes
   for (j=0; j<Nf; ++j){
@@ -317,20 +323,26 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
     mds.get_all_neighborcollections();
     td = mds.calc_potential_energy() / mds.natoms();
     yp[j] = td;
-    dyp[j] = ((td<0)? -td: td) * small;
+    dyp[j] = ((td<0)? -td: td) * ef;
 
+    /*
     cout << "f g V Epa "
 	 << f << " "
 	 << g << " "
 	 << xp[j] << " "
-	 << yp[j] << endl;
+	 << yp[j] << " "
+	 << dyp[j] << endl;
+    */
+    cout << xp[j] << " "
+	 << yp[j] << " "
+	 << dyp[j] << endl;
+    
 
     // Reset:
     mds.pos    = pos_bak;
     mds.boxdir = boxdir_bak;
     mds.boxlen = boxlen_bak;
   }
-  exit(1);
 
 
 
@@ -351,6 +363,7 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
   pp.X(1) = min_V;
   pp.X(2) = guess_B;
   pp.X(3) = guess_Bp;
+
 
   cs.Param() = pp;
   cs.DataX() = xp;
@@ -392,6 +405,15 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
   cond_print.prefix_report_iter  = "propfit B,B' iter: ";
   cond_print.prefix_report_warn  = "propfit B,B' warn: ";
   cond_print.prefix_report_error = "propfit B,B' error: ";
+
+  if (cond_debug.debug_fit_level0){
+    cond_conv.report_conv  = true;
+    cond_print.report_iter = true;
+    cond_print.report_warn = true;
+    cond_print.report_error= true;
+  }
+
+
 
 
   int seed = param.p_potinfo->specs_prop.seed;
@@ -562,7 +584,7 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
     }
 
     d2E = Ep[nmid+1] - 2*Ep[nmid] + Ep[nmid-1];
-    guess_B = B0 = d2E/(dV*dV) * V0;
+    guess_B = B0 = - d2E/(dV*dV) * V0;
     //B0  = d2E/(4.0*dV*dV) * V0 * eVA3_to_GPa;
     d3E = Ep[nmid+2] - 2*Ep[nmid+1] + 2*Ep[nmid-1] - Ep[nmid-2];
     Bp0 = -1.0 - V0*V0/B0 * d3E/(2.0*dV*dV*dV);
@@ -603,13 +625,15 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
   int j,k,p,Nf,NC,isym;
   Vector<double> xp, yp, dyp, Clincomb, Xopt;
   Matrix<double> alpha(3,3,0), C(6,6,0);
-  double fmin, fmax, df, f, td, C11, C12, C13, C22, C23, C33, C44, C55, C66;
-  double small = sqrt( std::numeric_limits<double>::epsilon() ), min_f=0.0, min_E=E0, guess_C;
+  double fmin, fmax, ef, df, f, td, C11, C12, C13, C22, C23, C33, C44, C55, C66;
+  double eps = std::numeric_limits<double>::epsilon(), min_f=0.0, min_E=E0, guess_C;
+  double small = sqrt(eps);
 
 
   fmin = param.p_potinfo->specs_prop.C_fmin;
   fmax = param.p_potinfo->specs_prop.C_fmax;
   Nf   = param.p_potinfo->specs_prop.C_Nf;
+  ef   = param.p_potinfo->specs_prop.C_ef;
   if (Nf<3) Nf=3;
   df   = (fmax - fmin)/Nf;
   xp.resize(Nf); yp.resize(Nf); dyp.resize(Nf);
@@ -783,7 +807,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       mds.get_all_neighborcollections();
       td = mds.calc_potential_energy() / mds.natoms();
       yp[j] = td;
-      dyp[j] = ((td<0)? -td: td) * small;
+      dyp[j] = ((td<0)? -td: td) * ef;
 
 
       // Reset:
@@ -856,6 +880,15 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
     cond_print.prefix_report_iter  = "propfit Cij iter: ";
     cond_print.prefix_report_warn  = "propfit Cij warn: ";
     cond_print.prefix_report_error = "propfit Cij error: ";
+
+
+    if (cond_debug.debug_fit_level0){
+      cond_conv.report_conv  = true;
+      cond_print.report_iter = true;
+      cond_print.report_warn = true;
+      cond_print.report_error= true;
+    }
+
 
 
     int seed = param.p_potinfo->specs_prop.seed;

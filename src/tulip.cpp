@@ -399,10 +399,12 @@ int main(int argc, char *argv[]){
   cout << "Bulk modulus: Minimum strain (e.g. -0.01)          : " << potinfo.specs_prop.BM_fmin << endl;
   cout << "Bulk modulus: Maximum strain (e.g.  0.01)          : " << potinfo.specs_prop.BM_fmax << endl;
   cout << "Bulk modulus: Number of strain points (e.g. 10)    : " << potinfo.specs_prop.BM_Nf << endl;
+  cout << "Bulk modulus: Multiplicative uncertainty factor (e.g. 0.10): " << potinfo.specs_prop.BM_ef << endl;
   cout << endl;
   cout << "Elastic moduli: Minimum strain (e.g. -0.01)        : " << potinfo.specs_prop.C_fmin << endl;
   cout << "Elastic moduli: Maximum strain (e.g.  0.01)        : " << potinfo.specs_prop.C_fmax << endl;
   cout << "Elastic moduli: Number of strain points (e.g. 10)  : " << potinfo.specs_prop.C_Nf << endl;
+  cout << "Elastic moduli: Multiplicative uncertainty factor (e.g. 0.10): " << potinfo.specs_prop.C_ef << endl;
   cout << endl;
   cout << "--------------------------------------------------------------------------" << endl;
   cout << "Settings for MD simulations of read-in compounds" << endl;
@@ -968,8 +970,8 @@ int main(int argc, char *argv[]){
   cs.ReportFuncPointer() = report_pot_prop;
   cs.finalize_setup();
 
-
   cs.barrier_scale() = potinfo.specs_pot.barrier_scale;
+
 
   cond_conv.functolabs = potinfo.specs_pot.functolabs;
   cond_conv.functolrel = potinfo.specs_pot.functolrel;
@@ -978,8 +980,10 @@ int main(int argc, char *argv[]){
   cond_conv.steptolrel = potinfo.specs_pot.steptolrel;
   cond_conv.nitermin   = potinfo.specs_pot.nitermin;
   cond_conv.nitermax   = potinfo.specs_pot.nitermax;
+
   cond_conv.report_conv = potinfo.specs_pot.report_conv;
   cond_conv.prefix_report_conv = "POTFIT conv: ";
+
 
   cond_debug.debug_fit_level0 = potinfo.specs_pot.debug_fit_level0;
   cond_debug.debug_fit_level1 = potinfo.specs_pot.debug_fit_level1;
@@ -992,14 +996,22 @@ int main(int argc, char *argv[]){
   cond_debug.prefix_debug_fit_level3 = "POTFIT debug3: ";
   cond_debug.prefix_debug_fit_level4 = "POTFIT debug4: ";
 
+
   cond_print.report_iter = true;
   cond_print.report_error= true;
   cond_print.report_warn = true;
-
   cond_print.prefix_report_iter  = "POTFIT iter: ";
   cond_print.prefix_report_warn  = "POTFIT warn: ";
   cond_print.prefix_report_error = "POTFIT error: ";
 
+
+
+  if (cond_debug.debug_fit_level0){
+    cond_conv.report_conv  = true;
+    cond_print.report_iter = true;
+    cond_print.report_warn = true;
+    cond_print.report_error= true;
+  }
 
 
 

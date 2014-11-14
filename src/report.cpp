@@ -75,6 +75,9 @@ void report_pot_prop(ParamPot & param,
   // calculated using the current settings of the potentials):
   report_prop( DX );
 
+
+  if (param.p_potinfo->specs_prop.mds_specs_common.quick_mode)
+    aborterror("Done with quick mode, performing dirty exit.");
 }
 
 
