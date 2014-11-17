@@ -333,10 +333,11 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 	 << yp[j] << " "
 	 << dyp[j] << endl;
     */
+    /*
     cout << xp[j] << " "
 	 << yp[j] << " "
 	 << dyp[j] << endl;
-    
+    */    
 
     // Reset:
     mds.pos    = pos_bak;
@@ -664,6 +665,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
   // Loop over particular symmetry changes
   for (isym=0; isym<NC; ++isym){
 
+    cout << " --------------------------------- " << endl;
 
     // Loop over differential changes
     for (j=0; j<Nf; ++j){
@@ -808,6 +810,8 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       td = mds.calc_potential_energy() / mds.natoms();
       yp[j] = td;
       dyp[j] = ((td<0)? -td: td) * ef;
+      
+      //printf("%.10f  %.10e  %.10e\n", xp[j], yp[j], dyp[j]);
 
 
       // Reset:
@@ -1025,7 +1029,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
     // a numerical estimate of the required derivatives.
 
     if (fit_OK){
-      E0  = Xopt[0];
+      E0  = Xopt[1];
       //f0  = Xopt[1];
       Clincomb[isym] = Xopt[2] / V0 * eVA3_to_GPa; // unit now: GPa
     }

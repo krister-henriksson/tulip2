@@ -869,12 +869,12 @@ CompoundListFit::CompoundListFit(const Elements & el,
   ifstream fp;
   ofstream fpo;
   string line;
-  vector<string> args, opts;
+  vector<string> args, opts, opts_special;
   istringstream strbuf;
   int ns, nlats, ilat, nelem;
   double td;
   Vector< Vector<double> > bv;
-  int ot, it;
+  int itr, its, ot;
   bool reading_latinfo, elem_ok;
   int i, j, k, p;
 
@@ -931,13 +931,15 @@ CompoundListFit::CompoundListFit(const Elements & el,
   opts.push_back("B");
   opts.push_back("Bp");
   opts.push_back("dB/dP");
-  opts.push_back("C");
   opts.push_back("Fmax");
   opts.push_back("F_max");
   opts.push_back("Pmax");
   opts.push_back("P_max");
   opts.push_back("displmax");
   opts.push_back("displ_max");
+
+  opts_special.resize(0);
+  opts_special.push_back("C");
 
 
 
@@ -990,7 +992,6 @@ CompoundListFit::CompoundListFit(const Elements & el,
     else if (args[0]=="file"){
       compounds[ilat].filename = args[1];
     }
-
     else if (args[0]=="elements"){
       compounds[ilat].elemnames.resize(0);
       for (i=1; i<ns; ++i){
@@ -1017,7 +1018,6 @@ CompoundListFit::CompoundListFit(const Elements & el,
 	}
       }
     }
-
     else if (args[0]=="csystem"){
       if      ( args[1][0] == 'c' || args[1][0] == 'C' )
 	compounds[ilat].csystem = "cubic";
@@ -1165,25 +1165,54 @@ CompoundListFit::CompoundListFit(const Elements & el,
       // args[0] is being investigated.
       // It could be e.g. 'a', 'w_a', or 'u_a'
 
+      itr = -1;
+      its = -1;
+      ot  = -1;
 
-      ot = it = -1;
+      // Regular options, matches an entire string:
       for (unsigned int i=0; i<opts.size(); ++i){
 	if      (args[0]==opts[i]){
-	  it = i; ot = 1; break;
+	  itr = i; ot = 1; break;
 	}
 	else if (args[0]==("w_" + opts[i])){
-	  it = i; ot = 2; break;
+	  itr = i; ot = 2; break;
 	}
 	else if (args[0]==("u_" + opts[i])){
-	  it = i; ot = 3; break;
+	  itr = i; ot = 3; break;
+	}
+      }
+      // Special options, starting with a single character and then followed by
+      // others:
+      if (itr<0){
+	for (unsigned int i=0; i<opts_special.size(); ++i){
+	  if      (args[0][0]==opts_special[i][0]){
+	    its = i; ot = 1; break;
+	  }
+	  else if (args[0][0]=='w' &&
+		   args[0][1]=='_' &&
+		   args[0][2]==opts_special[i][0]){
+	    its = i; ot = 2; break;
+	  }
+	  else if (args[0][0]=='u' &&
+		   args[0][1]=='_' &&
+		   args[0][2]==opts_special[i][0]){
+	    its = i; ot = 3; break;
+	  }
 	}
       }
 
-      string match="none";
-      if (it>=0){
-	match = opts[it];
+
+
+
+      string match="n";
+      if (itr>=0) match = opts[itr];
+      if (its>=0) match = opts_special[its];
+      if (itr>=0 || its>=0){
 	strbuf.str(args[1]); strbuf >> td; strbuf.clear();
       }
+
+      //cout << "match = " << match << " match[0] = " << match[0] << endl;
+
       
       if (match=="a"){
 	if (ot==1){
@@ -1297,19 +1326,7 @@ CompoundListFit::CompoundListFit(const Elements & el,
 	else if (ot==2) { compounds[ilat].prop_w.Bp = td; compounds[ilat].use_w.Bp = true;  compounds[ilat].use_u.Bp = false; }
 	else if (ot==3) { compounds[ilat].prop_u.Bp = td; compounds[ilat].use_w.Bp = false; compounds[ilat].use_u.Bp = true; }
       }
-      else if (match[0]=='C'){
-	int i = match[1];
-	int j = match[2];
 
-	if (i>=1 && i<=6 && j>=1 && j<=6){
-	  if (ot==1){
-	    compounds[ilat].prop_readin.C.elem(i-1,j-1) = td;
-	    compounds[ilat].prop_use.C.elem(i-1,j-1)    = true;
-	  }
-	  else if (ot==2) { compounds[ilat].prop_w.C.elem(i-1,j-1) = td; compounds[ilat].use_w.C.elem(i-1,j-1) = true;  compounds[ilat].use_u.C.elem(i-1,j-1) = false; }
-	  else if (ot==3) { compounds[ilat].prop_u.C.elem(i-1,j-1) = td; compounds[ilat].use_w.C.elem(i-1,j-1) = false; compounds[ilat].use_u.C.elem(i-1,j-1) = true; }
-	}
-      }
       else if (match=="Fmax" || match=="F_max"){
 	if (ot==1){
 	  compounds[ilat].prop_readin.Fmax = td;
@@ -1335,6 +1352,48 @@ CompoundListFit::CompoundListFit(const Elements & el,
 	else if (ot==3) { compounds[ilat].prop_u.displmax = td; compounds[ilat].use_w.displmax = false; compounds[ilat].use_u.displmax = true; }
       }
 
+
+
+      // Special parameters:
+      else if (its>=0 && match=="C"){
+	char k=0,p=0;
+	if (ot==1){
+	  k = args[0][1];
+	  p = args[0][2];
+	}
+	else if (ot==2 || ot==3){
+	  k = args[0][3];
+	  p = args[0][4];
+	}
+	// Now get integers:
+	int u, v;
+	stringstream sstream;
+	sstream.clear(); sstream << k; sstream >> u;
+	sstream.clear(); sstream << p; sstream >> v;
+	//cout << "u v " << u << " " << v << endl;
+
+	if (u>=1 && u<=6 && v>=1 && v<=6){
+	  //cout << "C (again)" << u << v << endl;
+
+	  if (ot==1){
+	    compounds[ilat].prop_readin.C.elem(u-1,v-1) = td;
+	    compounds[ilat].prop_use.C.elem(u-1,v-1)    = true;
+	    //cout << "use C" << u << v << " : " << compounds[ilat].prop_use.C.elem(u-1,v-1) << endl;
+	  }
+	  else if (ot==2) {
+	    compounds[ilat].prop_w.C.elem(u-1,v-1) = td;
+	    compounds[ilat].use_w.C.elem(u-1,v-1) = true;
+	    compounds[ilat].use_u.C.elem(u-1,v-1) = false;
+	  }
+	  else if (ot==3) {
+	    compounds[ilat].prop_u.C.elem(u-1,v-1) = td;
+	    compounds[ilat].use_w.C.elem(u-1,v-1) = false;
+	    compounds[ilat].use_u.C.elem(u-1,v-1) = true;
+	  }
+	}
+      }
+
+
     }
 
 
@@ -1345,6 +1404,10 @@ CompoundListFit::CompoundListFit(const Elements & el,
   fp.close();
 
   cout << "Compounds information collected." << endl;
+
+
+
+
 
   /*
   if (compounds.size() != ilat)
