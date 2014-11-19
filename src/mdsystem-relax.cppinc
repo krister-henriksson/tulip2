@@ -631,11 +631,11 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
 	tmp3 = s3*frc[i][2];
 	tmp4 = 0;
 
-	if      (tmp1>tmp2 && tmp1>tmp3) tmp4 = tmp1;
-	else if (tmp2>tmp1 && tmp2>tmp3) tmp4 = tmp2;
-	else                             tmp4 = tmp3;
+	if      (tmp1>=tmp2 && tmp1>=tmp3) tmp4 = tmp1;
+	else if (tmp2>=tmp1 && tmp2>=tmp3) tmp4 = tmp2;
+	else                               tmp4 = tmp3;
 
-	if (i==0 || (tmp4 > F_max)) F_max = tmp4;
+	if (i==0 || (tmp4 >= F_max)) F_max = tmp4;
       }
     }
   
@@ -1087,7 +1087,6 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
       P_max = tmp3;
       if      (tmp1 >= tmp2 && tmp1 >= tmp3) P_max = tmp1;
       else if (tmp2 >= tmp1 && tmp2 >= tmp3) P_max = tmp2;
-      else                                   P_max = tmp3;
     }
       
     //cout << "made it here 11" << endl;    

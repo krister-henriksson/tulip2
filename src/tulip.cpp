@@ -106,14 +106,19 @@ int main(int argc, char *argv[]){
     cout << "     -gf file           Path to file containing geometry information." << endl;
     cout << "     -sf file           Path to file containing technical specifications about the calculations." << endl;
     cout << "" << endl;
+
     cout << "Options:" << endl;
-    cout << "     -quick             Calculate properties of read-in geometries and quit." << endl;
+    cout << "     -quick             Calculate properties of read-in geometries and quit. No relaxation" << endl;
+    cout << "                        is performed on read-in compounds. Reference compounds are relaxed." << endl;
     cout << "     -dfitpropn         Show information about fitting of properties. Here 'n' must be" << endl;
-    cout << "                        an integer. Supported: 0-4. 0: debug fitting method. 1-4: debug deeper" << endl;
+    cout << "                        an integer. Supported: 0-4. 0: debug fitting method. 1-4: debug deeper." << endl;
     cout << "                        lying methods used by the fitting method. Default: not used" << endl;
+    cout << "                        NOTE: 0 also shows some info about the initial Chi^2 object." << endl;
     cout << "     -dfitpotn          Show information about fitting of potentials. Here 'n' have a similar" << endl;
     cout << "                        role as for fitting of the properties." << endl;
-    cout << "                        NOTE: 'fitpot0' is always set to true, others are false by default." << endl;
+    cout << "                        NOTE 1: 0 also shows some info about the initial Chi^2 object." << endl;
+    cout << "                        NOTE 2: 'fitpot0' is always set to true, others are false by default." << endl;
+    cout << "" << endl;
 
     cout << "     -dforces           Debug the forces. Default: not used" << endl;
     cout << "     -dpressure         Debug the pressure. Default: not used" << endl;
@@ -629,7 +634,7 @@ int main(int argc, char *argv[]){
 
 
   Vector<CompoundStructureFit> DX;
-  Vector<double> DY, SDY;
+  Vector<double> DY, DUY, DWY;
 
 
 
@@ -645,102 +650,210 @@ int main(int argc, char *argv[]){
   // WeightsDataY: 
 
   DY.resize(0);
-  SDY.resize(0);
+  DUY.resize(0);
+  DWY.resize(0);
 
   for (i=0; i<ncomp; ++i){
     
     if (complistfit.compounds[i].prop_use.a){ DY.push_back(complistfit.compounds[i].prop_readin.a);
-      if (complistfit.compounds[i].use_u.a) SDY.push_back(complistfit.compounds[i].prop_u.a);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.a);
+      if (complistfit.compounds[i].use_u.a){
+	DUY.push_back(complistfit.compounds[i].prop_u.a);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.a);
+      }
     }
-
     if (complistfit.compounds[i].prop_use.b){ DY.push_back(complistfit.compounds[i].prop_readin.b);
-      if (complistfit.compounds[i].use_u.b) SDY.push_back(complistfit.compounds[i].prop_u.b);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.b);
+      if (complistfit.compounds[i].use_u.b){
+	DUY.push_back(complistfit.compounds[i].prop_u.b);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.b);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.c){ DY.push_back(complistfit.compounds[i].prop_readin.c);
-      if (complistfit.compounds[i].use_u.c) SDY.push_back(complistfit.compounds[i].prop_u.c);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.c);
+      if (complistfit.compounds[i].use_u.c){
+	DUY.push_back(complistfit.compounds[i].prop_u.c);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.c);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.bpa){ DY.push_back(complistfit.compounds[i].prop_readin.bpa);
-      if (complistfit.compounds[i].use_u.bpa) SDY.push_back(complistfit.compounds[i].prop_u.bpa);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.bpa);
+      if (complistfit.compounds[i].use_u.bpa){
+	DUY.push_back(complistfit.compounds[i].prop_u.bpa);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.bpa);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.cpa){ DY.push_back(complistfit.compounds[i].prop_readin.cpa);
-      if (complistfit.compounds[i].use_u.cpa) SDY.push_back(complistfit.compounds[i].prop_u.cpa);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.cpa);
+      if (complistfit.compounds[i].use_u.cpa){
+	DUY.push_back(complistfit.compounds[i].prop_u.cpa);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.cpa);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.r0){ DY.push_back(complistfit.compounds[i].prop_readin.r0);
-      if (complistfit.compounds[i].use_u.r0) SDY.push_back(complistfit.compounds[i].prop_u.r0);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.r0);
+      if (complistfit.compounds[i].use_u.r0){
+	DUY.push_back(complistfit.compounds[i].prop_u.r0);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.r0);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.angle_ab){ DY.push_back(complistfit.compounds[i].prop_readin.angle_ab);
-      if (complistfit.compounds[i].use_u.angle_ab) SDY.push_back(complistfit.compounds[i].prop_u.angle_ab);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.angle_ab);
+      if (complistfit.compounds[i].use_u.angle_ab){
+	DUY.push_back(complistfit.compounds[i].prop_u.angle_ab);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.angle_ab);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.angle_ac){ DY.push_back(complistfit.compounds[i].prop_readin.angle_ac);
-      if (complistfit.compounds[i].use_u.angle_ac) SDY.push_back(complistfit.compounds[i].prop_u.angle_ac);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.angle_ac);
+      if (complistfit.compounds[i].use_u.angle_ac){
+	DUY.push_back(complistfit.compounds[i].prop_u.angle_ac);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.angle_ac);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.angle_bc){ DY.push_back(complistfit.compounds[i].prop_readin.angle_bc);
-      if (complistfit.compounds[i].use_u.angle_bc) SDY.push_back(complistfit.compounds[i].prop_u.angle_bc);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.angle_bc);
+      if (complistfit.compounds[i].use_u.angle_bc){
+	DUY.push_back(complistfit.compounds[i].prop_u.angle_bc);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.angle_bc);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.Vatom){ DY.push_back(complistfit.compounds[i].prop_readin.Vatom);
-      if (complistfit.compounds[i].use_u.Vatom) SDY.push_back(complistfit.compounds[i].prop_u.Vatom);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.Vatom);
+      if (complistfit.compounds[i].use_u.Vatom){
+	DUY.push_back(complistfit.compounds[i].prop_u.Vatom);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.Vatom);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.Ecoh){ DY.push_back(complistfit.compounds[i].prop_readin.Ecoh);
-      if (complistfit.compounds[i].use_u.Ecoh) SDY.push_back(complistfit.compounds[i].prop_u.Ecoh);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.Ecoh);
+      if (complistfit.compounds[i].use_u.Ecoh){
+	DUY.push_back(complistfit.compounds[i].prop_u.Ecoh);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.Ecoh);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.Emix){ DY.push_back(complistfit.compounds[i].prop_readin.Emix);
-      if (complistfit.compounds[i].use_u.Emix) SDY.push_back(complistfit.compounds[i].prop_u.Emix);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.Emix);
+      if (complistfit.compounds[i].use_u.Emix){
+	DUY.push_back(complistfit.compounds[i].prop_u.Emix);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.Emix);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.B){ DY.push_back(complistfit.compounds[i].prop_readin.B);
-      if (complistfit.compounds[i].use_u.B) SDY.push_back(complistfit.compounds[i].prop_u.B);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.B);
+      if (complistfit.compounds[i].use_u.B){
+	DUY.push_back(complistfit.compounds[i].prop_u.B);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.B);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.Bp){ DY.push_back(complistfit.compounds[i].prop_readin.Bp);
-      if (complistfit.compounds[i].use_u.Bp) SDY.push_back(complistfit.compounds[i].prop_u.Bp);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.Bp);
+      if (complistfit.compounds[i].use_u.Bp){
+	DUY.push_back(complistfit.compounds[i].prop_u.Bp);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.Bp);
+      }
     }
 
     for (k=0; k<6; ++k){
       for (p=0; p<6; ++p){
 	if (complistfit.compounds[i].prop_use.C.elem(k,p)){ DY.push_back(complistfit.compounds[i].prop_readin.C.elem(k,p));
-	  if (complistfit.compounds[i].use_u.C.elem(k,p)) SDY.push_back(complistfit.compounds[i].prop_u.C.elem(k,p));
-	  else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.C.elem(k,p));
+	  if (complistfit.compounds[i].use_u.C.elem(k,p)){
+	    DUY.push_back(complistfit.compounds[i].prop_u.C.elem(k,p));
+	    DWY.push_back(-1.0);
+	  }
+	  else {
+	    DUY.push_back(-1.0);
+	    DWY.push_back(complistfit.compounds[i].prop_w.C.elem(k,p));
+	  }
 	}
       }
     }
 
     if (complistfit.compounds[i].prop_use.Fmax){ DY.push_back(complistfit.compounds[i].prop_readin.Fmax);
-      if (complistfit.compounds[i].use_u.Fmax) SDY.push_back(complistfit.compounds[i].prop_u.Fmax);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.Fmax);
+      if (complistfit.compounds[i].use_u.Fmax){
+	DUY.push_back(complistfit.compounds[i].prop_u.Fmax);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.Fmax);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.Pmax){ DY.push_back(complistfit.compounds[i].prop_readin.Pmax);
-      if (complistfit.compounds[i].use_u.Pmax) SDY.push_back(complistfit.compounds[i].prop_u.Pmax);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.Pmax);
+      if (complistfit.compounds[i].use_u.Pmax){
+	DUY.push_back(complistfit.compounds[i].prop_u.Pmax);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.Pmax);
+      }
     }
 
     if (complistfit.compounds[i].prop_use.displmax){ DY.push_back(complistfit.compounds[i].prop_readin.displmax);
-      if (complistfit.compounds[i].use_u.displmax) SDY.push_back(complistfit.compounds[i].prop_u.displmax);
-      else                                  SDY.push_back( 1.0/complistfit.compounds[i].prop_w.displmax);
+      if (complistfit.compounds[i].use_u.displmax){
+	DUY.push_back(complistfit.compounds[i].prop_u.displmax);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.displmax);
+      }
     }
 
 
@@ -965,12 +1078,19 @@ int main(int argc, char *argv[]){
   cs.Param() = param;
   cs.DataX() = DX;
   cs.DataY() = DY;
-  cs.DataUncertaintyY()  = SDY;
+  cs.DataUncertaintyY()  = DUY;
+  cs.DataWeightY()       = DWY;
   cs.ModelFuncPointer()  = latcalc;
   cs.ReportFuncPointer() = report_pot_prop;
-  cs.finalize_setup();
 
   cs.barrier_scale() = potinfo.specs_pot.barrier_scale;
+
+  cs.finalize_setup();
+
+
+
+
+
 
 
   cond_conv.functolabs = potinfo.specs_pot.functolabs;
@@ -1011,6 +1131,13 @@ int main(int argc, char *argv[]){
     cond_print.report_iter = true;
     cond_print.report_warn = true;
     cond_print.report_error= true;
+    cs.debug();
+  }
+
+
+  if (run_quick){
+    cond_conv.nitermin   = 0;
+    cond_conv.nitermax   = 0;
   }
 
 

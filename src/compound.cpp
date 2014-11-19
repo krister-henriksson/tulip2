@@ -150,23 +150,23 @@ CompoundPropertiesUseWeights::CompoundPropertiesUseWeights()
 CompoundPropertiesUncertainties::CompoundPropertiesUncertainties()
   : C(6,6,1)
 {
-  a = 1;
-  b = 1;
-  c = 1;
-  bpa = 1;
-  cpa = 1;
-  r0 = 1;
-  angle_ab = 1;
-  angle_ac = 1;
-  angle_bc = 1;
-  Vatom = 1;
-  Ecoh = 1;
-  Emix = 1;
-  B = 1;
-  Bp = 1;
-  Fmax = 1;
-  Pmax = 1;
-  displmax = 1;
+  a = 0.1;
+  b = 0.1;
+  c = 0.1;
+  bpa = 0.1;
+  cpa = 0.1;
+  r0 = 0.1;
+  angle_ab = 0.1;
+  angle_ac = 0.1;
+  angle_bc = 0.1;
+  Vatom = 0.1;
+  Ecoh = 0.1;
+  Emix = 0.1;
+  B = 0.1;
+  Bp = 0.1;
+  Fmax = 0.1;
+  Pmax = 0.1;
+  displmax = 0.1;
 }
 
 CompoundPropertiesWeights::CompoundPropertiesWeights()

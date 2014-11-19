@@ -225,12 +225,22 @@ void CompoundStructureFit::getprop(ParamPot & param){
     prop_pred.Emix /= mds.natoms();
   }
 
+  if (prop_use.Fmax)     prop_pred.Fmax = mds.F_max;
+  if (prop_use.Pmax)     prop_pred.Pmax = mds.P_max;
+  if (prop_use.displmax) prop_pred.displmax = mds.displ_max;
 
+
+
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // Make sure additional calculations of properties
+  // start with the relaxed system
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   pos_bak    = mds.pos;
   boxdir_bak = mds.boxdir;
   boxlen_bak = mds.boxlen;
   V0         = mds.V/mds.natoms();
   E0         = mds.Ep_tot/mds.natoms();
+
 
 
   // ############################################################################
@@ -257,9 +267,6 @@ void CompoundStructureFit::getprop(ParamPot & param){
   }
 
     
-  if (prop_use.Fmax)     prop_pred.Fmax = mds.F_max;
-  if (prop_use.Pmax)     prop_pred.Pmax = mds.P_max;
-  if (prop_use.displmax) prop_pred.displmax = mds.displ_max;
 
 
 
@@ -412,6 +419,7 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
     cond_print.report_iter = true;
     cond_print.report_warn = true;
     cond_print.report_error= true;
+    cs.debug();
   }
 
 
@@ -665,7 +673,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
   // Loop over particular symmetry changes
   for (isym=0; isym<NC; ++isym){
 
-    cout << " --------------------------------- " << endl;
+    //cout << " --------------------------------- " << endl;
 
     // Loop over differential changes
     for (j=0; j<Nf; ++j){
@@ -891,6 +899,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       cond_print.report_iter = true;
       cond_print.report_warn = true;
       cond_print.report_error= true;
+      cs.debug();
     }
 
 

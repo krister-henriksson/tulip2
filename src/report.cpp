@@ -488,7 +488,7 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
 	  td3 = cmpfit.prop_u.C.elem(k,p);
 	  td4 = cmpfit.prop_w.C.elem(k,p);
 
-	  printf("Elastic constant C%d%d                : read-in  %15.10f", k+1, p+1, td2);
+	  printf("Elastic constant C%d%d                  : read-in  %15.10f", k+1, p+1, td2);
 	  if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
 	  if (tb1) printf ("  uncertainty  %15.10f", td3);
 	  if (tb2) printf ("  weight       %15.10f", td4);
@@ -539,7 +539,7 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       if (tb2) printf ("  weight       %15.10f", td4);
       printf("\n");
     }
-
+    cout << "..............................................................................." << endl;
 
   }
 
