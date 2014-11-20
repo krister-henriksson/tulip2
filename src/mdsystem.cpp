@@ -167,9 +167,20 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
   // Create atom system:
   clear_all_atoms();
 
-  orig[0] = -0.5 * boxlen[0];
-  orig[1] = -0.5 * boxlen[1];
-  orig[2] = -0.5 * boxlen[2];
+
+
+
+
+
+  cmp.origin[0] = -0.5 * boxlen[0];
+  cmp.origin[1] = -0.5 * boxlen[1];
+  cmp.origin[2] = -0.5 * boxlen[2];
+
+
+
+
+
+
 
   for (i=0; i<N1; ++i){
     for (j=0; j<N2; ++j){
@@ -177,7 +188,7 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 	for (p=0; p<cmp.nbasis; ++p){
 	  iat = add_atom();
 
-	  pos[iat] = orig + i * cmp.u1_vec + j * cmp.u2_vec + k * cmp.u3_vec
+	  pos[iat] = cmp.origin + i * cmp.u1_vec + j * cmp.u2_vec + k * cmp.u3_vec
 	    + cmp.basis_vecs[p];
 
 	  // Atom type info will be filled in later. Now just put something here:

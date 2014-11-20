@@ -36,7 +36,26 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
   get_pot_energy = true;;
 
   boxlen_orig = boxlen;
+
+
+  {
+    ofstream fdump;
+    string dumpfn = "mds-frame0-" + name + ".xyz";
+    fdump.open(dumpfn.c_str());
+    dumpframe(fdump);
+    fdump.close();
+  }
+
   handle_pbc_of_positions();
+
+  {
+    ofstream fdump;
+    string dumpfn = "mds-frame1-" + name + ".xyz";
+    fdump.open(dumpfn.c_str());
+    dumpframe(fdump);
+    fdump.close();
+  }
+
 
   int type1;
   double mass1;

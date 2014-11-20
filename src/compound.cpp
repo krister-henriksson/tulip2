@@ -198,6 +198,7 @@ CompoundStructure::CompoundStructure()
   :
   elemnames(1, "none"),   // Single-atom basis, i.e. Bravais lattice
   pbc(3, false),
+  origin(3,0),
   u1_vec(3,0), u2_vec(3,0), u3_vec(3,0),
   basis_elems(1, "none"),
   basis_vecs(1, Vector<double>(3, 0.0))
@@ -228,6 +229,15 @@ CompoundStructure::CompoundStructure()
   // Else n1,n2,n3 can vary, and, and 0<=j<nbasis.
 }
 
+
+
+// ###########################################################################
+// ###########################################################################
+//
+// Create from model
+//
+// ###########################################################################
+// ###########################################################################
 
 
 
@@ -363,11 +373,20 @@ void CompoundStructure::create_from_model(string name_in,
     pbc[2] = false;
     csystem = "hexagonal";
 
-    // Lattice parameter a is taken as r_nn !!!
+    /*
+      Primitive cell:
+      a1 = a*xhat
+      a2 = a/2*xhat + sqrt(3)*a/2*yhat
+      a3 = 0.0
+     */
 
-    u1_vec[0] = 3.0; u1_vec[1] = 0.0;       u1_vec[2] = 0.0;
-    u2_vec[0] = 0.0; u2_vec[1] = sqrt(3.0); u2_vec[2] = 0.0;
-    u3_vec[0] = 0.0; u3_vec[1] = 0.0;       u3_vec[2] = 1.0;
+    // Input lattice parameter a is called ahex, and is taken as r_nn !!!
+    double ap=3.0;
+    double bp=sqrt(3);
+
+    u1_vec[0] = ap;  u1_vec[1] = 0.0; u1_vec[2] = 0.0;
+    u2_vec[0] = 0.0; u2_vec[1] = bp;  u2_vec[2] = 0.0;
+    u3_vec[0] = 0.0; u3_vec[1] = 0.0; u3_vec[2] = 1.0;
 
     nbasis = 4;
     basis_elems.resize(nbasis);
@@ -378,21 +397,30 @@ void CompoundStructure::create_from_model(string name_in,
 
     use_int = true;
 
-    i=0; basis_vecs[i] = Vector<double>(3, 0.0);
+    i=0; basis_vecs[i]    = Vector<double>(3, 0.0);
     i=1; basis_vecs[i][0] = 1.0/3.0; basis_vecs[i][1] = 0;       basis_vecs[i][2] = 0;
     i=2; basis_vecs[i][0] = 1.0/2.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 0;
     i=3; basis_vecs[i][0] = 5.0/6.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 0;
 
     return;
   }
-  else if (crystalname=="GRA"){ //
+  else if (crystalname=="SH" || crystalname=="GRA"){
     csystem = "hexagonal";
 
-    // Lattice parameter a is taken as r_nn !!!
+    /*
+      Primitive cell:
+      a1 = a*xhat
+      a2 = a/2*xhat + sqrt(3)*a/2*yhat
+      a3 = c*zhat
+     */
 
-    u1_vec[0] = 3.0; u1_vec[1] = 0.0;       u1_vec[2] = 0.0;
-    u2_vec[0] = 0.0; u2_vec[1] = sqrt(3.0); u2_vec[2] = 0.0;
-    u3_vec[0] = 0.0; u3_vec[1] = 0.0;       u3_vec[2] = 1.0;
+    // Input lattice parameter a is called ahex, and is taken as r_nn !!!
+    double ap=3.0;
+    double bp=sqrt(3);
+
+    u1_vec[0] = ap;  u1_vec[1] = 0.0; u1_vec[2] = 0.0;
+    u2_vec[0] = 0.0; u2_vec[1] = bp;  u2_vec[2] = 0.0;
+    u3_vec[0] = 0.0; u3_vec[1] = 0.0; u3_vec[2] = 1.0;
 
     nbasis = 8;
     basis_elems.resize(nbasis);
@@ -403,7 +431,7 @@ void CompoundStructure::create_from_model(string name_in,
 
     use_int = true;
 
-    i=0; basis_vecs[i] = Vector<double>(3, 0.0);
+    i=0; basis_vecs[i]    = Vector<double>(3, 0.0);
     i=1; basis_vecs[i][0] = 1.0/3.0; basis_vecs[i][1] = 0;       basis_vecs[i][2] = 0;
     i=2; basis_vecs[i][0] = 1.0/2.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 0;
     i=3; basis_vecs[i][0] = 5.0/6.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 0;
@@ -497,8 +525,13 @@ void CompoundStructure::create_from_model(string name_in,
 
 
 
-
-
+// ###########################################################################
+// ###########################################################################
+//
+// Create from readin-file
+//
+// ###########################################################################
+// ###########################################################################
 
 
 void CompoundStructure::read_structure(void){
@@ -526,6 +559,9 @@ void CompoundStructure::read_structure(void){
 
     utils::get_line(fp, line);
     ns = utils::get_substrings( line, args, "\t :,()[]=");
+    cout << line << endl;
+
+
 
     // iline = 1
     /* 1. Comment line: */
@@ -631,17 +667,15 @@ void CompoundStructure::read_structure(void){
 }
 
 
-// #####################################################################
-// #####################################################################
 
-
-
-
+// ###########################################################################
+// ###########################################################################
+// ###########################################################################
+// ###########################################################################
 
 void CompoundStructure::finalize(const double ai,
 				 const double bi,
 				 const double ci){
-  Vector< Vector<double> > bv;
   int i, k;
   double td;
 
@@ -663,8 +697,9 @@ void CompoundStructure::finalize(const double ai,
   // Basis vectors:
   // ****************************************************************
   if (! use_int){
+    // Use non-internal format:
     td = (scalefactor < 0) ? ai : scalefactor;
-    td = ai;
+    //td = ai;
 
     // Basis vectors are in non-internal format
     for (i=0; i<nbasis; ++i){
@@ -674,28 +709,24 @@ void CompoundStructure::finalize(const double ai,
   }
   else {
     // Basis vectors are in internal format
+    Vector< Vector<double> > bv;
     bv = basis_vecs;
     for (i=0; i<nbasis; ++i){
-      basis_vecs[i][0] = 0;
-      basis_vecs[i][1] = 0;
-      basis_vecs[i][2] = 0;
-
       for (k=0; k<3; ++k)
-	basis_vecs[i][k] += 
-	  bv[i][0] * u1_vec[k]
+	basis_vecs[i][k] = 0.0
+	  + bv[i][0] * u1_vec[k]
 	  + bv[i][1] * u2_vec[k]
 	  + bv[i][2] * u3_vec[k];
     }
   }
 
-  /*
-  for (i=0; i<nbasis; ++i){
-    cout << i << " " << basis_elems[i] << " " << basis_vecs[i] << endl;
-  }
-  */
   /* -----------------------------------------------------------------------------
      Make all basis atoms be inside the cell, if possible
      ----------------------------------------------------------------------------- */
+
+
+
+
 
   Matrix<double> boxdir(3,3,0), Bravaismatrix_inv(3,3,0);
   Vector<double> tv(3,0), boxlen(3), drs(3,0), drc(3,0);
@@ -703,6 +734,7 @@ void CompoundStructure::finalize(const double ai,
   tv=u1_vec; td=tv.normalize(); boxlen[0]=td; boxdir.col(0,tv);
   tv=u2_vec; td=tv.normalize(); boxlen[1]=td; boxdir.col(1,tv);
   tv=u3_vec; td=tv.normalize(); boxlen[2]=td; boxdir.col(2,tv);
+
   
   bool isCart = false;
   double eps = numeric_limits<double>::epsilon();;
@@ -789,752 +821,17 @@ void CompoundStructure::finalize(const double ai,
   return;
 }
 
+// ###########################################################################
+// ###########################################################################
+// ###########################################################################
+// ###########################################################################
 
 
-// #####################################################################
-// #####################################################################
-// #####################################################################
-// #####################################################################
-
-
-CompoundStructureFit::CompoundStructureFit()
-  :
-  CompoundStructure()
-{
-  prop_use    = CompoundPropertiesUse();
-  prop_readin = CompoundProperties();
-  prop_pred   = CompoundProperties();
-
-  mds_specs = MDSettings();
-
-  use_u = CompoundPropertiesUseUncertainties();
-  use_w = CompoundPropertiesUseWeights();
-  prop_u = CompoundPropertiesUncertainties();
-  prop_w = CompoundPropertiesWeights();
-}
-
-
-
-
-// Make sure we are not using the same properties in different
-// disguises, since this will lead to problems in some fitting
-// algorithms:
-
-
-void CompoundStructureFit::check_and_fix_uses(){
-  prop_use.check_and_fix();
-
-}
-
-int CompoundStructureFit::NData(){
-  int N=0;
-
-  if (prop_use.a) N++;
-  if (prop_use.b) N++;
-  if (prop_use.c) N++;
-  if (prop_use.bpa) N++;
-  if (prop_use.cpa) N++;
-  if (prop_use.r0) N++;
-  if (prop_use.angle_ab) N++;
-  if (prop_use.angle_ac) N++;
-  if (prop_use.angle_bc) N++;
-  if (prop_use.Vatom) N++;
-  if (prop_use.Ecoh) N++;
-  if (prop_use.Emix) N++;
-  if (prop_use.B) N++;
-  if (prop_use.Bp) N++;
-  for (int k=0; k<6; ++k)
-    for (int p=0; p<6; ++p)
-      if (prop_use.C.elem(k,p)) N++;
-  if (prop_use.Fmax) N++;
-  if (prop_use.Pmax) N++;
-  if (prop_use.displmax) N++;
-
-  return N;
-}
-
+#include "compound-strfit.cppinc"
 
 
 // #####################################################################
 // #####################################################################
 
-
-
-CompoundListFit::CompoundListFit(const Elements & el,
-				 MDSettings & mds_specs_general,
-				 string filename)
-  : elem(el), ncompounds(0)
-{
-
-  ifstream fp;
-  ofstream fpo;
-  string line;
-  vector<string> args, opts, opts_special;
-  istringstream strbuf;
-  int ns, nlats, ilat, nelem;
-  double td;
-  Vector< Vector<double> > bv;
-  int itr, its, ot;
-  bool reading_latinfo, elem_ok;
-  int i, j, k, p;
-
-  double eps = std::numeric_limits<double>::epsilon();
-
-
-
-  fp.open(filename.c_str());
-  if (!fp)
-    aborterror("Error: Could not find file " + filename + ". Exiting.");
-
-
-  nlats = 0;
-  while (true){
-    utils::get_line(fp, line);
-    ns = utils::get_substrings( line, args, "\t :,()[]=");
-    if (ns==0 && fp) continue;
-
-
-    if (args[0]=="LAT") nlats++;
-
-
-    if (! fp) break;
-  }
-  fp.close();
-  fp.clear();
-
-  cout << "Detected " << nlats << " compounds." << endl;
-
-  compounds.resize(nlats);
-  ncompounds = compounds.size();
-
-
-  opts.resize(0);
-  opts.push_back("a");
-  opts.push_back("b");
-  opts.push_back("c");
-  opts.push_back("bpa");
-  opts.push_back("cpa");
-  opts.push_back("r0");
-  opts.push_back("angle_ab");
-  opts.push_back("angle_ac");
-  opts.push_back("angle_bc");
-  opts.push_back("Vatom");
-  opts.push_back("Vat");
-  opts.push_back("V0");
-  opts.push_back("Ecoh");
-  opts.push_back("Ec");
-  opts.push_back("E0");
-  opts.push_back("Eatom");
-  opts.push_back("Eat");
-  opts.push_back("Emix");
-  opts.push_back("B");
-  opts.push_back("B");
-  opts.push_back("Bp");
-  opts.push_back("dB/dP");
-  opts.push_back("Fmax");
-  opts.push_back("F_max");
-  opts.push_back("Pmax");
-  opts.push_back("P_max");
-  opts.push_back("displmax");
-  opts.push_back("displ_max");
-
-  opts_special.resize(0);
-  opts_special.push_back("C");
-
-
-
-  fp.open(filename.c_str());
-  if (!fp)
-    aborterror("Error: Could not find file " + filename + ". Exiting.");
-
-  ilat = 0;
-  reading_latinfo = false;
-
-  while (true){
-    utils::get_line(fp, line);
-    ns = utils::get_substrings( line, args, "\t :,()[]=");
-    if (ns==0 && fp) continue;
-
-
-    if (args[0]=="LAT"){
-      if (reading_latinfo){
-	ilat++;
-      }
-      else {
-	reading_latinfo = true;
-	k = compounds.size();
-	if (k<=ilat)
-	  compounds.resize(k+1);
-      }
-
-
-      // Initialization:
-      compounds[ilat].mds_specs = mds_specs_general;
-
-      // Since we are reading this compound from a file, it is not a reference compound:
-      compounds[ilat].mds_specs.is_ref_comp = false;
-
-
-    }
-
-
-    // *******************************************************************
-    // Compound properties, needed for e.g. MD cell construction in
-    // conjunction with the information in the compound's LAT file:
-    // *******************************************************************
-
-    else if (args[0]=="name"){
-      compounds[ilat].name = args[1];
-    }
-    else if (args[0]=="crystalname"){
-      compounds[ilat].crystalname = args[1];
-    }
-    else if (args[0]=="file"){
-      compounds[ilat].filename = args[1];
-    }
-    else if (args[0]=="elements"){
-      compounds[ilat].elemnames.resize(0);
-      for (i=1; i<ns; ++i){
-	if (args[i][0]=='#') break;
-	compounds[ilat].elemnames.push_back(args[i]);
-      }
-      nelem = compounds[ilat].elemnames.size();
-      compounds[ilat].nelem = nelem;
-
-
-      // Check each supplied element, if it is known from before:
-      for (i=0; i<nelem; ++i){
-	elem_ok=false;
-	for (j=0; j<elem.nelem(); ++j){
-	  if (compounds[ilat].elemnames[i] == elem.idx2name(j)){
-	    // found the element
-	    elem_ok=true;
-	    break;
-	  }
-	}
-	if (! elem_ok){
-	  aborterror("Element " + compounds[ilat].elemnames[i] + " was not found "
-		     + "in the list of known element names. Exiting.");
-	}
-      }
-    }
-    else if (args[0]=="csystem"){
-      if      ( args[1][0] == 'c' || args[1][0] == 'C' )
-	compounds[ilat].csystem = "cubic";
-      else if ( args[1][0] == 'h' || args[1][0] == 'H' )
-	compounds[ilat].csystem = "hexagonal";
-      else if ( args[1][0] == 'o' || args[1][0] == 'O' )
-	compounds[ilat].csystem = "orthorombic";
-      else {
-	aborterror("ERROR: Unknown crystal system " + args[1] + ". Exiting.");
-      }
-    }
-
-
-
-    // *******************************************************************
-    // Compound-specific conditions for e.g. MD relaxation:
-    // *******************************************************************
-
-    else if (args[0]=="option"){
-
-      if      (args[1]=="no_heating"){
-	compounds[ilat].mds_specs.heating_allowed = false;
-      }
-      else if (args[1]=="fixed_geometry"){
-	compounds[ilat].mds_specs.fixed_geometry = true;
-      }
-      else if (args[1]=="quench_always"){
-	compounds[ilat].mds_specs.quench_always = true;
-      }
-
-    }
-
-    else if (args[0][0]=='m' && args[0][1]=='d' && args[0][2]=='s'){
-
-      if      (args[0]=="mds_skint"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.skint;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_seed"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.seed;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_ndump"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.ndump;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_tstart"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.tstart;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_tend"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.tend;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_Tstart"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.Tstart;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_dt"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.dt;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_max_dt"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.max_dt;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_max_dE"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.max_dE;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_max_dr"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.max_dr;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_btc_tau"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.btc_tau;
-	if (compounds[ilat].mds_specs.btc_tau<0.0 ||
-	    abs(compounds[ilat].mds_specs.btc_tau)<eps)
-	  compounds[ilat].mds_specs.use_Tcontrol = false;
-	else
-	  compounds[ilat].mds_specs.use_Tcontrol = true;
-	strbuf.clear();
-      }
-
-      else if (args[0]=="mds_btc_T0"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.btc_T0;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_bpc_tau"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.bpc_tau;
-
-	if (compounds[ilat].mds_specs.bpc_tau<0.0 ||
-	    abs(compounds[ilat].mds_specs.bpc_tau)<eps)
-	  compounds[ilat].mds_specs.use_Pcontrol = false;
-	else
-	  compounds[ilat].mds_specs.use_Pcontrol = true;
-	strbuf.clear();
-
-      }
-      else if (args[0]=="mds_bpc_P0"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.bpc_P0;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_bpc_scale"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.bpc_scale;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_quench_tstart"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.quench_tstart;
-	strbuf.clear();
-      }
-      else if (args[0]=="mds_quench_rate"){
-	strbuf.str(args[1]);
-	strbuf >> compounds[ilat].mds_specs.quench_rate;
-	strbuf.clear();
-      }
-
-      // OTHER OPTIONS POSSIBLE TO ADD HERE
-
-
-    }
-
-
-    // *******************************************************************
-    // Compound properties to use as targets when fitting:
-    // *******************************************************************
-
-    else {
-      // args[0] is being investigated.
-      // It could be e.g. 'a', 'w_a', or 'u_a'
-
-      itr = -1;
-      its = -1;
-      ot  = -1;
-
-      // Regular options, matches an entire string:
-      for (unsigned int i=0; i<opts.size(); ++i){
-	if      (args[0]==opts[i]){
-	  itr = i; ot = 1; break;
-	}
-	else if (args[0]==("w_" + opts[i])){
-	  itr = i; ot = 2; break;
-	}
-	else if (args[0]==("u_" + opts[i])){
-	  itr = i; ot = 3; break;
-	}
-      }
-      // Special options, starting with a single character and then followed by
-      // others:
-      if (itr<0){
-	for (unsigned int i=0; i<opts_special.size(); ++i){
-	  if      (args[0][0]==opts_special[i][0]){
-	    its = i; ot = 1; break;
-	  }
-	  else if (args[0][0]=='w' &&
-		   args[0][1]=='_' &&
-		   args[0][2]==opts_special[i][0]){
-	    its = i; ot = 2; break;
-	  }
-	  else if (args[0][0]=='u' &&
-		   args[0][1]=='_' &&
-		   args[0][2]==opts_special[i][0]){
-	    its = i; ot = 3; break;
-	  }
-	}
-      }
-
-
-
-
-      string match="n";
-      if (itr>=0) match = opts[itr];
-      if (its>=0) match = opts_special[its];
-      if (itr>=0 || its>=0){
-	strbuf.str(args[1]); strbuf >> td; strbuf.clear();
-      }
-
-      //cout << "match = " << match << " match[0] = " << match[0] << endl;
-
-      
-      if (match=="a"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.a = td;
-	  compounds[ilat].prop_use.a    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.a = td; compounds[ilat].use_w.a = true;  compounds[ilat].use_u.a = false; }
-	else if (ot==3) { compounds[ilat].prop_u.a = td; compounds[ilat].use_w.a = false; compounds[ilat].use_u.a = true; }
-      }
-      else if (match=="b"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.b = td;
-	  compounds[ilat].prop_use.b    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.b = td; compounds[ilat].use_w.b = true;  compounds[ilat].use_u.b = false; }
-	else if (ot==3) { compounds[ilat].prop_u.b = td; compounds[ilat].use_w.b = false; compounds[ilat].use_u.b = true; }
-      }
-      else if (match=="c"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.c = td;
-	  compounds[ilat].prop_use.c    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.c = td; compounds[ilat].use_w.c = true;  compounds[ilat].use_u.c = false; }
-	else if (ot==3) { compounds[ilat].prop_u.c = td; compounds[ilat].use_w.c = false; compounds[ilat].use_u.c = true; }
-      }
-      else if (match=="bpa"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.bpa = td;
-	  compounds[ilat].prop_use.bpa    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.bpa = td; compounds[ilat].use_w.bpa = true;  compounds[ilat].use_u.bpa = false; }
-	else if (ot==3) { compounds[ilat].prop_u.bpa = td; compounds[ilat].use_w.bpa = false; compounds[ilat].use_u.bpa = true; }
-      }
-      else if (match=="cpa"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.cpa = td;
-	  compounds[ilat].prop_use.cpa    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.cpa = td; compounds[ilat].use_w.cpa = true;  compounds[ilat].use_u.cpa = false; }
-	else if (ot==3) { compounds[ilat].prop_u.cpa = td; compounds[ilat].use_w.cpa = false; compounds[ilat].use_u.cpa = true; }
-      }
-      else if (match=="r0"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.r0 = td;
-	  compounds[ilat].prop_use.r0    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.r0 = td; compounds[ilat].use_w.r0 = true;  compounds[ilat].use_u.r0 = false; }
-	else if (ot==3) { compounds[ilat].prop_u.r0 = td; compounds[ilat].use_w.r0 = false; compounds[ilat].use_u.r0 = true; }
-      }
-      else if (match=="angle_ab"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.angle_ab = td;
-	  compounds[ilat].prop_use.angle_ab    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.angle_ab = td; compounds[ilat].use_w.angle_ab = true;  compounds[ilat].use_u.angle_ab = false; }
-	else if (ot==3) { compounds[ilat].prop_u.angle_ab = td; compounds[ilat].use_w.angle_ab = false; compounds[ilat].use_u.angle_ab = true; }
-      }
-      else if (match=="angle_ac"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.angle_ac = td;
-	  compounds[ilat].prop_use.angle_ac    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.angle_ac = td; compounds[ilat].use_w.angle_ac = true;  compounds[ilat].use_u.angle_ac = false; }
-	else if (ot==3) { compounds[ilat].prop_u.angle_ac = td; compounds[ilat].use_w.angle_ac = false; compounds[ilat].use_u.angle_ac = true; }
-      }
-      else if (match=="angle_bc"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.angle_bc = td;
-	  compounds[ilat].prop_use.angle_bc    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.angle_bc = td; compounds[ilat].use_w.angle_bc = true;  compounds[ilat].use_u.angle_bc = false; }
-	else if (ot==3) { compounds[ilat].prop_u.angle_bc = td; compounds[ilat].use_w.angle_bc = false; compounds[ilat].use_u.angle_bc = true; }
-      }
-      else if (match=="V0" || match=="Vat" || match=="Vatom"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.Vatom = td;
-	  compounds[ilat].prop_use.Vatom    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.Vatom = td; compounds[ilat].use_w.Vatom = true;  compounds[ilat].use_u.Vatom = false; }
-	else if (ot==3) { compounds[ilat].prop_u.Vatom = td; compounds[ilat].use_w.Vatom = false; compounds[ilat].use_u.Vatom = true; }
-      }
-      else if (match=="Ec" || match=="Ecoh" || match=="Eat" || match=="Eatom"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.Ecoh = td;
-	  compounds[ilat].prop_use.Ecoh    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.Ecoh = td; compounds[ilat].use_w.Ecoh = true;  compounds[ilat].use_u.Ecoh = false; }
-	else if (ot==3) { compounds[ilat].prop_u.Ecoh = td; compounds[ilat].use_w.Ecoh = false; compounds[ilat].use_u.Ecoh = true; }
-      }
-      else if (match=="Emix"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.Emix = td;
-	  compounds[ilat].prop_use.Emix    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.Emix = td; compounds[ilat].use_w.Emix = true;  compounds[ilat].use_u.Emix = false; }
-	else if (ot==3) { compounds[ilat].prop_u.Emix = td; compounds[ilat].use_w.Emix = false; compounds[ilat].use_u.Emix = true; }
-      }
-      else if (match=="B"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.B = td;
-	  compounds[ilat].prop_use.B    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.B = td; compounds[ilat].use_w.B = true;  compounds[ilat].use_u.B = false; }
-	else if (ot==3) { compounds[ilat].prop_u.B = td; compounds[ilat].use_w.B = false; compounds[ilat].use_u.B = true; }
-      }
-      else if (match=="Bp" || match=="dB/dP"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.Bp = td;
-	  compounds[ilat].prop_use.Bp    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.Bp = td; compounds[ilat].use_w.Bp = true;  compounds[ilat].use_u.Bp = false; }
-	else if (ot==3) { compounds[ilat].prop_u.Bp = td; compounds[ilat].use_w.Bp = false; compounds[ilat].use_u.Bp = true; }
-      }
-
-      else if (match=="Fmax" || match=="F_max"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.Fmax = td;
-	  compounds[ilat].prop_use.Fmax    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.Fmax = td; compounds[ilat].use_w.Fmax = true;  compounds[ilat].use_u.Fmax = false; }
-	else if (ot==3) { compounds[ilat].prop_u.Fmax = td; compounds[ilat].use_w.Fmax = false; compounds[ilat].use_u.Fmax = true; }
-      }
-      else if (match=="Pmax" || match=="P_max"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.Pmax = td;
-	  compounds[ilat].prop_use.Pmax    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.Pmax = td; compounds[ilat].use_w.Pmax = true;  compounds[ilat].use_u.Pmax = false; }
-	else if (ot==3) { compounds[ilat].prop_u.Pmax = td; compounds[ilat].use_w.Pmax = false; compounds[ilat].use_u.Pmax = true; }
-      }
-      else if (match=="displmax" || match=="displ_max"){
-	if (ot==1){
-	  compounds[ilat].prop_readin.displmax = td;
-	  compounds[ilat].prop_use.displmax    = true;
-	}
-	else if (ot==2) { compounds[ilat].prop_w.displmax = td; compounds[ilat].use_w.displmax = true;  compounds[ilat].use_u.displmax = false; }
-	else if (ot==3) { compounds[ilat].prop_u.displmax = td; compounds[ilat].use_w.displmax = false; compounds[ilat].use_u.displmax = true; }
-      }
-
-
-
-      // Special parameters:
-      else if (its>=0 && match=="C"){
-	char k=0,p=0;
-	if (ot==1){
-	  k = args[0][1];
-	  p = args[0][2];
-	}
-	else if (ot==2 || ot==3){
-	  k = args[0][3];
-	  p = args[0][4];
-	}
-	// Now get integers:
-	int u, v;
-	stringstream sstream;
-	sstream.clear(); sstream << k; sstream >> u;
-	sstream.clear(); sstream << p; sstream >> v;
-	//cout << "u v " << u << " " << v << endl;
-
-	if (u>=1 && u<=6 && v>=1 && v<=6){
-	  //cout << "C (again)" << u << v << endl;
-
-	  if (ot==1){
-	    compounds[ilat].prop_readin.C.elem(u-1,v-1) = td;
-	    compounds[ilat].prop_use.C.elem(u-1,v-1)    = true;
-	    //cout << "use C" << u << v << " : " << compounds[ilat].prop_use.C.elem(u-1,v-1) << endl;
-	  }
-	  else if (ot==2) {
-	    compounds[ilat].prop_w.C.elem(u-1,v-1) = td;
-	    compounds[ilat].use_w.C.elem(u-1,v-1) = true;
-	    compounds[ilat].use_u.C.elem(u-1,v-1) = false;
-	  }
-	  else if (ot==3) {
-	    compounds[ilat].prop_u.C.elem(u-1,v-1) = td;
-	    compounds[ilat].use_w.C.elem(u-1,v-1) = false;
-	    compounds[ilat].use_u.C.elem(u-1,v-1) = true;
-	  }
-	}
-      }
-
-
-    }
-
-
-
-    if (!fp) break; 
-  }
-  fp.clear();
-  fp.close();
-
-  cout << "Compounds information collected." << endl;
-
-
-
-
-
-  /*
-  if (compounds.size() != ilat)
-    compounds.resize(ilat+1);
-  */
-  // ncompounds = compounds.size();
-
-
-
-  cout << "Number of compounds read: " << compounds.size() << endl;
-  cout << "Debugging compounds ..." << endl;
-  /* -----------------------------------------------------------------------------
-     Debugging of settings:
-     ----------------------------------------------------------------------------- */
-  for (ilat=0; ilat<compounds.size(); ++ilat){
-    if (compounds[ilat].mds_specs.fixed_geometry){
-      compounds[ilat].prop_use.displmax   = false;
-      compounds[ilat].prop_use.a = false;
-      compounds[ilat].prop_use.b = false;
-      compounds[ilat].prop_use.c = false;
-      compounds[ilat].prop_use.bpa = false;
-      compounds[ilat].prop_use.cpa = false;
-      compounds[ilat].prop_use.angle_ab = false;
-      compounds[ilat].prop_use.angle_ac = false;
-      compounds[ilat].prop_use.angle_bc = false;
-      compounds[ilat].prop_use.r0 = false;
-      compounds[ilat].prop_use.Vatom = false;
-    }
-
-    // Make sure we are not using the same properties in different
-    // disguises, since this will lead to problems in some fitting
-    // algorithms:
-    compounds[ilat].check_and_fix_uses();
-
-  }
-
-
-  /* Some notes:
-
-     - If a,b,c is mentioned in the geometry file they will be used. No checks or
-     comparisons is made with the length of the primitive vectors in the LAT files.
-   */
-
-
-    
-    
-    
-
-  /* -----------------------------------------------------------------------------
-     Now get lattice data for the read-in structures.
-     ----------------------------------------------------------------------------- */
-  cout << "Reading structural info for compounds ... " << endl;
-  for (ilat=0; ilat<compounds.size(); ++ilat){
-    compounds[ilat].read_structure();
-    // calls finalize() internally to insert a,b,c
-  }
-
-
-
-  /* ##############################################################################
-     ##############################################################################
-     Some debugging
-     ##############################################################################
-     ##############################################################################    
-  */
-
-
-  for (ilat=0; ilat<compounds.size(); ++ilat){
-
-    if (compounds[ilat].name == "none")
-      aborterror("Error: No compound name specified for compound " + tostring(ilat) + ". Exiting.");
-
-    if (compounds[ilat].filename == "none")
-      aborterror("Error: No file name specified for compound " + tostring(ilat) + ". Exiting.");
-
-    if (compounds[ilat].nelem == 0)
-      aborterror("Error: No elements specified for compound " + tostring(ilat) + ". Exiting.");
-
-    if (compounds[ilat].nbasis == 0)
-      aborterror("Error: No basis specified for compound " + tostring(ilat) + ". Exiting.");
-
-
-
-    if (!compounds[ilat].pbc[0] ||
-	!compounds[ilat].pbc[1] ||
-	!compounds[ilat].pbc[2]){
-      compounds[ilat].prop_use.B  = false;
-      compounds[ilat].prop_use.Bp = false;
-      compounds[ilat].prop_use.Pmax = false;
-      for (k=0; k<6; ++k)
-	for (p=0; p<6; ++p)
-	  compounds[ilat].prop_use.C.elem(k,p) = false;
-    }
-
-
-    for (j=0; j<compounds[ilat].nbasis; ++j){
-      elem_ok=false;
-      for (i=0; i<compounds[ilat].nelem; ++i){
-	if (compounds[ilat].basis_elems[j] == compounds[ilat].elemnames[i]){
-	  // found the element
-	  elem_ok=true;
-	  break;
-	}
-      }
-      if (! elem_ok){
-	aborterror("Error: Compound " + tostring(ilat) + " basis vector " + tostring(j) + " "
-		   "with element " + compounds[ilat].basis_elems[j] + " was not found "
-		   + "in the list of known element names for this compound. Exiting.");
-      }
-    }
-  }
-
-
-  cout << "Compound information read-in completed." << endl;
-
-  return;
-}
-
-
-
-int CompoundListFit::NData(){
-  int N=0, i;
-
-  for (i=0; i<compounds.size(); ++i)
-    N += compounds[i].NData();
-
-  return N;
-}
-
+#include "compound-listfit.cppinc"
 

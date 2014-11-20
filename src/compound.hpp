@@ -199,6 +199,8 @@ public:
 
   bool use_int;
 
+  Vector<double> origin;
+
   Vector<double> u1_vec;
   Vector<double> u2_vec;
   Vector<double> u3_vec;

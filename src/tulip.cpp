@@ -900,13 +900,20 @@ int main(int argc, char *argv[]){
     Vector<CompoundStructureFit> cmpref(1, CompoundStructureFit());;
     double a,b,c;
 
+    // ###############################################################
+    // 1. Create from generic model:
+    // ###############################################################
     cmpref[0].create_from_model(latref, sref, sref);
 
-    // Build a compound from the model name:
+    // ###############################################################
+    // 2. Use specific compound data:
+    // ###############################################################
     a = potinfo.elem.reflat_a(sref);
     b = potinfo.elem.reflat_b(sref);
     c = potinfo.elem.reflat_c(sref);
     cmpref[0].finalize(a,b,c);
+
+
 
 
     cout << "Reference compound " << iref+1 << " of " << nref << endl;
@@ -916,6 +923,11 @@ int main(int argc, char *argv[]){
 	 << cmpref[0].pbc[2] << endl;
     cout << "  Crystal system      : " << cmpref[0].csystem << endl;
     cout << "  Scale factor        : " << cmpref[0].scalefactor << endl;
+    cout << "  Lattice parameters provided" << endl;
+    cout << "                     a: " << a << endl;
+    cout << "                     b: " << b << endl;
+    cout << "                     c: " << c << endl;
+    cout << "                => c/a: " << c/a << endl;
     cout << "  Use internal format?: " << cmpref[0].use_int << endl;
     cout << "  Direction vector 1  : " 
 	 << format("%15.10f ") % cmpref[0].u1_vec[0]
@@ -1041,6 +1053,12 @@ int main(int argc, char *argv[]){
 
 
   }
+
+
+
+
+  exit(1);
+
 
 
   /*
