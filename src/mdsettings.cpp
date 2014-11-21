@@ -27,8 +27,8 @@ MDSettings::MDSettings(){
   Tstart  = 0.01;
   dt      = 1.0;
   max_dt  = 1.0;
-  max_dE  = 30.0;
-  max_dr  = 0.2;
+  max_dE  = 1.0;
+  max_dr  = 0.1;
 
   use_quench   = false;
   use_Tcontrol = false;

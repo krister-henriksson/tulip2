@@ -16,7 +16,6 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
   Vector<double> tv(3,0.0), tv1(3,0.0), tv2(3,0.0);
   Vector<double> boxlen_orig(3,0);
   double tmp1, tmp2, tmp3, tmp4, td;
-  int k;
   double eps = std::numeric_limits<double>::epsilon();
   Vector<double> drs(3), drc(3);
   Vector<double> u(3), v(3), w(3);
@@ -444,10 +443,9 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
     dt_candidate[3] = specs.max_dt;
 
     // Find smallest choice for dt:
-    dt = dt_candidate[0];
-    if (dt_candidate[1] < dt) dt = dt_candidate[1];
-    if (dt_candidate[2] < dt) dt = dt_candidate[2];
-    if (dt_candidate[3] < dt) dt = dt_candidate[3];
+    for (int k=0; k<4; ++k){
+      if (k==0 || (k>0 && dt_candidate[k]<dt)) dt=dt_candidate[k];
+    }
 
 
     //cout << "made it here 04" << endl;
@@ -507,7 +505,7 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
 	pos_bak[2] = pos[i][2];
 
 	//cout << "debug_forces: Made it here 01, atom " << i << endl;
-	for (k=0; k<3; ++k){
+	for (int k=0; k<3; ++k){
 	  //cout << " " << k;
 	  d = abs(pos[i][k]);
 	  //d = (d < eps) ? t : t*d;
@@ -742,10 +740,10 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
     dt_candidate[3] = specs.max_dt;
 
     // Find smallest choice for dt:
-    dt = dt_candidate[0];
-    if (dt_candidate[1] < dt) dt = dt_candidate[1];
-    if (dt_candidate[2] < dt) dt = dt_candidate[2];
-    if (dt_candidate[3] < dt) dt = dt_candidate[3];
+    for (int k=0; k<4; ++k){
+      if (k==0 || (k>0 && dt_candidate[k]<dt)) dt=dt_candidate[k];
+    }
+
 
     //cout << "made it here 08" << endl;
 
@@ -1232,7 +1230,7 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
     fout.open(dumpfile.c_str());
     for (i=0; i<nat; ++i){
       td1 = 0;
-      for (k=0; k<3; ++k){
+      for (int k=0; k<3; ++k){
 	td1 += (frc[i][k] - frc_num[i][k]) * (frc[i][k] - frc_num[i][k]);
       }
       td1 = sqrt(td1);
