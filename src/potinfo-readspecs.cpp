@@ -141,6 +141,18 @@ void PotentialInformationFit::read_specs(string filename){
 
 
 
+    if (args[0]=="prop" && args[1]=="ref" && args[2]=="mds" &&
+	args[3]=="prop" && args[4]=="mds"){
+      // prop:ref:mds = prop:mds
+      cout << "" << endl;
+      cout << "NOTE: Copying mds settings for reference compounds from the general mds settings" << endl;
+      cout << "" << endl;
+      specs_prop.mds_specs_ref = specs_prop.mds_specs;
+    }
+
+
+
+    // Only for fitting of properties:
     if (c==1){
 
       if (args[1]=="lattol"){
@@ -192,6 +204,11 @@ void PotentialInformationFit::read_specs(string filename){
       }
 
 
+
+
+
+
+      // Only for handling of reference compounds:
       if ( (args[1]=="ref" &&
 	    args[2][0]=='m' && args[2][1]=='d' && args[2][2]=='s')
 	   ||

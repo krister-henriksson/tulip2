@@ -196,8 +196,11 @@ public:
   string csystem;
 
   double scalefactor;
+  double lpa, lpb, lpc;
 
+  bool use_readin_structure;
   bool use_int;
+  bool use_origin_spec;
 
   Vector<double> origin;
 
@@ -215,12 +218,16 @@ public:
   //CompoundStructure & operator=(const CompoundStructure & sv);
 
 
-  void create_from_model(string name,
-			 string elem1,
-			 string elem2
-			 );
+  // 1 ...
+  void create_from_model(string name, string elem1, string elem2,
+			 double ai, double bi, double ci);
+  // ... or 2
   void read_structure(void);
+  // 1 and 2: Finalize basis vectors, etc:
   void finalize(const double ai, const double bi, const double ci);
+
+  void origin_from_model(int & N1, int & N2, int & N3);
+
 
 } ;
 

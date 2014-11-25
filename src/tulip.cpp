@@ -78,7 +78,7 @@ using boost::format;
 int main(int argc, char *argv[]){
   // double eps = numeric_limits<double>::epsilon();
   int i,j,k,p,iref, ivec;
-  bool run_quick, debug_forces, debug_pressure, report_mds_steps;
+  bool run_quick, run_refonly, debug_forces, debug_pressure, report_mds_steps;
   Vector<bool> debug_fit_prop(5, false),debug_fit_pot(5,false);
   string arg, potfile, geomfile, specsfile;
   bool potfileOK, geomfileOK, specsfileOK;
@@ -110,6 +110,8 @@ int main(int argc, char *argv[]){
     cout << "Options:" << endl;
     cout << "     -quick             Calculate properties of read-in geometries and quit. No relaxation" << endl;
     cout << "                        is performed on read-in compounds. Reference compounds are relaxed." << endl;
+    cout << "     -ro                Only calculate properties of reference compounds, then exit." << endl;
+    cout << "" << endl;
     cout << "     -dfitpropn         Show information about fitting of properties. Here 'n' must be" << endl;
     cout << "                        an integer. Supported: 0-4. 0: debug fitting method. 1-4: debug deeper." << endl;
     cout << "                        lying methods used by the fitting method. Default: not used" << endl;
@@ -139,10 +141,12 @@ int main(int argc, char *argv[]){
 
   potfileOK = geomfileOK = specsfileOK = false;
   run_quick = false;
+  run_refonly = false;
   debug_forces = false;
   debug_pressure = false;
   report_mds_steps = false;
   debug_fit_pot[0]  = true;
+  
 
 
   /* ###############################################################################
@@ -170,6 +174,9 @@ int main(int argc, char *argv[]){
     }
     else if (string(argv[i])=="-quick"){
       run_quick = true;
+    }
+    else if (string(argv[i])=="-ro"){
+      run_refonly = true;
     }
     else if (string(argv[i])=="-dfitprop0"){ debug_fit_prop[0] = true; }
     else if (string(argv[i])=="-dfitprop1"){ debug_fit_prop[1] = true; }
@@ -901,17 +908,13 @@ int main(int argc, char *argv[]){
     double a,b,c;
 
     // ###############################################################
-    // 1. Create from generic model:
-    // ###############################################################
-    cmpref[0].create_from_model(latref, sref, sref);
-
-    // ###############################################################
-    // 2. Use specific compound data:
+    // Create from generic model:
     // ###############################################################
     a = potinfo.elem.reflat_a(sref);
     b = potinfo.elem.reflat_b(sref);
     c = potinfo.elem.reflat_c(sref);
-    cmpref[0].finalize(a,b,c);
+    cmpref[0].create_from_model(latref,sref,sref, a,b,c);
+
 
 
 
@@ -1053,6 +1056,19 @@ int main(int argc, char *argv[]){
 
 
   }
+
+
+
+
+
+
+  if (run_refonly){
+    cout << "Done with reference compounds. Quitting." << endl;
+    return EXIT_SUCCESS;
+  }
+
+
+
 
 
 

@@ -1070,8 +1070,9 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
 
 	/* Guard against box becoming too large when relaxing: */
 	for (i=0; i<3; ++i){
-	  if (isnan(boxlen[i]))
+	  if (isnan(boxlen[i])){
 	    aborterror("ERROR: Box in direction " + tostring(i) + " is NaN. Exiting");
+	  }
 	}
 
 	/* Guard against box becoming too small when relaxing: */

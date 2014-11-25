@@ -34,170 +34,18 @@ using namespace constants;
 using boost::format;
 
 
-
-
-CompoundPropertiesUse::CompoundPropertiesUse()
-  : C(6,6,false)
-{
-  a = false;
-  b = false;
-  c = false;
-  bpa = false;
-  cpa = false;
-  r0 = false;
-  angle_ab = false;
-  angle_ac = false;
-  angle_bc = false;
-  Vatom = false;
-  Ecoh = false;
-  Emix = false;
-  B = false;
-  Bp = false;
-  Fmax = false;
-  Pmax = false;
-  displmax = false;
-}
-
-
-void CompoundPropertiesUse::check_and_fix(){
-  if (bpa){
-    if (a && b) b=false;
-  }
-  if (cpa){
-    if (a && c) c=false;
-  }
-  if (Vatom){
-    if (a && (b || bpa) && (c || cpa)) Vatom=false;
-  }
-  if (r0)
-    a=b=c=bpa=cpa=Vatom=angle_ab=angle_ac=angle_bc=0;
-}
-
-
-
-
-
-
-
-
-
-CompoundProperties::CompoundProperties()
-  : C(6,6,0)
-{
-  a = -1;
-  b = -1;
-  c = -1;
-  bpa = -1;
-  cpa = -1;
-  r0 = -1;
-  angle_ab = 0.5*PI;
-  angle_ac = 0.5*PI;
-  angle_bc = 0.5*PI;
-  Vatom = 0;
-  Ecoh = 0;
-  Emix = 0;
-  B = 0;
-  Bp = 0;
-  Fmax = 0;
-  Pmax = 0;
-  displmax = 0;
-}
-
-CompoundPropertiesUseUncertainties::CompoundPropertiesUseUncertainties()
-  : C(6,6,true)
-{
-  a = true;
-  b = true;
-  c = true;
-  bpa = true;
-  cpa = true;
-  r0 = true;
-  angle_ab = true;
-  angle_ac = true;
-  angle_bc = true;
-  Vatom = true;
-  Ecoh = true;
-  Emix = true;
-  B = true;
-  Bp = true;
-  Fmax = true;
-  Pmax = true;
-  displmax = true;
-}
-
-CompoundPropertiesUseWeights::CompoundPropertiesUseWeights()
-  : C(6,6,false)
-{
-  a = false;
-  b = false;
-  c = false;
-  bpa = false;
-  cpa = false;
-  r0 = false;
-  angle_ab = false;
-  angle_ac = false;
-  angle_bc = false;
-  Vatom = false;
-  Ecoh = false;
-  Emix = false;
-  B = false;
-  Bp = false;
-  Fmax = false;
-  Pmax = false;
-  displmax = false;
-}
-
-CompoundPropertiesUncertainties::CompoundPropertiesUncertainties()
-  : C(6,6,1)
-{
-  a = 0.1;
-  b = 0.1;
-  c = 0.1;
-  bpa = 0.1;
-  cpa = 0.1;
-  r0 = 0.1;
-  angle_ab = 0.1;
-  angle_ac = 0.1;
-  angle_bc = 0.1;
-  Vatom = 0.1;
-  Ecoh = 0.1;
-  Emix = 0.1;
-  B = 0.1;
-  Bp = 0.1;
-  Fmax = 0.1;
-  Pmax = 0.1;
-  displmax = 0.1;
-}
-
-CompoundPropertiesWeights::CompoundPropertiesWeights()
-  : C(6,6,0)
-{
-  a = 1;
-  b = 1;
-  c = 1;
-  bpa = 1;
-  cpa = 1;
-  r0 = 1;
-  angle_ab = 1;
-  angle_ac = 1;
-  angle_bc = 1;
-  Vatom = 1;
-  Ecoh = 1;
-  Emix = 1;
-  B = 1;
-  Bp = 1;
-  Fmax = 1;
-  Pmax = 1;
-  displmax = 1;
-}
-
+#include "compound-misc.cppinc"
 
 
 
 CompoundStructure::CompoundStructure()
   :
+  nelem(1),
   elemnames(1, "none"),   // Single-atom basis, i.e. Bravais lattice
   pbc(3, false),
+  use_readin_structure(true),
+  use_int(false),
+  use_origin_spec(false),
   origin(3,0),
   u1_vec(3,0), u2_vec(3,0), u3_vec(3,0),
   basis_elems(1, "none"),
@@ -210,9 +58,10 @@ CompoundStructure::CompoundStructure()
   nelem = elemnames.size();
   csystem = "cubic";
 
-  scalefactor = 1;
+  scalefactor = -1;
+  lpa = lpb = lpc = -1;
 
-  use_int = false;
+
 
   // Orthonormal cubic system:
   u1_vec[0] = 1;
@@ -231,6 +80,8 @@ CompoundStructure::CompoundStructure()
 
 
 
+
+
 // ###########################################################################
 // ###########################################################################
 //
@@ -239,11 +90,44 @@ CompoundStructure::CompoundStructure()
 // ###########################################################################
 // ###########################################################################
 
+void CompoundStructure::origin_from_model(int & N1,
+					  int & N2,
+					  int & N3
+					  ){
+  Vector<double> boxlen(3, 0);
+  
+  boxlen[0] = N1 * u1_vec.magn();
+  boxlen[1] = N2 * u2_vec.magn();
+  boxlen[2] = N3 * u3_vec.magn();
+
+  origin[0] = -0.5*boxlen[0];
+  origin[1] = -0.5*boxlen[1];
+  origin[2] = -0.5*boxlen[2];
+
+
+
+  if (crystalname=="SH" || crystalname=="GRA"){
+    origin[0] = -0.5*boxlen[0] + lpa * 1.0/12.0;
+    origin[1] = -0.5*boxlen[1] + lpb * 1.0/4.0;
+    origin[2] = -0.5*boxlen[2] + lpc * 1.0/4.0;
+  }
+  else if (crystalname=="HCP"){
+    origin[0] = -0.5*boxlen[0] + lpa * 0.125;
+    origin[1] = -0.5*boxlen[1] + lpb * 1.0/12.0;
+    origin[2] = -0.5*boxlen[2] + lpc * 1.0/8.0;
+  }
+
+
+}
+
 
 
 void CompoundStructure::create_from_model(string name_in,
 					  string elem1,
-					  string elem2
+					  string elem2,
+					  double ai,
+					  double bi,
+					  double ci
 					  ){
   
   int i;
@@ -251,9 +135,7 @@ void CompoundStructure::create_from_model(string name_in,
   crystalname = name_in;
   name = crystalname + "-" + elem1;
   elemnames[0] = elem1;
-
-  // finalize() will use 'ai' for the overall scaling of basis vectors:
-  scalefactor = -1;
+  use_readin_structure = false;
 
 
   pbc = Vector<bool>(3, true);
@@ -263,6 +145,11 @@ void CompoundStructure::create_from_model(string name_in,
 
   //use_u=false;
   //use_w=false;
+
+  scalefactor = ai;
+  lpa = ai;
+  lpb = bi;
+  lpc = ci;
 
 
   if (crystalname=="DIM1"){
@@ -277,7 +164,7 @@ void CompoundStructure::create_from_model(string name_in,
     i=0; basis_vecs[i] = Vector<double>(3, 0.0);
     i=1; basis_vecs[i] = Vector<double>(3, 0.0); basis_vecs[i][0] = 1.0; // bond axis in X direction
 
-    return;
+
   }
   else if (crystalname=="DIM2"){
     nelem = 2;
@@ -297,12 +184,26 @@ void CompoundStructure::create_from_model(string name_in,
     i=0; basis_vecs[i] = Vector<double>(3, 0.0);
     i=1; basis_vecs[i] = Vector<double>(3, 0.0); basis_vecs[i][0] = 1.0; // bond axis in X direction
 
-    return;
+
   }
-  else if (crystalname=="SC"){
-    return;
+  // ---------------------------------------------------------------------------
+  else if (crystalname=="BCC-P"){
+
+    u1_vec[0] = -0.5; u1_vec[1] =  0.5; u1_vec[2] =  0.5;
+    u2_vec[0] =  0.5; u2_vec[1] = -0.5; u2_vec[2] =  0.5;
+    u3_vec[0] =  0.5; u3_vec[1] =  0.5; u3_vec[2] = -0.5;
+
+    nbasis = 1;
+    basis_elems.resize(nbasis);
+    basis_vecs.resize(nbasis);
+
+    i=0; basis_elems[i] = elem1;
+
+    i=0; basis_vecs[i] = Vector<double>(3, 0.0);
+
   }
-  else if (crystalname=="BCC"){
+  else if (crystalname=="BCC" || crystalname=="BCC-C"){
+
     u1_vec[0] =  1.0; u1_vec[1] =  0.0; u1_vec[2] =  0.0;
     u2_vec[0] =  0.0; u2_vec[1] =  1.0; u2_vec[2] =  0.0;
     u3_vec[0] =  0.0; u3_vec[1] =  0.0; u3_vec[2] =  1.0;
@@ -316,9 +217,25 @@ void CompoundStructure::create_from_model(string name_in,
 
     i=0; basis_vecs[i] = Vector<double>(3, 0.0);
     i=1; basis_vecs[i] = Vector<double>(3, 0.5);
-    return;
+
   }
-  else if (crystalname=="FCC"){
+  // ---------------------------------------------------------------------------
+  else if (crystalname=="FCC-P"){
+
+    u1_vec[0] =  0.0; u1_vec[1] =  0.5; u1_vec[2] =  0.5;
+    u2_vec[0] =  0.5; u2_vec[1] =  0.0; u2_vec[2] =  0.5;
+    u3_vec[0] =  0.5; u3_vec[1] =  0.5; u3_vec[2] =  0.0;
+
+    nbasis = 1;
+    basis_elems.resize(nbasis);
+    basis_vecs.resize(nbasis);
+
+    i=0; basis_elems[i] = elem1;
+
+    i=0; basis_vecs[i] = Vector<double>(3, 0.0);
+
+  }
+  else if (crystalname=="FCC" || crystalname=="FCC-C"){
     nbasis = 4;
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
@@ -330,8 +247,8 @@ void CompoundStructure::create_from_model(string name_in,
     i=2; basis_vecs[i][0] = 0.5; basis_vecs[i][1] = 0.0; basis_vecs[i][2] = 0.5;
     i=3; basis_vecs[i][0] = 0.0; basis_vecs[i][1] = 0.5; basis_vecs[i][2] = 0.5;
 
-    return;
   }
+  // ---------------------------------------------------------------------------
   else if (crystalname=="DIA"){
     nbasis = 8;
     basis_elems.resize(nbasis);
@@ -349,25 +266,33 @@ void CompoundStructure::create_from_model(string name_in,
     i=6; basis_vecs[i][0] += 0.5; basis_vecs[i][1] += 0.0; basis_vecs[i][2] += 0.5;
     i=7; basis_vecs[i][0] += 0.0; basis_vecs[i][1] += 0.5; basis_vecs[i][2] += 0.5;
 
-    return;
+
   }
   else if (crystalname=="HCP"){
     csystem = "hexagonal";
-    use_int = true;
 
-    u2_vec[0] = 0.5; u2_vec[1] = 0.866025403784; u2_vec[2] = 0;
+    double bp = sqrt(3.0);
 
-    nbasis = 2;
+    u1_vec[0] = 1.0; u1_vec[1] = 0.0; u1_vec[2] = 0.0;
+    u2_vec[0] = 0.0; u2_vec[1] = bp;  u2_vec[2] = 0.0;
+    u3_vec[0] = 0.0; u3_vec[1] = 0.0; u3_vec[2] = 1.0;
+
+    // u2_vec[0] = 0.5; u2_vec[1] = 0.866025403784; u2_vec[2] = 0;
+
+    nbasis = 4;
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
     for (i=0; i<nbasis; ++i) basis_elems[i] = elem1;
     for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector<double>(3, 0.0);
 
-    i=0; basis_vecs[i] = Vector<double>(3, 0.0);
-    i=1; basis_vecs[i][0] = 1.0/3.0; basis_vecs[i][1] = 1.0/3.0; basis_vecs[i][2] = 1.0/3.0;
+    use_int = true;
 
-    return;
+    i=1; basis_vecs[i][0] = 1.0/2.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 0;
+    i=2; basis_vecs[i][0] = 0.0;     basis_vecs[i][1] = 1.0/3.0; basis_vecs[i][2] = 1.0/2.0;
+    i=3; basis_vecs[i][0] = 1.0/2.0; basis_vecs[i][1] = 5.0/6.0; basis_vecs[i][2] = 1.0/2.0;
+
+
   }
   else if (crystalname=="GRP"){ // graphene
     pbc[2] = false;
@@ -380,9 +305,10 @@ void CompoundStructure::create_from_model(string name_in,
       a3 = 0.0
      */
 
+
     // Input lattice parameter a is called ahex, and is taken as r_nn !!!
-    double ap=3.0;
-    double bp=sqrt(3);
+    double ap = 3.0;
+    double bp = sqrt(3.0);
 
     u1_vec[0] = ap;  u1_vec[1] = 0.0; u1_vec[2] = 0.0;
     u2_vec[0] = 0.0; u2_vec[1] = bp;  u2_vec[2] = 0.0;
@@ -397,12 +323,11 @@ void CompoundStructure::create_from_model(string name_in,
 
     use_int = true;
 
-    i=0; basis_vecs[i]    = Vector<double>(3, 0.0);
     i=1; basis_vecs[i][0] = 1.0/3.0; basis_vecs[i][1] = 0;       basis_vecs[i][2] = 0;
     i=2; basis_vecs[i][0] = 1.0/2.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 0;
     i=3; basis_vecs[i][0] = 5.0/6.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 0;
 
-    return;
+
   }
   else if (crystalname=="SH" || crystalname=="GRA"){
     csystem = "hexagonal";
@@ -414,9 +339,10 @@ void CompoundStructure::create_from_model(string name_in,
       a3 = c*zhat
      */
 
+
     // Input lattice parameter a is called ahex, and is taken as r_nn !!!
-    double ap=3.0;
-    double bp=sqrt(3);
+    double ap = 3.0;
+    double bp = sqrt(3.0);
 
     u1_vec[0] = ap;  u1_vec[1] = 0.0; u1_vec[2] = 0.0;
     u2_vec[0] = 0.0; u2_vec[1] = bp;  u2_vec[2] = 0.0;
@@ -431,7 +357,6 @@ void CompoundStructure::create_from_model(string name_in,
 
     use_int = true;
 
-    i=0; basis_vecs[i]    = Vector<double>(3, 0.0);
     i=1; basis_vecs[i][0] = 1.0/3.0; basis_vecs[i][1] = 0;       basis_vecs[i][2] = 0;
     i=2; basis_vecs[i][0] = 1.0/2.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 0;
     i=3; basis_vecs[i][0] = 5.0/6.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 0;
@@ -441,7 +366,7 @@ void CompoundStructure::create_from_model(string name_in,
     i=6; basis_vecs[i][0] = 2.0/3.0; basis_vecs[i][1] = 0;       basis_vecs[i][2] = 1.0/2.0;
     i=7; basis_vecs[i][0] = 5.0/6.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 1.0/2.0;
 
-    return;
+
   }
   else if (crystalname=="CsCl"){
     name = name + "-" + elem2;
@@ -457,10 +382,9 @@ void CompoundStructure::create_from_model(string name_in,
     basis_elems[1] = elem2;
     for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector<double>(3, 0.0);
 
-    i=0; basis_vecs[i] = Vector<double>(3, 0.0);
     i=1; basis_vecs[i][0] = 0.5; basis_vecs[i][1] = 0.5; basis_vecs[i][2] = 0.5;
 
-    return;
+
   }
   else if (crystalname=="NaCl"){
     name = name + "-" + elem2;
@@ -476,7 +400,6 @@ void CompoundStructure::create_from_model(string name_in,
     for (i=5; i<nbasis; ++i) basis_elems[i] = elem2;
     for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector<double>(3, 0.0);
 
-    i=0; basis_vecs[i] = Vector<double>(3, 0.0);
     i=1; basis_vecs[i][0] = 0.5; basis_vecs[i][1] = 0.5; basis_vecs[i][2] = 0.0;
     i=2; basis_vecs[i][0] = 0.5; basis_vecs[i][1] = 0.0; basis_vecs[i][2] = 0.5;
     i=3; basis_vecs[i][0] = 0.0; basis_vecs[i][1] = 0.5; basis_vecs[i][2] = 0.5;
@@ -486,7 +409,7 @@ void CompoundStructure::create_from_model(string name_in,
     i=6; basis_vecs[i][0] = 0.0; basis_vecs[i][1] = 0.0; basis_vecs[i][2] = 0.5;
     i=7; basis_vecs[i][0] = 0.5; basis_vecs[i][1] = 0.5; basis_vecs[i][2] = 0.5;
 
-    return;
+
   }
   else if (crystalname=="ZnS"){
     name = name + "-" + elem2;
@@ -512,14 +435,23 @@ void CompoundStructure::create_from_model(string name_in,
     i=6; basis_vecs[i][0] += 0.5; basis_vecs[i][1] += 0.0; basis_vecs[i][2] += 0.5;
     i=7; basis_vecs[i][0] += 0.0; basis_vecs[i][1] += 0.5; basis_vecs[i][2] += 0.5;
 
-    return;
+
   }
   else {
     aborterror("Error: Compound type " + name + " not recognized. Exiting.");
-    return;
   }
 
+
+
+  finalize(lpa, lpb, lpc);
 }
+
+
+
+
+
+
+
 
 
 
@@ -541,6 +473,7 @@ void CompoundStructure::read_structure(void){
   istringstream strbuf;
   int ns, i, j, k, tl;
   double td;
+
 
 
   /* .......................................................................
@@ -655,6 +588,18 @@ void CompoundStructure::read_structure(void){
 	aborterror("Error while reading basis vectors for compound " + name + ". Exiting.");
     }
 
+    // iline=8+nbasis
+    /* Optional origin: */
+    if (iline == 8+nbasis){
+      if (ns>=4){
+	use_origin_spec=true;
+	strbuf.str(args[1]); strbuf >> origin[0]; strbuf.clear();
+	strbuf.str(args[2]); strbuf >> origin[1]; strbuf.clear();
+	strbuf.str(args[3]); strbuf >> origin[2]; strbuf.clear();
+      }
+    }
+
+
     iline++;
 
     if (!fp) break;
@@ -668,16 +613,19 @@ void CompoundStructure::read_structure(void){
 
 
 
+
 // ###########################################################################
 // ###########################################################################
 // ###########################################################################
 // ###########################################################################
 
-void CompoundStructure::finalize(const double ai,
-				 const double bi,
-				 const double ci){
+
+
+void CompoundStructure::finalize(double ma, double mb, double mc){
+
   int i, k;
   double td;
+  
 
   /* -----------------------------------------------------------------------------
      Get ready-to-use primitive and basis vectors.
@@ -687,27 +635,16 @@ void CompoundStructure::finalize(const double ai,
   // Primitive vectors:
   // ****************************************************************
   for (k=0; k<3; ++k){
-    u1_vec[k] *= ai;
-    u2_vec[k] *= bi;
-    u3_vec[k] *= ci;
+    u1_vec[k] *= ma;
+    u2_vec[k] *= mb;
+    u3_vec[k] *= mc;
   }
 
 
   // ****************************************************************
   // Basis vectors:
   // ****************************************************************
-  if (! use_int){
-    // Use non-internal format:
-    td = (scalefactor < 0) ? ai : scalefactor;
-    //td = ai;
-
-    // Basis vectors are in non-internal format
-    for (i=0; i<nbasis; ++i){
-      for (k=0; k<3; ++k)
-	basis_vecs[i][k] *= td;
-    }
-  }
-  else {
+  if (use_int){
     // Basis vectors are in internal format
     Vector< Vector<double> > bv;
     bv = basis_vecs;
@@ -719,15 +656,21 @@ void CompoundStructure::finalize(const double ai,
 	  + bv[i][2] * u3_vec[k];
     }
   }
+  else {
+    // Use non-internal format:
+    td = scalefactor;
+
+    // Basis vectors are in non-internal format
+    for (i=0; i<nbasis; ++i){
+      for (k=0; k<3; ++k)
+	basis_vecs[i][k] *= td;
+    }
+  }
+
 
   /* -----------------------------------------------------------------------------
      Make all basis atoms be inside the cell, if possible
      ----------------------------------------------------------------------------- */
-
-
-
-
-
   Matrix<double> boxdir(3,3,0), Bravaismatrix_inv(3,3,0);
   Vector<double> tv(3,0), boxlen(3), drs(3,0), drc(3,0);
 
@@ -821,10 +764,14 @@ void CompoundStructure::finalize(const double ai,
   return;
 }
 
+
+
 // ###########################################################################
 // ###########################################################################
 // ###########################################################################
 // ###########################################################################
+
+
 
 
 #include "compound-strfit.cppinc"

@@ -109,7 +109,8 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 				     double distmin // only makes sense for periodic directions
 				     ){
   int i,j,k,p,iat;
-  Vector<double> tv, orig(3,0);
+  Vector<double> tv;
+  Vector<double> origin(3, 0);
 
   pbc = cmp.pbc;
 
@@ -136,6 +137,14 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
   }
 
 
+  cout << "Creating MD system: Using N1 N2 N3  " << N1 << " " << N2 << " " << N3 << endl;
+
+  cout << "Creating MD system: scalefactor  " << cmp.scalefactor << endl;
+  cout << "Creating MD system: internal lattice parameters  " 
+       << cmp.lpa << " "
+       << cmp.lpb << " "
+       << cmp.lpc << endl;
+
 
   name = cmp.name;
 
@@ -151,6 +160,30 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
   boxlen[2] = N3 * cmp.u3_vec.magn();
 
   update_box_geometry();
+
+  cout << "Creating MD system: Box lengths: " << boxlen[0] << " " << boxlen[1] << " " << boxlen[2] << endl;
+
+  // Default:
+  origin[0] = -0.5 * boxlen[0];
+  origin[1] = -0.5 * boxlen[1];
+  origin[2] = -0.5 * boxlen[2];
+
+  if (! cmp.use_readin_structure){
+    cmp.origin_from_model(N1, N2, N3);
+    origin = cmp.origin;
+  }
+  if (cmp.use_origin_spec){
+    origin = cmp.origin;
+  }
+
+
+  cout << "Creating MD system: Origin: " << origin[0] << " " << origin[1] << " " << origin[2] << endl;
+
+
+
+
+
+
 
   /*
     cout << "boxlen 0: " << boxlen[0] << endl;
@@ -168,27 +201,14 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
   clear_all_atoms();
 
 
-
-
-
-
-  cmp.origin[0] = -0.5 * boxlen[0];
-  cmp.origin[1] = -0.5 * boxlen[1];
-  cmp.origin[2] = -0.5 * boxlen[2];
-
-
-
-
-
-
-
   for (i=0; i<N1; ++i){
     for (j=0; j<N2; ++j){
       for (k=0; k<N3; ++k){
 	for (p=0; p<cmp.nbasis; ++p){
 	  iat = add_atom();
 
-	  pos[iat] = cmp.origin + i * cmp.u1_vec + j * cmp.u2_vec + k * cmp.u3_vec
+	  pos[iat] = origin
+	    + i * cmp.u1_vec + j * cmp.u2_vec + k * cmp.u3_vec
 	    + cmp.basis_vecs[p];
 
 	  // Atom type info will be filled in later. Now just put something here:
@@ -205,6 +225,20 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 
   return;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
