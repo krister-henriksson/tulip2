@@ -42,7 +42,17 @@ rfermi(Fe, Fe) = 1.7
 
 # Parameters for fittable interactions
 
-     potpar(Fe, Fe):D0 = 1.5
+# (1) If min < max: constrained parameter
+#  => parameter will be forced to be between provided min and max values.
+
+# (2) If min==max and they are different from 0.0: FIXED parameter
+
+# (3) If min==max and they are 0.0 (to machine accuracy): free parameter
+#  => no restrictions on the parameter (UNSAFE)
+
+
+
+     potpar(Fe, Fe):D0 =   1.5
 min: potpar(Fe, Fe):D0 =   1.0
 max: potpar(Fe, Fe):D0 =  10.0
 
