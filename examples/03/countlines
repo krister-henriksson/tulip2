@@ -1,0 +1,4 @@
+#! /bin/bash
+
+cat $* | awk 'BEGIN{nlines=0;} {if (NF>0) nlines++;} END{print nlines}'
+

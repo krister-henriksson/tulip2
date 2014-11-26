@@ -406,13 +406,18 @@ int main(int argc, char *argv[]){
   cout << "SIMPLEX: Displacement when creating initial simplex: " << potinfo.specs_prop.simplex_delta << endl;
   cout << "Debug: level0                                      : " << potinfo.specs_prop.debug_fit_level0 << endl;
   cout << "Debug: level1                                      : " << potinfo.specs_prop.debug_fit_level1 << endl;
+  cout << "Debug: level2                                      : " << potinfo.specs_prop.debug_fit_level2 << endl;
+  cout << "Debug: level3                                      : " << potinfo.specs_prop.debug_fit_level3 << endl;
+  cout << "Debug: level4                                      : " << potinfo.specs_prop.debug_fit_level4<< endl;
   cout << "Lattice tolerance                                  : " << potinfo.specs_prop.lattol << endl;
   cout << endl;
+  cout << "Bulk modulus: Relax strained systems?              : " << potinfo.specs_prop.BM_rel_sys << endl;
   cout << "Bulk modulus: Minimum strain (e.g. -0.01)          : " << potinfo.specs_prop.BM_fmin << endl;
   cout << "Bulk modulus: Maximum strain (e.g.  0.01)          : " << potinfo.specs_prop.BM_fmax << endl;
   cout << "Bulk modulus: Number of strain points (e.g. 10)    : " << potinfo.specs_prop.BM_Nf << endl;
   cout << "Bulk modulus: Multiplicative uncertainty factor (e.g. 0.10): " << potinfo.specs_prop.BM_ef << endl;
   cout << endl;
+  cout << "Elastic moduli: Relax strained systems?            : " << potinfo.specs_prop.C_rel_sys << endl;
   cout << "Elastic moduli: Minimum strain (e.g. -0.01)        : " << potinfo.specs_prop.C_fmin << endl;
   cout << "Elastic moduli: Maximum strain (e.g.  0.01)        : " << potinfo.specs_prop.C_fmax << endl;
   cout << "Elastic moduli: Number of strain points (e.g. 10)  : " << potinfo.specs_prop.C_Nf << endl;
@@ -518,6 +523,9 @@ int main(int argc, char *argv[]){
   cout << "SIMPLEX: Displacement when creating initial simplex: " << potinfo.specs_pot.simplex_delta << endl;
   cout << "Debug: level0                                      : " << potinfo.specs_pot.debug_fit_level0 << endl;
   cout << "Debug: level1                                      : " << potinfo.specs_pot.debug_fit_level1 << endl;
+  cout << "Debug: level2                                      : " << potinfo.specs_pot.debug_fit_level2 << endl;
+  cout << "Debug: level3                                      : " << potinfo.specs_pot.debug_fit_level3 << endl;
+  cout << "Debug: level4                                      : " << potinfo.specs_pot.debug_fit_level4 << endl;
   cout << "Penalty function: barrier                          : " << potinfo.specs_pot.barrier_scale << endl;
 
 

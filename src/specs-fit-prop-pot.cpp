@@ -41,12 +41,14 @@ SpecsFitProp::SpecsFitProp(){
   report_error = false;
   report_conv = false;
   lattol = small;
-  BM_fmin = -1e-3;
-  BM_fmax =  1e-3;
+  BM_rel_sys = true;
+  BM_fmin = -0.01;
+  BM_fmax =  0.01;
   BM_Nf   = 10;
   BM_ef   = 0.01;
-  C_fmin = -1e-3;
-  C_fmax =  1e-3;
+  C_rel_sys = true;
+  C_fmin = -0.01;
+  C_fmax =  0.01;
   C_Nf   = 10;
   C_ef   = 0.01;
 

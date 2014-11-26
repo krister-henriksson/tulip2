@@ -52,10 +52,13 @@ public:
   // ***********************************
   double   lattol;
   // ***********************************
+  bool     BM_rel_sys;
   double   BM_fmin;
   double   BM_fmax;
   double   BM_Nf;
   double   BM_ef;
+
+  bool     C_rel_sys;
   double   C_fmin;
   double   C_fmax;
   double   C_Nf;

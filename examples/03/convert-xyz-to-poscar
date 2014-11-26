@@ -1,0 +1,83 @@
+#! /bin/bash
+
+
+
+file=$1
+
+nat=`head -n 1 $file | tail -n 1 | awk '{printf "%s", $1;}'`
+
+b1=`head -n 2 $file | tail -n 1 | awk '{printf "%s", $7;}'`
+b2=`head -n 2 $file | tail -n 1 | awk '{printf "%s", $8;}'`
+b3=`head -n 2 $file | tail -n 1 | awk '{printf "%s", $9;}'`
+
+nelem=`tail -n $nat $file | awk '{print $1}' | sort | uniq | countlines`
+
+elemfile=tmpf.$$
+tail -n $nat $file | awk '{print $1}' | sort | uniq > $elemfile
+
+
+elemrow=""
+i=1
+while [ $i -le $nelem ]; do
+    name=`head -n $i $elemfile | tail -n 1 | awk '{printf "%s", $1;}'`
+
+    num=`echo $file $name | awk '{ file = $1 ""; name = $2 "";} END{
+while((getline < file)>0){
+  if ($1 "" == name) print $0;
+}
+}' | countlines`
+#    num=`grep ^'$name ' $file | countlines`
+
+    elemrow=$elemrow" "$num
+
+    let "i = i + 1"
+done
+
+
+
+
+
+echo "//Comment"
+
+echo "  $b1"
+echo 1.0 0.0 | awk '{printf "%15.10f  %15.10f  %15.10f\n", 1.0, 0.0, 0.0; }'
+echo $b2 $b1 | awk '{printf "%15.10f  %15.10f  %15.10f\n", 0.0, $1/$2, 0.0; }'
+echo $b3 $b1 | awk '{printf "%15.10f  %15.10f  %15.10f\n", 0.0, 0.0,   $1/$2; }'
+
+echo $elemrow
+echo Cartesian
+
+
+
+i=1
+while [ $i -le $nelem ]; do
+    name=`head -n $i $elemfile | tail -n 1 | awk '{printf "%s", $1;}'`
+
+    echo $file $name $b1 | awk '{ file = $1 ""; name = $2 ""; a = $3;} END{
+while((getline < file)>0){
+  if ($1 "" == name) printf "%20.10f  %20.10f  %20.10f\n", $2/a, $3/a, $4/a;
+}
+}'
+
+    let "i = i + 1"
+done
+rm -f $elemfile
+
+
+exit
+
+
+
+
+tmpf=tmpf.$$
+tail -n $nat $file | sort > $tmpf
+echo $tmpf $b1 | awk '{
+file = $1 "";
+a = $2; } END{
+while ((getline < file)>0){
+  printf "%20.10f  %20.10f  %20.10f\n", $2/a, $3/a, $4/a;
+}
+}'
+rm $tmpf
+
+

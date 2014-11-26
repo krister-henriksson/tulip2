@@ -1,0 +1,39 @@
+#! /bin/bash
+
+
+
+NF=$#
+file=$1
+shift
+elems=$*
+
+# echo $file
+# echo $elems
+
+
+
+
+tmpf=tmpf.$$
+
+if [ $NF -lt 2 ]; then
+    echo ""
+    echo "Arguments:"
+    echo "   file                File to convert."
+    echo "   elem1 elem2 ...     Element names."
+    echo ""
+
+    echo " ############################# Firstly called script: #############################"
+    convert-poscar-to-lat
+    echo " ############################# Secondly called script: #############################"
+    convert-lat-to-xyz
+    exit
+else
+    convert-poscar-to-lat $file $elems  > $tmpf
+fi
+
+
+
+convert-lat-to-xyz $tmpf
+
+rm -f $tmpf
+

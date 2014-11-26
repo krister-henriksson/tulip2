@@ -11,7 +11,8 @@
 // ##############################################################################
 
 
-void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
+void MDSystem::relax(bool quick_mode){
+
   int i,j;
   Vector<double> tv(3,0.0), tv1(3,0.0), tv2(3,0.0);
   Vector<double> boxlen_orig(3,0);
@@ -26,6 +27,7 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
   double dt_v_max=-1, dt_a_max=-1, dt_F_max=-1;
   Vector<double> dt_candidate(4, specs.max_dt);
   int nat;
+
 
 
   bool periodic = true;
@@ -1076,11 +1078,11 @@ void MDSystem::relax(int & N1, int & N2, int & N3, bool quick_mode){
 	}
 
 	/* Guard against box becoming too small when relaxing: */
-	if (boxlen[0] <= 2.0*(rcut+skint)) N1 = - floor(boxlen_orig[0]/boxlen[0] * N1);
-	if (boxlen[1] <= 2.0*(rcut+skint)) N2 = - floor(boxlen_orig[1]/boxlen[1] * N2);
-	if (boxlen[2] <= 2.0*(rcut+skint)) N3 = - floor(boxlen_orig[2]/boxlen[2] * N3);
+	if (boxlen[0] <= 2.0*(rcut+skint)) N[0] = - floor(boxlen_orig[0]/boxlen[0] * N[0]);
+	if (boxlen[1] <= 2.0*(rcut+skint)) N[1] = - floor(boxlen_orig[1]/boxlen[1] * N[1]);
+	if (boxlen[2] <= 2.0*(rcut+skint)) N[2] = - floor(boxlen_orig[2]/boxlen[2] * N[2]);
 	
-	if (N1<0 || N2<0 || N3<0) return;
+	if (N[0]<0 || N[1]<0 || N[2]<0) return;
       }
     
     }

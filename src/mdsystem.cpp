@@ -53,7 +53,9 @@ MDSystem::MDSystem()
   p_potinfo = 0;
   debug_creation = false;
   debug_mds = false;
-
+  N[0]=0;
+  N[1]=0;
+  N[2]=0;
   vel.cap(100);
   acc.cap(100);
   frc.cap(100);
@@ -103,41 +105,40 @@ MDSystem::MDSystem()
 */
 
 void MDSystem::create_from_structure(CompoundStructure & cmp,
-				     int & N1,
-				     int & N2,
-				     int & N3,
 				     double distmin // only makes sense for periodic directions
 				     ){
   int i,j,k,p,iat;
   Vector<double> tv;
   Vector<double> origin(3, 0);
 
+
+
   pbc = cmp.pbc;
 
-  if (N1<=0){
-    N1 = 1;
+  if (N[0]<=0){
+    N[0] = 1;
     if (pbc[0] && distmin>0){
-      N1 = distmin/cmp.u1_vec.magn();
-      while (N1 * cmp.u1_vec.magn() <= distmin) N1++;
+      N[0] = distmin/cmp.u1_vec.magn();
+      while (N[0] * cmp.u1_vec.magn() <= distmin) N[0]++;
     }
   }
-  if (N2<=0){
-    N2 = 1;
+  if (N[1]<=0){
+    N[1] = 1;
     if (pbc[1] && distmin>0){
-      N2 = distmin/cmp.u2_vec.magn();
-      while (N2 * cmp.u2_vec.magn() <= distmin) N2++;
+      N[1] = distmin/cmp.u2_vec.magn();
+      while (N[1] * cmp.u2_vec.magn() <= distmin) N[1]++;
     }
   }
-  if (N3<=0){
-    N3 = 1;
+  if (N[2]<=0){
+    N[2] = 1;
     if (pbc[2] && distmin>0){
-      N3 = distmin/cmp.u3_vec.magn();
-      while (N3 * cmp.u3_vec.magn() <= distmin) N3++;
+      N[2] = distmin/cmp.u3_vec.magn();
+      while (N[2] * cmp.u3_vec.magn() <= distmin) N[2]++;
     }
   }
 
 
-  cout << "Creating MD system: Using N1 N2 N3  " << N1 << " " << N2 << " " << N3 << endl;
+  cout << "Creating MD system: Using N[0] N[1] N[2]  " << N[0] << " " << N[1] << " " << N[2] << endl;
 
   cout << "Creating MD system: scalefactor  " << cmp.scalefactor << endl;
   cout << "Creating MD system: internal lattice parameters  " 
@@ -155,9 +156,9 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
   tv = cmp.u2_vec; tv.normalize(); set_boxdir(1, tv);
   tv = cmp.u3_vec; tv.normalize(); set_boxdir(2, tv);
 
-  boxlen[0] = N1 * cmp.u1_vec.magn();
-  boxlen[1] = N2 * cmp.u2_vec.magn();
-  boxlen[2] = N3 * cmp.u3_vec.magn();
+  boxlen[0] = N[0] * cmp.u1_vec.magn();
+  boxlen[1] = N[1] * cmp.u2_vec.magn();
+  boxlen[2] = N[2] * cmp.u3_vec.magn();
 
   update_box_geometry();
 
@@ -169,7 +170,7 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
   origin[2] = -0.5 * boxlen[2];
 
   if (! cmp.use_readin_structure){
-    cmp.origin_from_model(N1, N2, N3);
+    cmp.origin_from_model(N[0], N[1], N[2]);
     origin = cmp.origin;
   }
   if (cmp.use_origin_spec){
@@ -194,16 +195,16 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
     cout << "boxdir 1: " << get_boxdir(1) << endl;
     cout << "boxdir 2: " << get_boxdir(2) << endl;
 
-    cout << "N1 N2 N3: " << N1 << " " << N2 << " " << N3 << endl;
+    cout << "N[0] N[1] N[2]: " << N[0] << " " << N[1] << " " << N[2] << endl;
   */
 
   // Create atom system:
   clear_all_atoms();
 
 
-  for (i=0; i<N1; ++i){
-    for (j=0; j<N2; ++j){
-      for (k=0; k<N3; ++k){
+  for (i=0; i<N[0]; ++i){
+    for (j=0; j<N[1]; ++j){
+      for (k=0; k<N[2]; ++k){
 	for (p=0; p<cmp.nbasis; ++p){
 	  iat = add_atom();
 

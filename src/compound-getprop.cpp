@@ -60,6 +60,9 @@ using boost::format;
 
 
 
+
+
+
 void CompoundStructureFit::getprop(ParamPot & param){
 
   int N1,N2,N3;
@@ -94,32 +97,29 @@ void CompoundStructureFit::getprop(ParamPot & param){
   // MD relaxation of compound:
   // ###################################################################
 
-  // Initialize common MD settings:
+  // Initialize (common) MD settings:
   mds.specs_common = param.p_potinfo->specs_prop.mds_specs_common;
-    
-  mds.omp_info = param.p_potinfo->omp_info;
-
-
-  // Initialize MD settings:
-  mds.specs    = mds_specs;
-
+  mds.specs        = mds_specs;
   // Other settings:
-  mds.rcut = mds.rcut_max = mds.p_potinfo->get_rcut_max( elemnames );
-  mds.skint = mds.specs.skint;
+  mds.omp_info     = param.p_potinfo->omp_info;
+  mds.rcut         = mds.rcut_max = mds.p_potinfo->get_rcut_max( elemnames );
+  mds.skint        = mds.specs.skint;
 
 
 
-  double rm = mds.rcut_max + mds.skint;
-  N1 = N2 = N3 = 0;
+
+
   //cout << "rcut_max and skint are " << mds.rcut_max << " " << mds.skint << endl;
+
 
 
 
   bool retry;
   while (true){
-    // Set atoms:
+
     cout << "Creating atom system ... " << endl;
-    mds.create_from_structure(*this, N1, N2, N3, 2.0*rm); // removes old atoms
+    double rm = mds.rcut_max + mds.skint;
+    mds.create_from_structure(*this, 2.0*rm); // removes old atoms
 
     b_ini[0] = mds.boxlen[0];
     b_ini[1] = mds.boxlen[1];
@@ -132,22 +132,20 @@ void CompoundStructureFit::getprop(ParamPot & param){
     }
 
 
-      
-    // Perform MD relaxation:
     cout << "Relaxing atom system ... " << endl;
     if (mds.specs.is_ref_comp)
-      mds.relax(N1, N2, N3, false); // never quick mode on a reference compound
+      mds.relax(false);
     else
-      mds.relax(N1, N2, N3, mds.specs_common.quick_mode);
-
+      mds.relax(mds.specs_common.quick_mode);
 
     E0 = mds.Ep_tot / mds.natoms();
     V0 = mds.V / mds.natoms();
+
     retry = false;
-    if (N1<0 || N2<0 || N3<0) retry=true;
-    if (N1<0) N1 = -N1+1;
-    if (N2<0) N2 = -N2+1;
-    if (N3<0) N3 = -N3+1;
+    if (mds.N[0]<0 || mds.N[1]<0 || mds.N[2]<0) retry=true;
+    if (mds.N[0]<0) mds.N[0] = -mds.N[0]+1;
+    if (mds.N[1]<0) mds.N[1] = -mds.N[1]+1;
+    if (mds.N[2]<0) mds.N[2] = -mds.N[2]+1;
     
     if (! retry) break;
   }
@@ -298,26 +296,20 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
   double min_V=V0, min_E=E0, guess_B, guess_Bp;
   double eps = std::numeric_limits<double>::epsilon();
   double small = sqrt(eps);
+  bool rel_sys;
 
-
-
-  fmin = param.p_potinfo->specs_prop.BM_fmin;
-  fmax = param.p_potinfo->specs_prop.BM_fmax;
-  Nf   = param.p_potinfo->specs_prop.BM_Nf;
-  ef   = param.p_potinfo->specs_prop.BM_ef;
+  rel_sys = param.p_potinfo->specs_prop.BM_rel_sys;
+  fmin    = param.p_potinfo->specs_prop.BM_fmin;
+  fmax    = param.p_potinfo->specs_prop.BM_fmax;
+  Nf      = param.p_potinfo->specs_prop.BM_Nf;
+  ef      = param.p_potinfo->specs_prop.BM_ef;
   if (Nf<3) Nf=3;
-  df   = (fmax - fmin)/Nf;
+  df      = (fmax - fmin)/Nf;
   xp.resize(Nf); yp.resize(Nf); dyp.resize(Nf);
-
-
-
 
 
   // Loop over particular symmetry changes
   // (only one => no loop)
-
-
-
 
   // Loop over differential changes
   for (j=0; j<Nf; ++j){
@@ -327,10 +319,66 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
     for (k=0; k<3; ++k) for (p=0; p<3; ++p) alpha.elem(k,p)=0;
     alpha.elem(0,0) = alpha.elem(1,1) = alpha.elem(2,2) = g; // Note!!!
     mds.transform_cell(alpha);
-    mds.get_all_neighborcollections();
-    td = mds.calc_potential_energy() / mds.natoms();
-    yp[j] = td;
-    dyp[j] = ((td<0)? -td: td) * ef;
+
+
+    // **************************************************************
+    // **************************************************************
+    double Epa=0;
+    if (! rel_sys){
+      // +++++++++++++++++++++++++++++++++++++++++++++++++
+      // Option A: Do not allow internal relaxation:
+      // +++++++++++++++++++++++++++++++++++++++++++++++++
+
+      mds.get_all_neighborcollections();
+      Epa = mds.calc_potential_energy() / mds.natoms();
+    }
+    else {
+      // +++++++++++++++++++++++++++++++++++++++++++++++++
+      // Option B: Allow internal relaxation:
+      // +++++++++++++++++++++++++++++++++++++++++++++++++
+
+      // Update specs for this relaxation:
+      MDSettings specs_bak = mds.specs;
+      mds.specs.use_Pcontrol = false;
+
+      // Relax using current system. Only enlargen it if position scaling
+      // has made the system too small.
+      bool retry;
+      while (true){
+	if (mds.specs.is_ref_comp)
+	  mds.relax(false);
+	else
+	  mds.relax(mds.specs_common.quick_mode);
+
+	Epa = mds.Ep_tot / mds.natoms();
+
+	retry = false;
+	if (mds.N[0]<0 || mds.N[1]<0 || mds.N[2]<0) retry=true;
+	if (mds.N[0]<0) mds.N[0] = -mds.N[0]+1;
+	if (mds.N[1]<0) mds.N[1] = -mds.N[1]+1;
+	if (mds.N[2]<0) mds.N[2] = -mds.N[2]+1;
+
+	if (! retry) break;
+
+	double rm = mds.rcut_max + mds.skint;
+	mds.create_from_structure(*this, 2.0*rm); // removes old atoms
+	for (int i=0; i<mds.natoms(); i++){
+	  mds.type[i] = param.p_potinfo->elem.atomtype(mds.matter[i]);
+	}
+      }
+      mds.specs = specs_bak;
+    }
+    // **************************************************************
+    // **************************************************************
+
+    yp[j] = Epa;
+    dyp[j] = ((Epa<0)? -Epa: Epa) * ef;
+
+    // Reset:
+    mds.pos    = pos_bak;
+    mds.boxdir = boxdir_bak;
+    mds.boxlen = boxlen_bak;
+
 
     /*
     cout << "f g V Epa "
@@ -344,13 +392,21 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
     cout << xp[j] << " "
 	 << yp[j] << " "
 	 << dyp[j] << endl;
-    */    
+    */
 
-    // Reset:
-    mds.pos    = pos_bak;
-    mds.boxdir = boxdir_bak;
-    mds.boxlen = boxlen_bak;
+
   }
+
+
+  {
+    ofstream fdump;
+    string dumpfn = "data-V-Epa-dEpa-" + name + ".dat";
+    fdump.open(dumpfn.c_str());
+    for (j=0; j<Nf; ++j)
+      fdump << format("%15.10f  %15.10f  %15.10f") % xp[j] % yp[j] % dyp[j] << endl;
+    fdump.close();
+  }
+
 
 
 
@@ -552,6 +608,8 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 
 
 
+
+
   // If fitting went alright, then we are almost done. Else we need to get
   // a numerical estimate of the required derivatives.
 
@@ -613,7 +671,10 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
   if (prop_use.Vatom) prop_pred.Vatom = V0;
   if (prop_use.B)     prop_pred.B     = B0;
   if (prop_use.Bp)    prop_pred.Bp    = Bp0;
-  
+
+
+
+  return;
 }
 
 
@@ -637,14 +698,15 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
   double fmin, fmax, ef, df, f, td, C11, C12, C13, C22, C23, C33, C44, C55, C66;
   double eps = std::numeric_limits<double>::epsilon(), min_f=0.0, min_E=E0, guess_C;
   double small = sqrt(eps);
+  bool rel_sys;
 
-
-  fmin = param.p_potinfo->specs_prop.C_fmin;
-  fmax = param.p_potinfo->specs_prop.C_fmax;
-  Nf   = param.p_potinfo->specs_prop.C_Nf;
-  ef   = param.p_potinfo->specs_prop.C_ef;
+  rel_sys = param.p_potinfo->specs_prop.C_rel_sys;
+  fmin    = param.p_potinfo->specs_prop.C_fmin;
+  fmax    = param.p_potinfo->specs_prop.C_fmax;
+  Nf      = param.p_potinfo->specs_prop.C_Nf;
+  ef      = param.p_potinfo->specs_prop.C_ef;
   if (Nf<3) Nf=3;
-  df   = (fmax - fmin)/Nf;
+  df      = (fmax - fmin)/Nf;
   xp.resize(Nf); yp.resize(Nf); dyp.resize(Nf);
 
 
@@ -814,19 +876,81 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       //alpha.elem(0,0) = alpha.elem(1,1) = alpha.elem(2,2) = g; // Note!!!
 
       mds.transform_cell(alpha);
-      mds.get_all_neighborcollections();
-      td = mds.calc_potential_energy() / mds.natoms();
-      yp[j] = td;
-      dyp[j] = ((td<0)? -td: td) * ef;
-      
-      //printf("%.10f  %.10e  %.10e\n", xp[j], yp[j], dyp[j]);
 
+
+      // **************************************************************
+      // **************************************************************
+      double Epa=0;
+      if (! rel_sys){
+	// +++++++++++++++++++++++++++++++++++++++++++++++++
+	// Option A: Do not allow internal relaxation:
+	// +++++++++++++++++++++++++++++++++++++++++++++++++
+	
+	mds.get_all_neighborcollections();
+	Epa = mds.calc_potential_energy() / mds.natoms();
+      }
+      else {
+	// +++++++++++++++++++++++++++++++++++++++++++++++++
+	// Option B: Allow internal relaxation:
+	// +++++++++++++++++++++++++++++++++++++++++++++++++
+
+	// Update specs for this relaxation:
+	MDSettings specs_bak = mds.specs;
+	mds.specs.use_Pcontrol = false;
+
+	// Relax using current system. Only enlargen it if position scaling
+	// has made the system too small.
+	bool retry;
+	while (true){
+	  if (mds.specs.is_ref_comp)
+	    mds.relax(false);
+	  else
+	    mds.relax(mds.specs_common.quick_mode);
+
+	  Epa = mds.Ep_tot / mds.natoms();
+
+	  retry = false;
+	  if (mds.N[0]<0 || mds.N[1]<0 || mds.N[2]<0) retry=true;
+	  if (mds.N[0]<0) mds.N[0] = -mds.N[0]+1;
+	  if (mds.N[1]<0) mds.N[1] = -mds.N[1]+1;
+	  if (mds.N[2]<0) mds.N[2] = -mds.N[2]+1;
+
+	  if (! retry) break;
+
+	  double rm = mds.rcut_max + mds.skint;
+	  mds.create_from_structure(*this, 2.0*rm); // removes old atoms
+	  for (int i=0; i<mds.natoms(); i++){
+	    mds.type[i] = param.p_potinfo->elem.atomtype(mds.matter[i]);
+	  }
+	}
+	mds.specs = specs_bak;
+      }
+      // **************************************************************
+      // **************************************************************
+
+
+      yp[j] = Epa;
+      dyp[j] = ((Epa<0)? -Epa: Epa) * ef;
 
       // Reset:
       mds.pos    = pos_bak;
       mds.boxdir = boxdir_bak;
       mds.boxlen = boxlen_bak;
+
+
     }
+
+    {
+      ofstream fdump;
+      string dumpfn = "data-f-Epa-dEpa-" + name + "-" + tostring(isym) + ".dat";
+      fdump.open(dumpfn.c_str());
+      for (j=0; j<Nf; ++j)
+	fdump << format("%15.10f  %15.10f  %15.10f") % xp[j] % yp[j] % dyp[j] << endl;
+      fdump.close();
+    }
+
+
+
 
     if (quit) break;
 

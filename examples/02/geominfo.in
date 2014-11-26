@@ -1,0 +1,162 @@
+
+
+
+LAT
+
+name = Cr-C-dimer
+file = in/Cr-C-dimer.lat
+elements = Cr C
+
+Emix = 0.2
+Fmax = 1e-3
+displ_max = 0.0001
+
+
+
+
+LAT
+name     = CsCl-Cr-C
+file     = in/CsCl-Cr-C.lat
+elements = Cr C
+csystem  = cubic
+
+a        = 2.5255160248
+u_a      = 0.025
+
+Emix       = 0.675319085
+u_Emix     = 0.0068
+
+B        = 330.6192536394
+u_B      = 3.3
+Bp       = 4.35018868
+u_Bp     = 0.44
+
+Fmax = 1e-3
+Pmax = 1e-3
+displ_max = 1e-5
+
+w_Fmax = 1e-3
+w_Pmax = 1e-4
+u_displ_max = 1e-5
+
+
+
+LAT
+name     = NaCl-Cr-C
+file     = in/NaCl-Cr-C.lat
+elements = Cr C
+csystem  = cubic
+
+a        = 4.0741512214
+u_a      = 0.042
+
+Emix       = 0.161024839
+u_Emix     = 0.0016
+
+B        = 326.5357386582
+u_B      = 3.3
+Bp       = 4.260598094
+u_Bp     = 0.43
+
+
+
+
+LAT
+name     = ZnS-Cr-C
+file     = in/ZnS-Cr-C.lat
+elements = Cr C
+csystem  = cubic
+
+a        = 4.38860156197
+u_a      = 0.044
+
+Emix       = 0.497521968
+u_Emix     = 0.0050
+
+B        = 229.1135513562
+u_B      = 2.3
+Bp       = 4.124412052
+u_Bp     = 0.41
+
+
+
+
+
+
+LAT
+name     = Cr3-C2
+file     = in/Cr3-C2.lat
+elements = Cr C
+csystem  = cubic
+
+a        = 11.4888857733
+u_a      = 0.11
+bpa      = 0.4780647267
+u_bpa    = 0.0048
+cpa      = 0.2431664903
+u_cpa    = 0.0024
+
+Emix       = -0.118892626
+u_Emix     =  0.0012
+
+B        = 332.5736402928
+u_B      = 0.033
+Bp       = 4.315372692
+u_Bp     = 0.43
+
+
+
+
+
+LAT
+name     = Cr23-C6
+file     = in/Cr23-C6.lat
+elements = Cr C
+csystem  = cubic
+
+a        = 5.28053416283
+u_a      = 0.053
+
+Emix       = -0.0902314496897
+u_Emix     =  0.00090
+
+B        = 294.3583066026
+u_B      = 0.029
+Bp       = 4.32832531
+u_Bp     = 0.043
+
+C11 = 487.083292353
+C12 = 200.279243723
+C44 = 149.052055099
+
+u_C11 = 0.049
+u_C12 = 0.020
+u_C44 = 0.015
+
+
+
+
+
+LAT
+name     = Cr7-C3
+file     = in/Cr7-C3.lat
+elements = Cr C
+csystem  = cubic
+
+a        = 4.50979666586
+u_a      = 0.045
+bpa      = 1.5404841681
+u_bpa    = 0.015
+cpa      = 2.6696903634
+u_cpa    = 0.027
+
+Emix       = -0.116900443
+u_Emix     =  0.0012
+
+B        = 314.6540383548
+u_B      = 0.032
+Bp       = 4.331180926
+u_Bp     = 0.43
+
+
+

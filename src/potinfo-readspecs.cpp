@@ -161,6 +161,14 @@ void PotentialInformationFit::read_specs(string filename){
 	strbuf.clear();
       }
 
+      else if (args[1]=="BM_rel_sys"){
+	string ri;
+	strbuf.str(args[2]); strbuf >> ri; strbuf.clear();
+	if (ri[0]=='y' || ri[0]=='Y' || ri[0]=='t' || ri[0]=='T')
+	  specs_prop.BM_rel_sys=true;
+	else
+	  specs_prop.BM_rel_sys=false;
+      }
       else if (args[1]=="BM_fmin"){
 	strbuf.str(args[2]);
 	strbuf >> specs_prop.BM_fmin;
@@ -181,7 +189,15 @@ void PotentialInformationFit::read_specs(string filename){
 	strbuf >> specs_prop.BM_ef;
 	strbuf.clear();
       }
-
+      
+      else if (args[1]=="C_rel_sys"){
+	string ri;
+	strbuf.str(args[2]); strbuf >> ri; strbuf.clear();
+	if (ri[0]=='y' || ri[0]=='Y' || ri[0]=='t' || ri[0]=='T')
+	  specs_prop.C_rel_sys=true;
+	else
+	  specs_prop.C_rel_sys=false;
+      }
       else if (args[1]=="C_fmin"){
 	strbuf.str(args[2]);
 	strbuf >> specs_prop.C_fmin;

@@ -1,0 +1,70 @@
+
+
+LAT
+
+
+name = Fe1024-Cr1-tetra
+file = in/Fe1024-Cr1-tetra.lat
+elements = Fe Cr
+csystem  = cubic
+
+a = 2.89
+Emix =  0.0047707317
+Fmax = 1e-3
+Pmax = 1e-3
+displ_max = 1e-5
+
+u_a = 1e-1
+u_Emix = 1e-2
+u_Fmax = 1e-3
+u_Pmax = 1e-4
+u_displ_max = 1e-5
+
+option: quench_always
+option: fixed_geometry
+
+
+LAT
+
+
+name = Fe1024-Cr1-110SIAFeCr
+file = in/Fe1024-Cr1-110SIAFeCr.lat
+elements = Fe Cr
+csystem  = cubic
+
+a = 2.89
+Emix =  0.0043707317
+Fmax = 1e-3
+Pmax = 1e-3
+displ_max = 1e-5
+
+u_a = 1e-1
+u_Emix = 1e-2
+u_Fmax = 1e-3
+u_Pmax = 1e-4
+u_displ_max = 1e-5
+
+option: quench_always
+
+
+LAT
+
+
+name = Fe1023-Cr1-subst
+file = in/Fe1023-Cr1-subst.lat
+elements = Fe Cr
+csystem  = cubic
+
+a = 2.89
+Emix =  0.001
+Fmax = 1e-3
+Pmax = 1e-3
+displ_max = 1e-5
+
+u_a = 1e-1
+u_Emix = 1e-2
+u_Fmax = 1e-3
+u_Pmax = 1e-4
+u_displ_max = 1e-5
+
+option: quench_always

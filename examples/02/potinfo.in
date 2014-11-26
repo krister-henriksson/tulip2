@@ -1,0 +1,292 @@
+
+
+# Number of elements:
+nelem = 3
+
+
+# Element names:
+elem(1) = Fe
+elem(2) = Cr
+elem(3) = C
+
+
+# Optional:
+atomtype(Fe) = 1
+atomtype(Cr) = 2
+atomtype(C)  = 3
+
+
+# Masses
+mass( Fe ) = 55.8470
+mass( Cr ) = 51.9961
+mass( C  ) = 12.0110
+
+
+# Reference lattices:
+lat( Cr, Cr ) = BCC
+lat( Fe, Fe ) = BCC
+lat( C,  C  ) = GRA
+
+a( Cr,  Cr )  = 2.87
+a( Fe,  Fe )  = 2.87
+
+#########################################################################
+# Use accurate values for C, otherwise the graphite might explode due
+# to massive pressure!!! Also, use small enough time step!!!
+#########################################################################
+a( C,  C  )   = 1.46   rNN for graphite (GRA)      DIA: 3.55647765821
+c(C, C)       = 6.689
+
+
+# Interaction types:
+iac( Fe, Fe ) = ABOP
+iac( Cr, Cr ) = ABOP
+iac( C,  C  ) = ABOP
+iac( Fe, Cr ) = ABOP
+iac( Fe, C  ) = ABOP
+iac( Cr, C  ) = ABOP
+
+
+# Fit this interaction? The interaction must be analytical.
+fit( Fe, Cr ) = yes
+
+
+use_rep_core( Fe, Fe ) = yes
+bfermi( Fe, Fe ) = 10
+rfermi( Fe, Fe ) = 1.0
+
+use_rep_core( Cr, Cr ) = yes
+bfermi( Cr, Cr ) = 12
+rfermi( Cr, Cr ) = 1.7
+
+use_rep_core( C, C ) = yes
+bfermi( C, C ) = 8
+rfermi( C, C ) = 0.6
+
+
+
+use_rep_core( Fe, Cr ) = no
+bfermi( Fe, Cr ) = 10
+rfermi( Fe, Cr ) = 1 
+
+use_rep_core( Fe, C ) = yes
+bfermi( Fe, C ) = 10
+rfermi( Fe, C ) = 1
+
+use_rep_core( Cr, C ) = yes
+bfermi( Cr, C ) = 8
+rfermi( Cr, C ) = 1.2
+
+
+
+
+
+# Parameters for fixed interactions
+
+potpar( Fe, Fe ):D0 = 1.5
+potpar( Fe, Fe ):r0 = 2.29
+potpar( Fe, Fe ):beta = 1.4
+potpar( Fe, Fe ):S = 2.0693109
+potpar( Fe, Fe ):gamma = 0.0115751
+potpar( Fe, Fe ):c = 1.2898716
+potpar( Fe, Fe ):d = 0.3413219
+potpar( Fe, Fe ):h = -0.26
+potpar( Fe, Fe ):R = 3.15
+potpar( Fe, Fe ):D = 0.2
+
+potpar(Cr, Cr ):D0 = 4.04222081
+potpar(Cr, Cr ):r0 = 2.13018547
+potpar(Cr, Cr ):beta = 1.62158721
+potpar(Cr, Cr ):S = 3.36793914
+potpar(Cr, Cr ):gamma = 0.02388562
+potpar(Cr, Cr ):c = 1.03288255
+potpar(Cr, Cr ):d = 0.13813230
+potpar(Cr, Cr ):h = -0.28569237
+potpar(Cr, Cr ):R = 3.2
+potpar(Cr, Cr ):D = 0.20
+
+potpar(C, C ):D0 = 6.0
+potpar(C, C ):r0 = 1.39
+potpar(C, C ):beta = 2.1
+potpar(C, C ):S = 1.22
+potpar(C, C ):gamma = 2.0813e-4
+potpar(C, C ):c = 330.0
+potpar(C, C ):d = 3.5
+potpar(C, C ):h = 1.0
+potpar(C, C ):R = 1.85
+potpar(C, C ):D = 0.15
+
+potpar(Fe, C ):D0 = 3.95000634
+potpar(Fe, C ):r0 = 1.53426579
+potpar(Fe, C ):beta = 1.82109816
+potpar(Fe, C ):S = 1.43035110
+potpar(Fe, C ):gamma = 0.07485571
+potpar(Fe, C ):c = 1.11674155
+potpar(Fe, C ):d = 0.94663188
+potpar(Fe, C ):h = -0.18665305
+potpar(Fe, C ):R = 2.6
+potpar(Fe, C ):D = 0.20
+
+potpar( Cr, C ):D0        =  2.77620074
+potpar( Cr, C ):r0        =  1.81289285
+potpar( Cr, C ):beta      =  2.00816371
+potpar( Cr, C ):S         =  2.04637644
+potpar( Cr, C ):gamma     =  0.00068830
+potpar( Cr, C ):c         =  3.93353757
+potpar( Cr, C ):d         =  0.17497204
+potpar( Cr, C ):h         =  -0.17850001
+potpar( Cr, C ):R         =  2.95
+potpar( Cr, C ):D         =  0.1
+
+
+# Parameters for fittable interactions
+
+     potpar( Fe, Cr ):D0 = 3.48049488
+min: potpar( Fe, Cr ):D0 = 0.1
+max: potpar( Fe, Cr ):D0 = 10.0
+
+     potpar( Fe, Cr ):r0 = 2.16998952
+min: potpar( Fe, Cr ):r0 = 1.0
+max: potpar( Fe, Cr ):r0 = 5.0
+
+     potpar( Fe, Cr ):beta = 1.75467567
+min: potpar( Fe, Cr ):beta = 1.0
+max: potpar( Fe, Cr ):beta = 5.0
+
+     potpar( Fe, Cr ):S  = 2.28661503
+min: potpar( Fe, Cr ):S  = 1.1
+max: potpar( Fe, Cr ):S  = 5.0
+
+     potpar( Fe, Cr ):gamma = 0.15766130
+min: potpar( Fe, Cr ):gamma = 1e-5
+max: potpar( Fe, Cr ):gamma = 1e5
+
+     potpar( Fe, Cr ):c = 0.48531613
+min: potpar( Fe, Cr ):c = -1e5
+max: potpar( Fe, Cr ):c =  1e5
+
+     potpar( Fe, Cr ):d  = 0.31427413
+min: potpar( Fe, Cr ):d  =  -1e5
+max: potpar( Fe, Cr ):d  =   1e5
+
+     potpar( Fe, Cr ):h  = -0.69
+min: potpar( Fe, Cr ):h  =  1.0
+max: potpar( Fe, Cr ):h  =  1.0
+
+     potpar( Fe, Cr ):R  = 3.10
+min: potpar( Fe, Cr ):R  = 2.0
+max: potpar( Fe, Cr ):R  = 2.0
+
+     potpar( Fe, Cr ):D         = 0.15
+min: potpar( Fe, Cr ):D  = 1.0
+max: potpar( Fe, Cr ):D  = 1.0
+
+
+
+
+# ABOP alpha and omega parameters
+
+################################################################
+##
+##  NOTE: ABOP alpha's are 0 **BY DEFAULT**.
+##
+##  NOTE: ABOP omega's are 1.0 and independent **BY DEFAULT**.
+##
+##  We use 'rule' to specify a set of omega parameters to be dependent
+##  parameters.
+##
+################################################################
+
+#
+# RULES
+#
+# Uncomment appropriate versions of following rules (and/or make similar ones)
+# to make omega_ijk's be **dependent** parameters (will then depend on alpha_ijk):
+# rule : abop_omega(Fe, Fe, Fe) : use_Brenner_form
+# rule : abop_omega(Fe, Fe, C) : use_Brenner_form
+# rule : abop_omega(Fe, C,  C) : use_Brenner_form
+# ...
+
+
+# Fixed:
+
+abop_alpha( Fe, Fe, Fe ) = 0.0
+abop_omega( Fe, Fe, Fe ) = 1.0
+
+abop_alpha( Cr, Cr, Cr ) = 1.39662066
+abop_omega( Cr, Cr, Cr ) = 1.0
+
+abop_alpha( C, C, C ) = 0.0
+abop_omega( C, C, C ) = 1.0
+
+abop_alpha( Cr, Cr, C  )        = 0.8640643600
+abop_alpha( Cr, C , Cr )        = -1.7520448300
+abop_alpha( C, Cr, Cr )        = 0.6122158900
+abop_alpha( C, C , Cr )        = 0
+abop_alpha( C, Cr, C )        = 0
+abop_alpha( Cr, C, C  )        = 0
+
+abop_omega( Cr, Cr, C  )        = 1.6402877600
+abop_omega( Cr, C , Cr )        = 0.2939996300
+abop_omega( C, Cr, Cr )        = 0.4190507900
+abop_omega( C, C , Cr )        = 1
+abop_omega( C, Cr, C )        = 1
+abop_omega( Cr, C, C  )        = 1
+
+
+
+# Fittable:
+
+     abop_alpha( Fe, Fe, Cr ) = 1.0
+min: abop_alpha( Fe, Fe, Cr ) =  100.0
+max: abop_alpha( Fe, Fe, Cr ) =  100.0
+
+     abop_alpha( Fe, Cr, Fe ) = 1.0
+min: abop_alpha( Fe, Cr, Fe ) =  100.0
+max: abop_alpha( Fe, Cr, Fe ) =  100.0
+
+     abop_alpha( Cr, Fe, Fe ) = 1.0
+min: abop_alpha( Cr, Fe, Fe ) =  100.0
+max: abop_alpha( Cr, Fe, Fe ) =  100.0
+
+     abop_alpha( Cr, Fe, Cr ) = 1.0
+min: abop_alpha( Cr, Fe, Cr ) =  100.0
+max: abop_alpha( Cr, Fe, Cr ) =  100.0
+
+     abop_alpha( Fe, Cr, Cr ) = 1.0
+min: abop_alpha( Fe, Cr, Cr ) =  100.0
+max: abop_alpha( Fe, Cr, Cr ) =  100.0
+
+     abop_alpha( Cr, Cr, Fe ) = 1.0
+min: abop_alpha( Cr, Cr, Fe ) =  100.0
+max: abop_alpha( Cr, Cr, Fe ) =  100.0
+
+
+
+
+     abop_omega( Fe, Fe, Cr ) = 1.0
+min: abop_omega( Fe, Fe, Cr ) =  100.0
+max: abop_omega( Fe, Fe, Cr ) =  100.0
+
+     abop_omega( Fe, Cr, Fe ) = 1.0
+min: abop_omega( Fe, Cr, Fe ) =  100.0
+max: abop_omega( Fe, Cr, Fe ) =  100.0
+
+     abop_omega( Cr, Fe, Fe ) = 1.0
+min: abop_omega( Cr, Fe, Fe ) =  100.0
+max: abop_omega( Cr, Fe, Fe ) =  100.0
+
+     abop_omega( Cr, Fe, Cr ) = 1.0
+min: abop_omega( Cr, Fe, Cr ) =  100.0
+max: abop_omega( Cr, Fe, Cr ) =  100.0
+
+     abop_omega( Fe, Cr, Cr ) = 1.0
+min: abop_omega( Fe, Cr, Cr ) =  100.0
+max: abop_omega( Fe, Cr, Cr ) =  100.0
+
+     abop_omega( Cr, Cr, Fe ) = 1.0
+min: abop_omega( Cr, Cr, Fe ) =  100.0
+max: abop_omega( Cr, Cr, Fe ) =  100.0
+
+
+

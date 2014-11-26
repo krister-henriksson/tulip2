@@ -52,6 +52,8 @@ public:
   bool debug_creation;
   bool debug_mds;
 
+  int N[3];
+
   double rcut_max;
   double dt;
   double T;
@@ -98,9 +100,6 @@ public:
 
 
   void create_from_structure(CompoundStructure & cmp,
-			     int & N1,
-			     int & N2,
-			     int & N3,
 			     double distmin);
 
   void handle_pbc_of_positions(const double lowlim=-1);
@@ -122,7 +121,7 @@ public:
 
 
   // MD:
-  void relax(int & N1, int & N2, int & N3, bool quick_mode=false);
+  void relax(bool quick_mode=false);
 
   void transform_cell(const Matrix<double> & alpha_cart,
 		      const double lowlim=-1);

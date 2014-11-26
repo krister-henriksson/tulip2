@@ -1,0 +1,205 @@
+#! /bin/bash
+
+
+
+# # Comment
+# 5.32500000
+# 0.0  1.0  1.0  pbc
+# 1.0  0.0  1.0  pbc
+# 1.0  1.0  0.0  pbc
+# internal
+#   29
+# C  -0.27650000  0.27650000  0.27650000
+# ...
+
+
+if [ $# -lt 1 ]; then
+    echo ""
+    echo "Command: `basename $0`  file [n1 n2 n3]"
+    echo "Purpose: Convert a LAT file to a XYZ file. LAT files are read by cupid."
+    echo "Argument:"
+    echo "      file         LAT file to convert."
+    echo ""
+    echo "Optional arguments:"
+    echo "      n1 n2 n3     Number of cells in primitive directions (equals x,y,z for an orthorombic lattice)."
+    echo ""
+
+    exit
+fi
+
+
+
+file=$1
+
+if [ $# -gt 1 ] && [ $# -lt 5 ] ; then
+    nx=$2
+    ny=$3
+    nz=$4
+else
+    nx=1
+    ny=1
+    nz=1
+fi
+
+
+
+
+
+
+
+latpar=`head -n 2 $file | tail -n 1`
+a1=`head -n 3 $file | tail -n 1 | awk  '{printf "%s  %s  %s", $1,$2,$3;}'`
+a2=`head -n 4 $file | tail -n 1 | awk  '{printf "%s  %s  %s", $1,$2,$3;}'`
+a3=`head -n 5 $file | tail -n 1 | awk  '{printf "%s  %s  %s", $1,$2,$3;}'`
+format=`head -n 6 $file | tail -n 1`
+nat=`head -n 7 $file | tail -n 1`
+
+
+
+pbc1=`head -n 3 $file | tail -n 1 | awk  '{if (NF>=4) printf "%d", 1; else printf "%d", 0;}'`
+pbc2=`head -n 4 $file | tail -n 1 | awk  '{if (NF>=4) printf "%d", 1; else printf "%d", 0;}'`
+pbc3=`head -n 5 $file | tail -n 1 | awk  '{if (NF>=4) printf "%d", 1; else printf "%d", 0;}'`
+
+
+
+
+
+atfile=atfile.$$
+let "nlines = nat + 7"
+head -n $nlines $file | tail -n $nat > $atfile
+# tail -n $nat $file > $atfile
+
+tmpf=tmpf.$$
+sort -k 1 $atfile > $tmpf
+cp $tmpf $atfile
+rm -f $tmpf
+
+
+
+
+
+
+
+
+echo $format $latpar $a1 $a2 $a3 $pbc1 $pbc2 $pbc3 $atfile $nx $ny $nz | awk '{
+format = $1 "";
+latpar = $2;
+pv[1,1] = $3;  pv[1,2] = $4;  pv[1,3] = $5;
+pv[2,1] = $6;  pv[2,2] = $7;  pv[2,3] = $8;
+pv[3,1] = $9;  pv[3,2] = $10;  pv[3,3] = $11;
+pbc[1] = $12;
+pbc[2] = $13;
+pbc[3] = $14;
+atfile = $15 "";
+nx = $16;
+ny = $17;
+nz = $18;
+}
+END{
+
+
+# printf "%f %f %f\n", pv[1,1], pv[1,2], pv[1,3];
+# printf "%f %f %f\n", pv[2,1], pv[2,2], pv[2,3];
+# printf "%f %f %f\n", pv[3,1], pv[3,2], pv[3,3];
+
+
+
+# Get atoms:
+i=1;
+while ((getline<atfile)>0){
+  if (NF==0) continue;
+
+  elem[i] = $1 "";
+  bv[i,1] = $2;
+  bv[i,2] = $3;
+  bv[i,3] = $4;
+  # printf "%f %f %f\n", bv[i,1], bv[i,2], bv[i,3];
+  i++;
+}
+nat = i-1;
+close(atfile);
+
+# Get the format:
+intern = 0;
+form = substr(format, 1, 1);
+if (form == "i" || form == "I") intern = 1;
+
+
+
+
+for (i=1; i<=3; i++){
+  for (j=1; j<=3; j++){
+    pv[i,j] = latpar * pv[i,j];
+#    printf "  %15.10f", pv[i,j];
+  }
+#  printf "\n";
+}
+
+
+if (intern==0){
+  for (i=1; i<=nat; i++){
+    for (j=1; j<=3; j++){
+      pos[i,j] = latpar * bv[i,j];
+#      printf "  %15.10f", pos[i,j];
+    }
+#    printf "\n";
+  }
+}
+else {
+  for (i=1; i<=nat; i++){
+    for (j=1; j<=3; j++){
+      pos[i,j] = bv[i,1] * pv[1,j] + bv[i,2] * pv[2,j] + bv[i,3] * pv[3,j];
+    }
+  }
+}
+
+
+# All positions are now ready for printing.
+
+
+
+# Get box lengths.
+L1 = nx * sqrt( pv[1,1]^2 + pv[1,2]^2 + pv[1,3]^2 );
+L2 = ny * sqrt( pv[2,1]^2 + pv[2,2]^2 + pv[2,3]^2 );
+L3 = nz * sqrt( pv[3,1]^2 + pv[3,2]^2 + pv[3,3]^2 );
+
+if (pbc[1]==0) L1 += 20.0;
+if (pbc[2]==0) L2 += 20.0;
+if (pbc[3]==0) L3 += 20.0;
+
+
+itype=0;
+prev="";
+printf "%ld\n", nat * nx*ny*nz;
+printf "Frame number 0  0.0 fs boxsize  %20.10lg  %20.10lg  %20.10lg\n", L1, L2, L3;
+for (i=1; i<=nat; i++){
+  if (elem[i] != prev) itype++;
+  prev = elem[i];
+
+  for (p=0; p<=nx-1; p++){
+    for (q=0; q<=ny-1; q++){
+      for (v=0; v<=nz-1; v++){
+
+        ox = p * pv[1,1] + q * pv[2,1] + v * pv[3,1];
+        oy = p * pv[1,2] + q * pv[2,2] + v * pv[3,2];
+        oz = p * pv[1,3] + q * pv[2,3] + v * pv[3,3];
+
+        x = ox + pos[i,1];
+        y = oy + pos[i,2];
+        z = oz + pos[i,3];
+
+
+        printf "%s  %20.10lg  %20.10lg  %20.10lg  %10ld   %ld\n", elem[i], x, y, z, itype, i;
+      }
+    }
+  }
+
+}
+
+
+}'
+
+
+rm -f $atfile
+
+

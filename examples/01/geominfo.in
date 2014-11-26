@@ -1,0 +1,85 @@
+
+
+############################
+# Compound number 1:
+############################
+LAT
+
+name = Fe-Fe-dimer
+file = in/Fe-Fe-dimer.lat
+elements = Fe
+
+# Desired physical properties:
+r0 = 2.29
+
+Ecoh     = -2.0
+  u_Ecoh   = 0.001  # uncertainty (indentation just for cosmetic reasons)
+
+# Using MD settings from specsfile for this compound,
+# or default ones if no settings in that file.
+
+
+############################
+# Compound number 2:
+############################
+LAT
+
+name     = Fe-BCC
+file     = in/Fe-BCC.lat
+elements = Fe
+csystem  = cubic
+
+# Desired physical properties:
+a        = 2.9    2.860
+  u_a      = 0.025
+
+Ecoh       = -4.28
+  u_Ecoh     = 0.004
+B        = 169
+  u_B      = 2.1
+Bp       = 4.6
+  u_Bp     = 0.57
+
+Fmax = 1e-10
+  w_Fmax = 1e5  # weight
+Pmax = 1e-10
+  w_Pmax = 1e5
+displ_max = 1e-10
+  w_displ_max = 1e5
+
+C11 = 225
+  u_C11 = 0.02
+C12 = 142
+  u_C12 = 0.01
+C44 = 126
+  u_C44 = 0.01
+
+# option: no_heating
+# option: fixed_geometry
+# option: quench_always
+
+# Compound-specific settings (specified ones overrides those in specsfile,
+# or the default ones if no settings in that file:
+
+mds_skint = 1
+mds_seed  = 123
+mds_ndump = 1
+
+mds_tstart  = 0.0
+mds_tend    = 1000.0
+mds_dt      = 5.0
+mds_max_dt  = 5.0
+
+mds_Tstart  = 300.1
+
+mds_btc_tau =  20
+mds_btc_T0  =   0
+
+mds_bpc_tau   =  80
+mds_bpc_P0    =  0
+mds_bpc_scale =  100
+
+# mds_quench_tstart = 30
+# mds_quench_rate   = 1.0
+
+
