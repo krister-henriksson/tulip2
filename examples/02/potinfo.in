@@ -17,38 +17,41 @@ atomtype(C)  = 3
 
 
 # Masses
-mass( Fe ) = 55.8470
-mass( Cr ) = 51.9961
-mass( C  ) = 12.0110
+mass(Fe) = 55.8470
+mass(Cr) = 51.9961
+mass(C ) = 12.0110
 
 
 # Reference lattices:
-lat( Cr, Cr ) = BCC
-lat( Fe, Fe ) = BCC
-lat( C,  C  ) = GRA
+lat(Cr, Cr) = BCC
+lat(Fe, Fe) = BCC
+lat(C,  C ) = GRA
 
-a( Cr,  Cr )  = 2.87
-a( Fe,  Fe )  = 2.87
+# Supported ref. lattices:
+# DIM1 (homomer), DIM2 (heteromer), SC, BCC, BCC-P, FCC, FCC-P, DIA, HCP, GRA, GRP (graphene)
+# The ...-P versions refer to alternate structures with non-Cartesian primitive vectors.
 
+a(Cr, Cr)  = 2.87
+a(Fe, Fe)  = 2.87
 #########################################################################
 # Use accurate values for C, otherwise the graphite might explode due
 # to massive pressure!!! Also, use small enough time step!!!
 #########################################################################
-a( C,  C  )   = 1.46   rNN for graphite (GRA)      DIA: 3.55647765821
-c(C, C)       = 6.689
+a(C,  C )   = 1.46   rNN for graphite (GRA)      DIA: 3.55647765821
+c(C,  C )   = 6.689
 
 
 # Interaction types:
-iac( Fe, Fe ) = ABOP
-iac( Cr, Cr ) = ABOP
-iac( C,  C  ) = ABOP
-iac( Fe, Cr ) = ABOP
-iac( Fe, C  ) = ABOP
-iac( Cr, C  ) = ABOP
+iac(Fe, Fe) = ABOP
+iac(Cr, Cr) = ABOP
+iac(C,  C ) = ABOP
+iac(Fe, Cr) = ABOP
+iac(Fe, C ) = ABOP
+iac(Cr, C ) = ABOP
 
 
 # Fit this interaction? The interaction must be analytical.
-fit( Fe, Cr ) = yes
+fit(Fe, Cr) = yes
 
 
 use_rep_core( Fe, Fe ) = yes

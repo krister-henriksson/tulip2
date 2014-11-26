@@ -3,11 +3,13 @@
 # ------------------------------------
 # Calculating properties of compounds
 # ------------------------------------
-prop:BM_fmin  = -0.01
-prop:BM_fmax  =  0.01
-prop:BM_Nf    =  10
-prop:BM_ef    =  1e-10
+prop:BM_rel_sys = yes    # Relax system when calc. bulk modulus (BM). DEFAULT VALUE.
+prop:BM_fmin  = -0.01    # Vmin is (1 + ...)*V_rel for BM calc..
+prop:BM_fmax  =  0.01    # Vmax is (1 + ...)*V_rel for BM calc..
+prop:BM_Nf    =  10      # Use ... points between Vmin and Vmax.
+prop:BM_ef    =  1e-10   # Use ... times the energy as the uncertainty in fitting.
 
+prop:C_rel_sys = yes     # DEFAULT VALUE.
 prop:C_fmin   = -0.01
 prop:C_fmax   =  0.01
 prop:C_Nf     =  10
@@ -17,7 +19,7 @@ prop:C_ef     =  1e-10
 # ------------------------------------
 # Fitting properties of compounds
 # ------------------------------------
-prop:fitmet       = DL LM    options: CG, PM, GN, LM, DL, SM, DE, PS, BC, GS, or SA
+prop:fitmet       = DL   options: CG, PM, GN, LM, DL, SM, DE, PS, BC, GS, or SA (see below)
 prop:nitermin     = 3
 prop:nitermax     = 100
 
@@ -36,26 +38,26 @@ prop:dogleg_minradius = 1e-10
 # ------------------------------------
 # General MDS settings
 # ------------------------------------
-prop:mds_skint = 1.0       # Angstrom
+prop:mds_skint = 1.0
 prop:mds_seed  = 12345
-prop:mds_ndump = 1  20        # dump info every ndump steps (if -dmdsprop option)
+prop:mds_ndump = 1  20
 
 prop:mds_tstart  = 0.0
 prop:mds_tend    = 100.0
 prop:mds_dt      = 5.0
 prop:mds_max_dt  = 5.0
 
-prop:mds_Tstart  = 1.0   # starting temperature T (K)
+prop:mds_Tstart  = 100.0
 
-prop:mds_btc_tau =  20     # Berendsen time constant for T control (fs)
-prop:mds_btc_T0  =   0     # desired T (K)
+prop:mds_btc_tau =  20
+prop:mds_btc_T0  =   0
 
-prop:mds_bpc_tau   = 100   # Berendsen time constant for P control (fs)
-prop:mds_bpc_P0    = 0     # desired P (GPa)
-prop:mds_bpc_scale = 100   # scaling constant, usually on the order of bulk modulus (GPa)
+prop:mds_bpc_tau   = 100
+prop:mds_bpc_P0    = 0
+prop:mds_bpc_scale = 100
 
 # prop:mds_quench_tstart = 100
-# prop:mds_quench_rate   = 1.0   # quenching rate (K/fs), negative value => heating
+# prop:mds_quench_rate   = 1.0
 
 
 # ------------------------------------
@@ -65,17 +67,17 @@ prop:mds_bpc_scale = 100   # scaling constant, usually on the order of bulk modu
 # Copy MDS settings for reference compounds from the general settings:
 prop:ref:mds = prop:mds
 
-// prop:ref:mds_tend    =  1000.0
-// prop:ref:mds_ndump = 1  20
+# prop:ref:mds_tend    =  1000.0
+# prop:ref:mds_ndump = 1  20
 
-// prop:ref:mds_Tstart  = 10.0   # starting temperature T (K)
+prop:ref:mds_Tstart  = 10.0
 
-// prop:ref:mds_btc_tau =  20     # Berendsen time constant for T control (fs)
-// prop:ref:mds_btc_T0  =   0     # desired T (K)
+# prop:ref:mds_btc_tau =  20
+# prop:ref:mds_btc_T0  =   0
 
-// prop:ref:mds_bpc_tau   = 100   # Berendsen time constant for P control (fs)
-// prop:ref:mds_bpc_P0    = 0     # desired P (GPa)
-// prop:ref:mds_bpc_scale = 100   # scaling constant, usually on the order of bulk modulus (GPa)
+# prop:ref:mds_bpc_tau   = 100
+# prop:ref:mds_bpc_P0    = 0
+# prop:ref:mds_bpc_scale = 100
 
 
 
@@ -83,7 +85,7 @@ prop:ref:mds = prop:mds
 # Fitting potential(s)
 # ##############################################################
 
-pot:fitmet       = DL    options: CG, PM, GN, LM, DL, SM, DE, PS, BC, GS, or SA
+pot:fitmet       = DL    options: CG, PM, GN, LM, DL, SM, DE, PS, BC, GS, or SA (see below)
 pot:nitermin     = 3
 pot:nitermax     = 5  10 # 200
 
@@ -99,7 +101,9 @@ pot:dogleg_minradius = 1e-5
 pot:barrier_scale    = 1.0  # scaling constant for barrier function, to keep parameter
                             # values inside min/max interval
 
+  INFO:
 
+# -------------------------------
 # Gradient-based fitting methods:
 # -------------------------------
 # CG = conjugate gradients (ls)
@@ -107,7 +111,8 @@ pot:barrier_scale    = 1.0  # scaling constant for barrier function, to keep par
 # GN = Gauss-Newton (mi)
 # LM = Levenberg-Marquardt (mi)
 # DL = Powell's dog-leg method (mi) (usually most robust)
-#
+
+# -------------------------------
 # Population-based fitting methods:
 # ---------------------------------
 # SM = simplex method
