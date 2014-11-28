@@ -100,8 +100,10 @@ void ParamPot::update_pot(){
     for (int i2=0; i2<nel; ++i2){
       for (int i3=0; i3<nel; ++i3){
 
-	if ((*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) != PARAM_FIXED)
-	  (*p_potinfo).abop_alpha.elem(i1,i2,i3) = X(ipar++);
+	if ((*p_potinfo).use_abop_alpha.elem(i1,i2,i3)){
+	  if ((*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) != PARAM_FIXED)
+	    (*p_potinfo).abop_alpha.elem(i1,i2,i3) = X(ipar++);
+	}
 
       }
     }
@@ -111,12 +113,24 @@ void ParamPot::update_pot(){
     for (int i2=0; i2<(*p_potinfo).elem.nelem(); ++i2){
       for (int i3=0; i3<(*p_potinfo).elem.nelem(); ++i3){
 
-	if ((*p_potinfo).abop_omega_is_free.elem(i1,i2,i3)){
+	if ((*p_potinfo).use_abop_omega.elem(i1,i2,i3)){
 	  if ((*p_potinfo).abop_omega_partype.elem(i1,i2,i3) != PARAM_FIXED)
 	    (*p_potinfo).set_abop_omega(i1,i2,i3, X(ipar++));
 	}
 	
       }
+    }
+  }
+
+  for (int i1=0; i1<(*p_potinfo).elem.nelem(); ++i1){
+    for (int i2=0; i2<(*p_potinfo).elem.nelem(); ++i2){
+
+      if ((*p_potinfo).use_abop_2mu.elem(i1,i2)){
+
+	if ((*p_potinfo).abop_2mu_partype.elem(i1,i2) != PARAM_FIXED)
+	  (*p_potinfo).abop_2mu.elem(i1,i2) = X(ipar++);
+      }
+      
     }
   }
 
@@ -190,13 +204,16 @@ void ParamPot::update_par(){
       for (int i3=0; i3<nel; ++i3){
 	string s3 = (*p_potinfo).elem.idx2name(i3);
 
+	if ((*p_potinfo).use_abop_alpha.elem(i1,i2,i3)){
 
-	if ((*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) != PARAM_FIXED){
-	  ++ipar;
-	  xi.push_back(   (*p_potinfo).abop_alpha.elem(i1,i2,i3));
-	  ximin.push_back((*p_potinfo).abop_alpha_parmin.elem(i1,i2,i3));
-	  ximax.push_back((*p_potinfo).abop_alpha_parmax.elem(i1,i2,i3));
-	  xitype.push_back( (*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) );
+	  if ((*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) != PARAM_FIXED){
+	    ++ipar;
+	    xi.push_back(   (*p_potinfo).abop_alpha.elem(i1,i2,i3));
+	    ximin.push_back((*p_potinfo).abop_alpha_parmin.elem(i1,i2,i3));
+	    ximax.push_back((*p_potinfo).abop_alpha_parmax.elem(i1,i2,i3));
+	    xitype.push_back( (*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) );
+	  }
+
 	}
 
       }
@@ -211,7 +228,8 @@ void ParamPot::update_par(){
       for (int i3=0; i3<nel; ++i3){
 	string s3 = (*p_potinfo).elem.idx2name(i3);
 
-	if ((*p_potinfo).abop_omega_is_free.elem(i1,i2,i3)){
+	if ((*p_potinfo).use_abop_omega.elem(i1,i2,i3)){
+
 	  if ((*p_potinfo).abop_omega_partype.elem(i1,i2,i3) != PARAM_FIXED){
 	    ++ipar;
 	    xi.push_back(   (*p_potinfo).get_abop_omega(s1,s2,s3));
@@ -225,6 +243,27 @@ void ParamPot::update_par(){
     }
   }
 
+
+  for (int i1=0; i1<nel; ++i1){
+    string s1 = (*p_potinfo).elem.idx2name(i1);
+    for (int i2=0; i2<nel; ++i2){
+      string s2 = (*p_potinfo).elem.idx2name(i2);
+
+      if ((*p_potinfo).use_abop_2mu.elem(i1,i2)){
+
+	if ((*p_potinfo).abop_2mu_partype.elem(i1,i2) != PARAM_FIXED){
+	  ++ipar;
+	  xi.push_back(   (*p_potinfo).abop_2mu.elem(i1,i2));
+	  ximin.push_back((*p_potinfo).abop_2mu_parmin.elem(i1,i2));
+	  ximax.push_back((*p_potinfo).abop_2mu_parmax.elem(i1,i2));
+	  xitype.push_back( (*p_potinfo).abop_2mu_partype.elem(i1,i2) );
+	}
+	
+      }
+      
+    }
+  }
+  
 
 
 

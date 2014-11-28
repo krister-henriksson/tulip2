@@ -28,8 +28,8 @@ using namespace utils;
 class PotentialInformation {
 private:
   Matrix<string>  mbasepot;
-  Matrix<int>    mbasepot_vecidx;
-  Matrix<int>    mreppot_vecidx;
+  Matrix<int>     mbasepot_vecidx;
+  Matrix<int>     mreppot_vecidx;
   Vector<bool>    muse_reppot;
   Matrix3<double> mabop_omega;
 
@@ -43,7 +43,14 @@ public:
   Vector<Potential_Reppot> pot_Reppot;
 
   Matrix3<double> abop_alpha;
-  Matrix3<bool>   abop_omega_is_free;
+  // Matrix3<bool>   abop_omega_is_indep;
+  // Note: abop_omega is set/get by methods.
+  Matrix3<bool>   use_abop_alpha;
+  Matrix3<bool>   use_abop_omega;
+
+  Matrix<double>  abop_2mu;
+  Matrix< bool>   use_abop_2mu;
+
 
 
   PotentialInformation();
@@ -103,13 +110,18 @@ public:
   SpecsFitPot  specs_pot;
   OMP_Info     omp_info;
 
-  Matrix3<double> abop_alpha_parmin;
-  Matrix3<double> abop_alpha_parmax;
+  Matrix3<double>        abop_alpha_parmin;
+  Matrix3<double>        abop_alpha_parmax;
   Matrix3<parametertype> abop_alpha_partype;
 
-  Matrix3<double> abop_omega_parmin;
-  Matrix3<double> abop_omega_parmax;
+  Matrix3<double>        abop_omega_parmin;
+  Matrix3<double>        abop_omega_parmax;
   Matrix3<parametertype> abop_omega_partype;
+
+  Matrix<double>         abop_2mu_parmin;
+  Matrix<double>         abop_2mu_parmax;
+  Matrix<parametertype>  abop_2mu_partype;
+
 
 
   PotentialInformationFit();
@@ -131,6 +143,10 @@ public:
   void limerr1_abop(string s0, string s1, string s2, string s3);
   void limerr2_abop(string s0, string s1, string s2, string s3);
   void limerr3_abop(string s0, string s1, string s2, string s3);
+
+  void limerr1_2mu(string s0, string s1, string s2);
+  void limerr2_2mu(string s0, string s1, string s2);
+  void limerr3_2mu(string s0, string s1, string s2);
 
 
 } ;

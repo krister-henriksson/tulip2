@@ -60,8 +60,18 @@ double MDSystem::force_ABOP(){
   int se_ivecik = se_ivecij;
   int se_ivec_reppot = p_potinfo->reppot_vecidx(se_typei, se_typei);
   bool se_use_reppot = p_potinfo->use_reppot(se_typei, se_typei);
-  double se_alphaijk = p_potinfo->abop_alpha.elem(se_typei, se_typei, se_typei);
-  double se_omegaijk = p_potinfo->get_abop_omega(se_typei, se_typei, se_typei);
+
+
+  double se_alphaijk;
+  double se_omegaijk;
+  double se_twomuik;
+  if (p_potinfo->use_abop_alpha.elem(se_typei, se_typei, se_typei))
+    se_alphaijk = p_potinfo->abop_alpha.elem(se_typei, se_typei, se_typei);
+  if (p_potinfo->use_abop_omega.elem(se_typei, se_typei, se_typei))
+    se_omegaijk = p_potinfo->get_abop_omega(se_typei, se_typei, se_typei);
+  if (p_potinfo->use_abop_2mu.elem(se_typei, se_typei))
+    se_twomuik = p_potinfo->abop_2mu.elem(se_typei, se_typei);
+
   
 
 
@@ -77,20 +87,18 @@ double MDSystem::force_ABOP(){
   int ij,j,ik,k,p,q;
   int typei, typej, typek;
   double D0ij,r0ij,betaij,Sij,Rij,Dij,fcij,rij,rcutij;
-  double gammaik,cik,dik,hik,Rik,Dik,fcik,rik,rcutik;
+  double gammaik,cik,dik,hik,r0ik,Rik,Dik,fcik,rik,rcutik;
   double V1, dV1, fermi, dfermi, bfermi, rfermi;
-  double VRij,VAij,bij,Chiij,gijk,c2,d2,cost,hcost,hcost2,alphaijk,omegaijk,expijk;
+  double VRij,VAij,bij,Chiij,gijk,c2,d2,cost,hcost,hcost2,alphaijk,twomuik;
 
   //double eps = std::numeric_limits<double>::epsilon();
   double VRij_r, VAij_r, dVRij_r, dVAij_r;
-  double dVRij, dVAij, dgijk, dexpijk;
+  double dVRij, dVAij, dgijk;
   double dfcij, dfcik, threebodyfactor;
 
   Vector<double> dposij(3,0),dposik(3,0);
   Vector<double> dcost_i(3,0), dcost_j(3,0), dcost_k(3,0);
   Vector<double> dgijk_i(3,0), dgijk_j(3,0), dgijk_k(3,0);
-  Vector<double> dexpijk_i(3,0), dexpijk_j(3,0), dexpijk_k(3,0);
-  Vector<double> dexpik_i(3,0), dexpik_j(3,0), dexpik_k(3,0);
   Vector<double> frci(3,0), frcj(3,0), frck(3,0);
 
   double td, td1,td2;
@@ -99,6 +107,10 @@ double MDSystem::force_ABOP(){
 
 
   double frc_ij, frc_ik, frc_jk;
+
+  double F1, F2, dF1, dF2;
+  Vector<double> dF1_i(3,0), dF1_j(3,0), dF1_k(3,0);
+  Vector<double> dF2_i(3,0), dF2_j(3,0), dF2_k(3,0);
 
 
 
@@ -270,6 +282,8 @@ double MDSystem::force_ABOP(){
 	get_atom_distance_vec(pos[i], pos[k], dposik);
 	rik = dposik.magn();
 
+	r0ik = p_potinfo->pot_ABOP[ivecik].parval[1];
+
 	Rik = p_potinfo->pot_ABOP[ivecik].parval[8];
 	Dik = p_potinfo->pot_ABOP[ivecik].parval[9];
 	rcutik = Rik+Dik;
@@ -310,26 +324,36 @@ double MDSystem::force_ABOP(){
 
 	gijk = gammaik * (1.0 + c2/d2 - c2 / (d2 + hcost2) );
 
+	// *****************************************************************
 	alphaijk = se_alphaijk;
-	if (! sys_single_elem)
-	  alphaijk = p_potinfo->abop_alpha.elem(typei, typej, typek);
-	if (fp_is_small(alphaijk)){
-	  expijk = 1.0;
-	}
-	else {
-	  expijk = exp( alphaijk * (rij - rik) );
-	}
+	twomuik  = se_twomuik;
+	F1 = 1.0;
+	F2 = se_omegaijk;
 
-	omegaijk = se_omegaijk;
-	if (! sys_single_elem)
-	  omegaijk = p_potinfo->get_abop_omega(typei, typej, typek);
-	/*
-	omegaijk = p_potinfo->get_abop_omega(p_potinfo->elem.idx2name(typei),
-					     p_potinfo->elem.idx2name(typej),
-					     p_potinfo->elem.idx2name(typek));
-	*/
+	// alpha, omega
+	if (p_potinfo->use_abop_alpha.elem(typei, typej, typek)){
+	  if (! sys_single_elem)
+	    alphaijk = p_potinfo->abop_alpha.elem(typei, typej, typek);
+	  F1 = exp( alphaijk * (rij - rik) );
+	  // .........................................................
+	  if (p_potinfo->use_abop_omega.elem(typei, typej, typek)){
+	    if (! sys_single_elem)
+	      F2 = p_potinfo->get_abop_omega(typei, typej, typek);
+	  }
+	  else {
+	    double td = rij - r0ij - (rik - r0ik);
+	    F2 = exp( alphaijk * td );
+	  }
+	}
+	// 2mu
+	else if (p_potinfo->use_abop_2mu.elem(typei, typek)){
+	  F1 = exp( twomuik * (rij - rik) );
+	  F2 = 1.0;
+	}
+	// *****************************************************************
+
 	
-	Chiij += fcik * gijk * expijk * omegaijk;
+	Chiij += fcik * gijk * F1 * F2;
       } // end of loop over neighbors k
       bij = 1.0/sqrt(1.0 + Chiij);
       //cout << "bij " << bij << endl;
@@ -427,6 +451,8 @@ double MDSystem::force_ABOP(){
 	get_atom_distance_vec(pos[i], pos[k], dposik);
 	rik = dposik.magn();
 
+	r0ik = p_potinfo->pot_ABOP[ivecik].parval[1];
+
 	Rik = p_potinfo->pot_ABOP[ivecik].parval[8];
 	Dik = p_potinfo->pot_ABOP[ivecik].parval[9];
 	rcutik = Rik+Dik;
@@ -463,8 +489,6 @@ double MDSystem::force_ABOP(){
 
 
 
-
-
 	for (p=0; p<3; ++p){
 	  dcost_i[p] = - cost/(rij*rij) *   dposij[p]
 	    - cost/(rik*rik) * dposik[p]
@@ -489,51 +513,93 @@ double MDSystem::force_ABOP(){
 
 
 
-	alphaijk = se_alphaijk;
-	if (! sys_single_elem)
-	  alphaijk = p_potinfo->abop_alpha.elem(typei, typej, typek);
-	if (fp_is_small(alphaijk)){
-	  expijk  = 1.0;
-	  dexpijk = 0.0;
-	}
-	else {
-	  expijk  = exp( alphaijk * (rij - rik) );
-	  dexpijk = alphaijk * expijk;
-	}
 
+
+	dF1  = 0.0;
 	for (p=0; p<3; ++p){
-	  dexpijk_i[p] = dexpijk * ( dposij[p]/rij - dposik[p]/rik );
-	  dexpijk_j[p] = dexpijk * (-dposij[p]/rij);
-	  dexpijk_k[p] = dexpijk * ( dposik[p]/rik);
+	  dF1_i[p] = 0.0;
+	  dF1_j[p] = 0.0;
+	  dF1_k[p] = 0.0;
+	}
+	dF2 = 0.0;
+	for (p=0; p<3; ++p){
+	  dF2_i[p] = 0.0;
+	  dF2_j[p] = 0.0;
+	  dF2_k[p] = 0.0;
 	}
 
 
-	omegaijk = se_omegaijk;
-	if (! sys_single_elem)
-	  omegaijk = p_potinfo->get_abop_omega(typei, typej, typek);
-	/*
-	omegaijk = p_potinfo->get_abop_omega(p_potinfo->elem.idx2name(typei),
-					     p_potinfo->elem.idx2name(typej),
-					     p_potinfo->elem.idx2name(typek));
-	*/
+	// *****************************************************************
+	alphaijk = se_alphaijk;
+	twomuik  = se_twomuik;
+	F1 = 1.0;
+	F2 = se_omegaijk;
+	// alpha, omega
+	if (p_potinfo->use_abop_alpha.elem(typei, typej, typek)){
+	  if (! sys_single_elem)
+	    alphaijk = p_potinfo->abop_alpha.elem(typei, typej, typek);
+
+	  F1  = exp( alphaijk * (rij - rik) );
+	  dF1 = alphaijk * F1;
+	  for (p=0; p<3; ++p){
+	    dF1_i[p] = dF1 * ( dposij[p]/rij - dposik[p]/rik );
+	    dF1_j[p] = dF1 * (-dposij[p]/rij);
+	    dF1_k[p] = dF1 * ( dposik[p]/rik);
+	  }
+	  // .........................................................
+	  if (p_potinfo->use_abop_omega.elem(typei, typej, typek)){
+	    if (! sys_single_elem){
+	      F2  = p_potinfo->get_abop_omega(typei, typej, typek);
+	      dF2 = 0.0;
+	    }
+	  }
+	  else {
+	    double td = rij - r0ij - (rik - r0ik);
+	    F2  = exp( alphaijk * td );
+	    dF2 = alphaijk * F2;
+	    for (p=0; p<3; ++p){
+	      dF2_i[p] = dF2 * ( dposij[p]/rij - dposik[p]/rik );
+	      dF2_j[p] = dF2 * (-dposij[p]/rij);
+	      dF2_k[p] = dF2 * ( dposik[p]/rik);
+	    }
+	  }
+	  // .........................................................
+	}
+	// 2mu
+	else if (p_potinfo->use_abop_2mu.elem(typei, typek)){
+	  F1  = exp( twomuik * (rij - rik) );
+	  dF1 = twomuik * F1;
+	  for (p=0; p<3; ++p){
+	    dF1_i[p] = dF1 * ( dposij[p]/rij - dposik[p]/rik );
+	    dF1_j[p] = dF1 * (-dposij[p]/rij);
+	    dF1_k[p] = dF1 * ( dposik[p]/rik);
+	  }
+	  F2  = 1.0;
+	  dF2 = 0.0;
+	}
+	// *****************************************************************
+
 
 	//cout << "alpha omega  " << p_potinfo->abop_alpha.elem(typei, typej, typek) << " " << omegaijk << endl;
 
 	for (p=0; p<3; ++p){
 	  frci[p] = 0.0
-	    + threebodyfactor * dfcik * dposik[p]/rik * gijk * expijk * omegaijk
-	    + threebodyfactor * fcik * dgijk_i[p] * expijk * omegaijk
-	    + threebodyfactor * fcik * gijk * dexpijk_i[p] * omegaijk;
+	    + threebodyfactor * dfcik * dposik[p]/rik * gijk * F1 * F2
+	    + threebodyfactor * fcik * dgijk_i[p] * F1 * F2
+	    + threebodyfactor * fcik * gijk * dF1_i[p] * F2
+	    + threebodyfactor * fcik * gijk * F1 * dF2_i[p];
 	  
 	  frcj[p] = 0.0
 	    + 0.0
-	    + threebodyfactor * fcik * dgijk_j[p] * expijk * omegaijk
-	    + threebodyfactor * fcik * gijk * dexpijk_j[p] * omegaijk;
+	    + threebodyfactor * fcik * dgijk_j[p] * F1 * F2
+	    + threebodyfactor * fcik * gijk * dF1_j[p] * F2
+	    + threebodyfactor * fcik * gijk * F1 * dF2_j[p];
 	  
 	  frck[p] = 0.0
-	    + threebodyfactor * dfcik * (-dposik[p]/rik) * gijk * expijk * omegaijk
-	    + threebodyfactor * fcik * dgijk_k[p] * expijk * omegaijk
-	    + threebodyfactor * fcik * gijk * dexpijk_k[p] * omegaijk;
+	    + threebodyfactor * dfcik * (-dposik[p]/rik) * gijk * F1 * F2
+	    + threebodyfactor * fcik * dgijk_k[p] * F1 * F2
+	    + threebodyfactor * fcik * gijk * dF1_k[p] * F2
+	    + threebodyfactor * fcik * gijk * F1 * dF2_k[p];
 	}
 
 
@@ -544,23 +610,31 @@ double MDSystem::force_ABOP(){
 	  for (int v2=0; v2<3; ++v2){
 	    // ij contribution:
 	    virials[i].elem(v1,v2) += 
-	      ( threebodyfactor * fcik * dgijk * ( dposik[v1]/(rij*rik) - cost*dposij[v1]/(rij*rij))
-		* omegaijk * expijk
-		+
-		threebodyfactor * fcik * gijk * omegaijk * alphaijk * expijk * dposij[v1]/rij )
+	      ( 
+	       threebodyfactor * fcik * dgijk * ( dposik[v1]/(rij*rik) - cost*dposij[v1]/(rij*rij))
+	       * F1 * F2
+	       +
+	       threebodyfactor * fcik * gijk * dF1 * dposij[v1]/rij * F2
+	       +
+	       threebodyfactor * fcik * gijk * F1 * dF2 * dposij[v1]/rij
+	        )
 	      * dposij[v2];
 	    // ik contribution:
 	    virials[i].elem(v1,v2) += 
-	      ( threebodyfactor * dfcik * dposik[v1]/rik * gijk * omegaijk * expijk
-		+
-		threebodyfactor * fcik * dgijk * ( dposij[v1]/(rij*rik) - cost*dposik[v1]/(rik*rik))
-		* omegaijk * expijk
-		+
-		threebodyfactor * fcik * gijk * omegaijk * (-alphaijk) * expijk * dposik[v1]/rik )
+	      ( 
+	       threebodyfactor * dfcik * dposik[v1]/rik * gijk * F1 * F2
+	       +
+	       threebodyfactor * fcik * dgijk * ( dposij[v1]/(rij*rik) - cost*dposik[v1]/(rik*rik))
+	       * F1 * F2
+	       +
+	       threebodyfactor * fcik * gijk * (-dF1 * dposik[v1]/rik) * F2
+	       +
+	       threebodyfactor * fcik * gijk * F1 * (-dF2 * dposik[v1]/rik)
+		)
 	      * dposik[v2];
 	  }
 	}
-
+	
 
 	for (p=0; p<3; ++p){
 	  frc[i][p] += frci[p];

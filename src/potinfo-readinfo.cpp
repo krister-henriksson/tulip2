@@ -292,25 +292,55 @@ void PotentialInformation::read_info(string filename){
   mreppot_vecidx.resize(elem.nelem(), elem.nelem());
 
 
-  // ABOP omega and alpha matrices:
+  // ABOP alpha, omega, 2mu matrices:
   // ------------------------------------------------------
   int n = elem.nelem();
   abop_alpha.resize(n,n,n);
-  abop_omega_is_free.resize(n,n,n);
-  mabop_omega.resize(n,n,n);
+  mabop_omega.resize(n,n,n); // private
+  use_abop_alpha.resize(n,n,n);
+  use_abop_omega.resize(n,n,n);
+
+  abop_2mu.resize(n,n);
+  use_abop_2mu.resize(n,n);
+
+  /*
+    ----------------------------------------------------------------------
+    Notes:
+    ----------------------------------------------------------------------
+    ABOP, full form: use abop_alpha
+                   : use abop_omega as indepependent parameter
+		   : do NOT use abop_2mu
+
+    ABOP, 2mu form : do NOT use abop_alpha
+                   : do NOT use abop_omega
+		   : use abop_2mu
+
+    Brenner        : use abop_alpha
+                   : use abop_omega expression explicitly, given by
+		       omega_ijk = exp(-alpha_ijk*(r0_ij - r0_ik))
+		   : do NOT use abop_2mu
+    ----------------------------------------------------------------------
+    There is no default version.
+    ----------------------------------------------------------------------
+  */
+
 
   for (int i=0; i<n; i++){
     for (int j=0; j<n; j++){
       for (int k=0; k<n; k++){
 	// default: alpha = 0
-	abop_alpha.elem(i,j,k)     = 0.0;
-	// default: omega is independent, i.e. is not given by the form
-	//          omega_ijk = exp(-alpha_ijk*(r0_ij - r0_ik))
-	// note: special syntax needed in input file to make omega_ijk dependent
-	abop_omega_is_free.elem(i,j,k) = true;
+	abop_alpha.elem(i,j,k)          = 0.0;
+	use_abop_alpha.elem(i,j,k)      = false;
+	use_abop_omega.elem(i,j,k)      = false;
 	// default: omega = 1
-	mabop_omega.elem(i,j,k)    = 1.0;
+	mabop_omega.elem(i,j,k)         = 1.0;
       }
+    }
+  }
+  for (int i=0; i<n; i++){
+    for (int j=0; j<n; j++){
+      abop_2mu.elem(i,j)     = 0.0;
+      use_abop_2mu.elem(i,j) = false;
     }
   }
 
@@ -487,6 +517,7 @@ void PotentialInformation::read_info(string filename){
       i2 = elem.name2idx(ts2);
       i3 = elem.name2idx(ts3);
       abop_alpha.elem(i1, i2, i3) = td;
+      use_abop_alpha.elem(i1, i2, i3) = true;
     }
     else if (args[0]=="abop_omega"){
       // **************************************************************************
@@ -501,38 +532,27 @@ void PotentialInformation::read_info(string filename){
       i2 = elem.name2idx(ts2);
       i3 = elem.name2idx(ts3);
       mabop_omega.elem(i1, i2, i3) = td;
-      abop_omega_is_free.elem(i1, i2, i3) = true;
+      use_abop_omega.elem(i1, i2, i3) = true;
+    }
+    else if (args[0]=="abop_2mu"){
+      strbuf.str(args[1]); strbuf >> ts1; strbuf.clear();
+      strbuf.str(args[2]); strbuf >> ts2; strbuf.clear();
+      strbuf.str(args[3]); strbuf >> td; strbuf.clear();
+
+      i1 = elem.name2idx(ts1);
+      i2 = elem.name2idx(ts2);
+      abop_2mu.elem(i1, i2)    = td;
+      use_abop_2mu.elem(i1,i2) = true; // ABOP, 2mu form
     }
 
-    else if (args[0]=="rule"){
-
-      // # Handle entries like:
-      // rule : abop_omega( Fe, Cr, C ) : use_Brenner_form
-      // # All omega permutations of Fe, Cr, C will be specified to be dependent
-      // # parameters, i.e. omega_ijk = exp(-alpha_ijk*(r0_ij - r0_ik))
-      if (args[1]=="abop_omega"){
-	strbuf.str(args[2]); strbuf >> ts1; strbuf.clear();
-	strbuf.str(args[3]); strbuf >> ts2; strbuf.clear();
-	strbuf.str(args[4]); strbuf >> ts3; strbuf.clear();
-
-	i1 = elem.name2idx(ts1);
-	i2 = elem.name2idx(ts2);
-	i3 = elem.name2idx(ts3);
-
-	if (args[5]=="use_Brenner_form"){
-	  for (int i=0; i<elem.nelem(); ++i)
-	    for (int j=0; j<elem.nelem(); ++j)
-	      for (int k=0; k<elem.nelem(); ++k)
-		abop_omega_is_free.elem(i, j, k) = false;
-	}
-      }
-
-
-    }
 
 
     if (! fp) break;
   }
+
+
+
+
 
 
 
@@ -571,6 +591,7 @@ void PotentialInformation::read_info(string filename){
 
     }
   }
+
 
   
 
@@ -645,6 +666,10 @@ void PotentialInformationFit::read_info_fit(string filename){
   abop_omega_parmax.resize(n,n,n);
   abop_omega_partype.resize(n,n,n);
 
+  abop_2mu_parmin.resize(n,n);
+  abop_2mu_parmax.resize(n,n);
+  abop_2mu_partype.resize(n,n);
+
   for (int i=0; i<n; i++){
     for (int j=0; j<n; j++){
       for (int k=0; k<n; k++){
@@ -658,6 +683,13 @@ void PotentialInformationFit::read_info_fit(string filename){
 	abop_omega_parmax.elem(i,j,k) = 1;
 	abop_omega_partype.elem(i,j,k) = PARAM_FIXED;
       }
+    }
+  }
+  for (int i=0; i<n; i++){
+    for (int j=0; j<n; j++){
+      abop_2mu_parmin.elem(i,j) = 1;
+      abop_2mu_parmax.elem(i,j) = 1;
+      abop_2mu_partype.elem(i,j) = PARAM_FIXED;
     }
   }
 
@@ -852,8 +884,10 @@ void PotentialInformationFit::read_info_fit(string filename){
 	i2 = elem.name2idx(ts2);
 	i3 = elem.name2idx(ts3);
 
-	if      (args[0]=="min") abop_alpha_parmin.elem(i1, i2, i3) = td;
-	else if (args[0]=="max") abop_alpha_parmax.elem(i1, i2, i3) = td;
+	if (use_abop_alpha.elem(i1,i2,i3)){
+	  if      (args[0]=="min") abop_alpha_parmin.elem(i1, i2, i3) = td;
+	  else if (args[0]=="max") abop_alpha_parmax.elem(i1, i2, i3) = td;
+	}
       }
 
       else if (tsi=="abop_omega"){
@@ -866,11 +900,28 @@ void PotentialInformationFit::read_info_fit(string filename){
 	i2 = elem.name2idx(ts2);
 	i3 = elem.name2idx(ts3);
 
-	if (abop_omega_is_free.elem(i1,i2,i3)){
+	if (use_abop_omega.elem(i1,i2,i3)){
 	  if      (args[0]=="min") abop_omega_parmin.elem(i1, i2, i3) = td;
 	  else if (args[0]=="max") abop_omega_parmax.elem(i1, i2, i3) = td;
 	}
       }
+
+      else if (tsi=="abop_2mu"){
+	strbuf.str(args[2]); strbuf >> ts1; strbuf.clear();
+	strbuf.str(args[3]); strbuf >> ts2; strbuf.clear();
+	strbuf.str(args[4]); strbuf >> td;  strbuf.clear();
+	
+	i1 = elem.name2idx(ts1);
+	i2 = elem.name2idx(ts2);
+
+	if (use_abop_2mu.elem(i1,i2)){
+	  if      (args[0]=="min") abop_2mu_parmin.elem(i1, i2) = td;
+	  else if (args[0]=="max") abop_2mu_parmax.elem(i1, i2) = td;
+	}
+      }
+
+
+
     }
 
 
@@ -1008,15 +1059,19 @@ void PotentialInformationFit::read_info_fit(string filename){
 	string s2 = elem.idx2name(j);
 	string s3 = elem.idx2name(k);
 
-	if (abop_alpha_parmin.elem(i,j,k) > abop_alpha_parmax.elem(i,j,k))
-	  limerr1_abop("alpha", s1,s2,s3);
+	if (use_abop_alpha.elem(i,j,k)){
 
-	set_param_type(abop_alpha_parmin.elem(i,j,k), abop_alpha_parmax.elem(i,j,k), abop_alpha_partype.elem(i,j,k));
+	  if (abop_alpha_parmin.elem(i,j,k) > abop_alpha_parmax.elem(i,j,k))
+	    limerr1_abop("alpha", s1,s2,s3);
 
-	if (abop_alpha_partype.elem(i,j,k) == PARAM_FREE_WITH_LIMITS && (abop_alpha_parmin.elem(i,j,k) > abop_alpha.elem(i,j,k)))
-	  limerr2_abop("alpha", s1,s2,s3);
-	if (abop_alpha_partype.elem(i,j,k) == PARAM_FREE_WITH_LIMITS && (abop_alpha_parmax.elem(i,j,k) < abop_alpha.elem(i,j,k)))
-	  limerr3_abop("alpha", s1,s2,s3);
+	  set_param_type(abop_alpha_parmin.elem(i,j,k), abop_alpha_parmax.elem(i,j,k), abop_alpha_partype.elem(i,j,k));
+
+	  if (abop_alpha_partype.elem(i,j,k) == PARAM_FREE_WITH_LIMITS && (abop_alpha_parmin.elem(i,j,k) > abop_alpha.elem(i,j,k)))
+	    limerr2_abop("alpha", s1,s2,s3);
+	  if (abop_alpha_partype.elem(i,j,k) == PARAM_FREE_WITH_LIMITS && (abop_alpha_parmax.elem(i,j,k) < abop_alpha.elem(i,j,k)))
+	    limerr3_abop("alpha", s1,s2,s3);
+
+	}
 
       }
     }
@@ -1032,8 +1087,7 @@ void PotentialInformationFit::read_info_fit(string filename){
 	string s2 = elem.idx2name(j);
 	string s3 = elem.idx2name(k);
 
-
-	if (abop_omega_is_free.elem(i,j,k)){
+	if (use_abop_omega.elem(i,j,k)){
 
 	  if (abop_omega_parmin.elem(i,j,k) > abop_omega_parmax.elem(i,j,k))
 	    limerr1_abop("omega", s1,s2,s3);
@@ -1054,6 +1108,73 @@ void PotentialInformationFit::read_info_fit(string filename){
 
 
 
+  for (int i=0; i<elem.nelem(); i++){
+    for (int j=0; j<elem.nelem(); j++){
+
+      string s1 = elem.idx2name(i);
+      string s2 = elem.idx2name(j);
+
+      if (use_abop_2mu.elem(i,j)){
+
+	if (abop_2mu_parmin.elem(i,j) > abop_2mu_parmax.elem(i,j))
+	  limerr1_2mu("2mu", s1,s2);
+
+	set_param_type(abop_2mu_parmin.elem(i,j), abop_2mu_parmax.elem(i,j), abop_2mu_partype.elem(i,j));
+
+	if (abop_2mu_partype.elem(i,j) == PARAM_FREE_WITH_LIMITS && (abop_2mu_parmin.elem(i,j) > abop_2mu.elem(i,j)))
+	  limerr2_2mu("2mu", s1,s2);
+	if (abop_2mu_partype.elem(i,j) == PARAM_FREE_WITH_LIMITS && (abop_2mu_parmax.elem(i,j) < abop_2mu.elem(i,j)))
+	  limerr3_2mu("2mu", s1,s2);
+
+      }
+
+    }
+  }
+
+
+  cout << "##############################################################################" << endl;
+
+  for (int i=0; i<elem.nelem(); i++){
+    for (int j=0; j<elem.nelem(); j++){
+      for (int k=0; k<elem.nelem(); k++){
+	string s1 = elem.idx2name(i);
+	string s2 = elem.idx2name(j);
+	string s3 = elem.idx2name(k);
+
+	cout << "ABOP alpha(" << s1 << "," << s2 << "," << s3 << "): ";
+	if (use_abop_alpha.elem(i,j,k)) cout << "used";
+	else cout << "NOT used";
+	cout << endl;
+      }
+    }
+  }
+  for (int i=0; i<elem.nelem(); i++){
+    for (int j=0; j<elem.nelem(); j++){
+      for (int k=0; k<elem.nelem(); k++){
+	string s1 = elem.idx2name(i);
+	string s2 = elem.idx2name(j);
+	string s3 = elem.idx2name(k);
+
+	cout << "ABOP omega(" << s1 << "," << s2 << "," << s3 << "): ";
+	if (use_abop_omega.elem(i,j,k)) cout << "used";
+	else cout << "NOT used";
+	cout << endl;
+      }
+    }
+  }
+  for (int i=0; i<elem.nelem(); i++){
+    for (int j=0; j<elem.nelem(); j++){
+      string s1 = elem.idx2name(i);
+      string s2 = elem.idx2name(j);
+
+      cout << "ABOP 2mu(" << s1 << "," << s2 << "): ";
+      if (use_abop_2mu.elem(i,j)) cout << "used";
+      else cout << "NOT used";
+      cout << endl;
+    }
+  }
+
+  cout << "##############################################################################" << endl;
 
   cout << "Read-in of information about fittable potentials completed." << endl;
 
@@ -1088,6 +1209,19 @@ void PotentialInformationFit::limerr2_abop(string s0, string s1, string s2, stri
 }
 void PotentialInformationFit::limerr3_abop(string s0, string s1, string s2, string s3){
   aborterror("Error: ABOP " + s0 + ": " + s1 + "-" + s2 + "-" + s3 + ": " +
+	     " value is larger than upper limit ?! Exiting.");
+}
+
+void PotentialInformationFit::limerr1_2mu(string s0, string s1, string s2){
+  aborterror("Error: ABOP " + s0 + ": " + s1 + "-" + s2 + "-" + 
+	     " limits are reversed ?! Exiting.");
+}
+void PotentialInformationFit::limerr2_2mu(string s0, string s1, string s2){
+  aborterror("Error: ABOP " + s0 + ": " + s1 + "-" + s2 + "-" + 
+	     " value is smaller than lower limit ?! Exiting.");
+}
+void PotentialInformationFit::limerr3_2mu(string s0, string s1, string s2){
+  aborterror("Error: ABOP " + s0 + ": " + s1 + "-" + s2 + "-" + 
 	     " value is larger than upper limit ?! Exiting.");
 }
 

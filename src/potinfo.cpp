@@ -9,10 +9,14 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "exiterrors.hpp"
+
 #include "utils.hpp"
 #include "utils-vector.hpp"
 #include "utils-matrix.hpp"
 #include "utils-matrix3.hpp"
+
+#include "utils-string.hpp"
 
 #include "elem-iacs.hpp"
 #include "specs-fit-prop-pot.hpp"
@@ -140,34 +144,29 @@ int PotentialInformation::reppot_vecidx(int i1, int i2){
 }
 
 // ###############################################################################
+// ###############################################################################
+// ###############################################################################
+// ###############################################################################
 
 
 double PotentialInformation::get_abop_omega(string s1, string s2, string s3){
   int i = elem.name2idx(s1);
   int j = elem.name2idx(s2);
   int k = elem.name2idx(s3);
-
-  if (! abop_omega_is_free.elem(i,j,k)){
-    int ivec1 = basepot_vecidx(s1,s2);
-    int ivec2 = basepot_vecidx(s1,s3);
-    mabop_omega.elem(i,j,k)
-      = exp( - abop_alpha.elem(i,j,k) * (pot_ABOP[ivec1].parval[1] - pot_ABOP[ivec2].parval[1]));
+  if (! use_abop_omega.elem(i,j,k)){
+    aborterror("ERROR: Tried to get ABOP omega(" + s1 + " " + s2 + " " + s3
+	       + ", but omega is not specified as being used! Exiting.");
   }
-
   return mabop_omega.elem(i,j,k);
 }
 
 double PotentialInformation::get_abop_omega(int i, int j, int k){
-  if (! abop_omega_is_free.elem(i,j,k)){
-    int ivec1 = basepot_vecidx(i,j);
-    int ivec2 = basepot_vecidx(i,k);
-    mabop_omega.elem(i,j,k)
-      = exp( - abop_alpha.elem(i,j,k) * (pot_ABOP[ivec1].parval[1] - pot_ABOP[ivec2].parval[1]));
+  if (! use_abop_omega.elem(i,j,k)){
+    aborterror("ERROR: Tried to get ABOP omega(" + tostring(i) + " " + tostring(j) + " " + tostring(k)
+	       + ", but omega is not specified as being used! Exiting.");
   }
-  
   return mabop_omega.elem(i,j,k);
 }
-
 
 
 
@@ -175,17 +174,26 @@ void PotentialInformation::set_abop_omega(string s1, string s2, string s3, doubl
   int i = elem.name2idx(s1);
   int j = elem.name2idx(s2);
   int k = elem.name2idx(s3);
-
-  if (abop_omega_is_free.elem(i,j,k))
-    mabop_omega.elem(i,j,k) = val;
+  if (! use_abop_omega.elem(i,j,k)){
+    aborterror("ERROR: Tried to set ABOP omega(" + s1 + " " + s2 + " " + s3
+	       + ", but omega is not specified as being used! Exiting.");
+  }
+  mabop_omega.elem(i,j,k) = val;
 }
 
 void PotentialInformation::set_abop_omega(int i, int j, int k, double val){
-  if (abop_omega_is_free.elem(i,j,k))
-    mabop_omega.elem(i,j,k) = val;
+  if (! use_abop_omega.elem(i,j,k)){
+    aborterror("ERROR: Tried to set ABOP omega(" + tostring(i) + " " + tostring(j) + " " + tostring(k)
+	       + ", but omega is not specified as being used! Exiting.");
+  }
+  mabop_omega.elem(i,j,k) = val;
 }
 
 
+// ###############################################################################
+// ###############################################################################
+// ###############################################################################
+// ###############################################################################
 
 
 
