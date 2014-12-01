@@ -62,9 +62,9 @@ double MDSystem::force_ABOP(){
   bool se_use_reppot = p_potinfo->use_reppot(se_typei, se_typei);
 
 
-  double se_alphaijk;
-  double se_omegaijk;
-  double se_twomuik;
+  double se_alphaijk = 0.0;
+  double se_omegaijk = 1.0;
+  double se_twomuik  = 0.0;
   if (p_potinfo->use_abop_alpha.elem(se_typei, se_typei, se_typei))
     se_alphaijk = p_potinfo->abop_alpha.elem(se_typei, se_typei, se_typei);
   if (p_potinfo->use_abop_omega.elem(se_typei, se_typei, se_typei))
@@ -347,6 +347,8 @@ double MDSystem::force_ABOP(){
 	}
 	// 2mu
 	else if (p_potinfo->use_abop_2mu.elem(typei, typek)){
+	  if (! sys_single_elem)
+	    twomuik = p_potinfo->abop_2mu.elem(typei, typek);
 	  F1 = exp( twomuik * (rij - rik) );
 	  F2 = 1.0;
 	}
@@ -532,14 +534,16 @@ double MDSystem::force_ABOP(){
 	// *****************************************************************
 	alphaijk = se_alphaijk;
 	twomuik  = se_twomuik;
-	F1 = 1.0;
-	F2 = se_omegaijk;
+	F1  = 1.0;
+	dF1 = 0.0;
+	F2  = se_omegaijk;
+	dF2 = 0.0;
+
 	// alpha, omega
 	if (p_potinfo->use_abop_alpha.elem(typei, typej, typek)){
 	  if (! sys_single_elem)
 	    alphaijk = p_potinfo->abop_alpha.elem(typei, typej, typek);
-
-	  F1  = exp( alphaijk * (rij - rik) );
+	  F1 = exp( alphaijk * (rij - rik) );
 	  dF1 = alphaijk * F1;
 	  for (p=0; p<3; ++p){
 	    dF1_i[p] = dF1 * ( dposij[p]/rij - dposik[p]/rik );
@@ -563,10 +567,11 @@ double MDSystem::force_ABOP(){
 	      dF2_k[p] = dF2 * ( dposik[p]/rik);
 	    }
 	  }
-	  // .........................................................
 	}
 	// 2mu
 	else if (p_potinfo->use_abop_2mu.elem(typei, typek)){
+	  if (! sys_single_elem)
+	    twomuik = p_potinfo->abop_2mu.elem(typei, typek);
 	  F1  = exp( twomuik * (rij - rik) );
 	  dF1 = twomuik * F1;
 	  for (p=0; p<3; ++p){
@@ -670,10 +675,6 @@ double MDSystem::force_ABOP(){
 
   return Ep_tot_local;
 }
-
-
-
-
 
 
 

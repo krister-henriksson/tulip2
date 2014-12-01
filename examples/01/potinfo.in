@@ -99,25 +99,18 @@ max: potpar(Fe, Fe):D = 1.0
 
 ################################################################
 ##
-##  NOTE: ABOP alpha's are 0 **BY DEFAULT**.
+##  NOTE: There are NO ABOP alpha, omega, 2mu parameters used by default.
+##        Only the specified ones are used.
+##        Defaults: alpha=2mu=0.0 and omega=1.0 as constants.
 ##
-##  NOTE: ABOP omega's are 1.0 and independent **BY DEFAULT**.
+##        If an omega parameter is specified it is taken as an
+##        independent parameter (non-Brenner form), otherwise
+##        it is constructed from alpha parameters, if they are
+##        specified, as
 ##
-##  We use 'rule' to specify a set of omega parameters to be dependent
-##  parameters.
+##          "omega_ijk" = exp( alpha_ijk*(r0_ij - r0_ik) )
 ##
 ################################################################
-
-#
-# RULES
-#
-# Uncomment appropriate versions of following rules (and/or make similar ones)
-# to make omega_ijk's be **dependent** parameters (will then depend on alpha_ijk):
-# rule : abop_omega(Fe, Fe, Fe) : use_Brenner_form
-# rule : abop_omega(Fe, Fe, C) : use_Brenner_form
-# rule : abop_omega(Fe, C,  C) : use_Brenner_form
-# ...
-
 
 # Fixed:
 # (none)
@@ -125,13 +118,20 @@ max: potpar(Fe, Fe):D = 1.0
 
 # Fittable:
 
-     abop_alpha(Fe, Fe, Fe) =  3.0
-min: abop_alpha(Fe, Fe, Fe) =    1.0
-max: abop_alpha(Fe, Fe, Fe) =  100.0
+# Comment out the following in order not to use alpha:
+#      abop_alpha( Fe, Fe, Fe ) =  3.0
+# min: abop_alpha( Fe, Fe, Fe ) =    1.0
+# max: abop_alpha( Fe, Fe, Fe ) =  100.0
 
 
+# Comment out the following to use Brenner's "omega":
+# Note: alpha's must be specified, otherwise there should be an error message.
+#      abop_omega( Fe, Fe, Fe ) =  2.0
+# min: abop_omega( Fe, Fe, Fe ) =    1.0
+# max: abop_omega( Fe, Fe, Fe ) =  100.0
 
-     abop_omega(Fe, Fe, Fe) =  2.0
-min: abop_omega(Fe, Fe, Fe) =    1.0
-max: abop_omega(Fe, Fe, Fe) =  100.0
+# Comment out the following in order not to use the 2mu form:
+     abop_2mu(Fe, Fe) =  2.0;
+min: abop_2mu(Fe, Fe) =  1.0;
+max: abop_2mu(Fe, Fe) = 10.0;
 
