@@ -492,7 +492,7 @@ void CompoundStructure::read_structure(void){
 
     utils::get_line(fp, line);
     ns = utils::get_substrings( line, args, "\t :,()[]=");
-    cout << line << endl;
+    // cout << line << endl;
 
 
 

@@ -374,6 +374,14 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
     yp[j] = Epa;
     dyp[j] = ((Epa<0)? -Epa: Epa) * ef;
 
+    {
+      ofstream fdump;
+      string dumpfn = "mds-frame-B-calc-" + mds.name + "-step-" + tostring(j) + ".xyz";
+      fdump.open(dumpfn.c_str());
+      mds.dumpframe(fdump);
+      fdump.close();
+    }
+
     // Reset:
     mds.pos    = pos_bak;
     mds.boxdir = boxdir_bak;
@@ -403,7 +411,7 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
     string dumpfn = "data-V-Epa-dEpa-" + name + ".dat";
     fdump.open(dumpfn.c_str());
     for (j=0; j<Nf; ++j)
-      fdump << format("%15.10f  %15.10f  %15.10f") % xp[j] % yp[j] % dyp[j] << endl;
+      fdump << format("%20.10e  %20.10e  %20.10e") % xp[j] % yp[j] % dyp[j] << endl;
     fdump.close();
   }
 
@@ -932,6 +940,17 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       yp[j] = Epa;
       dyp[j] = ((Epa<0)? -Epa: Epa) * ef;
 
+
+      {
+	ofstream fdump;
+	string dumpfn = "mds-frame-C-calc-" + mds.name + "-isym-" + tostring(isym)
+	  + "-step-" + tostring(j) + ".xyz";
+	fdump.open(dumpfn.c_str());
+	mds.dumpframe(fdump);
+	fdump.close();
+      }
+
+
       // Reset:
       mds.pos    = pos_bak;
       mds.boxdir = boxdir_bak;
@@ -945,7 +964,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       string dumpfn = "data-f-Epa-dEpa-" + name + "-" + tostring(isym) + ".dat";
       fdump.open(dumpfn.c_str());
       for (j=0; j<Nf; ++j)
-	fdump << format("%15.10f  %15.10f  %15.10f") % xp[j] % yp[j] % dyp[j] << endl;
+	fdump << format("%20.10e  %20.10e  %20.10e") % xp[j] % yp[j] % dyp[j] << endl;
       fdump.close();
     }
 

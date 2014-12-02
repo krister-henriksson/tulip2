@@ -100,7 +100,9 @@ void report_pot(PotentialInformationFit * p_potinfo,
   int i1, i2, i3, j, k, nel = p_potinfo->elem.nelem();
   string s1, s2, s3, partypestring;
   bool o1, o2, oprint;
-
+  string formatf = "%20.10f";
+  string formate = "%20.10e";
+  double td;
 
   if (! fittable_ones && ! fixed_ones) return;
 
@@ -141,17 +143,24 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	    && (p_potinfo->is_fittable(s1,s2)) 
 	    && (p_potinfo->pot_ABOP[j].partype[k] != PARAM_FIXED);
 	  if (!o1 && !o2) continue;
-	    
-	  if (o1 || o2) cout << "ABOP " << s1 << "-" << s2 << ": "
-			     << format("%20s : ") % p_potinfo->pot_ABOP[j].parname[k]
-			     << format("%15.10f") % p_potinfo->pot_ABOP[j].parval[k];
+
+
+	  if (o1 || o2){
+	    cout << "ABOP " << s1 << "-" << s2 << ": "
+		 << format("%20s : ") % p_potinfo->pot_ABOP[j].parname[k];
+
+	    td = p_potinfo->pot_ABOP[j].parval[k];
+	    if (abs(td)<1.0e-4) cout << format(formate) % td;
+	    else                cout << format(formatf) % td;
+	  }
+
 	  if (o2){
 	    partypestring="unknown";
 	    if      (p_potinfo->pot_ABOP[j].partype[k] == PARAM_FIXED) partypestring="FIXED parameter";
 	    else if (p_potinfo->pot_ABOP[j].partype[k] == PARAM_FREE_WITH_LIMITS) partypestring="CONSTRAINED parameter";
 	    else if (p_potinfo->pot_ABOP[j].partype[k] == PARAM_FREE) partypestring="FREE parameter";
-	    cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin[k]
-		 << "   max: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmax[k]
+	    cout << "   min: " << format("%20.10e") % p_potinfo->pot_ABOP[j].parmin[k]
+		 << "   max: " << format("%20.10e") % p_potinfo->pot_ABOP[j].parmax[k]
 		 << "   " <<  partypestring;
 	  }
 	  if (o1 || o2) cout << endl;
@@ -178,12 +187,17 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	o2 = fittable_ones && (*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) != PARAM_FIXED;
 	if (!o1 && !o2) continue;
 
-	if (o1 || o2)
-	  cout << "ABOP " << s1 << "-" << s2 << "-" << s3 << ": alpha: "
-	       << format("%15.10f") % p_potinfo->abop_alpha.elem(i1,i2,i3);
+	if (o1 || o2){
+	  cout << "ABOP " << s1 << "-" << s2 << "-" << s3 << ": alpha: ";
+
+	  td = p_potinfo->abop_alpha.elem(i1,i2,i3);
+	  if (abs(td)<1.0e-4) cout << format(formate) % td;
+	  else                cout << format(formatf) % td;
+	}
+
 	if (o2)
-	  cout << "   min: " << format("%12.10e") % p_potinfo->abop_alpha_parmin.elem(i1,i2,i3)
-	       << "   max: " << format("%12.10e") % p_potinfo->abop_alpha_parmax.elem(i1,i2,i3);
+	  cout << "   min: " << format("%20.10e") % p_potinfo->abop_alpha_parmin.elem(i1,i2,i3)
+	       << "   max: " << format("%20.10e") % p_potinfo->abop_alpha_parmax.elem(i1,i2,i3);
 	if (o1 || o2) cout << endl;
 
       }
@@ -204,8 +218,14 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	o2 = fittable_ones && (*p_potinfo).abop_omega_partype.elem(i1,i2,i3) != PARAM_FIXED;
 	if (!o1 && !o2) continue;
 
-	if (o1 || o2) cout << "ABOP " << s1 << "-" << s2 << "-" << s3 << ": omega: "
-			   << format("%15.10f") % p_potinfo->get_abop_omega(s1,s2,s3);
+	if (o1 || o2){
+	  cout << "ABOP " << s1 << "-" << s2 << "-" << s3 << ": omega: ";
+
+	  td = p_potinfo->get_abop_omega(s1,s2,s3);
+	  if (abs(td)<1.0e-4) cout << format(formate) % td;
+	  else                cout << format(formatf) % td;
+	}
+
 	if (o2)
 	  cout << "   min: " << format("%12.10e") % p_potinfo->abop_omega_parmin.elem(i1,i2,i3)
 	       << "   max: " << format("%12.10e") % p_potinfo->abop_omega_parmax.elem(i1,i2,i3);
@@ -227,9 +247,14 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	o2 = fittable_ones && (*p_potinfo).abop_2mu_partype.elem(i1,i2) != PARAM_FIXED;
 	if (!o1 && !o2) continue;
 
-	if (o1 || o2)
-	  cout << "ABOP " << s1 << "-" << s2 << "-" << ": 2mu  : "
-	       << format("%15.10f") % p_potinfo->abop_2mu.elem(i1,i2);
+	if (o1 || o2){
+	  cout << "ABOP " << s1 << "-" << s2 << "-" << ": 2mu  : ";
+
+	  td = p_potinfo->abop_2mu.elem(i1,i2);
+	  if (abs(td)<1.0e-4) cout << format(formate) % td;
+	  else                cout << format(formatf) % td;
+	}
+
 	if (o2)
 	  cout << "   min: " << format("%12.10e") % p_potinfo->abop_2mu_parmin.elem(i1,i2)
 	       << "   max: " << format("%12.10e") % p_potinfo->abop_2mu_parmax.elem(i1,i2);
