@@ -78,7 +78,7 @@ using boost::format;
 int main(int argc, char *argv[]){
   // double eps = numeric_limits<double>::epsilon();
   int i,j,k,p,iref, ivec;
-  bool run_quick, run_refonly, debug_forces, debug_pressure, report_mds_steps;
+  bool run_refonly, use_relonly, debug_forces, debug_pressure, report_mds_steps;
   Vector<bool> debug_fit_prop(5, false),debug_fit_pot(5,false);
   string arg, potfile, geomfile, specsfile;
   bool potfileOK, geomfileOK, specsfileOK;
@@ -108,10 +108,11 @@ int main(int argc, char *argv[]){
     cout << "" << endl;
 
     cout << "Options:" << endl;
-    cout << "     -quick             Calculate properties of read-in geometries and quit. No relaxation" << endl;
-    cout << "                        is performed on read-in compounds. Reference compounds are relaxed." << endl;
-    cout << "     -ro                Only calculate properties of reference compounds, then exit." << endl;
+
+    cout << "     -ro                Only calculate properties of reference compounds, then exit. Default: not used." << endl;
+    cout << "     -nof               Only calculate properties of reference and read-in compounds, then exit. Default: not used." << endl;
     cout << "" << endl;
+
     cout << "     -dfitpropn         Show information about fitting of properties. Here 'n' must be" << endl;
     cout << "                        an integer. Supported: 0-4. 0: debug fitting method. 1-4: debug deeper." << endl;
     cout << "                        lying methods used by the fitting method. Default: not used" << endl;
@@ -140,7 +141,6 @@ int main(int argc, char *argv[]){
 
 
   potfileOK = geomfileOK = specsfileOK = false;
-  run_quick = false;
   run_refonly = false;
   debug_forces = false;
   debug_pressure = false;
@@ -172,11 +172,11 @@ int main(int argc, char *argv[]){
       sstream.clear();
       specsfileOK = true; i++;
     }
-    else if (string(argv[i])=="-quick"){
-      run_quick = true;
-    }
     else if (string(argv[i])=="-ro"){
       run_refonly = true;
+    }
+    else if (string(argv[i])=="-nof"){
+      use_relonly = true;
     }
     else if (string(argv[i])=="-dfitprop0"){ debug_fit_prop[0] = true; }
     else if (string(argv[i])=="-dfitprop1"){ debug_fit_prop[1] = true; }
@@ -289,7 +289,6 @@ int main(int argc, char *argv[]){
   potinfo.specs_prop.mds_specs_common.debug_forces = debug_forces;
   potinfo.specs_prop.mds_specs_common.debug_pressure = debug_pressure;
   potinfo.specs_prop.mds_specs_common.report_step  = report_mds_steps;
-  potinfo.specs_prop.mds_specs_common.quick_mode   = run_quick;
 
 
 
@@ -306,8 +305,6 @@ int main(int argc, char *argv[]){
   potinfo.specs_pot.debug_fit_level4  = debug_fit_pot[4];
 
 
-  // If true, then the quick_mode option must be set for all compounds
-  // individually. For the reference compounds quick mode will not be used.
 
 
 
@@ -458,8 +455,6 @@ int main(int argc, char *argv[]){
   cout << "  If true, writes out physical info of the system at every time step." << endl;
   cout << "Overruling options: debug forces?                                  : " << potinfo.specs_prop.mds_specs_common.debug_forces << endl; 
   cout << "Overruling options: debug pressure?                                : " << potinfo.specs_prop.mds_specs_common.debug_pressure << endl; 
-  cout << "Overruling options: quick mode?                                    : " << potinfo.specs_prop.mds_specs_common.quick_mode << endl; 
-  cout << "  If true, no MD relaxation, only evaluation of potential energy." << endl;
   cout << endl;
   cout << "--------------------------------------------------------------------------" << endl;
   cout << "Settings for MD simulations of reference compounds" << endl;
@@ -496,8 +491,6 @@ int main(int argc, char *argv[]){
   cout << "  If true, writes out physical info of the system at every time step." << endl;
   cout << "Overruling options: debug forces?                                  : " << potinfo.specs_prop.mds_specs_common.debug_forces << endl; 
   cout << "Overruling options: debug pressure?                                : " << potinfo.specs_prop.mds_specs_common.debug_pressure << endl; 
-  cout << "Overruling options: quick mode?                                    : " << potinfo.specs_prop.mds_specs_common.quick_mode << endl; 
-  cout << "  If true, no MD relaxation, only evaluation of potential energy." << endl;
 
 
 
@@ -906,8 +899,10 @@ int main(int argc, char *argv[]){
     string latref = potinfo.elem.reflat(sref);
 
     if (latref=="none"){
+      cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
       cout << "Elemental combination " << sref << "-" << sref << " is to be fitted."
 	   << " No reference lattice calculation possible. Continuing." << endl;
+      cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
       continue;
     }
 
@@ -1071,7 +1066,9 @@ int main(int argc, char *argv[]){
 
 
   if (run_refonly){
+    cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
     cout << "Done with reference compounds. Quitting." << endl;
+    cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
     return EXIT_SUCCESS;
   }
 
@@ -1080,49 +1077,64 @@ int main(int argc, char *argv[]){
 
 
 
-  /*
 
-  if (debug_forces){
-    cout << "Warning: Debugging of forces done, performing quick and dirty exiting from main routine. Bye." << endl;
-    return EXIT_SUCCESS;
+  // ***********************************************************************************
+  // ***********************************************************************************
+  // ***********************************************************************************
+  // ***********************************************************************************
+  if (use_relonly){
+
+    // ################################################################################
+    // A
+    // ################################################################################
+
+    //report_pot_prop( param, DX, DY, MDY );
+
+    cout << "'Relax only' option used." << endl;
+    cout << "1. Report on potential parameters:" << endl;
+    cout << "----------------------------------------------------------------" << endl;
+    report_pot( &potinfo, true, true );
+    cout << "2. Relaxing read-in compounds and obtaining their properties ..." << endl;
+    latcalc( param, DX);
+    cout << "----------------------------------------------------------------" << endl;
+    report_prop( DX );
+    cout << "Done." << endl;
+
   }
-  */
+  else {
+
+    // ################################################################################
+    // B
+    // ################################################################################
+    // Potential fitting
+    // ################################################################################
 
 
+    // #############################################################
+    // Form merit function object
+    // #############################################################
+
+    cout << "Setting up merit function ..." << endl;
 
 
-  // ################################################################################
-  // Potential fitting
-  // ################################################################################
+    ChiSqFunc<ParamPot, CompoundStructureFit, double> cs;
+    Vector<double> Xopt;
+    Cond_Conv  cond_conv;
+    Cond_Debug cond_debug;
+    Cond_Print cond_print;
 
 
+    cs.Param() = param;
+    cs.DataX() = DX;
+    cs.DataY() = DY;
+    cs.DataUncertaintyY()  = DUY;
+    cs.DataWeightY()       = DWY;
+    cs.ModelFuncPointer()  = latcalc;
+    cs.ReportFuncPointer() = report_pot_prop;
 
+    cs.barrier_scale() = potinfo.specs_pot.barrier_scale;
 
-  // #############################################################
-  // Form merit function object
-  // #############################################################
-
-  cout << "Setting up merit function ..." << endl;
-
-
-  ChiSqFunc<ParamPot, CompoundStructureFit, double> cs;
-  Vector<double> Xopt;
-  Cond_Conv  cond_conv;
-  Cond_Debug cond_debug;
-  Cond_Print cond_print;
-
-
-  cs.Param() = param;
-  cs.DataX() = DX;
-  cs.DataY() = DY;
-  cs.DataUncertaintyY()  = DUY;
-  cs.DataWeightY()       = DWY;
-  cs.ModelFuncPointer()  = latcalc;
-  cs.ReportFuncPointer() = report_pot_prop;
-
-  cs.barrier_scale() = potinfo.specs_pot.barrier_scale;
-
-  cs.finalize_setup();
+    cs.finalize_setup();
 
 
 
@@ -1130,222 +1142,222 @@ int main(int argc, char *argv[]){
 
 
 
-  cond_conv.functolabs = potinfo.specs_pot.functolabs;
-  cond_conv.functolrel = potinfo.specs_pot.functolrel;
-  cond_conv.gradtolabs = potinfo.specs_pot.gradtolabs;
-  cond_conv.steptolabs = potinfo.specs_pot.steptolabs;
-  cond_conv.steptolrel = potinfo.specs_pot.steptolrel;
-  cond_conv.nitermin   = potinfo.specs_pot.nitermin;
-  cond_conv.nitermax   = potinfo.specs_pot.nitermax;
+    cond_conv.functolabs = potinfo.specs_pot.functolabs;
+    cond_conv.functolrel = potinfo.specs_pot.functolrel;
+    cond_conv.gradtolabs = potinfo.specs_pot.gradtolabs;
+    cond_conv.steptolabs = potinfo.specs_pot.steptolabs;
+    cond_conv.steptolrel = potinfo.specs_pot.steptolrel;
+    cond_conv.nitermin   = potinfo.specs_pot.nitermin;
+    cond_conv.nitermax   = potinfo.specs_pot.nitermax;
 
-  cond_conv.report_conv = potinfo.specs_pot.report_conv;
-  cond_conv.prefix_report_conv = "POTFIT conv: ";
-
-
-  cond_debug.debug_fit_level0 = potinfo.specs_pot.debug_fit_level0;
-  cond_debug.debug_fit_level1 = potinfo.specs_pot.debug_fit_level1;
-  cond_debug.debug_fit_level2 = potinfo.specs_pot.debug_fit_level2;
-  cond_debug.debug_fit_level3 = potinfo.specs_pot.debug_fit_level3;
-  cond_debug.debug_fit_level4 = potinfo.specs_pot.debug_fit_level4;
-  cond_debug.prefix_debug_fit_level0 = "POTFIT debug0: ";
-  cond_debug.prefix_debug_fit_level1 = "POTFIT debug1: ";
-  cond_debug.prefix_debug_fit_level2 = "POTFIT debug2: ";
-  cond_debug.prefix_debug_fit_level3 = "POTFIT debug3: ";
-  cond_debug.prefix_debug_fit_level4 = "POTFIT debug4: ";
+    cond_conv.report_conv = potinfo.specs_pot.report_conv;
+    cond_conv.prefix_report_conv = "POTFIT conv: ";
 
 
-  cond_print.report_iter = true;
-  cond_print.report_error= true;
-  cond_print.report_warn = true;
-  cond_print.prefix_report_iter  = "POTFIT iter: ";
-  cond_print.prefix_report_warn  = "POTFIT warn: ";
-  cond_print.prefix_report_error = "POTFIT error: ";
+    cond_debug.debug_fit_level0 = potinfo.specs_pot.debug_fit_level0;
+    cond_debug.debug_fit_level1 = potinfo.specs_pot.debug_fit_level1;
+    cond_debug.debug_fit_level2 = potinfo.specs_pot.debug_fit_level2;
+    cond_debug.debug_fit_level3 = potinfo.specs_pot.debug_fit_level3;
+    cond_debug.debug_fit_level4 = potinfo.specs_pot.debug_fit_level4;
+    cond_debug.prefix_debug_fit_level0 = "POTFIT debug0: ";
+    cond_debug.prefix_debug_fit_level1 = "POTFIT debug1: ";
+    cond_debug.prefix_debug_fit_level2 = "POTFIT debug2: ";
+    cond_debug.prefix_debug_fit_level3 = "POTFIT debug3: ";
+    cond_debug.prefix_debug_fit_level4 = "POTFIT debug4: ";
 
 
-
-  if (cond_debug.debug_fit_level0){
-    cond_conv.report_conv  = true;
     cond_print.report_iter = true;
-    cond_print.report_warn = true;
     cond_print.report_error= true;
-    cs.debug();
-  }
-
-
-  if (run_quick){
-    cond_conv.nitermin   = 0;
-    cond_conv.nitermax   = 0;
-  }
+    cond_print.report_warn = true;
+    cond_print.prefix_report_iter  = "POTFIT iter: ";
+    cond_print.prefix_report_warn  = "POTFIT warn: ";
+    cond_print.prefix_report_error = "POTFIT error: ";
 
 
 
-
-
-  // Vector<double> latcalc(ParamPot & parpot, Vector<CompoundStructureFit> & cmpvec);
-
-  cout << endl;
-  cout << "******************************************************" << endl;
-  cout << "******************************************************" << endl;
-  cout << "**                                                  **" << endl;
-  cout << "**          Starting potential fitting ...          **" << endl;
-  cout << "**                                                  **" << endl;
-  cout << "******************************************************" << endl;
-  cout << "******************************************************" << endl;
-  cout << endl;
-  cout << "INFO: Number of free fitting prameters: " << param.NXfree() << endl;
-  cout << "INFO: Number of data points           : " << complistfit.NData() << endl;
-  cout << endl;
-
-
-  int seed = potinfo.specs_pot.seed;
-
-  /* ###############################################################################
-     Fit function.
-     ############################################################################### */
-  if (potinfo.specs_pot.fitmet=="CG"){
-    // Conjugate Gradients
-    cout << "Using conjugate gradients method." << endl;
-    ConjGrad< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       cond_conv, cond_debug, cond_print);
-  }
-  else if (potinfo.specs_pot.fitmet=="PM"){
-    // Powell's method
-    cout << "Using Powell's method." << endl;
-    Powell< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       cond_conv, cond_debug, cond_print);
-  }
-  else if (potinfo.specs_pot.fitmet=="GN"){
-    // Gauss-Newton
-    cout << "Using Gauss-Newton method." << endl;
-    GaussNewton< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       cond_conv, cond_debug, cond_print);
-  }
-  else if (potinfo.specs_pot.fitmet=="LM"){
-    // Levenberg-Marquardt
-    cout << "Using Levenberg-Marquardt method." << endl;
-    LeveMarq< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       cond_conv, cond_debug, cond_print);
-  }
-  else if (potinfo.specs_pot.fitmet=="DL"){
-    // Powell dog-leg
-    cout << "Using Powell dog-leg method." << endl;
-    PowellDogLeg< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       potinfo.specs_pot.dogleg_radius,
-		       potinfo.specs_pot.dogleg_minradius,
-		       cond_conv, cond_debug, cond_print);
-  }
-  else if (potinfo.specs_pot.fitmet=="SM"){
-    // Simplex method
-    cout << "Using Simplex method." << endl;
-    SimplexFit< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-    /*
-    Vector<double> X_displ( cs.Param().X().size(), 
-			    potinfo.specs_pot.simplex_delta );
-    */
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       seed,
-		       cond_conv, cond_debug, cond_print);
-  }
-
-  else if (potinfo.specs_pot.fitmet=="DE"){
-    // Differential evolution
-    cs.barrier_scale() = 0.0;
-    DiffEvol< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       seed,
-		       cond_conv, cond_debug, cond_print);
-  }
-  else if (potinfo.specs_pot.fitmet=="PS"){
-    // Particle Swarm
-    cs.barrier_scale() = 0.0;
-    PartSwarm< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       seed,
-		       cond_conv, cond_debug, cond_print);
-  }
-  else if (potinfo.specs_pot.fitmet=="BC"){
-    // Bee colony
-    cs.barrier_scale() = 0.0;
-    BeeColony< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       seed,
-		       cond_conv, cond_debug, cond_print);
-  }
-  else if (potinfo.specs_pot.fitmet=="GS"){
-    // Gravitational Search
-    cs.barrier_scale() = 0.0;
-    GravSearch< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       seed,
-		       cond_conv, cond_debug, cond_print);
-  }
-  else if (potinfo.specs_pot.fitmet=="SA"){
-    // Simulated Annealing
-    cs.barrier_scale() = 0.0;
-    SimAnn< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-
-    int N = cs.Param().X().size();
-    Vector<double> Xd(N);
-    double td;
-    for (int i=0; i<N; ++i){
-      td = cs.Param().X(i); if (td<0) td *= -1.0;
-      Xd[i] = td;
+    if (cond_debug.debug_fit_level0){
+      cond_conv.report_conv  = true;
+      cond_print.report_iter = true;
+      cond_print.report_warn = true;
+      cond_print.report_error= true;
+      cs.debug();
     }
 
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       Xd,
-		       seed,
-		       cond_conv, cond_debug, cond_print);
+
+
+
+
+
+    // Vector<double> latcalc(ParamPot & parpot, Vector<CompoundStructureFit> & cmpvec);
+
+    cout << endl;
+    cout << "******************************************************" << endl;
+    cout << "******************************************************" << endl;
+    cout << "**                                                  **" << endl;
+    cout << "**          Starting potential fitting ...          **" << endl;
+    cout << "**                                                  **" << endl;
+    cout << "******************************************************" << endl;
+    cout << "******************************************************" << endl;
+    cout << endl;
+    cout << "INFO: Number of free fitting prameters: " << param.NXfree() << endl;
+    cout << "INFO: Number of data points           : " << complistfit.NData() << endl;
+    cout << endl;
+
+
+    int seed = potinfo.specs_pot.seed;
+
+    /* ###############################################################################
+       Fit function.
+       ############################################################################### */
+    if (potinfo.specs_pot.fitmet=="CG"){
+      // Conjugate Gradients
+      cout << "Using conjugate gradients method." << endl;
+      ConjGrad< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 cond_conv, cond_debug, cond_print);
+    }
+    else if (potinfo.specs_pot.fitmet=="PM"){
+      // Powell's method
+      cout << "Using Powell's method." << endl;
+      Powell< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 cond_conv, cond_debug, cond_print);
+    }
+    else if (potinfo.specs_pot.fitmet=="GN"){
+      // Gauss-Newton
+      cout << "Using Gauss-Newton method." << endl;
+      GaussNewton< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 cond_conv, cond_debug, cond_print);
+    }
+    else if (potinfo.specs_pot.fitmet=="LM"){
+      // Levenberg-Marquardt
+      cout << "Using Levenberg-Marquardt method." << endl;
+      LeveMarq< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 cond_conv, cond_debug, cond_print);
+    }
+    else if (potinfo.specs_pot.fitmet=="DL"){
+      // Powell dog-leg
+      cout << "Using Powell dog-leg method." << endl;
+      PowellDogLeg< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 potinfo.specs_pot.dogleg_radius,
+			 potinfo.specs_pot.dogleg_minradius,
+			 cond_conv, cond_debug, cond_print);
+    }
+    else if (potinfo.specs_pot.fitmet=="SM"){
+      // Simplex method
+      cout << "Using Simplex method." << endl;
+      SimplexFit< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      /*
+	Vector<double> X_displ( cs.Param().X().size(), 
+	potinfo.specs_pot.simplex_delta );
+      */
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 seed,
+			 cond_conv, cond_debug, cond_print);
+    }
+
+    else if (potinfo.specs_pot.fitmet=="DE"){
+      // Differential evolution
+      cs.barrier_scale() = 0.0;
+      DiffEvol< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 seed,
+			 cond_conv, cond_debug, cond_print);
+    }
+    else if (potinfo.specs_pot.fitmet=="PS"){
+      // Particle Swarm
+      cs.barrier_scale() = 0.0;
+      PartSwarm< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 seed,
+			 cond_conv, cond_debug, cond_print);
+    }
+    else if (potinfo.specs_pot.fitmet=="BC"){
+      // Bee colony
+      cs.barrier_scale() = 0.0;
+      BeeColony< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 seed,
+			 cond_conv, cond_debug, cond_print);
+    }
+    else if (potinfo.specs_pot.fitmet=="GS"){
+      // Gravitational Search
+      cs.barrier_scale() = 0.0;
+      GravSearch< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 seed,
+			 cond_conv, cond_debug, cond_print);
+    }
+    else if (potinfo.specs_pot.fitmet=="SA"){
+      // Simulated Annealing
+      cs.barrier_scale() = 0.0;
+      SimAnn< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+
+      int N = cs.Param().X().size();
+      Vector<double> Xd(N);
+      double td;
+      for (int i=0; i<N; ++i){
+	td = cs.Param().X(i); if (td<0) td *= -1.0;
+	Xd[i] = td;
+      }
+
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 Xd,
+			 seed,
+			 cond_conv, cond_debug, cond_print);
+    }
+    else
+      aborterror("Error: Unknown fitting method " + potinfo.specs_pot.fitmet + ". " +
+		 "Exiting.");
+
+
+
+
+
+
+    /* ###############################################################################
+       Report on fitted parameters.
+       ############################################################################### */
+
+    //cs.Param().X() = Xopt;
+    //cout << "Made it here" << endl;
+    //cout << "Xopt - cs.Param().X() is " << endl;
+    //cout << Xopt - cs.Param().X() << endl;
+
+    cout << endl;
+    cout << "******************************************************" << endl;
+    cout << "******************************************************" << endl;
+    cout << "**                                                  **" << endl;
+    cout << "**          Potential fitting terminated.           **" << endl;
+    cout << "**                                                  **" << endl;
+    cout << "******************************************************" << endl;
+    cout << "******************************************************" << endl;
+    cout << endl;
+
+
+    // Calculate properties using optimized parameters:
+    cs(Xopt);
+    // Report:
+    report_pot_prop( cs.Param(), cs.DataX(), cs.DataY(), cs.ModelDataY() );
   }
-  else
-    aborterror("Error: Unknown fitting method " + potinfo.specs_pot.fitmet + ". " +
-	       "Exiting.");
-
-
-
-
-
-
-  /* ###############################################################################
-     Report on fitted parameters.
-     ############################################################################### */
-
-  //cs.Param().X() = Xopt;
-  //cout << "Made it here" << endl;
-  //cout << "Xopt - cs.Param().X() is " << endl;
-  //cout << Xopt - cs.Param().X() << endl;
-
-  cout << endl;
-  cout << "******************************************************" << endl;
-  cout << "******************************************************" << endl;
-  cout << "**                                                  **" << endl;
-  cout << "**          Potential fitting terminated.           **" << endl;
-  cout << "**                                                  **" << endl;
-  cout << "******************************************************" << endl;
-  cout << "******************************************************" << endl;
-  cout << endl;
-
-
-  // Calculate properties using optimized parameters:
-  cs(Xopt);
-  // Report:
-  report_pot_prop( cs.Param(), cs.DataX(), cs.DataY(), cs.ModelDataY() );
+  // ***********************************************************************************
+  // ***********************************************************************************
+  // ***********************************************************************************
+  // ***********************************************************************************
 
 
   double ts2 = omp_get_wtime();

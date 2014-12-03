@@ -11,7 +11,6 @@ MDSettings_common::MDSettings_common(){
   debug_pressure = false;
 
   report_step  = false;
-  quick_mode   = false;
 }
 
 

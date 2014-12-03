@@ -133,10 +133,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
 
 
     cout << "Relaxing atom system ... " << endl;
-    if (mds.specs.is_ref_comp)
-      mds.relax(false);
-    else
-      mds.relax(mds.specs_common.quick_mode);
+    mds.relax();
 
     E0 = mds.Ep_tot / mds.natoms();
     V0 = mds.V / mds.natoms();
@@ -345,10 +342,7 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
       // has made the system too small.
       bool retry;
       while (true){
-	if (mds.specs.is_ref_comp)
-	  mds.relax(false);
-	else
-	  mds.relax(mds.specs_common.quick_mode);
+	mds.relax();
 
 	Epa = mds.Ep_tot / mds.natoms();
 
@@ -910,10 +904,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 	// has made the system too small.
 	bool retry;
 	while (true){
-	  if (mds.specs.is_ref_comp)
-	    mds.relax(false);
-	  else
-	    mds.relax(mds.specs_common.quick_mode);
+	  mds.relax();
 
 	  Epa = mds.Ep_tot / mds.natoms();
 

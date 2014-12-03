@@ -593,6 +593,69 @@ void PotentialInformation::read_info(string filename){
   }
 
 
+  cout << "#########################################################################" << endl;
+  cout << "Debugging ABOP alpha/omega/2mu parameters ..." << endl;
+  cout << "#########################################################################" << endl;
+
+  for (int i1=0; i1<elem.nelem(); i1++){
+    for (int i2=0; i2<elem.nelem(); i2++){
+      for (int i3=0; i3<elem.nelem(); i3++){
+	string s1 = elem.idx2name(i1);
+	string s2 = elem.idx2name(i2);
+	string s3 = elem.idx2name(i3);
+	
+	cout << "Using abop_alpha(" << s1 << "," << s2 << "," << s3 << ")?: " << use_abop_alpha.elem(i1, i2, i3) << endl;
+	cout << "Using abop_omega(" << s1 << "," << s2 << "," << s3 << ")?: " << use_abop_omega.elem(i1, i2, i3) << endl;
+      }
+      cout << "Using abop_2mu(" << s1 << "," << s2 << ")?: " << use_abop_2mu.elem(i1, i2) << endl;
+    }
+  }
+  cout << "-------------------------------------------------------------------------" << endl;  
+
+  for (int i1=0; i1<elem.nelem(); i1++){
+    for (int i3=0; i3<elem.nelem(); i3++){
+
+      int n_abop_alpha=0;
+      int n_abop_omega=0;
+      int n_abop_alpha_abop_omega=0;
+      int n_abop_alpha_Brenner_omega=0;
+      for (int i2=0; i2<elem.nelem(); i2++){
+	string s1 = elem.idx2name(i1);
+	string s2 = elem.idx2name(i2);
+	string s3 = elem.idx2name(i3);
+
+	if (use_abop_alpha.elem(i1,i2,i3)==true) n_abop_alpha++;
+	if (use_abop_omega.elem(i1,i2,i3)==true) n_abop_omega++;
+
+	if      (use_abop_alpha.elem(i1,i2,i3)==true && use_abop_omega.elem(i1,i2,i3)==true){
+	  n_abop_alpha_abop_omega++;
+	  cout << "NOTE: Using ABOP alpha and ABOP omega for combination (ijk) "
+	       << s1 << "-" << s2 << "-" << s3 << endl;
+	}
+	else if (use_abop_alpha.elem(i1,i2,i3)==true && use_abop_omega.elem(i1,i2,i3)==false){
+	  n_abop_alpha_Brenner_omega++;
+	  cout << "NOTE: Using ABOP alpha and *Brenner omega* for combination (ijk) "
+	       << s1 << "-" << s2 << "-" << s3 << endl;
+	}
+      }
+
+      if (n_abop_alpha_abop_omega==0 && n_abop_alpha_Brenner_omega==0 &&
+	  use_abop_2mu.elem(i1,i3)==true){
+	cout << "NOTE: Using ABOP 2mu(i,k) for combination "
+	     << s1 << "-" << s2 << endl;
+      }
+
+      if (use_abop_2mu.elem(i1,i3)==true && (n_abop_alpha>0 || n_abop_omega>0)){
+	cout << "*** ERROR *** There is a clash between usage of alpha/omega and 2mu parameters! Exiting." << endl;
+	exit(EXIT_FAILURE);
+      }
+
+
+    }
+  }
+  cout << "#########################################################################" << endl;
+
+
   
 
   cout << "Read-in of general information about potentials completed." << endl;

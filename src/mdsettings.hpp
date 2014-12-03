@@ -12,7 +12,6 @@ public:
   bool debug_pressure;
 
   bool report_step;
-  bool quick_mode;
 
   MDSettings_common();
 } ;

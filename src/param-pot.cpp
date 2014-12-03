@@ -101,8 +101,10 @@ void ParamPot::update_pot(){
       for (int i3=0; i3<nel; ++i3){
 
 	if ((*p_potinfo).use_abop_alpha.elem(i1,i2,i3)){
+
 	  if ((*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) != PARAM_FIXED)
 	    (*p_potinfo).abop_alpha.elem(i1,i2,i3) = X(ipar++);
+
 	}
 
       }
@@ -114,8 +116,10 @@ void ParamPot::update_pot(){
       for (int i3=0; i3<(*p_potinfo).elem.nelem(); ++i3){
 
 	if ((*p_potinfo).use_abop_omega.elem(i1,i2,i3)){
+
 	  if ((*p_potinfo).abop_omega_partype.elem(i1,i2,i3) != PARAM_FIXED)
 	    (*p_potinfo).set_abop_omega(i1,i2,i3, X(ipar++));
+
 	}
 	
       }
@@ -129,6 +133,7 @@ void ParamPot::update_pot(){
 
 	if ((*p_potinfo).abop_2mu_partype.elem(i1,i2) != PARAM_FIXED)
 	  (*p_potinfo).abop_2mu.elem(i1,i2) = X(ipar++);
+
       }
       
     }

@@ -121,7 +121,7 @@ public:
 
 
   // MD:
-  void relax(bool quick_mode=false);
+  void relax(void);
 
   void transform_cell(const Matrix<double> & alpha_cart,
 		      const double lowlim=-1);

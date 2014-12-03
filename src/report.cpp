@@ -76,8 +76,8 @@ void report_pot_prop(ParamPot & param,
   report_prop( DX );
 
 
-  if (param.p_potinfo->specs_prop.mds_specs_common.quick_mode)
-    aborterror("Done with quick mode, performing dirty exit.");
+  //  if (param.p_potinfo->specs_prop.mds_specs_common.quick_mode)
+  //  aborterror("Done with quick mode, performing dirty exit.");
 }
 
 
@@ -146,7 +146,8 @@ void report_pot(PotentialInformationFit * p_potinfo,
 
 
 	  if (o1 || o2){
-	    cout << "ABOP " << s1 << "-" << s2 << ": "
+	    cout << "ABOP "
+		 << format("%2s-%2s: ") % s1 % s2
 		 << format("%20s : ") % p_potinfo->pot_ABOP[j].parname[k];
 
 	    td = p_potinfo->pot_ABOP[j].parval[k];
@@ -188,16 +189,24 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	if (!o1 && !o2) continue;
 
 	if (o1 || o2){
-	  cout << "ABOP " << s1 << "-" << s2 << "-" << s3 << ": alpha: ";
+	  cout << "ABOP "
+	       << format("%2s-%2s-%2s: ") % s1 % s2 % s3
+	       << format("%17s : ") % "alpha";
 
 	  td = p_potinfo->abop_alpha.elem(i1,i2,i3);
 	  if (abs(td)<1.0e-4) cout << format(formate) % td;
 	  else                cout << format(formatf) % td;
 	}
 
-	if (o2)
+	if (o2){
+	  partypestring="unknown";
+	  if      ((*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) == PARAM_FIXED) partypestring="FIXED parameter";
+	  else if ((*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) == PARAM_FREE_WITH_LIMITS) partypestring="CONSTRAINED parameter";
+	  else if ((*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) == PARAM_FREE) partypestring="FREE parameter";
 	  cout << "   min: " << format("%20.10e") % p_potinfo->abop_alpha_parmin.elem(i1,i2,i3)
-	       << "   max: " << format("%20.10e") % p_potinfo->abop_alpha_parmax.elem(i1,i2,i3);
+	       << "   max: " << format("%20.10e") % p_potinfo->abop_alpha_parmax.elem(i1,i2,i3)
+	       << "   " <<  partypestring;
+	}
 	if (o1 || o2) cout << endl;
 
       }
@@ -219,16 +228,24 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	if (!o1 && !o2) continue;
 
 	if (o1 || o2){
-	  cout << "ABOP " << s1 << "-" << s2 << "-" << s3 << ": omega: ";
+	  cout << "ABOP "
+	       << format("%2s-%2s-%2s: ") % s1 % s2 % s3
+	       << format("%17s : ") % "omega";
 
 	  td = p_potinfo->get_abop_omega(s1,s2,s3);
 	  if (abs(td)<1.0e-4) cout << format(formate) % td;
 	  else                cout << format(formatf) % td;
 	}
 
-	if (o2)
-	  cout << "   min: " << format("%12.10e") % p_potinfo->abop_omega_parmin.elem(i1,i2,i3)
-	       << "   max: " << format("%12.10e") % p_potinfo->abop_omega_parmax.elem(i1,i2,i3);
+	if (o2){
+	  partypestring="unknown";
+	  if      ((*p_potinfo).abop_omega_partype.elem(i1,i2,i3) == PARAM_FIXED) partypestring="FIXED parameter";
+	  else if ((*p_potinfo).abop_omega_partype.elem(i1,i2,i3) == PARAM_FREE_WITH_LIMITS) partypestring="CONSTRAINED parameter";
+	  else if ((*p_potinfo).abop_omega_partype.elem(i1,i2,i3) == PARAM_FREE) partypestring="FREE parameter";
+	  cout << "   min: " << format("%20.10e") % p_potinfo->abop_omega_parmin.elem(i1,i2,i3)
+	       << "   max: " << format("%20.10e") % p_potinfo->abop_omega_parmax.elem(i1,i2,i3)
+	       << "   " <<  partypestring;
+	}
 	if (o1 || o2) cout << endl;
 
       }
@@ -248,16 +265,24 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	if (!o1 && !o2) continue;
 
 	if (o1 || o2){
-	  cout << "ABOP " << s1 << "-" << s2 << "-" << ": 2mu  : ";
+	  cout << "ABOP "
+	       << format("%2s-%2s: ") % s1 % s2
+	       << format("%20s : ") % "2mu";
 
 	  td = p_potinfo->abop_2mu.elem(i1,i2);
 	  if (abs(td)<1.0e-4) cout << format(formate) % td;
 	  else                cout << format(formatf) % td;
 	}
 
-	if (o2)
-	  cout << "   min: " << format("%12.10e") % p_potinfo->abop_2mu_parmin.elem(i1,i2)
-	       << "   max: " << format("%12.10e") % p_potinfo->abop_2mu_parmax.elem(i1,i2);
+	if (o2){
+	  partypestring="unknown";
+	  if      ((*p_potinfo).abop_2mu_partype.elem(i1,i2) == PARAM_FIXED) partypestring="FIXED parameter";
+	  else if ((*p_potinfo).abop_2mu_partype.elem(i1,i2) == PARAM_FREE_WITH_LIMITS) partypestring="CONSTRAINED parameter";
+	  else if ((*p_potinfo).abop_2mu_partype.elem(i1,i2) == PARAM_FREE) partypestring="FREE parameter";
+	  cout << "   min: " << format("%20.10e") % p_potinfo->abop_2mu_parmin.elem(i1,i2)
+	       << "   max: " << format("%20.10e") % p_potinfo->abop_2mu_parmax.elem(i1,i2)
+	       << "   " <<  partypestring;
+	}
 	if (o1 || o2) cout << endl;
 
     }

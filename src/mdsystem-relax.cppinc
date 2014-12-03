@@ -11,7 +11,7 @@
 // ##############################################################################
 
 
-void MDSystem::relax(bool quick_mode){
+void MDSystem::relax(void){
 
   int i,j;
   Vector<double> tv(3,0.0), tv1(3,0.0), tv2(3,0.0);
@@ -1180,8 +1180,6 @@ void MDSystem::relax(bool quick_mode){
     if (specs.fixed_geometry) break;
     if (time >= specs.tend) break;
 
-
-    if (quick_mode) break;
 
 
     time += dt;
