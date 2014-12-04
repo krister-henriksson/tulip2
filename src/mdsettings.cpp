@@ -11,6 +11,10 @@ MDSettings_common::MDSettings_common(){
   debug_pressure = false;
 
   report_step  = false;
+
+  use_def_dump_xyz_fmt = true;
+  def_dump_xyz_fmt = "extxyz";
+
 }
 
 

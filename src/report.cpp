@@ -64,16 +64,27 @@ void report_pot_prop(ParamPot & param,
 		     Vector<double> & DY,
 		     Vector<double> & MDY
 		     ){
+  report_pot_prop_ext(param, DX, DY, MDY, cout, cout);
+}
+
+
+void report_pot_prop_ext(ParamPot & param,
+			 Vector<CompoundStructureFit> & DX,
+			 Vector<double> & DY,
+			 Vector<double> & MDY,
+			 ostream & fout_pot,
+			 ostream & fout_prop
+			 ){
 
   cout << "-------------------------------------------------------------------------------" << endl;
 
   // Report the current settings of the potentials:
   //param.update_pot();
-  report_pot( param.p_potinfo, true, false );
+  report_pot( param.p_potinfo, true, false, fout_pot );
 
   // Report the current properties of the compounds (assumes they have been
   // calculated using the current settings of the potentials):
-  report_prop( DX );
+  report_prop( DX, fout_prop );
 
 
   //  if (param.p_potinfo->specs_prop.mds_specs_common.quick_mode)
@@ -95,16 +106,20 @@ void report_pot_prop(ParamPot & param,
 
 void report_pot(PotentialInformationFit * p_potinfo,
 		bool fittable_ones,
-		bool fixed_ones
+		bool fixed_ones,
+		ostream & fout
 		){
   int i1, i2, i3, j, k, nel = p_potinfo->elem.nelem();
   string s1, s2, s3, partypestring;
   bool o1, o2, oprint;
   string formatf = "%20.10f";
   string formate = "%20.10e";
+  const double llim=1.0e-4;
+  const double ulim=1.0e+4;
   double td;
 
   if (! fittable_ones && ! fixed_ones) return;
+
 
 
   // ##########################################################################
@@ -125,7 +140,7 @@ void report_pot(PotentialInformationFit * p_potinfo,
 
       if (p_potinfo->basepot(s1,s2) == "ABOP"){
 	/*
-	  cout << "ABOP: " << p_potinfo->pot_ABOP[j].elemname1 << "-"
+	  fout << "ABOP: " << p_potinfo->pot_ABOP[j].elemname1 << "-"
 	  << p_potinfo->pot_ABOP[j].elemname2 << ": is fittable?: "
 	  << p_potinfo->is_fittable(s1,s2) << endl;
 	*/
@@ -146,13 +161,13 @@ void report_pot(PotentialInformationFit * p_potinfo,
 
 
 	  if (o1 || o2){
-	    cout << "ABOP "
+	    fout << "ABOP "
 		 << format("%2s-%2s: ") % s1 % s2
 		 << format("%20s : ") % p_potinfo->pot_ABOP[j].parname[k];
 
 	    td = p_potinfo->pot_ABOP[j].parval[k];
-	    if (abs(td)<1.0e-4) cout << format(formate) % td;
-	    else                cout << format(formatf) % td;
+	    if (abs(td)<llim || abs(td)>ulim) fout << format(formate) % td;
+	    else                              fout << format(formatf) % td;
 	  }
 
 	  if (o2){
@@ -160,11 +175,11 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	    if      (p_potinfo->pot_ABOP[j].partype[k] == PARAM_FIXED) partypestring="FIXED parameter";
 	    else if (p_potinfo->pot_ABOP[j].partype[k] == PARAM_FREE_WITH_LIMITS) partypestring="CONSTRAINED parameter";
 	    else if (p_potinfo->pot_ABOP[j].partype[k] == PARAM_FREE) partypestring="FREE parameter";
-	    cout << "   min: " << format("%20.10e") % p_potinfo->pot_ABOP[j].parmin[k]
+	    fout << "   min: " << format("%20.10e") % p_potinfo->pot_ABOP[j].parmin[k]
 		 << "   max: " << format("%20.10e") % p_potinfo->pot_ABOP[j].parmax[k]
 		 << "   " <<  partypestring;
 	  }
-	  if (o1 || o2) cout << endl;
+	  if (o1 || o2) fout << endl;
 	  
 	} // loop: k
       } // ABOP
@@ -172,7 +187,7 @@ void report_pot(PotentialInformationFit * p_potinfo,
   }
 
 
-  //if (counter==0) cout << "(no items detected)" << endl;
+  //if (counter==0) fout << "(no items detected)" << endl;
 
   for (i1=0; i1<nel; ++i1){
     s1 = p_potinfo->elem.idx2name(i1);
@@ -189,13 +204,13 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	if (!o1 && !o2) continue;
 
 	if (o1 || o2){
-	  cout << "ABOP "
+	  fout << "ABOP "
 	       << format("%2s-%2s-%2s: ") % s1 % s2 % s3
 	       << format("%17s : ") % "alpha";
 
 	  td = p_potinfo->abop_alpha.elem(i1,i2,i3);
-	  if (abs(td)<1.0e-4) cout << format(formate) % td;
-	  else                cout << format(formatf) % td;
+	  if (abs(td)<llim || abs(td)>ulim) fout << format(formate) % td;
+	  else                              fout << format(formatf) % td;
 	}
 
 	if (o2){
@@ -203,11 +218,11 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	  if      ((*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) == PARAM_FIXED) partypestring="FIXED parameter";
 	  else if ((*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) == PARAM_FREE_WITH_LIMITS) partypestring="CONSTRAINED parameter";
 	  else if ((*p_potinfo).abop_alpha_partype.elem(i1,i2,i3) == PARAM_FREE) partypestring="FREE parameter";
-	  cout << "   min: " << format("%20.10e") % p_potinfo->abop_alpha_parmin.elem(i1,i2,i3)
+	  fout << "   min: " << format("%20.10e") % p_potinfo->abop_alpha_parmin.elem(i1,i2,i3)
 	       << "   max: " << format("%20.10e") % p_potinfo->abop_alpha_parmax.elem(i1,i2,i3)
 	       << "   " <<  partypestring;
 	}
-	if (o1 || o2) cout << endl;
+	if (o1 || o2) fout << endl;
 
       }
     }
@@ -228,13 +243,13 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	if (!o1 && !o2) continue;
 
 	if (o1 || o2){
-	  cout << "ABOP "
+	  fout << "ABOP "
 	       << format("%2s-%2s-%2s: ") % s1 % s2 % s3
 	       << format("%17s : ") % "omega";
 
 	  td = p_potinfo->get_abop_omega(s1,s2,s3);
-	  if (abs(td)<1.0e-4) cout << format(formate) % td;
-	  else                cout << format(formatf) % td;
+	  if (abs(td)<llim || abs(td)>ulim) fout << format(formate) % td;
+	  else                              fout << format(formatf) % td;
 	}
 
 	if (o2){
@@ -242,11 +257,11 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	  if      ((*p_potinfo).abop_omega_partype.elem(i1,i2,i3) == PARAM_FIXED) partypestring="FIXED parameter";
 	  else if ((*p_potinfo).abop_omega_partype.elem(i1,i2,i3) == PARAM_FREE_WITH_LIMITS) partypestring="CONSTRAINED parameter";
 	  else if ((*p_potinfo).abop_omega_partype.elem(i1,i2,i3) == PARAM_FREE) partypestring="FREE parameter";
-	  cout << "   min: " << format("%20.10e") % p_potinfo->abop_omega_parmin.elem(i1,i2,i3)
+	  fout << "   min: " << format("%20.10e") % p_potinfo->abop_omega_parmin.elem(i1,i2,i3)
 	       << "   max: " << format("%20.10e") % p_potinfo->abop_omega_parmax.elem(i1,i2,i3)
 	       << "   " <<  partypestring;
 	}
-	if (o1 || o2) cout << endl;
+	if (o1 || o2) fout << endl;
 
       }
     }
@@ -265,13 +280,13 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	if (!o1 && !o2) continue;
 
 	if (o1 || o2){
-	  cout << "ABOP "
+	  fout << "ABOP "
 	       << format("%2s-%2s: ") % s1 % s2
 	       << format("%20s : ") % "2mu";
 
 	  td = p_potinfo->abop_2mu.elem(i1,i2);
-	  if (abs(td)<1.0e-4) cout << format(formate) % td;
-	  else                cout << format(formatf) % td;
+	  if (abs(td)<llim || abs(td)>ulim) fout << format(formate) % td;
+	  else                              fout << format(formatf) % td;
 	}
 
 	if (o2){
@@ -279,11 +294,11 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	  if      ((*p_potinfo).abop_2mu_partype.elem(i1,i2) == PARAM_FIXED) partypestring="FIXED parameter";
 	  else if ((*p_potinfo).abop_2mu_partype.elem(i1,i2) == PARAM_FREE_WITH_LIMITS) partypestring="CONSTRAINED parameter";
 	  else if ((*p_potinfo).abop_2mu_partype.elem(i1,i2) == PARAM_FREE) partypestring="FREE parameter";
-	  cout << "   min: " << format("%20.10e") % p_potinfo->abop_2mu_parmin.elem(i1,i2)
+	  fout << "   min: " << format("%20.10e") % p_potinfo->abop_2mu_parmin.elem(i1,i2)
 	       << "   max: " << format("%20.10e") % p_potinfo->abop_2mu_parmax.elem(i1,i2)
 	       << "   " <<  partypestring;
 	}
-	if (o1 || o2) cout << endl;
+	if (o1 || o2) fout << endl;
 
     }
   }
@@ -291,7 +306,7 @@ void report_pot(PotentialInformationFit * p_potinfo,
 
 
 
-  cout << "-------------------------------------------------------------------------------" << endl;
+  fout << "-------------------------------------------------------------------------------" << endl;
 
 }
 
@@ -299,14 +314,17 @@ void report_pot(PotentialInformationFit * p_potinfo,
 
 
 
-
-void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
+void report_prop(Vector<CompoundStructureFit> & DX,
+		 ostream & fout,
+		 bool firsttime
+		 ){
 
   int i;
   string s1, s2, s3;
   double td1, td2, td3, td4;
   int k,p;
   bool tb1, tb2;
+  string propstr="empty";
 
 
   // ##########################################################################
@@ -317,7 +335,7 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
   for (i=0; i<DX.size(); ++i){
     CompoundStructureFit cmpfit = DX[i];
 
-    cout << "Compound: " << cmpfit.name << endl;
+    fout << "Compound: " << cmpfit.name << endl;
 
     if (cmpfit.prop_use.a){
       td1 = cmpfit.prop_pred.a;
@@ -327,11 +345,14 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.a;
       td4 = cmpfit.prop_w.a;
 
-      printf("Lattice parameter a                   : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      //printf("Lattice parameter a                   : read-in  %15.10f", td2);
+      //printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
+      //printf ("  uncertainty  %15.10f", td3);
+      //printf ("  weight       %15.10f", td4);
+      //printf("\n");
+
+      propstr = "Lattice parameter a                   : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.b){
@@ -342,11 +363,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.b;
       td4 = cmpfit.prop_w.b;
 
-      printf("Lattice parameter b                   : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Lattice parameter b                   : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.c){
@@ -357,11 +375,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.c;
       td4 = cmpfit.prop_w.c;
 
-      printf("Lattice parameter c                   : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Lattice parameter c                   : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.bpa){
@@ -372,11 +387,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.bpa;
       td4 = cmpfit.prop_w.bpa;
 
-      printf("Lattice parameter ratio b/a           : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Lattice parameter ratio b/a           : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.cpa){
@@ -387,11 +399,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.cpa;
       td4 = cmpfit.prop_w.cpa;
 
-      printf("Lattice parameter ratio c/a           : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Lattice parameter ratio c/a           : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.r0){
@@ -402,11 +411,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.r0;
       td4 = cmpfit.prop_w.r0;
 
-      printf("Dimer bond length r0                  : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Dimer bond length r0                  : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.angle_ab){
@@ -417,11 +423,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.angle_ab;
       td4 = cmpfit.prop_w.angle_ab;
 
-      printf("Angle btw lat param a and b           : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Angle btw lat param a and b           : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.angle_ac){
@@ -432,11 +435,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.angle_ac;
       td4 = cmpfit.prop_w.angle_ac;
 
-      printf("Angle btw lat param a and c           : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Angle btw lat param a and c           : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.angle_bc){
@@ -447,12 +447,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.angle_bc;
       td4 = cmpfit.prop_w.angle_bc;
 
-      printf("Angle btw lat param b and c           : read-in  %15.10f", td2);
-      printf("Lattice parameter a : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Angle btw lat param b and c           : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.Vatom){
@@ -463,11 +459,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.Vatom;
       td4 = cmpfit.prop_w.Vatom;
 
-      printf("Atomic volume Vatom                   : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Atomic volume Vatom                   : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.Ecoh){
@@ -478,11 +471,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.Ecoh;
       td4 = cmpfit.prop_w.Ecoh;
 
-      printf("Cohesive energy Ecoh                  : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Cohesive energy Ecoh                  : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.Emix){
@@ -493,11 +483,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.Emix;
       td4 = cmpfit.prop_w.Emix;
 
-      printf("Mixing energy Emix                    : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Mixing energy Emix                    : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.B){
@@ -508,11 +495,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.B;
       td4 = cmpfit.prop_w.B;
 
-      printf("Bulk modulus B                        : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Bulk modulus B                        : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.Bp){
@@ -523,11 +507,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.Bp;
       td4 = cmpfit.prop_w.Bp;
 
-      printf("Pressure derivative of bulk modulus B': read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Pressure derivative of bulk modulus B': ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     for (k=0; k<6; ++k)
@@ -540,11 +521,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
 	  td3 = cmpfit.prop_u.C.elem(k,p);
 	  td4 = cmpfit.prop_w.C.elem(k,p);
 
-	  printf("Elastic constant C%d%d                  : read-in  %15.10f", k+1, p+1, td2);
-	  if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-	  if (tb1) printf ("  uncertainty  %15.10f", td3);
-	  if (tb2) printf ("  weight       %15.10f", td4);
-	  printf("\n");
+	  propstr = "Elastic constant C" + tostring(k+1) + tostring(p+1) + "                  : ";
+	  print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
 	}
 
     if (cmpfit.prop_use.Fmax){
@@ -555,11 +533,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.Fmax;
       td4 = cmpfit.prop_w.Fmax;
 
-      printf("Maximum force Fmax                    : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Maximum force Fmax                    : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.Pmax){
@@ -570,11 +545,8 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.Pmax;
       td4 = cmpfit.prop_w.Pmax;
 
-      printf("Maximum pressure Pmax                 : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Maximum pressure Pmax                 : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
     if (cmpfit.prop_use.displmax){
@@ -585,21 +557,57 @@ void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime){
       td3 = cmpfit.prop_u.displmax;
       td4 = cmpfit.prop_w.displmax;
 
-      printf("Maximum displacement displmax         : read-in  %15.10f", td2);
-      if (!firsttime) printf("  predicted  %15.10f  rel. change  %10.3e", td1, fp_divide(td1-td2, td2));
-      if (tb1) printf ("  uncertainty  %15.10f", td3);
-      if (tb2) printf ("  weight       %15.10f", td4);
-      printf("\n");
+      propstr = "Maximum displacement displmax         : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
-    cout << "..............................................................................." << endl;
+    fout << "..............................................................................." << endl;
 
   }
 
   if (DX.size()>0)
-    cout << "-------------------------------------------------------------------------------" << endl;
+    fout << "-------------------------------------------------------------------------------" << endl;
 
 }
 
+
+
+
+void print_prop_readin_pred_comp(ostream & fout,
+				 bool firsttime,
+				 bool tb1, bool tb2,
+				 string propstr,
+				 double td1, double td2,
+				 double td3, double td4){
+
+  const double llim=1.0e-4;
+  const double ulim=1.0e+4;
+  string formatf = "%20.10f";
+  string formate = "%20.10e";
+
+  fout << propstr;
+  fout << "read-in  ";
+  if (abs(td2)<llim || abs(td2)>ulim) fout << format(formate) % td2;
+  else                                fout << format(formatf) % td2;
+
+  if (!firsttime){
+    fout << "  predicted  ";
+    if (abs(td1)<llim || abs(td1)>ulim) fout << format(formate) % td1;
+    else                                fout << format(formatf) % td1;
+
+    fout << "  rel. change  " << format("%10.3e")  % fp_divide(td1-td2, td2);
+  }
+  if (tb1){
+    fout << "  uncertainty  ";
+    if (abs(td3)<llim || abs(td3)>ulim) fout << format(formate) % td3;
+    else                                fout << format(formatf) % td3;
+  }
+  else {
+    fout << "  weight       ";
+    if (abs(td4)<llim || abs(td4)>ulim) fout << format(formate) % td4;
+    else                                fout << format(formatf) % td4;
+  }
+  fout << endl;
+}
 
 
 

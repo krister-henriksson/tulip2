@@ -202,6 +202,7 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
   clear_all_atoms();
 
 
+  int atom_counter=1;
   for (i=0; i<N[0]; ++i){
     for (j=0; j<N[1]; ++j){
       for (k=0; k<N[2]; ++k){
@@ -214,7 +215,7 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 
 	  // Atom type info will be filled in later. Now just put something here:
 	  type[iat] = 0;
-	  idx[iat] = iat;
+	  idx[iat] = atom_counter++;
 	  matter[iat] = cmp.basis_elems[p];
 	}
       }

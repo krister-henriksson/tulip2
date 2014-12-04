@@ -2,7 +2,10 @@
 #ifndef MDSETTINGS_HPP
 #define MDSETTINGS_HPP
 
+#include <string>
 
+
+using std::string;
 
 
 // Set in main routine:
@@ -12,6 +15,10 @@ public:
   bool debug_pressure;
 
   bool report_step;
+
+  bool use_def_dump_xyz_fmt;
+  string def_dump_xyz_fmt;
+
 
   MDSettings_common();
 } ;

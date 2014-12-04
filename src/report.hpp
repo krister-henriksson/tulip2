@@ -2,6 +2,7 @@
 #ifndef REPORT_HPP
 #define REPORT_HPP
 
+#include <fstream>
 
 #include "chisq-basics.hpp"
 #include "exiterrors.hpp"
@@ -48,15 +49,35 @@ using namespace utils;
 void report_pot_prop(ParamPot & param,
 		     Vector<CompoundStructureFit> & DX,
 		     Vector<double> & DY,
-		     Vector<double> & MDY);
+		     Vector<double> & MDY
+		     );
+
+void report_pot_prop_ext(ParamPot & param,
+			 Vector<CompoundStructureFit> & DX,
+			 Vector<double> & DY,
+			 Vector<double> & MDY,
+			 ostream & fout_pot=cout,
+			 ostream & fout_prop=cout
+			 );
 
 void report_pot(PotentialInformationFit * p_potinfo,
 		bool fittable_ones=true,
-		bool fixed_ones=false);
+		bool fixed_ones=false,
+		ostream & fout_pot=cout
+		);
 
-void report_prop(Vector<CompoundStructureFit> & DX, bool firsttime=false);
+void report_prop(Vector<CompoundStructureFit> & DX,
+		 ostream & fout_prop=cout,
+		 bool firsttime=false
+		 );
 
 
+void print_prop_readin_pred_comp(ostream & fout,
+				 bool firsttime,
+				 bool tb1, bool tb2,
+				 string propstr,
+				 double td1, double td2,
+				 double td3, double td4);
 
 
 

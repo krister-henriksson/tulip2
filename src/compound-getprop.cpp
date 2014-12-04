@@ -97,14 +97,19 @@ void CompoundStructureFit::getprop(ParamPot & param){
   // MD relaxation of compound:
   // ###################################################################
 
-  // Initialize (common) MD settings:
+  // Initialize common MD settings for all compounds:
   mds.specs_common = param.p_potinfo->specs_prop.mds_specs_common;
+  // Initialize MD settings:
   mds.specs        = mds_specs;
-  // Other settings:
+
+  // Other MD settings from different places ...:
   mds.omp_info     = param.p_potinfo->omp_info;
   mds.rcut         = mds.rcut_max = mds.p_potinfo->get_rcut_max( elemnames );
   mds.skint        = mds.specs.skint;
 
+  // These settings are applied to inherited base class members:
+  mds.use_def_xyz_fmt = param.p_potinfo->specs_prop.mds_specs_common.use_def_dump_xyz_fmt;
+  mds.def_xyz_fmt     = param.p_potinfo->specs_prop.mds_specs_common.def_dump_xyz_fmt;
 
 
 

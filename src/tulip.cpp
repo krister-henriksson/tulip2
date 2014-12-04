@@ -93,6 +93,11 @@ int main(int argc, char *argv[]){
   double ts1 = omp_get_wtime();
   //clock_t clock1 = std::clock();
 
+  bool u_d_xyz_fmt=true;
+  string d_xyz_fmt="extxyz";
+
+
+
 
   tulip_info = "TULIP version " + tostring(VERSION) + " (c) Krister Henriksson 2006-2014";
 
@@ -111,6 +116,9 @@ int main(int argc, char *argv[]){
 
     cout << "     -ro                Only calculate properties of reference compounds, then exit. Default: not used." << endl;
     cout << "     -nof               Only calculate properties of reference and read-in compounds, then exit. Default: not used." << endl;
+    cout << "     -xyz               Use traditional XYZ format when writing XYZ files. Default: not used." << endl;
+    cout << "                        The extended XYZ format (http://jrkermode.co.uk/quippy/io.html#extendedxyz)" << endl;
+    cout << "                        is used by default." << endl;
     cout << "" << endl;
 
     cout << "     -dfitpropn         Show information about fitting of properties. Here 'n' must be" << endl;
@@ -142,6 +150,7 @@ int main(int argc, char *argv[]){
 
   potfileOK = geomfileOK = specsfileOK = false;
   run_refonly = false;
+  use_relonly = false;
   debug_forces = false;
   debug_pressure = false;
   report_mds_steps = false;
@@ -155,28 +164,34 @@ int main(int argc, char *argv[]){
   for (i=1; i<argc; i++){
 
     if (string(argv[i])=="-pf"){
-      arg = string(argv[i+1]); sstream.str(arg);
+      arg = string(argv[i+1]); sstream.str(arg); i++;
       sstream >> potfile;
       sstream.clear();
-      potfileOK = true; i++;
+      potfileOK = true;
     }
     else if (string(argv[i])=="-gf"){
-      arg = string(argv[i+1]); sstream.str(arg);
+      arg = string(argv[i+1]); sstream.str(arg); i++;
       sstream >> geomfile;
       sstream.clear();
-      geomfileOK = true; i++;
+      geomfileOK = true;
     }
     else if (string(argv[i])=="-sf"){
-      arg = string(argv[i+1]); sstream.str(arg);
+      arg = string(argv[i+1]); sstream.str(arg); i++;
       sstream >> specsfile;
       sstream.clear();
-      specsfileOK = true; i++;
+      specsfileOK = true;
     }
     else if (string(argv[i])=="-ro"){
       run_refonly = true;
     }
     else if (string(argv[i])=="-nof"){
       use_relonly = true;
+    }
+    else if (string(argv[i])=="-xyz"){
+      arg = string(argv[i+1]); sstream.str(arg); i++;
+      sstream >> d_xyz_fmt;
+      sstream.clear();
+      u_d_xyz_fmt = true;      
     }
     else if (string(argv[i])=="-dfitprop0"){ debug_fit_prop[0] = true; }
     else if (string(argv[i])=="-dfitprop1"){ debug_fit_prop[1] = true; }
@@ -289,6 +304,9 @@ int main(int argc, char *argv[]){
   potinfo.specs_prop.mds_specs_common.debug_forces = debug_forces;
   potinfo.specs_prop.mds_specs_common.debug_pressure = debug_pressure;
   potinfo.specs_prop.mds_specs_common.report_step  = report_mds_steps;
+  potinfo.specs_prop.mds_specs_common.use_def_dump_xyz_fmt = u_d_xyz_fmt;
+  potinfo.specs_prop.mds_specs_common.def_dump_xyz_fmt = d_xyz_fmt;
+
 
 
 
@@ -451,10 +469,7 @@ int main(int argc, char *argv[]){
   cout << "Options: quench always?                                 : " << potinfo.specs_prop.mds_specs.quench_always << endl; 
   cout << "  If true, all velocities zeroed at every time step." << endl;
   cout << "" << endl;
-  cout << "Overruling options: report step?                                   : " << potinfo.specs_prop.mds_specs_common.report_step << endl;
-  cout << "  If true, writes out physical info of the system at every time step." << endl;
-  cout << "Overruling options: debug forces?                                  : " << potinfo.specs_prop.mds_specs_common.debug_forces << endl; 
-  cout << "Overruling options: debug pressure?                                : " << potinfo.specs_prop.mds_specs_common.debug_pressure << endl; 
+
   cout << endl;
   cout << "--------------------------------------------------------------------------" << endl;
   cout << "Settings for MD simulations of reference compounds" << endl;
@@ -487,10 +502,19 @@ int main(int argc, char *argv[]){
   cout << "Options: quench always?                                 : " << potinfo.specs_prop.mds_specs_ref.quench_always << endl; 
   cout << "  If true, all velocities zeroed at every time step." << endl;
   cout << "" << endl;
-  cout << "Overruling options: report step?                                   : " << potinfo.specs_prop.mds_specs_common.report_step << endl;
+
+  cout << endl;
+  cout << "--------------------------------------------------------------------------" << endl;
+  cout << "Common settings for MD simulations of any compound" << endl;
+  cout << "--------------------------------------------------------------------------" << endl;
+  cout << endl;
+  cout << "Report step?                                   : " << potinfo.specs_prop.mds_specs_common.report_step << endl;
   cout << "  If true, writes out physical info of the system at every time step." << endl;
-  cout << "Overruling options: debug forces?                                  : " << potinfo.specs_prop.mds_specs_common.debug_forces << endl; 
-  cout << "Overruling options: debug pressure?                                : " << potinfo.specs_prop.mds_specs_common.debug_pressure << endl; 
+  cout << "Debug forces?                                  : " << potinfo.specs_prop.mds_specs_common.debug_forces << endl; 
+  cout << "Debug pressure?                                : " << potinfo.specs_prop.mds_specs_common.debug_pressure << endl; 
+  cout << "Use default XYZ format?                        : " << potinfo.specs_prop.mds_specs_common.use_def_dump_xyz_fmt << endl;
+  cout << "Default XYZ format?                            : " << potinfo.specs_prop.mds_specs_common.def_dump_xyz_fmt << endl;
+  cout << "" << endl;
 
 
 
@@ -868,7 +892,7 @@ int main(int argc, char *argv[]){
   }
 
 
-  report_prop( complistfit.compounds, true );
+  report_prop( complistfit.compounds, cout, true );
 
 
 
@@ -1358,6 +1382,24 @@ int main(int argc, char *argv[]){
   // ***********************************************************************************
   // ***********************************************************************************
   // ***********************************************************************************
+
+
+  cout << "Dumping potential parameters and compound properties to files ..." << endl;
+  ofstream fout1, fout2;
+  string fname1 = "report-potpar.dat";
+  string fname2 = "report-compprop.dat";
+  fout1.open(fname1.c_str()); fout2.open(fname2.c_str());
+  report_pot( &potinfo, true, true, fout1 );
+  report_prop( DX, fout2 );
+  fout1.close(); fout1.clear();
+  fout2.close(); fout2.clear();
+
+
+  // ***********************************************************************************
+  // ***********************************************************************************
+  // ***********************************************************************************
+  // ***********************************************************************************
+
 
 
   double ts2 = omp_get_wtime();
