@@ -91,7 +91,7 @@ double & Elements::reflat_cpa(string s){
 
 
 
-
+// NOTE: Input argument must correspond to atom index, not atom type!!!
 int & Elements::atomtype(int i){
   return matomtype[i];
 }

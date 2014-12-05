@@ -55,7 +55,7 @@ double MDSystem::force_ABOP(){
   int nat = natoms();
   double Ep_tot_local = 0.0;
 
-  int se_typei = abs(type[0]);
+  int se_typei = elem.name2idx( matter[0] );
   int se_ivecij = p_potinfo->basepot_vecidx(se_typei, se_typei);
   int se_ivecik = se_ivecij;
   int se_ivec_reppot = p_potinfo->reppot_vecidx(se_typei, se_typei);
@@ -126,7 +126,7 @@ double MDSystem::force_ABOP(){
 
 
 
-    typei = abs(type[i]);
+    typei = elem.name2idx( matter[i] );
 
 
 
@@ -139,7 +139,7 @@ double MDSystem::force_ABOP(){
 
       if (i==j) continue;
 
-      typej = abs(type[j]);
+      typej = elem.name2idx( matter[j] );
       
       if (! iac_pure_ABOP)
 	if (p_potinfo->basepot(typei,typej) != "ABOP") continue;
@@ -266,7 +266,7 @@ double MDSystem::force_ABOP(){
 	if (k==j) continue;
 	//cout << "ijk " << i << j << k << endl;
 
-	typek = abs(type[k]);
+	typek = elem.name2idx( matter[k] );
 	//s3 = matter[k]; //p_potinfo->elem.idx2name(typek);
 
 	if (! iac_pure_ABOP)
@@ -437,7 +437,7 @@ double MDSystem::force_ABOP(){
 	if (k==i) continue;
 	if (k==j) continue;
 
-	typek = abs(type[k]);
+	typek = elem.name2idx( matter[k] );
 	//s3 = matter[k]; //p_potinfo->elem.idx2name(typek);
 
 	if (! iac_pure_ABOP)

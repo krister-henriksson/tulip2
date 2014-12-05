@@ -62,8 +62,8 @@ void MDSystem::relax(void){
   double mass1;
 
   
-  type1 = abs(type[0]);
-  mass1 = elem.mass(type1);
+  type1 = elem.atomtype(matter[0]);
+  mass1 = elem.mass(matter[0]); //type1
 
 
   rand_mtwister mtwister(specs.seed);
@@ -125,16 +125,17 @@ void MDSystem::relax(void){
       frc_num[i] = Vector<double>(3,0);
 
     if (sys_single_elem) type[i] = type1;
-    else                 type[i] = elem.name2idx(matter[i]);
+    else                 type[i] = elem.atomtype(matter[i]);//name2idx(matter[i]);
     
     tmp1 = mtwister.gauss(); // has internal state which is updated after call
     tmp2 = mtwister.gauss();
     tmp3 = mtwister.gauss();
-    vel[i][0] = vrms[ type[i] ] * tmp1;
-    vel[i][1] = vrms[ type[i] ] * tmp2;
-    vel[i][2] = vrms[ type[i] ] * tmp3;
+    int n2i = elem.name2idx(matter[i]);
+    vel[i][0] = vrms[ n2i ] * tmp1; // type[i]
+    vel[i][1] = vrms[ n2i ] * tmp2;
+    vel[i][2] = vrms[ n2i ] * tmp3;
 
-    nspecies[ abs(type[i]) ]++;
+    nspecies[ n2i ]++;
   }
   //cout << "MD system vectors resized to correct sizes." << endl;
 
@@ -211,6 +212,16 @@ void MDSystem::relax(void){
   //cout << "made it here 02*" << endl;
   // calc_P();
 
+  cout << "natoms: " << nat << endl;
+  cout << "boxlen[0]: " << boxlen[0] << endl;
+  cout << "boxlen[1]: " << boxlen[1] << endl;
+  cout << "boxlen[2]: " << boxlen[2] << endl;
+  cout << "type1: " << type1 << endl;
+  cout << "mass1: " << mass1 << endl;
+
+
+
+
 
   //  printf("nat_fixed = %ld       volume = %20.10f\n", nat_fixed, V);
   //  printf("P_vir(GPa): %20.10f  %20.10f  %20.10f\n", W_x/ V * 160.21773, W_y/ V * 160.21773, W_z/ V * 160.21773);
@@ -282,7 +293,8 @@ void MDSystem::relax(void){
   else {
 #pragma omp parallel for reduction(+:Ek_tot) schedule(static)
     for (i=0; i<nat; ++i){
-      Ek_tot += elem.mass( type[i] ) * ( vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2] );
+      int n2i = elem.name2idx( matter[i] );
+      Ek_tot += elem.mass( n2i ) * ( vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2] );
       //Ek_tot += elem.mass(matter[i]) * td;
     }
   }
@@ -676,7 +688,8 @@ void MDSystem::relax(void){
     Ek_tot = 0.0;
 #pragma omp parallel for reduction(+:Ek_tot) schedule(static)
     for (i=0; i<nat; ++i){
-      double td = 1.0 / elem.mass(type[i]) * 1.60217653 / 1.660538782 * 0.01;
+      int n2i = elem.name2idx( matter[i] );
+      double td = 1.0 / elem.mass( n2i ) * 1.60217653 / 1.660538782 * 0.01;
       //td = 1.0 / elem.mass(elem.idx2name(type[i])) * 1.60217653 / 1.660538782 * 0.01;
 
       /* Convert force to acceleration. */
@@ -696,7 +709,7 @@ void MDSystem::relax(void){
 	vel[i][2] = 0.0;
       }
       // temperature
-      Ek_tot += elem.mass(type[i]) * ( vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2] );
+      Ek_tot += elem.mass( n2i ) * ( vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2] );
       //Ek_tot += elem.mass(matter[i]) * td;
     }
     Ek_tot *= 0.5;
@@ -1082,7 +1095,14 @@ void MDSystem::relax(void){
 	if (boxlen[1] <= 2.0*(rcut+skint)) N[1] = - floor(boxlen_orig[1]/boxlen[1] * N[1]);
 	if (boxlen[2] <= 2.0*(rcut+skint)) N[2] = - floor(boxlen_orig[2]/boxlen[2] * N[2]);
 	
-	if (N[0]<0 || N[1]<0 || N[2]<0) return;
+	if (N[0]<0 || N[1]<0 || N[2]<0){
+	  cout << "Warning: Some box length(s) is (are) less than 2 * (rcut + skint): N[0] N[1] N[2]: "
+	       << N[0] << " "
+	       << N[1] << " "
+	       << N[2] << endl;
+	  cout << "Warning: Returning to box construction and redoing relaxation with bigger box ..." << endl;
+	  return;
+	}
       }
     
     }

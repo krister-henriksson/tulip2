@@ -347,7 +347,9 @@ int main(int argc, char *argv[]){
   nref = potinfo.elem.nelem();
   for (i=0; i<nref; ++i){
     s1 = potinfo.elem.idx2name(i);
-    cout << s1 << " atomtype " << potinfo.elem.atomtype(s1)
+    cout << s1
+	 << " element index " << potinfo.elem.name2idx(s1)
+	 << " atom type " << potinfo.elem.atomtype(s1)
 	 << " mass (amu)  " << potinfo.elem.mass(s1)
 	 << " reference lattice " << potinfo.elem.reflat(s1) << endl;
   }
@@ -1034,7 +1036,9 @@ int main(int argc, char *argv[]){
     cout << "  Lattice parameter b     : " << format("%15.10f") % cmpref[0].prop_pred.b << endl;
     cout << "  Lattice parameter c     : " << format("%15.10f") % cmpref[0].prop_pred.c << endl;
     cout << "  Cohesive energy   Ecoh  : " << format("%15.10f") % cmpref[0].prop_pred.Ecoh
-	 << " for type " << potinfo.elem.name2idx(sref) << endl;
+	 << " for element index " << potinfo.elem.name2idx(sref)
+	 << " having atom type " << potinfo.elem.atomtype(sref)
+	 << endl;
 
     potinfo.Ecoh_ref[ potinfo.elem.name2idx(sref) ] = cmpref[0].prop_pred.Ecoh;
 

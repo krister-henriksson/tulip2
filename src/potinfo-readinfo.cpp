@@ -91,11 +91,13 @@ void PotentialInformation::read_info(string filename){
       //cout << ts << endl;
       elem.add_elem(ts);
     }
+    /*
     else if (args[0]=="atomtype"){
       strbuf.str(args[1]); strbuf >> ts; strbuf.clear();
       strbuf.str(args[2]); strbuf >> tl; strbuf.clear();
       elem.atomtype(ts) = tl;
     }
+    */
     else if (args[0]=="mass"){
       strbuf.str(args[1]); strbuf >> ts; strbuf.clear();
       strbuf.str(args[2]); strbuf >> td; strbuf.clear();

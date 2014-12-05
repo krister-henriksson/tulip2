@@ -35,8 +35,10 @@ double MDSystem::get_forces_and_energies_common(){
   sys_single_elem
 */
 
+  int n2i = elem.name2idx( matter[0] );
+
   sys_single_elem=true;
-  t1_old = abs(type[0]);
+  t1_old = n2i;
 
   // ######################################################################
   // ######################################################################
@@ -61,14 +63,14 @@ double MDSystem::get_forces_and_energies_common(){
     virials[i].elem(2,2) = 0.0;
 
     s1 = matter[i];
-    t1 = abs(type[i]);
+    t1 = elem.name2idx( matter[i] );
 
     if (t1 != t1_old) sys_single_elem=false;
 
     for (j=0; j<neighborcollection[i].size(); ++j){
       k  = neighborcollection[i][j];
       s2 = matter[k];
-      t2 = abs(type[k]);
+      t2 = elem.name2idx( matter[k] );
 
       //if (t1 != t2) sys_single_elem=false;
 

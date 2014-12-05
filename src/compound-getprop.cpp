@@ -120,11 +120,25 @@ void CompoundStructureFit::getprop(ParamPot & param){
 
 
   bool retry;
+  int mds_box_iter=0;
   while (true){
 
     cout << "Creating atom system ... " << endl;
     double rm = mds.rcut_max + mds.skint;
     mds.create_from_structure(*this, 2.0*rm); // removes old atoms
+
+    /*
+    if (mds_box_iter>0){
+      // debug phase: dump box, and exit
+      ofstream fdump;
+      string dumpfn = "mds-retried-frame-" + mds.name + ".xyz";
+      fdump.open(dumpfn.c_str());
+      mds.dumpframe(fdump);
+      fdump.close();
+      //exit(EXIT_SUCCESS);
+    }
+    */
+
 
     b_ini[0] = mds.boxlen[0];
     b_ini[1] = mds.boxlen[1];
@@ -139,6 +153,12 @@ void CompoundStructureFit::getprop(ParamPot & param){
 
     cout << "Relaxing atom system ... " << endl;
     mds.relax();
+    /*
+    if (mds_box_iter>0){
+      exit(EXIT_SUCCESS);
+    }
+    */
+
 
     E0 = mds.Ep_tot / mds.natoms();
     V0 = mds.V / mds.natoms();
@@ -148,7 +168,9 @@ void CompoundStructureFit::getprop(ParamPot & param){
     if (mds.N[0]<0) mds.N[0] = -mds.N[0]+1;
     if (mds.N[1]<0) mds.N[1] = -mds.N[1]+1;
     if (mds.N[2]<0) mds.N[2] = -mds.N[2]+1;
-    
+
+    if (retry) mds_box_iter++;
+
     if (! retry) break;
   }
 
