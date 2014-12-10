@@ -361,9 +361,12 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
       // Option B: Allow internal relaxation:
       // +++++++++++++++++++++++++++++++++++++++++++++++++
 
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       // Update specs for this relaxation:
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       MDSettings specs_bak = mds.specs;
-      mds.specs.use_Pcontrol = false;
+      mds.specs.use_Pcontrol  = false;
+      mds.specs.quench_always = true;
 
       // Relax using current system. Only enlargen it if position scaling
       // has made the system too small.
@@ -923,9 +926,12 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 	// Option B: Allow internal relaxation:
 	// +++++++++++++++++++++++++++++++++++++++++++++++++
 
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// Update specs for this relaxation:
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	MDSettings specs_bak = mds.specs;
-	mds.specs.use_Pcontrol = false;
+	mds.specs.use_Pcontrol  = false;
+	mds.specs.quench_always = true;
 
 	// Relax using current system. Only enlargen it if position scaling
 	// has made the system too small.
