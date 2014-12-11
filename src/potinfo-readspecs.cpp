@@ -375,6 +375,32 @@ void PotentialInformationFit::read_specs(string filename){
 	  else      specs_prop.mds_specs_ref.use_quench = true;
 	}
 
+	else if (args[id]=="mds_error_T_gt"){
+	  strbuf.str(args[id+1]);
+	  if (t==1) strbuf >> specs_prop.mds_specs.error_T_gt;
+	  else      strbuf >> specs_prop.mds_specs_ref.error_T_gt;
+	  strbuf.clear();
+	  if (t==1) specs_prop.mds_specs.use_error_T_gt = true;
+	  else      specs_prop.mds_specs_ref.use_error_T_gt = true;
+	}
+	else if (args[id]=="mds_error_dt_lt"){
+	  strbuf.str(args[id+1]);
+	  if (t==1) strbuf >> specs_prop.mds_specs.error_dt_lt;
+	  else      strbuf >> specs_prop.mds_specs_ref.error_dt_lt;
+	  strbuf.clear();
+	  if (t==1) specs_prop.mds_specs.use_error_dt_lt = true;
+	  else      specs_prop.mds_specs_ref.use_error_dt_lt = true;
+	}
+	else if (args[id]=="mds_error_boxlen_gt"){
+	  strbuf.str(args[id+1]);
+	  if (t==1) strbuf >> specs_prop.mds_specs.error_boxlen_gt;
+	  else      strbuf >> specs_prop.mds_specs_ref.error_boxlen_gt;
+	  strbuf.clear();
+	  if (t==1) specs_prop.mds_specs.use_error_boxlen_gt = true;
+	  else      specs_prop.mds_specs_ref.use_error_boxlen_gt = true;
+	}
+
+
       }
 
     }

@@ -59,6 +59,11 @@ prop:mds_bpc_scale = 100
 # prop:mds_quench_tstart = 100
 # prop:mds_quench_rate   = 1.0
 
+prop:mds_error_T_gt = 10000.0         # Fatal error if T gets over this limit (K).
+prop:mds_error_dt_lt = 0.01           # Fatal error if dt gets under this limit (fs).
+prop:mds_error_boxlen_gt = 10000.0    # Fatal error if any boxlen gets over this limit (Angstrom).
+
+
 
 # ------------------------------------
 # MDS settings for reference compounds

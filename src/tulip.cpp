@@ -301,11 +301,11 @@ int main(int argc, char *argv[]){
   potinfo.omp_info = omp_info;
 
 
-  potinfo.specs_prop.mds_specs_common.debug_forces = debug_forces;
-  potinfo.specs_prop.mds_specs_common.debug_pressure = debug_pressure;
-  potinfo.specs_prop.mds_specs_common.report_step  = report_mds_steps;
+  potinfo.specs_prop.mds_specs_common.debug_forces         = debug_forces;
+  potinfo.specs_prop.mds_specs_common.debug_pressure       = debug_pressure;
+  potinfo.specs_prop.mds_specs_common.report_step          = report_mds_steps;
   potinfo.specs_prop.mds_specs_common.use_def_dump_xyz_fmt = u_d_xyz_fmt;
-  potinfo.specs_prop.mds_specs_common.def_dump_xyz_fmt = d_xyz_fmt;
+  potinfo.specs_prop.mds_specs_common.def_dump_xyz_fmt     = d_xyz_fmt;
 
 
 
@@ -405,10 +405,13 @@ int main(int argc, char *argv[]){
   cout << "Specifications for calculation of properties of compounds:" << endl;
   cout << "##########################################################################" << endl;
   cout << endl;
+
+  cout << endl;
   cout << "--------------------------------------------------------------------------" << endl;
   cout << "General" << endl;
   cout << "--------------------------------------------------------------------------" << endl;
   cout << endl;
+
   cout << "Random number seed                                 : " << potinfo.specs_prop.seed << endl;
   cout << "Fitting method                                     : " << potinfo.specs_prop.fitmet << endl;
   cout << "Min. iterations                                    : " << potinfo.specs_prop.nitermin << endl;
@@ -439,11 +442,14 @@ int main(int argc, char *argv[]){
   cout << "Elastic moduli: Maximum strain (e.g.  0.01)        : " << potinfo.specs_prop.C_fmax << endl;
   cout << "Elastic moduli: Number of strain points (e.g. 10)  : " << potinfo.specs_prop.C_Nf << endl;
   cout << "Elastic moduli: Multiplicative uncertainty factor (e.g. 0.10): " << potinfo.specs_prop.C_ef << endl;
+
+
   cout << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
+  cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
   cout << "Settings for MD simulations of read-in compounds" << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
+  cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
   cout << endl;
+
   cout << "Skin thickness of neighbor list                         : " << potinfo.specs_prop.mds_specs.skint << endl;
   cout << "Seed for random numbers                                 : " << potinfo.specs_prop.mds_specs.seed << endl;
   cout << "Starting time for simulation (usually 0.0)              : " << potinfo.specs_prop.mds_specs.tstart << endl;
@@ -465,7 +471,14 @@ int main(int argc, char *argv[]){
   cout << "  P control: desired pressure (GPa)                     : " << potinfo.specs_prop.mds_specs.bpc_P0 << endl; 
   cout << "  P control: scale                                      : " << potinfo.specs_prop.mds_specs.bpc_scale << endl; 
   cout << "    The scale is usually equal to the approximate bulk modulus (GPa)." << endl;
+  cout << "Terminate program is T > T_limit?                       : " << potinfo.specs_prop.mds_specs.use_error_T_gt << endl; 
+  cout << "  T_limit                                               : " << potinfo.specs_prop.mds_specs.error_T_gt << endl; 
+  cout << "Terminate program is dt < dt_limit?                     : " << potinfo.specs_prop.mds_specs.use_error_dt_lt << endl; 
+  cout << "  dt_limit                                              : " << potinfo.specs_prop.mds_specs.error_dt_lt << endl; 
+  cout << "Terminate program is boxlen[1/2/3] > bl_limit?          : " << potinfo.specs_prop.mds_specs.use_error_boxlen_gt << endl; 
+  cout << "  bl_limit                                              : " << potinfo.specs_prop.mds_specs.error_boxlen_gt << endl; 
   cout << "" << endl;
+
   cout << "Options: heating allowed?                               : " << potinfo.specs_prop.mds_specs.heating_allowed << endl; 
   cout << "Options: fixed geometry?                                : " << potinfo.specs_prop.mds_specs.fixed_geometry << endl; 
   cout << "Options: quench always?                                 : " << potinfo.specs_prop.mds_specs.quench_always << endl; 
@@ -473,10 +486,11 @@ int main(int argc, char *argv[]){
   cout << "" << endl;
 
   cout << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
+  cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
   cout << "Settings for MD simulations of reference compounds" << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
+  cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
   cout << endl;
+
   cout << "Skin thickness of neighbor list                         : " << potinfo.specs_prop.mds_specs_ref.skint << endl;
   cout << "Seed for random numbers                                 : " << potinfo.specs_prop.mds_specs_ref.seed << endl;
   cout << "Starting time for simulation (usually 0.0)              : " << potinfo.specs_prop.mds_specs_ref.tstart << endl;
@@ -498,6 +512,13 @@ int main(int argc, char *argv[]){
   cout << "  P control: desired pressure (GPa)                     : " << potinfo.specs_prop.mds_specs_ref.bpc_P0 << endl; 
   cout << "  P control: scale                                      : " << potinfo.specs_prop.mds_specs_ref.bpc_scale << endl; 
   cout << "    The scale is usually equal to the approximate bulk modulus (GPa)." << endl;
+  cout << "Terminate program is T > T_limit?                       : " << potinfo.specs_prop.mds_specs_ref.use_error_T_gt << endl; 
+  cout << "  T_limit                                               : " << potinfo.specs_prop.mds_specs_ref.error_T_gt << endl; 
+  cout << "Terminate program is dt < dt_limit?                     : " << potinfo.specs_prop.mds_specs_ref.use_error_dt_lt << endl; 
+  cout << "  dt_limit                                              : " << potinfo.specs_prop.mds_specs_ref.error_dt_lt << endl; 
+  cout << "Terminate program is boxlen[1/2/3] > bl_limit?          : " << potinfo.specs_prop.mds_specs_ref.use_error_boxlen_gt << endl; 
+  cout << "  bl_limit                                              : " << potinfo.specs_prop.mds_specs_ref.error_boxlen_gt << endl; 
+
   cout << "" << endl;
   cout << "Options: heating allowed?                               : " << potinfo.specs_prop.mds_specs_ref.heating_allowed << endl; 
   cout << "Options: fixed geometry?                                : " << potinfo.specs_prop.mds_specs_ref.fixed_geometry << endl; 
@@ -506,10 +527,11 @@ int main(int argc, char *argv[]){
   cout << "" << endl;
 
   cout << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
+  cout << "**************************************************************************" << endl;
   cout << "Common settings for MD simulations of any compound" << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
+  cout << "**************************************************************************" << endl;
   cout << endl;
+
   cout << "Report step?                                   : " << potinfo.specs_prop.mds_specs_common.report_step << endl;
   cout << "  If true, writes out physical info of the system at every time step." << endl;
   cout << "Debug forces?                                  : " << potinfo.specs_prop.mds_specs_common.debug_forces << endl; 
@@ -517,6 +539,16 @@ int main(int argc, char *argv[]){
   cout << "Use default XYZ format?                        : " << potinfo.specs_prop.mds_specs_common.use_def_dump_xyz_fmt << endl;
   cout << "Default XYZ format?                            : " << potinfo.specs_prop.mds_specs_common.def_dump_xyz_fmt << endl;
   cout << "" << endl;
+
+  cout << endl;
+  cout << "//////////////////////////////////////////////////////////////////////////" << endl;
+  cout << "Special settings for various types of MDS cases" << endl;
+  cout << "//////////////////////////////////////////////////////////////////////////" << endl;
+  cout << endl;
+
+  cout << "'''''''''''''''''''' Elastic properties ''''''''''''''''''''" << endl;
+  cout << "  quench_always = true" << endl;
+  cout << endl;
 
 
 

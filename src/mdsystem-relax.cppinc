@@ -1200,10 +1200,57 @@ void MDSystem::relax(void){
     if (specs.fixed_geometry) break;
     if (time >= specs.tend) break;
 
-
-
     time += dt;
     istep++;
+
+
+
+    // ///////////////////////////////////////////////////////////////////////////////////
+    // Some error checking
+    // - errors are fatal
+    // - later: use bad_mds exception propagated to fitting algorithm
+    // ///////////////////////////////////////////////////////////////////////////////////
+
+    if (specs.use_error_T_gt && T > specs.error_T_gt){
+      aborterror("FATAL ERROR: Temperature " + tostring(T) + " K"
+		 " for compound " + name + " has exceeded upper allowed value "
+		 + tostring(specs.error_T_gt)
+		 + ". Exiting.");
+    }
+    if (specs.use_error_dt_lt && dt < specs.error_dt_lt){
+      aborterror("FATAL ERROR: Time step " + tostring(dt) + " fs"
+		 " for compound " + name + " has become smaller than minimum allowed value "
+		 + tostring(specs.error_dt_lt)
+		 + ". Exiting.");
+    }
+    if (specs.use_error_boxlen_gt &&
+	(boxlen[0] > specs.error_boxlen_gt ||
+	 boxlen[1] > specs.error_boxlen_gt ||
+	 boxlen[2] > specs.error_boxlen_gt) ){
+      cout << "Boxlen for direction 1: " << boxlen[0] << endl;
+      cout << "Boxlen for direction 2: " << boxlen[1] << endl;
+      cout << "Boxlen for direction 3: " << boxlen[2] << endl;
+      aborterror("FATAL ERROR: One or more box lenghts"
+		 " for compound " + name + " has exceeded upper allowed value "
+		 + tostring(specs.error_boxlen_gt)
+		 + ". Exiting.");
+    }
+    if (! periodic){
+      for (int i=0; i<3; ++i){
+	if (isnan(boxlen[i])){
+	  aborterror("FATAL ERROR: Box length in direction " + tostring(i)
+		     + " is NaN. Exiting.");
+	}
+      }
+    }
+
+
+
+
+
+
+
+
   }
 
   /* #############################################################

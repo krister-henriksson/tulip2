@@ -13,10 +13,8 @@ class MDSettings_common {
 public:
   bool debug_forces;
   bool debug_pressure;
-
   bool report_step;
-
-  bool use_def_dump_xyz_fmt;
+  bool   use_def_dump_xyz_fmt;
   string def_dump_xyz_fmt;
 
 
@@ -28,9 +26,9 @@ public:
 class MDSettings {
 public:
 
-  double skint;
   unsigned int seed;
   int ndump;
+  double skint;
 
   double tstart;
   double tend;
@@ -42,12 +40,12 @@ public:
   double max_dE;
   double max_dr;
 
+  double btc_tau;
+  double btc_T0;
+
   bool use_quench;
   bool use_Tcontrol;
   bool use_Pcontrol;
-
-  double btc_tau;
-  double btc_T0;
 
   double quench_tstart;
   double quench_rate;
@@ -55,6 +53,16 @@ public:
   double bpc_tau;
   double bpc_P0;
   double bpc_scale;
+
+
+  bool use_error_T_gt;
+  bool use_error_dt_lt;
+  bool use_error_boxlen_gt;
+
+  double error_T_gt;
+  double error_dt_lt;
+  double error_boxlen_gt;
+
 
   bool is_ref_comp;
   bool heating_allowed;

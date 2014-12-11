@@ -24,7 +24,7 @@ LDFLAGS        = $(LIB) -lrt -lm -lutils
 LDFLAGS_STATIC = $(LDFLAGS) -static 
 
 
-EXECUTABLE = tulip
+EXECUTABLE = bin/tulip
 
 
 
@@ -49,7 +49,7 @@ SRC    = compound.cpp \
 	propfun.cpp \
 	report.cpp \
 	specs-fit-prop-pot.cpp \
-	$(EXECUTABLE).cpp
+	tulip.cpp
 
 SOURCES = $(addprefix src/,$(SRC))
 OBJECTS = $(SOURCES:src/%.cpp=obj/%.o)
@@ -102,12 +102,13 @@ obj/%.o: src/%.cpp
 
 dirs:
 	- mkdir obj
+	- mkdir bin
 	- mkdir -p $(INCDIR)
 	- mkdir -p $(LIBDIR)
 	- mkdir -p $(BINDIR)
 
 clean:
-	-rm $(REBUILDABLES)
+	- rm -f $(REBUILDABLES)
 
 
 # $@: the target filename.

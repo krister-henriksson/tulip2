@@ -291,6 +291,19 @@ CompoundListFit::CompoundListFit(const Elements & el,
 	strbuf.clear();
       }
 
+      else if (args[0]=="mds_error_T_gt"){
+	strbuf.str(args[1]); strbuf >> compounds[ilat].mds_specs.error_T_gt; strbuf.clear();
+	compounds[ilat].mds_specs.use_error_T_gt = true;
+      }
+      else if (args[0]=="mds_error_dt_lt"){
+	strbuf.str(args[1]); strbuf >> compounds[ilat].mds_specs.error_dt_lt; strbuf.clear();
+	compounds[ilat].mds_specs.use_error_dt_lt = true;
+      }
+      else if (args[0]=="mds_error_boxlen_gt"){
+	strbuf.str(args[1]); strbuf >> compounds[ilat].mds_specs.error_boxlen_gt; strbuf.clear();
+	compounds[ilat].mds_specs.use_error_boxlen_gt = true;
+      }
+
       // OTHER OPTIONS POSSIBLE TO ADD HERE
 
 
