@@ -922,6 +922,30 @@ int main(int argc, char *argv[]){
       }
     }
 
+    // Forces !!!
+    if (complistfit.compounds[i].prop_use.frc){
+      int nb = complistfit.compounds[i].basis_elems.size();
+      for (int iat=0; iat<nb; ++iat){
+	for (int k=0; k<3; ++k){
+
+	  DY.push_back( complistfit.compounds[i].prop_readin.frc[iat][k] );
+
+	  if (complistfit.compounds[i].use_u.frc){
+	    DUY.push_back( complistfit.compounds[i].prop_u.frc[iat][k] );
+	    DWY.push_back(-1.0);
+	  }
+	  else {
+	    DUY.push_back(-1.0);
+	    DWY.push_back( complistfit.compounds[i].prop_w.frc[iat][k] );
+	  }
+	}
+      }
+
+    }
+
+
+
+
 
   }
 
@@ -1035,6 +1059,7 @@ int main(int argc, char *argv[]){
     cmpref[0].prop_use.Fmax = true;
     cmpref[0].prop_use.Pmax = true;
     cmpref[0].prop_use.displmax = true;
+    cmpref[0].prop_use.frc = false;
 
     if (!cmpref[0].pbc[0] || !cmpref[0].pbc[1] || !cmpref[0].pbc[2]){
       if (cmpref[0].nbasis==2)

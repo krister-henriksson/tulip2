@@ -560,6 +560,34 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       propstr = "Maximum displacement displmax         : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
+
+    // Forces !!!
+    if (cmpfit.prop_use.frc){
+      tb1 = cmpfit.use_u.frc;
+      tb2 = cmpfit.use_w.frc;
+      td3 = -1.0;
+      td4 = -1.0;
+
+      int nb = cmpfit.basis_elems.size();
+      for (int i=0; i<nb; ++i){
+	for (int k=0; k<3; ++k){
+	  td1 = cmpfit.prop_pred.frc[i][k];
+	  td2 = cmpfit.prop_readin.frc[i][k];
+	  if (tb1) td3 = cmpfit.prop_u.frc[i][k];
+	  else     td4 = cmpfit.prop_w.frc[i][k];
+
+	  propstr = "Force component (iat," + tostring(k+1) + ")       : ";
+	  print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
+	}
+      }
+    }
+
+
+
+
+
+
+
     fout << "..............................................................................." << endl;
 
   }

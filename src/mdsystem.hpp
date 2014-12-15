@@ -17,7 +17,7 @@
 #include "atomsystem.hpp"
 #include "mdsettings.hpp"
 #include "potinfo.hpp"
-//#include "compound.hpp"
+#include "compound.hpp"
 #include "specs-fit-prop-pot.hpp"
 #include "physconst.hpp"
 #include "constants.hpp"
@@ -31,7 +31,7 @@ using namespace constants;
 
 
 
-class CompoundStructure;
+//class CompoundStructure;
 
 
 

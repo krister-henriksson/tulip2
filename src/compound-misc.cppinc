@@ -21,6 +21,7 @@ CompoundPropertiesUse::CompoundPropertiesUse()
   Fmax = false;
   Pmax = false;
   displmax = false;
+  frc = false;
 }
 
 
@@ -69,28 +70,6 @@ CompoundProperties::CompoundProperties()
 }
 
 CompoundPropertiesUseUncertainties::CompoundPropertiesUseUncertainties()
-  : C(6,6,true)
-{
-  a = true;
-  b = true;
-  c = true;
-  bpa = true;
-  cpa = true;
-  r0 = true;
-  angle_ab = true;
-  angle_ac = true;
-  angle_bc = true;
-  Vatom = true;
-  Ecoh = true;
-  Emix = true;
-  B = true;
-  Bp = true;
-  Fmax = true;
-  Pmax = true;
-  displmax = true;
-}
-
-CompoundPropertiesUseWeights::CompoundPropertiesUseWeights()
   : C(6,6,false)
 {
   a = false;
@@ -110,6 +89,30 @@ CompoundPropertiesUseWeights::CompoundPropertiesUseWeights()
   Fmax = false;
   Pmax = false;
   displmax = false;
+  frc = false;
+}
+
+CompoundPropertiesUseWeights::CompoundPropertiesUseWeights()
+  : C(6,6,true)
+{
+  a = true;
+  b = true;
+  c = true;
+  bpa = true;
+  cpa = true;
+  r0 = true;
+  angle_ab = true;
+  angle_ac = true;
+  angle_bc = true;
+  Vatom = true;
+  Ecoh = true;
+  Emix = true;
+  B = true;
+  Bp = true;
+  Fmax = true;
+  Pmax = true;
+  displmax = true;
+  frc = true;
 }
 
 CompoundPropertiesUncertainties::CompoundPropertiesUncertainties()

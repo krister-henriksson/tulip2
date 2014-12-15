@@ -29,7 +29,8 @@ EXECUTABLE = bin/tulip
 
 
 SRC    = compound.cpp \
-	compound-getprop.cpp \
+	compoundfit.cpp \
+	compoundfit-getprop.cpp \
 	elem-iacs.cpp \
 	helpfuns.cpp \
 	latcalc.cpp \

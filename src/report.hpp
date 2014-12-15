@@ -29,7 +29,7 @@
 #include "utils-vector.hpp"
 
 #include "atomsystem.hpp"
-#include "compound.hpp"
+#include "compoundfit.hpp"
 #include "elem-iacs.hpp"
 #include "helpfuns.hpp"
 #include "mdsystem.hpp"

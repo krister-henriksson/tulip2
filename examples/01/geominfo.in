@@ -1,19 +1,26 @@
 
 
-# Cubic csystem:      C11, C12, C44
-# Hexagonal csystem:  C11, C12, C13, C33, C44
-# Orthogonal csystem: C11, C12, C13, C22, C23, C33, C44, C55, C66
 
-
+#############################################################################
 #############################################################################
 # Compound number 1:
 #############################################################################
+#############################################################################
 
 LAT  # <= Important for separating compounds!
+     ########################################
 
 name     = Fe-Fe-dimer
 file     = in/Fe-Fe-dimer.lat
 elements = Fe
+
+--------------------------------------------------------
+# forces
+frc_file = in/dimer.frc  # Format: Fx Fy Fz sx sy sz
+                         # where all s for all atoms is either weight or uncertainty
+frc_use_w = yes          # If yes, then all sx,sy,sz for all atoms are interpreted as being weights
+# frc_use_u = yes
+--------------------------------------------------------
 
 # Dimer bond distance:
 r0       = 2.29
@@ -23,12 +30,18 @@ w_r0     = 10.0   # weight (all weights are 1 by default, but become normalized 
 Ecoh     = -2.0
 u_Ecoh   = 0.001  # uncertainty
 
+--------------------------------------------------------
 # Using MD settings from specsfile for this compound,
-# or default ones if no settings in that file.
+# or default ones if no settings in that file. Provide MDS
+# settings below, before next 'LAT', to have specific settings
+# for this compound.
+--------------------------------------------------------
 
 
 #############################################################################
+#############################################################################
 # Compound number 2:
+#############################################################################
 #############################################################################
 
 LAT
@@ -122,5 +135,17 @@ mds_bpc_scale =  100 # Berendsen P control P scale (usually similar to bulk mod.
 
 # mds_quench_tstart = 30   # Time to start quench (fs)
 # mds_quench_rate   = 1.0  # Quench rate (K/fs)
+
+
+
+--------------------------------------------------------------------------
+
+# Note 1: Elastic constants:
+#
+# Cubic csystem:      C11, C12, C44
+# Hexagonal csystem:  C11, C12, C13, C33, C44
+# Orthogonal csystem: C11, C12, C13, C22, C23, C33, C44, C55, C66
+
+# Note 2: Mixing energy = formation energy divided by number of atoms in compound
 
 

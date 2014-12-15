@@ -34,7 +34,14 @@ using namespace constants;
 using boost::format;
 
 
+
+
+
+
 #include "compound-misc.cppinc"
+
+
+
 
 
 
@@ -52,7 +59,9 @@ CompoundStructure::CompoundStructure()
   basis_vecs(1, Vector<double>(3, 0.0))
 {
 
-  filename = "none";
+  filename     = "none";
+  filename_frc = "none";
+
   name = "none";
   crystalname = "none";
   nelem = elemnames.size();
@@ -60,7 +69,6 @@ CompoundStructure::CompoundStructure()
 
   scalefactor = -1;
   lpa = lpb = lpc = -1;
-
 
 
   // Orthonormal cubic system:
@@ -103,7 +111,6 @@ void CompoundStructure::origin_from_model(int & N1,
   origin[0] = -0.5*boxlen[0];
   origin[1] = -0.5*boxlen[1];
   origin[2] = -0.5*boxlen[2];
-
 
 
   if (crystalname=="SH" || crystalname=="GRA"){
@@ -150,6 +157,7 @@ void CompoundStructure::create_from_model(string name_in,
   lpa = ai;
   lpb = bi;
   lpc = ci;
+
 
 
   if (crystalname=="DIM1"){
@@ -589,15 +597,18 @@ void CompoundStructure::read_structure(void){
     }
 
     // iline=8+nbasis
-    /* Optional origin: */
     if (iline == 8+nbasis){
       if (ns>=4){
-	use_origin_spec=true;
-	strbuf.str(args[1]); strbuf >> origin[0]; strbuf.clear();
-	strbuf.str(args[2]); strbuf >> origin[1]; strbuf.clear();
-	strbuf.str(args[3]); strbuf >> origin[2]; strbuf.clear();
+	if ((args[0][0]=='o' || args[0][0]=='O')){
+	  /* Optional origin: */
+	  use_origin_spec=true;
+	  strbuf.str(args[1]); strbuf >> origin[0]; strbuf.clear();
+	  strbuf.str(args[2]); strbuf >> origin[1]; strbuf.clear();
+	  strbuf.str(args[3]); strbuf >> origin[2]; strbuf.clear();
+	}
       }
     }
+
 
 
     iline++;
@@ -764,21 +775,4 @@ void CompoundStructure::finalize(double ma, double mb, double mc){
   return;
 }
 
-
-
-// ###########################################################################
-// ###########################################################################
-// ###########################################################################
-// ###########################################################################
-
-
-
-
-#include "compound-strfit.cppinc"
-
-
-// #####################################################################
-// #####################################################################
-
-#include "compound-listfit.cppinc"
 

@@ -52,6 +52,7 @@ public:
   bool Fmax;
   bool Pmax;
   bool displmax;
+  bool frc;
 
   CompoundPropertiesUse();
 
@@ -79,6 +80,7 @@ public:
   double Fmax;
   double Pmax;
   double displmax;
+  Vector< Vector<double> > frc;
 
   CompoundProperties();
 } ;
@@ -104,6 +106,7 @@ public:
   bool Fmax;
   bool Pmax;
   bool displmax;
+  bool frc;
 
   CompoundPropertiesUseUncertainties();
 } ;
@@ -128,6 +131,7 @@ public:
   bool Fmax;
   bool Pmax;
   bool displmax;
+  bool frc;
 
   CompoundPropertiesUseWeights();
 } ;
@@ -154,6 +158,7 @@ public:
   double Fmax;
   double Pmax;
   double displmax;
+  Vector< Vector<double> > frc;
 
   CompoundPropertiesUncertainties();
 } ;
@@ -179,6 +184,7 @@ public:
   double Fmax;
   double Pmax;
   double displmax;
+  Vector< Vector<double> > frc;
 
   CompoundPropertiesWeights();
 } ;
@@ -188,6 +194,7 @@ public:
 class CompoundStructure {
 public:
   string filename;
+  string filename_frc;
   string name;
   string crystalname;
   int nelem;
@@ -231,77 +238,6 @@ public:
 
 } ;
 
-
-
-// #####################################################################
-// #####################################################################
-
-
-class CompoundStructureFit
-  :
-  public CompoundStructure
-{
-public:
-  CompoundPropertiesUse prop_use;
-  CompoundProperties    prop_readin;
-  CompoundProperties    prop_pred;
-
-  MDSettings            mds_specs;
-
-  CompoundPropertiesUseUncertainties use_u;
-  CompoundPropertiesUseWeights       use_w;
-
-  CompoundPropertiesUncertainties prop_u;
-  CompoundPropertiesWeights       prop_w;
-
-
-  CompoundStructureFit();
-  // CompoundStructureFit(const CompoundStructureFit & sv);
-  // CompoundStructureFit & operator=(const CompoundStructureFit & sv);
-
-  void check_and_fix_uses();
-  int NData();
-
-  void getprop(ParamPot & param);
-  void get_B_Bp(MDSystem             & mds,
-		ParamPot             & param,
-		Vector< Vector<double> > & pos_bak,
-		Matrix<double>           & boxdir_bak,
-		Vector<double>           & boxlen_bak,
-		double & E0,
-		double & V0);
-  void get_Cij(MDSystem             & mds,
-	       ParamPot             & param,
-	       Vector< Vector<double> > & pos_bak,
-	       Matrix<double>           & boxdir_bak,
-	       Vector<double>           & boxlen_bak,
-	       double & E0,
-	       double & V0);
-
-
-} ;
-  
-
-
-
-// #####################################################################
-// #####################################################################
-
-
-
-
-class CompoundListFit {
-public:
-  Elements elem;
-  int ncompounds;
-  Vector<CompoundStructureFit> compounds;
-
-  // Read structures:
-  CompoundListFit(const Elements & el,
-		  MDSettings & mds_specs,
-		  string filename);
-  int NData();
-} ;
 
 
 

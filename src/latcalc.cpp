@@ -105,12 +105,21 @@ Vector<double> latcalc(ParamPot & param, Vector<CompoundStructureFit> & DX){
     if (cmpfit.prop_use.Emix) MDY.push_back(cmpfit.prop_pred.Emix);
     if (cmpfit.prop_use.B) MDY.push_back(cmpfit.prop_pred.B);
     if (cmpfit.prop_use.Bp) MDY.push_back(cmpfit.prop_pred.Bp);
+
     for (k=0; k<6; ++k)
       for (p=0; p<6; ++p)
 	if (cmpfit.prop_use.C.elem(k,p)) MDY.push_back(cmpfit.prop_pred.C.elem(k,p));
+
     if (cmpfit.prop_use.Fmax) MDY.push_back(cmpfit.prop_pred.Fmax);
     if (cmpfit.prop_use.Pmax) MDY.push_back(cmpfit.prop_pred.Pmax);
     if (cmpfit.prop_use.displmax) MDY.push_back(cmpfit.prop_pred.displmax);
+
+    if (cmpfit.prop_use.frc){
+      int nb = cmpfit.basis_elems.size();
+      for (int iat=0; iat<nb; ++iat)
+	for (int k=0; k<3; ++k)
+	  MDY.push_back(cmpfit.prop_pred.frc[iat][k]);
+    }
 
 
 

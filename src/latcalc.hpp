@@ -8,7 +8,7 @@
 #include "utils.hpp"
 #include "utils-vector.hpp"
 
-#include "compound.hpp"
+#include "compoundfit.hpp"
 #include "param-pot.hpp"
 
 
