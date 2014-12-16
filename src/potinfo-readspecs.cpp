@@ -15,14 +15,14 @@
 #include <cmath>
 
 #include "potinfo.hpp"
+
 #include "utils-string.hpp"
 #include "utils-streamio.hpp"
-#include "exiterrors.hpp"
 #include "utils-math.hpp"
+#include "utils-errors.hpp"
 
 using namespace std;
 using namespace utils;
-using namespace exiterrors;
 using boost::format;
 
 

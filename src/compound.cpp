@@ -25,11 +25,10 @@
 #include "specs-fit-prop-pot.hpp"
 #include "compound.hpp"
 #include "physconst.hpp"
-#include "exiterrors.hpp"
+#include "utils-errors.hpp"
 
 using namespace std;
 using namespace utils;
-using namespace exiterrors;
 using namespace constants;
 using boost::format;
 

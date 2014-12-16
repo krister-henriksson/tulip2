@@ -47,12 +47,12 @@ MDSettings::MDSettings(){
   quench_tstart = -1.0;
   quench_rate   = 0.0;
 
-  use_error_T_gt = false;
-  use_error_dt_lt = false;
+  use_error_T_gt = true;
+  use_error_dt_lt = true;
   use_error_boxlen_gt = false;
   
   error_T_gt = 1.0e4;
-  error_dt_lt = 1.0e-2;
+  error_dt_lt = 0.01;
   error_boxlen_gt = 1.0e4;
 
   is_ref_comp = true;

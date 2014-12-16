@@ -21,14 +21,15 @@
 #include "utils-matrix3.hpp"
 #include "utils-string.hpp"
 #include "utils-streamio.hpp"
-#include "exiterrors.hpp"
+#include "utils-errors.hpp"
+
+
 #include "potinfo.hpp"
 #include "param.hpp"
 #include "helpfuns.hpp"
 
 using namespace std;
 using namespace utils;
-using namespace exiterrors;
 using boost::format;
 
 

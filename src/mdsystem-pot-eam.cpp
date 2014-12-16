@@ -16,7 +16,6 @@
 #include <cstring>
 #include <cmath>
 
-#include "exiterrors.hpp"
 #include "constants.hpp"
 #include "utils.hpp"
 #include "utils-math.hpp"
@@ -24,6 +23,7 @@
 #include "utils-matrix.hpp"
 #include "utils-string.hpp"
 #include "utils-vector.hpp"
+#include "utils-errors.hpp"
 
 #include "atomsystem.hpp"
 #include "compound.hpp"
@@ -39,7 +39,6 @@
 
 using namespace std;
 using namespace utils;
-using namespace exiterrors;
 using boost::format;
 
 

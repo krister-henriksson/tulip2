@@ -9,10 +9,9 @@
 #include <cmath>
 
 #include "chisq-basics.hpp"
-#include "exiterrors.hpp"
 #include "funcfit-basics.hpp"
 #include "funcfit-conjgrad.hpp"
-#include "funcfit-exceptions.hpp"
+#include "funcfit-errors.hpp"
 #include "funcfit-ls-gauss-newton.hpp"
 #include "funcfit-ls-leve-marq.hpp"
 #include "funcfit-ls-powelldogleg.hpp"
@@ -31,6 +30,7 @@
 #include "utils-matrix-QRdecomp.hpp"
 #include "utils-string.hpp"
 #include "utils-vector.hpp"
+#include "utils-errors.hpp"
 
 #include "atomsystem.hpp"
 #include "compound.hpp"
@@ -49,7 +49,6 @@
 
 using namespace std;
 using namespace utils;
-using namespace exiterrors;
 using namespace constants;
 using namespace physconst;
 using namespace funcfit;

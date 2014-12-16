@@ -4,14 +4,15 @@
 #include "utils.hpp"
 #include "utils-math.hpp"
 #include "utils-vector.hpp"
+#include "utils-errors.hpp"
+
 #include "elem-iacs.hpp"
 #include "potinfo.hpp"
 #include "param.hpp"
 #include "param-pot.hpp"
-#include "exiterrors.hpp"
 
 
-using namespace exiterrors;
+using namespace utils;
 
 
 // construct

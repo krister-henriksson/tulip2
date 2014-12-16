@@ -9,11 +9,10 @@
 #include "utils-vector.hpp"
 #include "utils-math.hpp"
 #include "utils-string.hpp"
-#include "exiterrors.hpp"
+#include "utils-errors.hpp"
 
 
 using namespace utils;
-using namespace exiterrors;
 using boost::format;
 using std::cout;
 using std::endl;

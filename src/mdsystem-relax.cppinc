@@ -27,7 +27,7 @@ void MDSystem::relax(void){
   double dt_v_max=-1, dt_a_max=-1, dt_F_max=-1;
   Vector<double> dt_candidate(4, specs.max_dt);
   int nat;
-
+  bad_mds err_bad_mds;
 
 
   bool periodic = true;
@@ -212,13 +212,14 @@ void MDSystem::relax(void){
   //cout << "made it here 02*" << endl;
   // calc_P();
 
+  /*
   cout << "natoms: " << nat << endl;
   cout << "boxlen[0]: " << boxlen[0] << endl;
   cout << "boxlen[1]: " << boxlen[1] << endl;
   cout << "boxlen[2]: " << boxlen[2] << endl;
   cout << "type1: " << type1 << endl;
   cout << "mass1: " << mass1 << endl;
-
+  */
 
 
 
@@ -1086,7 +1087,10 @@ void MDSystem::relax(void){
 	/* Guard against box becoming too large when relaxing: */
 	for (i=0; i<3; ++i){
 	  if (isnan(boxlen[i])){
-	    aborterror("ERROR: Box in direction " + tostring(i) + " is NaN. Exiting");
+	    cout << "ERROR: Box length in direction " << i
+		 << " for compound is NaN." << endl;
+	    throw err_bad_mds;
+	    //aborterror("ERROR: Box in direction " + tostring(i) + " is NaN. Exiting");
 	  }
 	}
 
@@ -1207,47 +1211,46 @@ void MDSystem::relax(void){
 
     // ///////////////////////////////////////////////////////////////////////////////////
     // Some error checking
-    // - errors are fatal
-    // - later: use bad_mds exception propagated to fitting algorithm
     // ///////////////////////////////////////////////////////////////////////////////////
-
     if (specs.use_error_T_gt && T > specs.error_T_gt){
-      aborterror("FATAL ERROR: Temperature " + tostring(T) + " K"
-		 " for compound " + name + " has exceeded upper allowed value "
-		 + tostring(specs.error_T_gt)
-		 + ". Exiting.");
+      cout << "ERROR: Temperature T " << T << " K"
+	" for compound " << name << " has grown beyond upper allowed value "
+	   << specs.error_T_gt << endl;
+      throw err_bad_mds;
     }
     if (specs.use_error_dt_lt && dt < specs.error_dt_lt){
-      aborterror("FATAL ERROR: Time step " + tostring(dt) + " fs"
-		 " for compound " + name + " has become smaller than minimum allowed value "
-		 + tostring(specs.error_dt_lt)
-		 + ". Exiting.");
+      cout << "ERROR: Time step dt " << dt << " fs"
+	" for compound " << name << " has shrunk below lower allowed value "
+	   << specs.error_dt_lt << endl;
+      throw err_bad_mds;
     }
-    if (specs.use_error_boxlen_gt &&
-	(boxlen[0] > specs.error_boxlen_gt ||
-	 boxlen[1] > specs.error_boxlen_gt ||
-	 boxlen[2] > specs.error_boxlen_gt) ){
-      cout << "Boxlen for direction 1: " << boxlen[0] << endl;
-      cout << "Boxlen for direction 2: " << boxlen[1] << endl;
-      cout << "Boxlen for direction 3: " << boxlen[2] << endl;
-      aborterror("FATAL ERROR: One or more box lenghts"
-		 " for compound " + name + " has exceeded upper allowed value "
-		 + tostring(specs.error_boxlen_gt)
-		 + ". Exiting.");
-    }
-    if (! periodic){
-      for (int i=0; i<3; ++i){
-	if (isnan(boxlen[i])){
-	  aborterror("FATAL ERROR: Box length in direction " + tostring(i)
-		     + " is NaN. Exiting.");
-	}
+    if (specs.use_error_boxlen_gt){
+      int k=0;
+      if (boxlen[0] > specs.error_boxlen_gt) ++k;
+      if (boxlen[1] > specs.error_boxlen_gt) ++k;
+      if (boxlen[2] > specs.error_boxlen_gt) ++k;
+      if (k){
+	cout << "Boxlen for direction 1: " << boxlen[0] << endl;
+	cout << "Boxlen for direction 2: " << boxlen[1] << endl;
+	cout << "Boxlen for direction 3: " << boxlen[2] << endl;
+	cout << "ERROR: Box length for one or more directions"
+	  " for compound " << name << " has grown beyond upper allowed value "
+	     << specs.error_boxlen_gt << endl;
+	throw err_bad_mds;
       }
     }
 
-
-
-
-
+    if (! periodic){
+      for (int i=0; i<3; ++i){
+	if (isnan(boxlen[i])){
+	  cout << "ERROR: Box length in direction " << i
+	       << " for compound is NaN" << endl;
+	  throw err_bad_mds;
+	}
+      }
+    }
+    // ///////////////////////////////////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////////////////////////////////////
 
 
 

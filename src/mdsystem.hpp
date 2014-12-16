@@ -13,6 +13,7 @@
 #include "utils.hpp"
 #include "utils-vector.hpp"
 #include "utils-matrix.hpp"
+#include "utils-errors.hpp"
 
 #include "atomsystem.hpp"
 #include "mdsettings.hpp"
@@ -21,11 +22,9 @@
 #include "specs-fit-prop-pot.hpp"
 #include "physconst.hpp"
 #include "constants.hpp"
-#include "exiterrors.hpp"
 
 using namespace std;
 using namespace utils;
-using namespace exiterrors;
 using namespace physconst;
 using namespace constants;
 

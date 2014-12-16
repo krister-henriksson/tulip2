@@ -9,10 +9,9 @@
 #include <cmath>
 
 #include "chisq-basics.hpp"
-#include "exiterrors.hpp"
 #include "funcfit-basics.hpp"
 #include "funcfit-conjgrad.hpp"
-#include "funcfit-exceptions.hpp"
+#include "funcfit-errors.hpp"
 #include "funcfit-ls-gauss-newton.hpp"
 #include "funcfit-ls-leve-marq.hpp"
 #include "funcfit-ls-powelldogleg.hpp"
@@ -31,6 +30,7 @@
 #include "utils-matrix-QRdecomp.hpp"
 #include "utils-string.hpp"
 #include "utils-vector.hpp"
+#include "utils-errors.hpp"
 
 #include "atomsystem.hpp"
 #include "compound.hpp"
@@ -45,11 +45,11 @@
 #include "propfun.hpp"
 #include "specs-fit-prop-pot.hpp"
 #include "latcalc.hpp"
+#include "errors.hpp"
 
 
 using namespace std;
 using namespace utils;
-using namespace exiterrors;
 using namespace constants;
 using namespace physconst;
 using namespace funcfit;
@@ -70,6 +70,7 @@ Vector<double> latcalc(ParamPot & param, Vector<CompoundStructureFit> & DX){
   Vector<double> MDY;
   CompoundStructureFit cmpfit;
   int iDX,k,p;
+  bad_point err_bad_point;
 
   // Make sure potentials have been updated from the fitting parameters:
   param.update_pot();
@@ -79,8 +80,12 @@ Vector<double> latcalc(ParamPot & param, Vector<CompoundStructureFit> & DX){
     cmpfit = DX[iDX];
 
     cout << "Getting properties of compound " << cmpfit.name << " ..." << endl;
-    cmpfit.getprop(param);
-
+    try {
+      cmpfit.getprop(param);
+    }
+    catch (bad_mds & err_bad_mds){
+      throw err_bad_point;
+    }
 
     // ###################################################################
     // Make sure we get data back to calling function:

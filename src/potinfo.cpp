@@ -9,12 +9,11 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "exiterrors.hpp"
-
 #include "utils.hpp"
 #include "utils-vector.hpp"
 #include "utils-matrix.hpp"
 #include "utils-matrix3.hpp"
+#include "utils-errors.hpp"
 
 #include "utils-string.hpp"
 
@@ -23,13 +22,11 @@
 #include "potinfo.hpp"
 #include "potclasses.hpp"
 #include "compound.hpp"
-#include "exiterrors.hpp"
 
 #include "omp-basics.hpp"
 
 using namespace std;
 using namespace utils;
-using namespace exiterrors;
 using boost::format;
 
 

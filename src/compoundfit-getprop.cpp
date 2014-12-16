@@ -9,10 +9,9 @@
 #include <cmath>
 
 #include "chisq-basics.hpp"
-#include "exiterrors.hpp"
 #include "funcfit-basics.hpp"
 #include "funcfit-conjgrad.hpp"
-#include "funcfit-exceptions.hpp"
+#include "funcfit-errors.hpp"
 #include "funcfit-ls-gauss-newton.hpp"
 #include "funcfit-ls-leve-marq.hpp"
 #include "funcfit-ls-powelldogleg.hpp"
@@ -37,6 +36,7 @@
 #include "utils-matrix-QRdecomp.hpp"
 #include "utils-string.hpp"
 #include "utils-vector.hpp"
+#include "utils-errors.hpp"
 
 #include "atomsystem.hpp"
 //#include "compound.hpp"
@@ -53,7 +53,6 @@
 
 using namespace std;
 using namespace utils;
-using namespace exiterrors;
 using namespace constants;
 using namespace physconst;
 using namespace funcfit;
@@ -122,6 +121,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
 
   bool retry;
   int mds_box_iter=0;
+  int max_mds_box_iter = 10;
   while (true){
 
     cout << "Creating atom system ... " << endl;
@@ -171,6 +171,11 @@ void CompoundStructureFit::getprop(ParamPot & param){
     if (mds.N[2]<0) mds.N[2] = -mds.N[2]+1;
 
     if (retry) mds_box_iter++;
+
+    if (mds_box_iter > max_mds_box_iter)
+      aborterror("ERROR: Too many (" + tostring(max_mds_box_iter)
+		 + ") iterations of box construction "
+		 + "when trying to relax compound " + name + ". Exiting.");
 
     if (! retry) break;
   }

@@ -19,14 +19,14 @@
 #include "utils-matrix.hpp"
 #include "utils-matrix3.hpp"
 #include "utils-string.hpp"
+#include "utils-errors.hpp"
+
 #include "potinfo.hpp"
 #include "helpfuns.hpp"
-#include "exiterrors.hpp"
 #include "utils-streamio.hpp"
 
 using namespace std;
 using namespace utils;
-using namespace exiterrors;
 using boost::format;
 
 

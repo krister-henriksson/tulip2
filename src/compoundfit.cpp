@@ -18,19 +18,18 @@
 #include "utils-matrix3.hpp"
 #include "utils-string.hpp"
 #include "utils-streamio.hpp"
+#include "utils-errors.hpp"
 
 #include "elem-iacs.hpp"
 #include "specs-fit-prop-pot.hpp"
 #include "compound.hpp"
 #include "physconst.hpp"
-#include "exiterrors.hpp"
 
 #include "compoundfit.hpp"
 
 
 using namespace std;
 using namespace utils;
-using namespace exiterrors;
 using namespace constants;
 using boost::format;
 
