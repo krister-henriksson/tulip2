@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <limits>
 
 #include <boost/format.hpp>
 
@@ -22,7 +23,7 @@
 #include "utils-string.hpp"
 #include "utils-streamio.hpp"
 #include "utils-errors.hpp"
-
+#include "utils-math.hpp"
 
 #include "potinfo.hpp"
 #include "param.hpp"
@@ -1044,21 +1045,14 @@ void PotentialInformationFit::read_info_fit(string filename){
 	  int iv = basepot_vecidx(s1,s2);
 
 	  for (int k=0; k<pot_ABOP[iv].parval.size(); ++k){
-	    
-	    if (pot_ABOP[iv].parmin[k] > pot_ABOP[iv].parmax[k])
-	      limerr1("ABOP", s1, s2, pot_ABOP[iv].parname[k]);
 
 	    set_param_type(pot_ABOP[iv].parmin[k], pot_ABOP[iv].parmax[k], pot_ABOP[iv].partype[k]);
 
-	    if (pot_ABOP[iv].partype[k] == PARAM_FREE_WITH_LIMITS
-		&&
-		(pot_ABOP[iv].parmin[k] > pot_ABOP[iv].parval[k]))
-	      limerr2("ABOP", s1, s2, pot_ABOP[iv].parname[k]);
-
-	    if (pot_ABOP[iv].partype[k] == PARAM_FREE_WITH_LIMITS
-		&&
-		(pot_ABOP[iv].parval[k] > pot_ABOP[iv].parmax[k]))
-	      limerr3("ABOP", s1, s2, pot_ABOP[iv].parname[k]);
+	    limcheck("ABOP", pot_ABOP[iv].parname[k], s1 + "-" + s2,
+		     pot_ABOP[iv].partype[k],
+		     pot_ABOP[iv].parmin[k], pot_ABOP[iv].parmax[k],
+		     pot_ABOP[iv].parval[k]);
+	    
 
 	  }
 
@@ -1127,16 +1121,13 @@ void PotentialInformationFit::read_info_fit(string filename){
 
 	if (use_abop_alpha.elem(i,j,k)){
 
-	  if (abop_alpha_parmin.elem(i,j,k) > abop_alpha_parmax.elem(i,j,k))
-	    limerr1_abop("alpha", s1,s2,s3);
-
 	  set_param_type(abop_alpha_parmin.elem(i,j,k), abop_alpha_parmax.elem(i,j,k), abop_alpha_partype.elem(i,j,k));
 
-	  if (abop_alpha_partype.elem(i,j,k) == PARAM_FREE_WITH_LIMITS && (abop_alpha_parmin.elem(i,j,k) > abop_alpha.elem(i,j,k)))
-	    limerr2_abop("alpha", s1,s2,s3);
-	  if (abop_alpha_partype.elem(i,j,k) == PARAM_FREE_WITH_LIMITS && (abop_alpha_parmax.elem(i,j,k) < abop_alpha.elem(i,j,k)))
-	    limerr3_abop("alpha", s1,s2,s3);
-
+	  limcheck("ABOP", "alpha", s1 + "-" + s2 + "-" + s3,
+		   abop_alpha_partype.elem(i,j,k),
+		   abop_alpha_parmin.elem(i,j,k),
+		   abop_alpha_parmax.elem(i,j,k),
+		   abop_alpha.elem(i,j,k));
 	}
 
       }
@@ -1155,16 +1146,13 @@ void PotentialInformationFit::read_info_fit(string filename){
 
 	if (use_abop_omega.elem(i,j,k)){
 
-	  if (abop_omega_parmin.elem(i,j,k) > abop_omega_parmax.elem(i,j,k))
-	    limerr1_abop("omega", s1,s2,s3);
-
 	  set_param_type(abop_omega_parmin.elem(i,j,k), abop_omega_parmax.elem(i,j,k), abop_omega_partype.elem(i,j,k));
 
-	  if (abop_omega_partype.elem(i,j,k) == PARAM_FREE_WITH_LIMITS && (abop_omega_parmin.elem(i,j,k) > get_abop_omega(s1,s2,s3)))
-	    limerr2_abop("omega", s1,s2,s3);
-	  if (abop_omega_partype.elem(i,j,k) == PARAM_FREE_WITH_LIMITS && (abop_omega_parmax.elem(i,j,k) < get_abop_omega(s1,s2,s3)))
-	    limerr3_abop("omega", s1,s2,s3);
-
+	  limcheck("ABOP", "omega", s1 + "-" + s2 + "-" + s3,
+		   abop_alpha_partype.elem(i,j,k),
+		   abop_alpha_parmin.elem(i,j,k),
+		   abop_alpha_parmax.elem(i,j,k),
+		   abop_alpha.elem(i,j,k));
 	}
 
 
@@ -1182,16 +1170,13 @@ void PotentialInformationFit::read_info_fit(string filename){
 
       if (use_abop_2mu.elem(i,j)){
 
-	if (abop_2mu_parmin.elem(i,j) > abop_2mu_parmax.elem(i,j))
-	  limerr1_2mu("2mu", s1,s2);
-
 	set_param_type(abop_2mu_parmin.elem(i,j), abop_2mu_parmax.elem(i,j), abop_2mu_partype.elem(i,j));
 
-	if (abop_2mu_partype.elem(i,j) == PARAM_FREE_WITH_LIMITS && (abop_2mu_parmin.elem(i,j) > abop_2mu.elem(i,j)))
-	  limerr2_2mu("2mu", s1,s2);
-	if (abop_2mu_partype.elem(i,j) == PARAM_FREE_WITH_LIMITS && (abop_2mu_parmax.elem(i,j) < abop_2mu.elem(i,j)))
-	  limerr3_2mu("2mu", s1,s2);
-
+	limcheck("ABOP", "2mu", s1 + "-" + s2,
+		   abop_2mu_partype.elem(i,j),
+		   abop_2mu_parmin.elem(i,j),
+		   abop_2mu_parmax.elem(i,j),
+		   abop_2mu.elem(i,j));
       }
 
     }
@@ -1250,49 +1235,46 @@ void PotentialInformationFit::read_info_fit(string filename){
 
 
 
+void PotentialInformationFit::limcheck(const string & pot,
+				       const string & parname,
+				       const string & elems,
+				       const parametertype & partype,
+				       const double & parmin,
+				       const double & parmax,
+				       const double & parval
+				       ){
+  double twoeps = std::numeric_limits<double>::epsilon();
+  string intro = "ERROR: Potential " + pot + ": " + parname + ": "
+    + elems + ": ";
 
-
-void PotentialInformationFit::limerr1(string s0, string s1, string s2, string sp){
-  aborterror("Error: " + s0 + ": " + s1 + "-" + s2 + ": " + sp +
-	     " limits are reversed ?! Exiting.");
+  if (partype==PARAM_FREE_WITH_LIMITS){
+    if (parmin > parmax)
+      aborterror(intro
+		 + "Lower parameter limit " + tostring(parmin)
+		 + " is larger than upper limit " + tostring(parmax)
+		 + ". Exiting.");
+    if (fp_are_equal(parval, parmin, twoeps))
+      aborterror(intro
+		 + "Parameter value " + tostring(parval)
+		 + " is too close to lower limit " + tostring(parmin)
+		 + ". Exiting.");
+    if (fp_are_equal(parval, parmax, twoeps))
+      aborterror(intro
+		 + "Parameter value " + tostring(parval)
+		 + " is too close to upper limit " + tostring(parmax)
+		 + ". Exiting.");
+    if (parval < parmin)
+      aborterror(intro
+		 + "Parameter value " + tostring(parval)
+		 + " is smaller than lower limit " + tostring(parmax)
+		 + ". Exiting.");
+    if (parval > parmax)
+      aborterror(intro
+		 + "Parameter value " + tostring(parval)
+		 + " is larger than upper limit " + tostring(parmax)
+		 + ". Exiting.");
+  }
 }
-void PotentialInformationFit::limerr2(string s0, string s1, string s2, string sp){
-  aborterror("Error: " + s0 + ": " + s1 + "-" + s2 + ": " + sp +
-	     " value is smaller than lower limit ?! Exiting.");
-}
-void PotentialInformationFit::limerr3(string s0, string s1, string s2, string sp){
-  aborterror("Error: " + s0 + ": " + s1 + "-" + s2 + ": " + sp +
-	     " value is larger than upper limit ?! Exiting.");
-}
-
-void PotentialInformationFit::limerr1_abop(string s0, string s1, string s2, string s3){
-  aborterror("Error: ABOP " + s0 + ": " + s1 + "-" + s2 + "-" + s3 + ": " +
-	     " limits are reversed ?! Exiting.");
-}
-void PotentialInformationFit::limerr2_abop(string s0, string s1, string s2, string s3){
-  aborterror("Error: ABOP " + s0 + ": " + s1 + "-" + s2 + "-" + s3 + ": " +
-	     " value is smaller than lower limit ?! Exiting.");
-}
-void PotentialInformationFit::limerr3_abop(string s0, string s1, string s2, string s3){
-  aborterror("Error: ABOP " + s0 + ": " + s1 + "-" + s2 + "-" + s3 + ": " +
-	     " value is larger than upper limit ?! Exiting.");
-}
-
-void PotentialInformationFit::limerr1_2mu(string s0, string s1, string s2){
-  aborterror("Error: ABOP " + s0 + ": " + s1 + "-" + s2 + "-" + 
-	     " limits are reversed ?! Exiting.");
-}
-void PotentialInformationFit::limerr2_2mu(string s0, string s1, string s2){
-  aborterror("Error: ABOP " + s0 + ": " + s1 + "-" + s2 + "-" + 
-	     " value is smaller than lower limit ?! Exiting.");
-}
-void PotentialInformationFit::limerr3_2mu(string s0, string s1, string s2){
-  aborterror("Error: ABOP " + s0 + ": " + s1 + "-" + s2 + "-" + 
-	     " value is larger than upper limit ?! Exiting.");
-}
-
-
-
 
 
 

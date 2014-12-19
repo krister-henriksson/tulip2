@@ -84,6 +84,7 @@ Vector<double> latcalc(ParamPot & param, Vector<CompoundStructureFit> & DX){
       cmpfit.getprop(param);
     }
     catch (bad_mds & err_bad_mds){
+      cout << "ERROR: Bad MDS run detected!" << endl;
       throw err_bad_point;
     }
 

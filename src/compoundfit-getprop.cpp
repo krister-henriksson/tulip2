@@ -314,7 +314,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
     }
   }
   if (j>0){
-    cout << "Calculating for Cij ..." << endl;
+    cout << "Calculating for Cij ..." << flush << endl;
     get_Cij(mds, param, pos_bak, boxdir_bak, boxlen_bak, E0, V0);
   }
 
@@ -664,11 +664,14 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
     aborterror("Error: Unknown fitting method " + param.p_potinfo->specs_prop.fitmet + ". " +
 	       "Exiting.");
 
-
+  /*
+  cout << "Xopt: " << Xopt << endl;
+  cout << "Xmax: " << cs.Param().Xmin() << endl;
+  cout << "Xmax: " << cs.Param().Xmax() << endl;
 
   cs(Xopt);
-
-
+  cout << " ************************ B, B': Done with recalc after Xopt obtained." << flush << endl;
+  */
 
 
 
@@ -734,7 +737,7 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
   if (prop_use.B)     prop_pred.B     = B0;
   if (prop_use.Bp)    prop_pred.Bp    = Bp0;
 
-
+  // cout << "Done with fitting B, B'" << flush << endl;
 
   return;
 }
@@ -754,10 +757,19 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 				   ){
 		
   bool quit, fit_OK;
-  int j,k,p,Nf,NC,isym;
-  Vector<double> xp, yp, dyp, Clincomb, Xopt;
+  int j,k,p,Nf,isym;
+  Vector<double> xp, yp, dyp, Xopt;
+  double Clincomb[21];
+  int NC=21;
   Matrix<double> alpha(3,3,0), C(6,6,0);
-  double fmin, fmax, ef, df, f, td, C11, C12, C13, C22, C23, C33, C44, C55, C66;
+  double fmin, fmax, ef, df, f, td;
+  double C11, C12, C13, C14, C15, C16;
+  double C22, C23, C24, C25, C26;
+  double C33, C34, C35, C36;
+  double C44, C45, C46;
+  double C55, C56;
+  double C66;
+
   double eps = std::numeric_limits<double>::epsilon(), min_f=0.0, min_E=E0, guess_C;
   double small = sqrt(eps);
   bool rel_sys;
@@ -771,6 +783,14 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
   df      = (fmax - fmin)/Nf;
   xp.resize(Nf); yp.resize(Nf); dyp.resize(Nf);
 
+  C11 = C12 = C13 = C14 = C15 = C16 = 0.0;
+  C22 = C23 = C24 = C25 = C26 = 0.0;
+  C33 = C34 = C35 = C36 = 0.0;
+  C44 = C45 = C46 = 0.0;
+  C55 = C56 = 0.0;
+  C66 = 0.0;
+
+
 
   /* ###############################################################################
      Find the elastic constants.
@@ -782,12 +802,16 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
      C11, C12, C44, C13, C33
      ############################################################################### */
 
+  /*
   if      (csystem=="cubic") NC=3;
   else if (csystem=="hexagonal") NC=5;
   else if (csystem=="orthorombic") NC=9;
+  else if (csystem=="monoclinic") NC=13;
+  else if (csystem=="triclinic") NC=21;
   else NC=0;
 
   Clincomb.resize(NC);
+  */
   for (isym=0; isym<NC; ++isym) Clincomb[isym]=0;
 
 
@@ -864,6 +888,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 	}
 	else quit=true;
       }
+
       else if (csystem=="orthorombic"){
 	if (isym==0){
 	  /* Result: E - E0 = 0.5 * V0 * C11 * f^2 */
@@ -927,6 +952,260 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 	}
 	else quit=true;
       }
+
+      else if (csystem=="monoclinic"){
+	if (isym==0){
+	  /* Result: E - E0 = 0.5 * V0 * C11 * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	}
+	else if (isym==1){
+	  /* Result: E - E0 = 0.5 * V0 * C22 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0;
+	}
+	else if (isym==2){
+	  /* Result: E - E0 = 0.5 * V0 * C33 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0 + f;
+	}
+	else if (isym==3){
+	  /* Result: E - E0 = 2 * V0 * C44 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(1,2) = f;
+	}
+	else if (isym==4){
+	  /* Result: E - E0 = 2 * V0 * C55 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,2) = f;
+	}
+	else if (isym==5){
+	  /* Result: E - E0 = 2 * V0 * C66 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,1) = f;
+	}
+
+	else if (isym==6){
+	  /* Result: E - E0 = 0.5 * V0 * (C11 + C22 + 2.0 * C12) * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0;
+	}
+	else if (isym==7){
+	  /* Result: E - E0 = 0.5 * V0 * (C11 + C33 + 2.0 * C13) * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0 + f;
+	}
+
+	else if (isym==8){
+	  /* Result: E - E0 = 0.5 * V0 * (C11 + 4.0 * C55 + 2.0 * C15) * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,2) = f;
+	}
+
+	else if (isym==9){
+	  /* Result: E - E0 = 0.5 * V0 * (C22 + C33 + 2.0 * C23) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0 + f;
+	}
+
+	else if (isym==10){
+	  /* Result: E - E0 = 0.5 * V0 * (C22 + 4.0 * C55 + 2.0 * C25) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,2) = f;
+	}
+
+	else if (isym==11){
+	  /* Result: E - E0 = 0.5 * V0 * (C33 + 4.0 * C55 + 2.0 * C35) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0 + f;
+	  alpha.elem(0,2) = f;
+	}
+
+	else if (isym==12){
+	  /* Result: E - E0 = 0.5 * V0 * (4.0 * C44 + 4.0 * C66 + 8.0 * C46) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(1,2) = f;
+	  alpha.elem(0,1) = f;
+	}
+
+	else quit=true;
+      }
+
+      else if (csystem=="triclinic"){
+	if (isym==0){
+	  /* Result: E - E0 = 0.5 * V0 * C11 * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	}
+	else if (isym==1){
+	  /* Result: E - E0 = 0.5 * V0 * C22 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0;
+	}
+	else if (isym==2){
+	  /* Result: E - E0 = 0.5 * V0 * C33 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0 + f;
+	}
+	else if (isym==3){
+	  /* Result: E - E0 = 2 * V0 * C44 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(1,2) = f;
+	}
+	else if (isym==4){
+	  /* Result: E - E0 = 2 * V0 * C55 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,2) = f;
+	}
+	else if (isym==5){
+	  /* Result: E - E0 = 2 * V0 * C66 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,1) = f;
+	}
+
+	else if (isym==6){
+	  /* Result: E - E0 = 0.5 * V0 * (C11 + C22 + 2.0 * C12) * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0;
+	}
+	else if (isym==7){
+	  /* Result: E - E0 = 0.5 * V0 * (C11 + C33 + 2.0 * C13) * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0 + f;
+	}
+	else if (isym==8){
+	  /* Result: E - E0 = 0.5 * V0 * (C11 + 4.0 * C44 + 2.0 * C14) * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(1,2) = f;
+	}
+	else if (isym==9){
+	  /* Result: E - E0 = 0.5 * V0 * (C11 + 4.0 * C55 + 2.0 * C15) * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,2) = f;
+	}
+	else if (isym==10){
+	  /* Result: E - E0 = 0.5 * V0 * (C11 + 4.0 * C66 + 2.0 * C16) * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,1) = f;
+	}
+
+
+	else if (isym==11){
+	  /* Result: E - E0 = 0.5 * V0 * (C22 + C33 + 2.0 * C23) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0 + f;
+	}
+	else if (isym==12){
+	  /* Result: E - E0 = 0.5 * V0 * (C22 + 4.0 * C44 + 2.0 * C24) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(1,2) = f;
+	}
+	else if (isym==13){
+	  /* Result: E - E0 = 0.5 * V0 * (C22 + 4.0 * C55 + 2.0 * C25) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,2) = f;
+	}
+	else if (isym==14){
+	  /* Result: E - E0 = 0.5 * V0 * (C22 + 4.0 * C66 + 2.0 * C26) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,1) = f;
+	}
+
+
+	else if (isym==15){
+	  /* Result: E - E0 = 0.5 * V0 * (C33 + 4.0 * C44 + 2.0 * C34) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0 + f;
+	  alpha.elem(1,2) = f;
+	}
+	else if (isym==16){
+	  /* Result: E - E0 = 0.5 * V0 * (C33 + 4.0 * C55 + 2.0 * C35) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0 + f;
+	  alpha.elem(0,2) = f;
+	}
+	else if (isym==17){
+	  /* Result: E - E0 = 0.5 * V0 * (C33 + 4.0 * C66 + 2.0 * C36) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0 + f;
+	  alpha.elem(0,1) = f;
+	}
+
+
+	else if (isym==18){
+	  /* Result: E - E0 = 0.5 * V0 * (4.0 * C44 + 4.0 * C55 + 8.0 * C45) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(1,2) = f;
+	  alpha.elem(0,2) = f;
+	}
+	else if (isym==19){
+	  /* Result: E - E0 = 0.5 * V0 * (4.0 * C44 + 4.0 * C66 + 8.0 * C46) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(1,2) = f;
+	  alpha.elem(0,1) = f;
+	}
+
+	else if (isym==20){
+	  /* Result: E - E0 = 0.5 * V0 * (4.0 * C55 + 4.0 * C66 + 8.0 * C56) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,2) = f;
+	  alpha.elem(0,1) = f;
+	}
+	else quit=true;
+      }
+
       else quit=true;
 
       if (quit) break;
@@ -1224,8 +1503,14 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 
 
 
+    /*
+    cout << "Xopt: " << Xopt << endl;
+    cout << "Xmax: " << cs.Param().Xmin() << endl;
+    cout << "Xmax: " << cs.Param().Xmax() << endl;
 
-
+    cs(Xopt);
+    cout << " ************************ Cij: Done with recalc after Xopt obtained." << flush << endl;
+    */
 
 
 
@@ -1313,6 +1598,102 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
     C.elem(4,4) = C55;
     C.elem(5,5) = C66;
   }
+  else if (csystem=="triclinic"){
+    C11 = 2.0 * Clincomb[0];
+    C22 = 2.0 * Clincomb[1];
+    C33 = 2.0 * Clincomb[2];
+    C44 = 4.0 * Clincomb[3];
+    C55 = 4.0 * Clincomb[4];
+    C66 = 4.0 * Clincomb[5];
+
+    C12 = (2.0 * Clincomb[6]  - C11 - C22)/2.0;
+    C13 = (2.0 * Clincomb[7]  - C11 - C33)/2.0;
+    C14 = (2.0 * Clincomb[8]  - C11 - 4.0 * C44)/2.0;
+    C15 = (2.0 * Clincomb[9]  - C11 - 4.0 * C55)/2.0;
+    C16 = (2.0 * Clincomb[10] - C11 - 4.0 * C66)/2.0;
+
+    C23 = (2.0 * Clincomb[11]  - C22 - C33)/2.0;
+    C24 = (2.0 * Clincomb[12]  - C22 - 4.0 * C44)/2.0;
+    C25 = (2.0 * Clincomb[13]  - C22 - 4.0 * C55)/2.0;
+    C26 = (2.0 * Clincomb[14]  - C22 - 4.0 * C66)/2.0;
+
+    C34 = (2.0 * Clincomb[15]  - C33 - 4.0 * C44)/2.0;
+    C35 = (2.0 * Clincomb[16]  - C33 - 4.0 * C55)/2.0;
+    C36 = (2.0 * Clincomb[17]  - C33 - 4.0 * C66)/2.0;
+
+    C45 = (2.0 * Clincomb[18]  - 4.0 * C44 - 4.0 * C55)/8.0;
+    C46 = (2.0 * Clincomb[19]  - 4.0 * C44 - 4.0 * C66)/8.0;
+
+    C56 = (2.0 * Clincomb[20]  - 4.0 * C55 - 4.0 * C66)/8.0;
+
+    C.elem(0,0) = C11;
+    C.elem(1,1) = C22;
+    C.elem(2,2) = C33;
+    C.elem(3,3) = C44;
+    C.elem(4,4) = C55;
+    C.elem(5,5) = C66;
+
+    C.elem(0,1) = C12;
+    C.elem(0,2) = C13;
+    C.elem(0,3) = C14;
+    C.elem(0,4) = C15;
+    C.elem(0,5) = C16;
+
+    C.elem(1,2) = C23;
+    C.elem(1,3) = C24;
+    C.elem(1,4) = C25;
+    C.elem(1,5) = C26;
+
+    C.elem(2,3) = C34;
+    C.elem(2,4) = C35;
+    C.elem(2,5) = C36;
+
+    C.elem(3,4) = C45;
+    C.elem(3,5) = C46;
+
+    C.elem(4,5) = C56;
+  }
+  else if (csystem=="monoclinic"){
+    C11 = 2.0 * Clincomb[0];
+    C22 = 2.0 * Clincomb[1];
+    C33 = 2.0 * Clincomb[2];
+    C44 = 4.0 * Clincomb[3];
+    C55 = 4.0 * Clincomb[4];
+    C66 = 4.0 * Clincomb[5];
+
+    C12 = (2.0 * Clincomb[6]  - C11 - C22)/2.0;
+    C13 = (2.0 * Clincomb[7]  - C11 - C33)/2.0;
+
+    C15 = (2.0 * Clincomb[8]  - C11 - 4.0 * C55)/2.0;
+
+    C23 = (2.0 * Clincomb[9]  - C22 - C33)/2.0;
+    C25 = (2.0 * Clincomb[10]  - C22 - 4.0 * C55)/2.0;
+
+    C35 = (2.0 * Clincomb[11]  - C33 - 4.0 * C55)/2.0;
+
+    C46 = (2.0 * Clincomb[12]  - 4.0 * C44 - 4.0 * C66)/8.0;
+
+    C.elem(0,0) = C11;
+    C.elem(1,1) = C22;
+    C.elem(2,2) = C33;
+    C.elem(3,3) = C44;
+    C.elem(4,4) = C55;
+    C.elem(5,5) = C66;
+
+    C.elem(0,1) = C12;
+    C.elem(0,2) = C13;
+
+    C.elem(0,4) = C15;
+
+    C.elem(1,2) = C23;
+
+    C.elem(1,4) = C25;
+
+    C.elem(2,4) = C35;
+
+    C.elem(3,5) = C46;
+  }
+
 
 
   for (k=0; k<6; ++k){

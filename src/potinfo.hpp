@@ -17,6 +17,7 @@
 #include "elem-iacs.hpp"
 #include "specs-fit-prop-pot.hpp"
 #include "potclasses.hpp"
+#include "param.hpp"
 
 #include "omp-basics.hpp"
 
@@ -136,18 +137,15 @@ public:
   // Read settings about fitting structure properties and potential:
   void read_specs(string filename_specs);
 
-  void limerr1(string s0, string s1, string s2, string sp);
-  void limerr2(string s0, string s1, string s2, string sp);
-  void limerr3(string s0, string s1, string s2, string sp);
 
-  void limerr1_abop(string s0, string s1, string s2, string s3);
-  void limerr2_abop(string s0, string s1, string s2, string s3);
-  void limerr3_abop(string s0, string s1, string s2, string s3);
-
-  void limerr1_2mu(string s0, string s1, string s2);
-  void limerr2_2mu(string s0, string s1, string s2);
-  void limerr3_2mu(string s0, string s1, string s2);
-
+  void limcheck(const string & pot,
+		const string & parname,
+		const string & elems,
+		const parametertype & partype,
+		const double & parmin,
+		const double & parmax,
+		const double & parval
+		);
 
 } ;
 

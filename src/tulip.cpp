@@ -187,9 +187,7 @@ int main(int argc, char *argv[]){
       use_relonly = true;
     }
     else if (string(argv[i])=="-xyz"){
-      arg = string(argv[i+1]); sstream.str(arg); i++;
-      sstream >> d_xyz_fmt;
-      sstream.clear();
+      d_xyz_fmt   = "xyz";
       u_d_xyz_fmt = true;      
     }
     else if (string(argv[i])=="-dfitprop0"){ debug_fit_prop[0] = true; }
@@ -630,7 +628,7 @@ int main(int argc, char *argv[]){
 
 
     string dumpfile(complistfit.compounds[i].filename + ".xyz");
-    cout << "  Atom system will be written to file " << dumpfile << endl;
+    cout << "  Atom system will be written to file of format XYZ for debugging purposes: " << dumpfile << endl;
     ofstream fout;
     fout.open(dumpfile.c_str());
     fout << complistfit.compounds[i].basis_vecs.size() << endl;

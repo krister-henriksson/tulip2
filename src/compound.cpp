@@ -540,10 +540,12 @@ void CompoundStructure::read_structure(void){
 	aborterror("ERROR: No indicator for internal/direct format of basis vectors "
 		   "given for compound " + name + ". Exiting.");
   
-      if      (args[0][0]=='I' || args[0][0]=='i')
+      if      (args[0][0]=='I' || args[0][0]=='i'){
 	use_int = true;
-      else if (args[0][0]=='D' || args[0][0]=='d' || args[0][0]=='S' || args[0][0]=='s')
+      }
+      else if (args[0][0]=='S' || args[0][0]=='s'){
 	use_int = false;
+      }
       else
 	aborterror("ERROR: Unknown indicator " + args[0] +
 		   " for internal/direct format of basis vectors for compound " + 

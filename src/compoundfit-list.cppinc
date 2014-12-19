@@ -165,6 +165,11 @@ CompoundListFit::CompoundListFit(const Elements & el,
 	compounds[ilat].csystem = "hexagonal";
       else if ( args[1][0] == 'o' || args[1][0] == 'O' )
 	compounds[ilat].csystem = "orthorombic";
+      else if ( (args[1][0] == 't' || args[1][0] == 'T') &&
+		(args[1][1] == 'r' || args[1][1] == 'R') )
+	compounds[ilat].csystem = "triclinic";
+      else if ( args[1][0] == 'm' || args[1][0] == 'M' )
+	compounds[ilat].csystem = "monoclinic";
       else {
 	aborterror("ERROR: Unknown crystal system " + args[1] + ". Exiting.");
       }

@@ -966,6 +966,17 @@ void MDSystem::relax(void){
 	boxlen[2] = boxdir.col(2).normalize();
 
 
+	
+	/* Guard against box becoming too large when relaxing: */
+	for (int k=0; k<3; ++k){
+	  if (isnan(boxlen[k])){
+	    cout << "ERROR: Pressure control: Box length in direction " << k
+		 << " for compound " + name + " is NaN." << endl;
+	    throw err_bad_mds;
+	    //aborterror("ERROR: Box in direction " + tostring(i) + " is NaN. Exiting");
+	  }
+	}
+
 
 
 	/*
@@ -1084,15 +1095,6 @@ void MDSystem::relax(void){
 	cout << "boxdir([2]: " << boxdir.col(2) << endl;
 	*/
 
-	/* Guard against box becoming too large when relaxing: */
-	for (i=0; i<3; ++i){
-	  if (isnan(boxlen[i])){
-	    cout << "ERROR: Box length in direction " << i
-		 << " for compound is NaN." << endl;
-	    throw err_bad_mds;
-	    //aborterror("ERROR: Box in direction " + tostring(i) + " is NaN. Exiting");
-	  }
-	}
 
 	/* Guard against box becoming too small when relaxing: */
 	if (boxlen[0] <= 2.0*(rcut+skint)) N[0] = - floor(boxlen_orig[0]/boxlen[0] * N[0]);
@@ -1110,6 +1112,9 @@ void MDSystem::relax(void){
       }
     
     }
+
+
+
 
 
     /* ----------------------------------------------------------------------
