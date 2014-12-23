@@ -190,6 +190,165 @@ void CompoundStructureFit::read_forces(void){
 
 
 
+
+
+void CompoundStructureFit::check_and_fix_Cij(){
+  // Warn user and exit? Or rewrite to use "standard" settings?
+
+
+  csystem_sub=0;
+
+  if (csystem=="monoclinic" || csystem=="tetragonal" || csystem=="trigonal"){
+    int k=0, p=0;
+
+    if (csystem=="monoclinic"){
+      if (prop_use.C.elem(1,5)) k++;
+      if (prop_use.C.elem(2,5)) k++;
+      if (prop_use.C.elem(3,5)) k++;
+      if (prop_use.C.elem(4,6)) k++;
+      
+      if (prop_use.C.elem(1,6)) p++;
+      if (prop_use.C.elem(2,6)) p++;
+      if (prop_use.C.elem(3,6)) p++;
+      if (prop_use.C.elem(4,5)) p++;
+
+      if (k>0) csystem_sub=0;
+      if (p>0) csystem_sub=1;
+      if (k>0 && p>0){
+	aborterror("ERROR: Monoclinic crystal system uses either C15,C25,C35,C46 or "
+		   "C16,C26,C36,C45, not Cij from both. Exiting.");
+      }
+    }
+    else if (csystem=="tetragonal"){
+      if (prop_use.C.elem(1,6)) csystem_sub=0;
+      else csystem_sub=1;
+    }
+    else if (csystem=="trigonal"){
+      if (prop_use.C.elem(2,5)) csystem_sub=0;
+      else csystem_sub=1;
+    }
+  }
+
+
+
+  Matrix<bool> Cuse(7,7,false);
+  get_Cuse(Cuse);
+
+
+  for (int k=1; k<=6; ++k){
+    for (int p=1; p<=6; ++p){
+
+      if (prop_use.C.elem(k-1,p-1)==true && Cuse.elem(k,p)==false){
+	string mess = "ERROR: Crystal system " + csystem + " does not use elastic constant C"
+	  + tostring(k) + tostring(p) + ". Used Cij are:";
+	for (int ik=1; ik<=6; ++ik)
+	  for (int ip=1; ip<=6; ++ip)
+	    if (Cuse.elem(ik,ip)) mess += " C" + tostring(ik) + tostring(ip);
+	aborterror(mess);
+      }
+
+    }
+  }
+
+
+
+}
+
+
+
+void CompoundStructureFit::get_Cuse(Matrix<bool> & Cuse){
+  /* "Cuse" indicates which Cij elements are used by this code.
+     This method compares read-in Cij with these to find
+     (1) which alternate C-tensors are used, and
+     (2) if user provided correct Cij elements.
+   */
+
+
+
+
+  if (csystem=="cubic"){
+    Cuse.elem(1,1) = true;
+    Cuse.elem(1,2) = true;
+    Cuse.elem(4,4) = true;
+  }
+  else if (csystem=="hexagonal"){
+    Cuse.elem(1,1) = true;
+    Cuse.elem(1,2) = true;
+    Cuse.elem(1,3) = true;
+    Cuse.elem(3,3) = true;
+    Cuse.elem(4,4) = true;
+  }
+  else if (csystem=="orthorombic"){
+    Cuse.elem(1,1) = true;
+    Cuse.elem(1,2) = true;
+    Cuse.elem(1,3) = true;
+    Cuse.elem(2,2) = true;
+    Cuse.elem(2,3) = true;
+    Cuse.elem(3,3) = true;
+    Cuse.elem(4,4) = true;
+    Cuse.elem(5,5) = true;
+    Cuse.elem(6,6) = true;
+  }
+  else if (csystem=="monoclinic"){
+    Cuse.elem(1,1) = true;
+    Cuse.elem(1,2) = true;
+    Cuse.elem(1,3) = true;
+    Cuse.elem(2,2) = true;
+    Cuse.elem(2,3) = true;
+    Cuse.elem(3,3) = true;
+    Cuse.elem(4,4) = true;
+    Cuse.elem(5,5) = true;
+    Cuse.elem(6,6) = true;
+
+    if (csystem_sub==0){
+      Cuse.elem(1,5) = true;
+      Cuse.elem(2,5) = true;
+      Cuse.elem(3,5) = true;
+      Cuse.elem(4,6) = true;
+    }
+    else {
+      Cuse.elem(1,6) = true;
+      Cuse.elem(2,6) = true;
+      Cuse.elem(3,6) = true;
+      Cuse.elem(4,5) = true;
+    }
+  }
+  else if (csystem=="triclinic"){
+    for (int k=1; k<=6; ++k)
+      for (int p=1; p<=6; ++p)
+	Cuse.elem(k,p)=true;
+  }
+  else if (csystem=="tetragonal"){
+    Cuse.elem(1,1) = true;
+    Cuse.elem(1,2) = true;
+    Cuse.elem(1,3) = true;
+    Cuse.elem(3,3) = true;
+    Cuse.elem(4,4) = true;
+    Cuse.elem(6,6) = true;
+
+    if (csystem_sub==0){
+      Cuse.elem(1,6) = true;
+    }
+  }
+  else if (csystem=="trigonal"){
+    Cuse.elem(1,1) = true;
+    Cuse.elem(1,2) = true;
+    Cuse.elem(1,3) = true;
+    Cuse.elem(3,3) = true;
+    Cuse.elem(4,4) = true;
+    Cuse.elem(1,4) = true;
+
+    if (csystem_sub==0){
+      Cuse.elem(2,5) = true;
+    }
+  }
+
+}
+
+
+
+
+
 #include "compoundfit-list.cppinc"
 
 

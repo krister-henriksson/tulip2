@@ -138,13 +138,13 @@ public:
   void read_specs(string filename_specs);
 
 
-  void limcheck(const string & pot,
-		const string & parname,
-		const string & elems,
+  void limcheck(const string        & pot,
+		const string        & parname,
+		const string        & elems,
 		const parametertype & partype,
-		const double & parmin,
-		const double & parmax,
-		const double & parval
+		const double        & parmin,
+		const double        & parmax,
+		const double        & parval
 		);
 
 } ;

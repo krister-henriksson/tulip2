@@ -201,6 +201,7 @@ public:
   Vector<string> elemnames;
   Vector<bool> pbc;
   string csystem;
+  int    csystem_sub;
 
   double scalefactor;
   double lpa, lpb, lpc;

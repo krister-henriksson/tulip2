@@ -759,8 +759,9 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
   bool quit, fit_OK;
   int j,k,p,Nf,isym;
   Vector<double> xp, yp, dyp, Xopt;
-  double Clincomb[21];
   int NC=21;
+  Matrix<double> Clincomb(7,7,0);
+  double epsi[7];
   Matrix<double> alpha(3,3,0), C(6,6,0);
   double fmin, fmax, ef, df, f, td;
   double C11, C12, C13, C14, C15, C16;
@@ -769,6 +770,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
   double C44, C45, C46;
   double C55, C56;
   double C66;
+  double epsi1, epsi2, epsi3, epsi4, epsi5, epsi6;
 
   double eps = std::numeric_limits<double>::epsilon(), min_f=0.0, min_E=E0, guess_C;
   double small = sqrt(eps);
@@ -783,12 +785,26 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
   df      = (fmax - fmin)/Nf;
   xp.resize(Nf); yp.resize(Nf); dyp.resize(Nf);
 
+
   C11 = C12 = C13 = C14 = C15 = C16 = 0.0;
   C22 = C23 = C24 = C25 = C26 = 0.0;
   C33 = C34 = C35 = C36 = 0.0;
   C44 = C45 = C46 = 0.0;
   C55 = C56 = 0.0;
   C66 = 0.0;
+
+
+  /* i:
+    0  1  2  3  4  5
+       6  7  8  9  10
+          11 12 13 14
+	     15 16 17
+	        18 19
+		   20  */
+
+  
+  Matrix<bool> Cuse(7,7,false);
+  get_Cuse(Cuse);
 
 
 
@@ -803,254 +819,652 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
      ############################################################################### */
 
   /*
-  if      (csystem=="cubic") NC=3;
-  else if (csystem=="hexagonal") NC=5;
-  else if (csystem=="orthorombic") NC=9;
-  else if (csystem=="monoclinic") NC=13;
-  else if (csystem=="triclinic") NC=21;
-  else NC=0;
+           eps1  eps6  eps5
+    eps =  eps6  eps2  eps4
+           eps5  eps4  eps3
 
-  Clincomb.resize(NC);
-  */
-  for (isym=0; isym<NC; ++isym) Clincomb[isym]=0;
+            1  0  0
+    alpha = 0  1  0 + eps
+            0  0  1
 
+    E - E0 = 0.5 * V0 * (
+          C11 * eps1^2
+    +     C22 * eps2^2
+    +     C33 * eps3^2
+    + 4 * C44 * eps4^2
+    + 4 * C55 * eps5^2
+    + 4 * C66 * eps6^2
+    + 2 * C12 * eps1 * eps2
+    + 2 * C13 * eps1 * eps3
+    + 2 * C23 * eps2 * eps3
+    + 4 * eps1 * ( C14 * eps4 + C15 * eps5 + C16 * eps6 )
+    + 4 * eps2 * ( C24 * eps4 + C25 * eps5 + C26 * eps6 )
+    + 4 * eps3 * ( C34 * eps4 + C35 * eps5 + C36 * eps6 )
+    + 8 * eps4 * ( C45 * eps5 + C46 * eps6 )
+    + 8 * eps5 *   C56 * eps6
+    )
 
+   */
 
   quit = false;
 
   // Loop over particular symmetry changes
-  for (isym=0; isym<NC; ++isym){
+  for (int ik=1; ik<=6; ++ik){
+    for (int ip=1; ip<=6; ++ip){
 
-    //cout << " --------------------------------- " << endl;
+      if (Cuse.elem(ik,ip)==false)
+	continue;
 
-    // Loop over differential changes
-    for (j=0; j<Nf; ++j){
-      f = fmin + j*df;
 
-      /* Establish the transformation. */
-      for (k=0; k<3; ++k) for (p=0; p<3; ++p) alpha.elem(k,p)=0;
+      // Loop over differential changes
+      for (j=0; j<Nf; ++j){
+	f = fmin + j*df;
 
+	/* Establish the transformation. */
+	for (k=0; k<3; ++k) for (p=0; p<3; ++p) alpha.elem(k,p) = 0.0;
+	for (k=0; k<3; ++k) alpha.elem(k,k) = 1.0;
+	for (k=0; k<=6; ++k) epsi[k]=0.0;
+	epsi1 = epsi2 = epsi3 = epsi4 = epsi5 = epsi6 = 0.0;
+
+	epsi[ik] = f;
+	epsi[ip] = f;
+
+	epsi1 = epsi[1];
+	epsi2 = epsi[2];
+	epsi3 = epsi[3];
+	epsi4 = epsi[4];
+	epsi5 = epsi[5];
+	epsi6 = epsi[6];
+
+    
+	xp[j] = f;
+	//xp[j] = V0 * g*g*g;
+	//for (k=0; k<3; ++k) for (p=0; p<3; ++p) alpha.elem(k,p)=0;
+	//alpha.elem(0,0) = alpha.elem(1,1) = alpha.elem(2,2) = g; // Note!!!
+
+
+	alpha.elem(0,0) += epsi1;
+	alpha.elem(0,1) += epsi6;
+	alpha.elem(0,2) += epsi5;
+
+	alpha.elem(1,0) += epsi6;
+	alpha.elem(1,1) += epsi2;
+	alpha.elem(1,2) += epsi4;
+
+	alpha.elem(2,0) += epsi5;
+	alpha.elem(2,1) += epsi4;
+	alpha.elem(2,2) += epsi3;
+
+
+	mds.transform_cell(alpha);
+
+
+	// **************************************************************
+	// **************************************************************
+	double Epa=0;
+	if (! rel_sys){
+	  // +++++++++++++++++++++++++++++++++++++++++++++++++
+	  // Option A: Do not allow internal relaxation:
+	  // +++++++++++++++++++++++++++++++++++++++++++++++++
+	
+	  mds.get_all_neighborcollections();
+	  Epa = mds.calc_potential_energy() / mds.natoms();
+	}
+	else {
+	  // +++++++++++++++++++++++++++++++++++++++++++++++++
+	  // Option B: Allow internal relaxation:
+	  // +++++++++++++++++++++++++++++++++++++++++++++++++
+
+	  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	  // Update specs for this relaxation:
+	  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	  MDSettings specs_bak = mds.specs;
+	  mds.specs.use_Pcontrol  = false;
+	  mds.specs.quench_always = true;
+
+	  // Relax using current system. Only enlargen it if position scaling
+	  // has made the system too small.
+	  bool retry;
+	  while (true){
+	    mds.relax();
+
+	    Epa = mds.Ep_tot / mds.natoms();
+
+	    retry = false;
+	    if (mds.N[0]<0 || mds.N[1]<0 || mds.N[2]<0) retry=true;
+	    if (mds.N[0]<0) mds.N[0] = -mds.N[0]+1;
+	    if (mds.N[1]<0) mds.N[1] = -mds.N[1]+1;
+	    if (mds.N[2]<0) mds.N[2] = -mds.N[2]+1;
+
+	    if (! retry) break;
+
+	    double rm = mds.rcut_max + mds.skint;
+	    mds.create_from_structure(*this, 2.0*rm); // removes old atoms
+	    for (int i=0; i<mds.natoms(); i++){
+	      mds.type[i] = param.p_potinfo->elem.atomtype(mds.matter[i]);
+	    }
+	  }
+	  mds.specs = specs_bak;
+	}
+	// **************************************************************
+	// **************************************************************
+
+
+	yp[j] = Epa;
+	dyp[j] = ((Epa<0)? -Epa: Epa) * ef;
+
+
+	{
+	  ofstream fdump;
+	  string dumpfn = "mds-frame-C-calc-" + mds.name + "-isym-"
+	    + tostring(ik) + tostring(ip)
+	    + "-step-" + tostring(j) + ".xyz";
+	  fdump.open(dumpfn.c_str());
+	  mds.dumpframe(fdump);
+	  fdump.close();
+	}
+
+
+	// Reset:
+	mds.pos    = pos_bak;
+	mds.boxdir = boxdir_bak;
+	mds.boxlen = boxlen_bak;
+
+      }
+
+
+
+      {
+	ofstream fdump;
+	string dumpfn = "data-f-Epa-dEpa-" + name + "-" + tostring(ik) + tostring(ip) + ".dat";
+	fdump.open(dumpfn.c_str());
+	for (j=0; j<Nf; ++j)
+	  fdump << format("%20.10e  %20.10e  %20.10e") % xp[j] % yp[j] % dyp[j] << endl;
+	fdump.close();
+      }
+
+
+
+
+
+
+
+
+      /* Fit the energies 'Evec' as a function of 'fvec' to a 2nd degree polynomial.
+	 E(f) = c_0 + c_1 * f^2
+      */
+    
+      // Fit:
+      Param pp;
+      ChiSqFunc<Param, double, double> cs;
+      Cond_Conv  cond_conv;
+      Cond_Debug cond_debug;
+      Cond_Print cond_print;
+
+
+      // General physically motivated guess:
+      guess_C = 0.5 * V0 * (100.0 * GPa_to_eVA3); // unit now: eV/Ang^3
+
+      pp.init(3);
+      pp.X(0) = min_f;
+      pp.X(1) = min_E;
+      pp.X(2) = guess_C;
+
+   
+      cs.Param() = pp;
+      cs.DataX() = xp;
+      cs.DataY() = yp;
+      cs.DataUncertaintyY() = dyp;
+      cs.ModelFuncPointer() = fun_poly2;
+      cs.finalize_setup();
+
+
+      fit_OK = false;
+
+      cs.barrier_scale() = param.p_potinfo->specs_prop.barrier_scale;
+
+      cond_conv.functolabs = param.p_potinfo->specs_prop.functolabs;
+      cond_conv.functolrel = param.p_potinfo->specs_prop.functolrel;
+      cond_conv.gradtolabs = param.p_potinfo->specs_prop.gradtolabs;
+      cond_conv.steptolabs = param.p_potinfo->specs_prop.steptolabs;
+      cond_conv.steptolrel = param.p_potinfo->specs_prop.steptolrel;
+      cond_conv.nitermin   = param.p_potinfo->specs_prop.nitermin;
+      cond_conv.nitermax   = param.p_potinfo->specs_prop.nitermax;
+      cond_conv.report_conv = param.p_potinfo->specs_prop.report_conv;
+      cond_conv.prefix_report_conv = "propfit Cij conv: ";
+
+      cond_debug.debug_fit_level0 = param.p_potinfo->specs_prop.debug_fit_level0;
+      cond_debug.debug_fit_level1 = param.p_potinfo->specs_prop.debug_fit_level1;
+      cond_debug.debug_fit_level2 = param.p_potinfo->specs_prop.debug_fit_level2;
+      cond_debug.debug_fit_level3 = param.p_potinfo->specs_prop.debug_fit_level3;
+      cond_debug.debug_fit_level4 = param.p_potinfo->specs_prop.debug_fit_level4;
+      cond_debug.prefix_debug_fit_level0 = "propfit Cij debug0: ";
+      cond_debug.prefix_debug_fit_level1 = "propfit Cij debug1: ";
+      cond_debug.prefix_debug_fit_level2 = "propfit Cij debug2: ";
+      cond_debug.prefix_debug_fit_level3 = "propfit Cij debug3: ";
+      cond_debug.prefix_debug_fit_level4 = "propfit Cij debug4: ";
+
+      cond_print.report_iter = param.p_potinfo->specs_prop.report_iter;
+      cond_print.report_warn = param.p_potinfo->specs_prop.report_warn;
+      cond_print.report_error= param.p_potinfo->specs_prop.report_error;
+      cond_print.prefix_report_iter  = "propfit Cij iter: ";
+      cond_print.prefix_report_warn  = "propfit Cij warn: ";
+      cond_print.prefix_report_error = "propfit Cij error: ";
+
+
+      if (cond_debug.debug_fit_level0){
+	cond_conv.report_conv  = true;
+	cond_print.report_iter = true;
+	cond_print.report_warn = true;
+	cond_print.report_error= true;
+	cs.debug();
+      }
+
+
+
+      int seed = param.p_potinfo->specs_prop.seed;
+
+      if (param.p_potinfo->specs_prop.fitmet=="CG"){
+	// Conjugate Gradients
+	ConjGrad< ChiSqFunc<Param, double, double> > fm(cs);
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
+      else if (param.p_potinfo->specs_prop.fitmet=="PM"){
+	// Powell's method
+	Powell< ChiSqFunc<Param, double, double> > fm(cs);
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
+      else if (param.p_potinfo->specs_prop.fitmet=="GN"){
+	// Gauss-Newton
+	GaussNewton< ChiSqFunc<Param, double, double> > fm(cs);
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
+      else if (param.p_potinfo->specs_prop.fitmet=="LM"){
+	// Levenberg-Marquardt
+	LeveMarq< ChiSqFunc<Param, double, double> > fm(cs);
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
+      else if (param.p_potinfo->specs_prop.fitmet=="DL"){
+	// Powell dog-leg
+	PowellDogLeg< ChiSqFunc<Param, double, double> > fm(cs);
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   param.p_potinfo->specs_prop.dogleg_radius,
+			   param.p_potinfo->specs_prop.dogleg_minradius,
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
+      else if (param.p_potinfo->specs_prop.fitmet=="SM"){
+	// Simplex method
+	SimplexFit< ChiSqFunc<Param, double, double> > fm(cs);
+	/*
+	  Vector<double> X_displ( cs.Param().X().size(), 
+	  param.p_potinfo->specs_prop.simplex_delta );
+	*/
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   seed,
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
+      else if (param.p_potinfo->specs_prop.fitmet=="DE"){
+	// Differential evolution
+	cs.barrier_scale() = 0.0;
+	DiffEvol< ChiSqFunc<Param, double, double> > fm(cs);
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   seed,
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
+      else if (param.p_potinfo->specs_prop.fitmet=="PS"){
+	// Particle Swarm
+	cs.barrier_scale() = 0.0;
+	PartSwarm< ChiSqFunc<Param, double, double> > fm(cs);
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   seed,
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
+      else if (param.p_potinfo->specs_prop.fitmet=="BC"){
+	// Bee colony
+	cs.barrier_scale() = 0.0;
+	BeeColony< ChiSqFunc<Param, double, double> > fm(cs);
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   seed,
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
+      else if (param.p_potinfo->specs_prop.fitmet=="GS"){
+	// Gravitational Search
+	cs.barrier_scale() = 0.0;
+	GravSearch< ChiSqFunc<Param, double, double> > fm(cs);
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   seed,
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
+      else if (param.p_potinfo->specs_prop.fitmet=="SA"){
+	// Simulated Annealing
+	cs.barrier_scale() = 0.0;
+	SimAnn< ChiSqFunc<Param, double, double> > fm(cs);
+
+	int N = cs.Param().X().size();
+	Vector<double> Xd(N);
+	double td;
+	for (int i=0; i<N; ++i){
+	  td = cs.Param().X(i); if (td<0) td *= -1.0;
+	  Xd[i] = td;
+	}
+
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   Xd,
+			   seed,
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
+      else
+	aborterror("Error: Unknown fitting method " + param.p_potinfo->specs_prop.fitmet + ". " +
+		   "Exiting.");
+
+
+
+      /*
+	cout << "Xopt: " << Xopt << endl;
+	cout << "Xmax: " << cs.Param().Xmin() << endl;
+	cout << "Xmax: " << cs.Param().Xmax() << endl;
+
+	cs(Xopt);
+	cout << " ************************ Cij: Done with recalc after Xopt obtained." << flush << endl;
+      */
+
+
+
+
+
+      // If fitting went alright, then we are almost done. Else we need to get
+      // a numerical estimate of the required derivatives.
+
+      if (fit_OK){
+	E0  = Xopt[1];
+	//f0  = Xopt[1];
+	Clincomb.elem(ik,ip) = Xopt[2] / V0 * eVA3_to_GPa; // unit now: GPa
+      }
+      else {
+	// **************************************************************
+	// Numerical estimate
+	// **************************************************************
+	int min_idx=-1;
+	for (k=0; k<yp.size(); ++k){
+	  if (k==0 || (k>0 && yp[k]<td)){
+	    td = yp[k]; min_idx = k;
+	  }
+	}
+	Vector<double> vx(3,0), vy(3,0);
+	int im=0;
+	if ((min_idx-1)>=0 && (min_idx+1)<yp.size()) im = min_idx - 1;
+	else if (min_idx==0)                         im = min_idx;
+	else if (min_idx==yp.size()-1)               im = min_idx - 2;
+	vx[0] = xp[im];
+	vx[1] = xp[im+1];
+	vx[2] = xp[im+2];
+	vy[0] = yp[im];
+	vy[1] = yp[im+1];
+	vy[2] = yp[im+2];
+	get_parabolic_fit_from_triplet(vx, vy, min_E, guess_C, min_f, cond_debug.debug_fit_level1);
+	E0 = min_E;
+	//f0 = min_f;
+	Clincomb.elem(ik,ip) = guess_C / V0 * eVA3_to_GPa; // unit now: GPa
+	cout << "Warning: Failed to obtain combination of linear constants for compound " + name + ". " +
+	  "Using estimate " << guess_C << " GPa." << endl;
+      }
+
+
+
+
+
+
+
+    }
+  }
+  // End of loop over isym
+
+
+
+  for (int i=1; i<=3; ++i)
+    C.elem(i-1,i-1) = Clincomb.elem(i,i) * 2.0;
+
+  for (int i=4; i<=6; ++i)
+    C.elem(i-1,i-1) = Clincomb.elem(i,i) / 2.0;
+
+  for (int i=1; i<=3; ++i)
+    for (int j=i+1; j<=3; ++j)
+      C.elem(i-1,j-1) = Clincomb.elem(i,j);
+
+  for (int i=1; i<=3; ++i)
+    for (int j=4; j<=6; ++j)
+      C.elem(i-1,j-1) = Clincomb.elem(i,j) / 2.0;
+
+  for (int i=4; i<=5; ++i)
+    for (int j=i+1; j<=6; ++j)
+      C.elem(i-1,j-1) = Clincomb.elem(i,j) / 4.0;
+
+
+
+
+  for (k=0; k<6; ++k){
+    for (p=0; p<6; ++p){
+      if (prop_use.C.elem(k,p))
+	prop_pred.C.elem(k,p) = C.elem(k,p);
+    }
+  }
+
+
+}
+
+
+
+
+
+
+#if 0
+
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       if (csystem=="cubic"){
 	if (isym==0){
-	  /* Result: E - E0 = V0 * (C11 + C12) * f^2 */
-	  alpha.elem(0,0) = 1.0 + f;
-	  alpha.elem(1,1) = 1.0 + f;
-	  alpha.elem(2,2) = 1.0;
+	  /* Result: E - E0 = 0.5 * V0 * C11 * f^2 */
+	  eps1 = f;
 	}
 	else if (isym==1){
-	  /* Result: E - E0 = V0 * (C11 - C12) * f^2*/
-	  alpha.elem(0,0) = 1.0 + f;
-	  alpha.elem(1,1) = 1.0 - f;
-	  alpha.elem(2,2) = 1.0;
+	  /* Result: E - E0 = V0 * C12 * f^2*/
+	  eps1 = f;
+	  eps2 = f;
 	}
 	else if (isym==2){
 	  /* Result: E - E0 = 2 * V0 * C44 * f^2*/
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0;
-	  alpha.elem(1,2) = f;
-	  alpha.elem(2,1) = f;
+	  eps4 = f;
 	}
 	else quit=true;
       }
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       else if (csystem=="hexagonal"){
 	if (isym==0){
-	  /* Result: E - E0 = V0 * (C11 + C12) * f^2 */
-	  alpha.elem(0,0) = 1.0 + f;
-	  alpha.elem(1,1) = 1.0 + f;
-	  alpha.elem(2,2) = 1.0;
+	  /* Result: E - E0 = 0.5 * V0 * C11 * f^2 */
+	  eps1 = f;
 	}
 	else if (isym==1){
-	  /* Result: E - E0 = V0 * (C11 - C12) * f^2 */
-	  alpha.elem(0,0) = 1.0 + f;
-	  alpha.elem(1,1) = 1.0 - f;
-	  alpha.elem(2,2) = 1.0;
+	  /* Result: E - E0 = 0.5 * V0 * C33 * f^2 */
+	  eps3 = f;
 	}
 	else if (isym==2){
-	  /* Result: E - E0 = V0 * C33/2 * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0 + f;
+	  /* Result: E - E0 = V0 * C12 * f^2 */
+	  eps1 = f;
+	  eps2 = f;
 	}
 	else if (isym==3){
-	  /* Result: E - E0 = V0 * 0.5 * (C11 + C33 + 2*C13) * f^2 */
-	  alpha.elem(0,0) = 1.0 + f;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0 + f;
+	  /* Result: E - E0 = V0 * C13 * f^2 */
+	  eps1 = f;
+	  eps3 = f;
 	}
 	else if (isym==4){
 	  /* Result: E - E0 = 2 * V0 * C44 * f^2*/
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0;
-	  alpha.elem(1,2) = f;
-	  alpha.elem(2,1) = f;
+	  eps4 = f;
 	}
 	else quit=true;
       }
-
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       else if (csystem=="orthorombic"){
 	if (isym==0){
 	  /* Result: E - E0 = 0.5 * V0 * C11 * f^2 */
-	  alpha.elem(0,0) = 1.0 + f;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0;
-	}
-	else if (isym==1){
-	  /* Result: E - E0 = 0.5 * V0 * C33 * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0 + f;
-	  alpha.elem(2,2) = 1.0;
-	}
-	else if (isym==2){
-	  /* Result: E - E0 = 0.5 * V0 * C33 * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0 + f;
-	}
-	else if (isym==3){
-	  /* Result: E - E0 = 0.5 * V0 * (C11 + C22 + 2 * C12) * f^2 */
-	  alpha.elem(0,0) = 1.0 + f;
-	  alpha.elem(1,1) = 1.0 + f;
-	  alpha.elem(2,2) = 1.0;
-	}
-	else if (isym==4){
-	  /* Result: E - E0 = 0.5 * V0 * (C11 + C33 + 2 * C13) * f^2 */
-	  alpha.elem(0,0) = 1.0 + f;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0 + f;
-	}
-	else if (isym==5){
-	  /* Result: E - E0 = 0.5 * V0 * (C22 + C33 + 2 * C23) * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0 + f;
-	  alpha.elem(2,2) = 1.0 + f;
-	}
-	else if (isym==6){
-	  /* Result: E - E0 = 2.0 * V0 * C44 * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0;
-	  alpha.elem(1,2) = f;
-	  alpha.elem(2,1) = f;
-	}
-	else if (isym==7){
-	  /* Result: E - E0 = 2.0 * V0 * C55 * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0;
-	  alpha.elem(0,2) = f;
-	  alpha.elem(2,0) = f;
-	}
-	else if (isym==8){
-	  /* Result: E - E0 = 2.0 * V0 * C66 * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0;
-	  alpha.elem(0,1) = f;
-	  alpha.elem(1,0) = f;
-	}
-	else quit=true;
-      }
-
-      else if (csystem=="monoclinic"){
-	if (isym==0){
-	  /* Result: E - E0 = 0.5 * V0 * C11 * f^2 */
-	  alpha.elem(0,0) = 1.0 + f;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0;
+	  eps1 = f;
 	}
 	else if (isym==1){
 	  /* Result: E - E0 = 0.5 * V0 * C22 * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0 + f;
-	  alpha.elem(2,2) = 1.0;
+	  eps2 = f;
 	}
 	else if (isym==2){
 	  /* Result: E - E0 = 0.5 * V0 * C33 * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0 + f;
+	  eps3 = f;
 	}
 	else if (isym==3){
-	  /* Result: E - E0 = 2 * V0 * C44 * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0;
-	  alpha.elem(1,2) = f;
+	  /* Result: E - E0 = 2.0 * V0 * C44 * f^2 */
+	  eps4 = f;
 	}
 	else if (isym==4){
-	  /* Result: E - E0 = 2 * V0 * C55 * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0;
-	  alpha.elem(0,2) = f;
+	  /* Result: E - E0 = 2.0 * V0 * C55 * f^2 */
+	  eps5 = f;
 	}
 	else if (isym==5){
-	  /* Result: E - E0 = 2 * V0 * C66 * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0;
-	  alpha.elem(0,1) = f;
+	  /* Result: E - E0 = 2.0 * V0 * C66 * f^2 */
+	  eps6 = f;
 	}
-
 	else if (isym==6){
-	  /* Result: E - E0 = 0.5 * V0 * (C11 + C22 + 2.0 * C12) * f^2 */
-	  alpha.elem(0,0) = 1.0 + f;
-	  alpha.elem(1,1) = 1.0 + f;
-	  alpha.elem(2,2) = 1.0;
+	  /* Result: E - E0 = V0 * C12 * f^2 */
+	  eps1 = f;
+	  eps2 = f;
 	}
 	else if (isym==7){
-	  /* Result: E - E0 = 0.5 * V0 * (C11 + C33 + 2.0 * C13) * f^2 */
-	  alpha.elem(0,0) = 1.0 + f;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0 + f;
+	  /* Result: E - E0 = V0 * C13 * f^2 */
+	  eps1 = f;
+	  eps3 = f;
 	}
-
 	else if (isym==8){
-	  /* Result: E - E0 = 0.5 * V0 * (C11 + 4.0 * C55 + 2.0 * C15) * f^2 */
-	  alpha.elem(0,0) = 1.0 + f;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0;
-	  alpha.elem(0,2) = f;
+	  /* Result: E - E0 = V0 * C23 * f^2 */
+	  eps2 = f;
+	  eps3 = f;
 	}
-
+	else quit=true;
+      }
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      else if (csystem=="triclinic"){
+	if (isym==0){
+	  /* Result: E - E0 = 0.5 * V0 * C11 * f^2 */
+	  eps1 = f;
+	}
+	else if (isym==1){
+	  /* Result: E - E0 = 0.5 * V0 * C22 * f^2 */
+	  eps2 = f;
+	}
+	else if (isym==2){
+	  /* Result: E - E0 = 0.5 * V0 * C33 * f^2 */
+	  eps3 = f;
+	}
+	else if (isym==3){
+	  /* Result: E - E0 = 2.0 * V0 * C44 * f^2 */
+	  eps4 = f;
+	}
+	else if (isym==4){
+	  /* Result: E - E0 = 2.0 * V0 * C55 * f^2 */
+	  eps5 = f;
+	}
+	else if (isym==5){
+	  /* Result: E - E0 = 2.0 * V0 * C66 * f^2 */
+	  eps6 = f;
+	}
+	else if (isym==6){
+	  /* Result: E - E0 = V0 * C12 * f^2 */
+	  eps1 = f;
+	  eps2 = f;
+	}
+	else if (isym==7){
+	  /* Result: E - E0 = V0 * C13 * f^2 */
+	  eps1 = f;
+	  eps3 = f;
+	}
+	else if (isym==8){
+	  /* Result: E - E0 = 2.0 * V0 * C14 * f^2 */
+	  eps1 = f;
+	  eps4 = f;
+	}
 	else if (isym==9){
-	  /* Result: E - E0 = 0.5 * V0 * (C22 + C33 + 2.0 * C23) * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0 + f;
-	  alpha.elem(2,2) = 1.0 + f;
+	  /* Result: E - E0 = 2.0 * V0 * C15 * f^2 */
+	  eps1 = f;
+	  eps5 = f;
 	}
-
 	else if (isym==10){
-	  /* Result: E - E0 = 0.5 * V0 * (C22 + 4.0 * C55 + 2.0 * C25) * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0 + f;
-	  alpha.elem(2,2) = 1.0;
-	  alpha.elem(0,2) = f;
+	  /* Result: E - E0 = 2.0 * V0 * C16 * f^2 */
+	  eps1 = f;
+	  eps6 = f;
 	}
 
 	else if (isym==11){
-	  /* Result: E - E0 = 0.5 * V0 * (C33 + 4.0 * C55 + 2.0 * C35) * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0 + f;
-	  alpha.elem(0,2) = f;
+	  /* Result: E - E0 = V0 * C23 * f^2 */
+	  eps2 = f;
+	  eps3 = f;
 	}
-
 	else if (isym==12){
-	  /* Result: E - E0 = 0.5 * V0 * (4.0 * C44 + 4.0 * C66 + 8.0 * C46) * f^2 */
-	  alpha.elem(0,0) = 1.0;
-	  alpha.elem(1,1) = 1.0;
-	  alpha.elem(2,2) = 1.0;
-	  alpha.elem(1,2) = f;
-	  alpha.elem(0,1) = f;
+	  /* Result: E - E0 = 2.0 * V0 * C24 * f^2 */
+	  eps2 = f;
+	  eps4 = f;
+	}
+	else if (isym==13){
+	  /* Result: E - E0 = 2.0 * V0 * C25 * f^2 */
+	  eps2 = f;
+	  eps5 = f;
+	}
+	else if (isym==14){
+	  /* Result: E - E0 = 2.0 * V0 * C26 * f^2 */
+	  eps2 = f;
+	  eps6 = f;
 	}
 
-	else quit=true;
-      }
 
-      else if (csystem=="triclinic"){
+
+
+
+
+
+
+	else if (isym==8){
+	  /* Result: E - E0 = V0 * C23 * f^2 */
+	  eps2 = f;
+	  eps3 = f;
+	}
+	else quit=true;
+
+
+
+
+
+
+
+
 	if (isym==0){
 	  /* Result: E - E0 = 0.5 * V0 * C11 * f^2 */
 	  alpha.elem(0,0) = 1.0 + f;
@@ -1206,367 +1620,156 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 	else quit=true;
       }
 
-      else quit=true;
-
-      if (quit) break;
-
-    
-      xp[j] = f;
-      //xp[j] = V0 * g*g*g;
-      //for (k=0; k<3; ++k) for (p=0; p<3; ++p) alpha.elem(k,p)=0;
-      //alpha.elem(0,0) = alpha.elem(1,1) = alpha.elem(2,2) = g; // Note!!!
-
-      mds.transform_cell(alpha);
 
 
-      // **************************************************************
-      // **************************************************************
-      double Epa=0;
-      if (! rel_sys){
-	// +++++++++++++++++++++++++++++++++++++++++++++++++
-	// Option A: Do not allow internal relaxation:
-	// +++++++++++++++++++++++++++++++++++++++++++++++++
-	
-	mds.get_all_neighborcollections();
-	Epa = mds.calc_potential_energy() / mds.natoms();
-      }
-      else {
-	// +++++++++++++++++++++++++++++++++++++++++++++++++
-	// Option B: Allow internal relaxation:
-	// +++++++++++++++++++++++++++++++++++++++++++++++++
 
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// Update specs for this relaxation:
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	MDSettings specs_bak = mds.specs;
-	mds.specs.use_Pcontrol  = false;
-	mds.specs.quench_always = true;
+      else if (csystem=="monoclinic"){
+	if (isym==0){
+	  /* Result: E - E0 = 0.5 * V0 * C11 * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	}
+	else if (isym==1){
+	  /* Result: E - E0 = 0.5 * V0 * C22 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0;
+	}
+	else if (isym==2){
+	  /* Result: E - E0 = 0.5 * V0 * C33 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0 + f;
+	}
+	else if (isym==3){
+	  /* Result: E - E0 = 2 * V0 * C44 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(1,2) = f;
+	}
+	else if (isym==4){
+	  /* Result: E - E0 = 2 * V0 * C55 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,2) = f;
+	}
+	else if (isym==5){
+	  /* Result: E - E0 = 2 * V0 * C66 * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0;
+	  alpha.elem(0,1) = f;
+	}
 
-	// Relax using current system. Only enlargen it if position scaling
-	// has made the system too small.
-	bool retry;
-	while (true){
-	  mds.relax();
+	else if (isym==6){
+	  /* Result: E - E0 = 0.5 * V0 * (C11 + C22 + 2.0 * C12) * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0;
+	}
+	else if (isym==7){
+	  /* Result: E - E0 = 0.5 * V0 * (C11 + C33 + 2.0 * C13) * f^2 */
+	  alpha.elem(0,0) = 1.0 + f;
+	  alpha.elem(1,1) = 1.0;
+	  alpha.elem(2,2) = 1.0 + f;
+	}
 
-	  Epa = mds.Ep_tot / mds.natoms();
+	else if (isym==8){
+	  /* Result: E - E0 = 0.5 * V0 * (C22 + C33 + 2.0 * C23) * f^2 */
+	  alpha.elem(0,0) = 1.0;
+	  alpha.elem(1,1) = 1.0 + f;
+	  alpha.elem(2,2) = 1.0 + f;
+	}
+	// Monoclinic 1: C15, C25, C35, C46 neq. 0
+	// Monoclinic 2: C16, C26, C36, C45 neq. 0
+	else if (isym==9){
+	  if (csystem_sub==0){
+	    /* Result: E - E0 = 0.5 * V0 * (C11 + 4.0 * C55 + 2.0 * C15) * f^2 */
+	    alpha.elem(0,0) = 1.0 + f;
+	    alpha.elem(1,1) = 1.0;
+	    alpha.elem(2,2) = 1.0;
+	    alpha.elem(0,2) = f;
+	  }
+	  else {
 
-	  retry = false;
-	  if (mds.N[0]<0 || mds.N[1]<0 || mds.N[2]<0) retry=true;
-	  if (mds.N[0]<0) mds.N[0] = -mds.N[0]+1;
-	  if (mds.N[1]<0) mds.N[1] = -mds.N[1]+1;
-	  if (mds.N[2]<0) mds.N[2] = -mds.N[2]+1;
-
-	  if (! retry) break;
-
-	  double rm = mds.rcut_max + mds.skint;
-	  mds.create_from_structure(*this, 2.0*rm); // removes old atoms
-	  for (int i=0; i<mds.natoms(); i++){
-	    mds.type[i] = param.p_potinfo->elem.atomtype(mds.matter[i]);
 	  }
 	}
-	mds.specs = specs_bak;
-      }
-      // **************************************************************
-      // **************************************************************
+	else if (isym==10){
+	  if (csystem_sub==0){	  
+	    /* Result: E - E0 = 0.5 * V0 * (C22 + 4.0 * C55 + 2.0 * C25) * f^2 */
+	    alpha.elem(0,0) = 1.0;
+	    alpha.elem(1,1) = 1.0 + f;
+	    alpha.elem(2,2) = 1.0;
+	    alpha.elem(0,2) = f;
+	  }
+	  else {
 
-
-      yp[j] = Epa;
-      dyp[j] = ((Epa<0)? -Epa: Epa) * ef;
-
-
-      {
-	ofstream fdump;
-	string dumpfn = "mds-frame-C-calc-" + mds.name + "-isym-" + tostring(isym)
-	  + "-step-" + tostring(j) + ".xyz";
-	fdump.open(dumpfn.c_str());
-	mds.dumpframe(fdump);
-	fdump.close();
-      }
-
-
-      // Reset:
-      mds.pos    = pos_bak;
-      mds.boxdir = boxdir_bak;
-      mds.boxlen = boxlen_bak;
-
-
-    }
-
-    {
-      ofstream fdump;
-      string dumpfn = "data-f-Epa-dEpa-" + name + "-" + tostring(isym) + ".dat";
-      fdump.open(dumpfn.c_str());
-      for (j=0; j<Nf; ++j)
-	fdump << format("%20.10e  %20.10e  %20.10e") % xp[j] % yp[j] % dyp[j] << endl;
-      fdump.close();
-    }
-
-
-
-
-    if (quit) break;
-
-
-
-    /* Fit the energies 'Evec' as a function of 'fvec' to a 2nd degree polynomial.
-       E(f) = c_0 + c_1 * f^2
-    */
-    
-    // Fit:
-    Param pp;
-    ChiSqFunc<Param, double, double> cs;
-    Cond_Conv  cond_conv;
-    Cond_Debug cond_debug;
-    Cond_Print cond_print;
-
-
-    // General physically motivated guess:
-    guess_C = 0.5 * V0 * (100.0 * GPa_to_eVA3); // unit now: eV/Ang^3
-
-    pp.init(3);
-    pp.X(0) = min_f;
-    pp.X(1) = min_E;
-    pp.X(2) = guess_C;
-
-   
-    cs.Param() = pp;
-    cs.DataX() = xp;
-    cs.DataY() = yp;
-    cs.DataUncertaintyY() = dyp;
-    cs.ModelFuncPointer() = fun_poly2;
-    cs.finalize_setup();
-
-
-    fit_OK = false;
-
-    cs.barrier_scale() = param.p_potinfo->specs_prop.barrier_scale;
-
-    cond_conv.functolabs = param.p_potinfo->specs_prop.functolabs;
-    cond_conv.functolrel = param.p_potinfo->specs_prop.functolrel;
-    cond_conv.gradtolabs = param.p_potinfo->specs_prop.gradtolabs;
-    cond_conv.steptolabs = param.p_potinfo->specs_prop.steptolabs;
-    cond_conv.steptolrel = param.p_potinfo->specs_prop.steptolrel;
-    cond_conv.nitermin   = param.p_potinfo->specs_prop.nitermin;
-    cond_conv.nitermax   = param.p_potinfo->specs_prop.nitermax;
-    cond_conv.report_conv = param.p_potinfo->specs_prop.report_conv;
-    cond_conv.prefix_report_conv = "propfit Cij conv: ";
-
-    cond_debug.debug_fit_level0 = param.p_potinfo->specs_prop.debug_fit_level0;
-    cond_debug.debug_fit_level1 = param.p_potinfo->specs_prop.debug_fit_level1;
-    cond_debug.debug_fit_level2 = param.p_potinfo->specs_prop.debug_fit_level2;
-    cond_debug.debug_fit_level3 = param.p_potinfo->specs_prop.debug_fit_level3;
-    cond_debug.debug_fit_level4 = param.p_potinfo->specs_prop.debug_fit_level4;
-    cond_debug.prefix_debug_fit_level0 = "propfit Cij debug0: ";
-    cond_debug.prefix_debug_fit_level1 = "propfit Cij debug1: ";
-    cond_debug.prefix_debug_fit_level2 = "propfit Cij debug2: ";
-    cond_debug.prefix_debug_fit_level3 = "propfit Cij debug3: ";
-    cond_debug.prefix_debug_fit_level4 = "propfit Cij debug4: ";
-
-    cond_print.report_iter = param.p_potinfo->specs_prop.report_iter;
-    cond_print.report_warn = param.p_potinfo->specs_prop.report_warn;
-    cond_print.report_error= param.p_potinfo->specs_prop.report_error;
-    cond_print.prefix_report_iter  = "propfit Cij iter: ";
-    cond_print.prefix_report_warn  = "propfit Cij warn: ";
-    cond_print.prefix_report_error = "propfit Cij error: ";
-
-
-    if (cond_debug.debug_fit_level0){
-      cond_conv.report_conv  = true;
-      cond_print.report_iter = true;
-      cond_print.report_warn = true;
-      cond_print.report_error= true;
-      cs.debug();
-    }
-
-
-
-    int seed = param.p_potinfo->specs_prop.seed;
-
-    if (param.p_potinfo->specs_prop.fitmet=="CG"){
-      // Conjugate Gradients
-      ConjGrad< ChiSqFunc<Param, double, double> > fm(cs);
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 cond_conv, cond_debug, cond_print);
-      fit_OK = fm.status.fit_OK;
-    }
-    else if (param.p_potinfo->specs_prop.fitmet=="PM"){
-      // Powell's method
-      Powell< ChiSqFunc<Param, double, double> > fm(cs);
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 cond_conv, cond_debug, cond_print);
-      fit_OK = fm.status.fit_OK;
-    }
-    else if (param.p_potinfo->specs_prop.fitmet=="GN"){
-      // Gauss-Newton
-      GaussNewton< ChiSqFunc<Param, double, double> > fm(cs);
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 cond_conv, cond_debug, cond_print);
-      fit_OK = fm.status.fit_OK;
-    }
-    else if (param.p_potinfo->specs_prop.fitmet=="LM"){
-      // Levenberg-Marquardt
-      LeveMarq< ChiSqFunc<Param, double, double> > fm(cs);
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 cond_conv, cond_debug, cond_print);
-      fit_OK = fm.status.fit_OK;
-    }
-    else if (param.p_potinfo->specs_prop.fitmet=="DL"){
-      // Powell dog-leg
-      PowellDogLeg< ChiSqFunc<Param, double, double> > fm(cs);
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 param.p_potinfo->specs_prop.dogleg_radius,
-			 param.p_potinfo->specs_prop.dogleg_minradius,
-			 cond_conv, cond_debug, cond_print);
-      fit_OK = fm.status.fit_OK;
-    }
-    else if (param.p_potinfo->specs_prop.fitmet=="SM"){
-      // Simplex method
-      SimplexFit< ChiSqFunc<Param, double, double> > fm(cs);
-      /*
-	Vector<double> X_displ( cs.Param().X().size(), 
-	param.p_potinfo->specs_prop.simplex_delta );
-      */
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 seed,
-			 cond_conv, cond_debug, cond_print);
-      fit_OK = fm.status.fit_OK;
-    }
-    else if (param.p_potinfo->specs_prop.fitmet=="DE"){
-      // Differential evolution
-      cs.barrier_scale() = 0.0;
-      DiffEvol< ChiSqFunc<Param, double, double> > fm(cs);
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 seed,
-			 cond_conv, cond_debug, cond_print);
-      fit_OK = fm.status.fit_OK;
-    }
-    else if (param.p_potinfo->specs_prop.fitmet=="PS"){
-      // Particle Swarm
-      cs.barrier_scale() = 0.0;
-      PartSwarm< ChiSqFunc<Param, double, double> > fm(cs);
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 seed,
-			 cond_conv, cond_debug, cond_print);
-      fit_OK = fm.status.fit_OK;
-    }
-    else if (param.p_potinfo->specs_prop.fitmet=="BC"){
-      // Bee colony
-      cs.barrier_scale() = 0.0;
-      BeeColony< ChiSqFunc<Param, double, double> > fm(cs);
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 seed,
-			 cond_conv, cond_debug, cond_print);
-      fit_OK = fm.status.fit_OK;
-    }
-    else if (param.p_potinfo->specs_prop.fitmet=="GS"){
-      // Gravitational Search
-      cs.barrier_scale() = 0.0;
-      GravSearch< ChiSqFunc<Param, double, double> > fm(cs);
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 seed,
-			 cond_conv, cond_debug, cond_print);
-      fit_OK = fm.status.fit_OK;
-    }
-    else if (param.p_potinfo->specs_prop.fitmet=="SA"){
-      // Simulated Annealing
-      cs.barrier_scale() = 0.0;
-      SimAnn< ChiSqFunc<Param, double, double> > fm(cs);
-
-      int N = cs.Param().X().size();
-      Vector<double> Xd(N);
-      double td;
-      for (int i=0; i<N; ++i){
-	td = cs.Param().X(i); if (td<0) td *= -1.0;
-	Xd[i] = td;
-      }
-
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 Xd,
-			 seed,
-			 cond_conv, cond_debug, cond_print);
-      fit_OK = fm.status.fit_OK;
-    }
-    else
-      aborterror("Error: Unknown fitting method " + param.p_potinfo->specs_prop.fitmet + ". " +
-		 "Exiting.");
-
-
-
-    /*
-    cout << "Xopt: " << Xopt << endl;
-    cout << "Xmax: " << cs.Param().Xmin() << endl;
-    cout << "Xmax: " << cs.Param().Xmax() << endl;
-
-    cs(Xopt);
-    cout << " ************************ Cij: Done with recalc after Xopt obtained." << flush << endl;
-    */
-
-
-
-
-
-    // If fitting went alright, then we are almost done. Else we need to get
-    // a numerical estimate of the required derivatives.
-
-    if (fit_OK){
-      E0  = Xopt[1];
-      //f0  = Xopt[1];
-      Clincomb[isym] = Xopt[2] / V0 * eVA3_to_GPa; // unit now: GPa
-    }
-    else {
-      // **************************************************************
-      // Numerical estimate
-      // **************************************************************
-      int min_idx=-1;
-      for (k=0; k<yp.size(); ++k){
-	if (k==0 || (k>0 && yp[k]<td)){
-	  td = yp[k]; min_idx = k;
+	  }
 	}
+	else if (isym==11){
+	  if (csystem_sub==0){
+	    /* Result: E - E0 = 0.5 * V0 * (C33 + 4.0 * C55 + 2.0 * C35) * f^2 */
+	    alpha.elem(0,0) = 1.0;
+	    alpha.elem(1,1) = 1.0;
+	    alpha.elem(2,2) = 1.0 + f;
+	    alpha.elem(0,2) = f;
+	  }
+	  else {
+
+	  }
+	}
+	else if (isym==12){
+	  if (csystem_sub==0){
+	    /* Result: E - E0 = 0.5 * V0 * (4.0 * C44 + 4.0 * C66 + 8.0 * C46) * f^2 */
+	    alpha.elem(0,0) = 1.0;
+	    alpha.elem(1,1) = 1.0;
+	    alpha.elem(2,2) = 1.0;
+	    alpha.elem(1,2) = f;
+	    alpha.elem(0,1) = f;
+	  }
+	  else {
+
+
+	  }
+	}
+
+
+	else quit=true;
       }
-      Vector<double> vx(3,0), vy(3,0);
-      int im=0;
-      if ((min_idx-1)>=0 && (min_idx+1)<yp.size()) im = min_idx - 1;
-      else if (min_idx==0)                         im = min_idx;
-      else if (min_idx==yp.size()-1)               im = min_idx - 2;
-      vx[0] = xp[im];
-      vx[1] = xp[im+1];
-      vx[2] = xp[im+2];
-      vy[0] = yp[im];
-      vy[1] = yp[im+1];
-      vy[2] = yp[im+2];
-      get_parabolic_fit_from_triplet(vx, vy, min_E, guess_C, min_f, cond_debug.debug_fit_level1);
-      E0 = min_E;
-      //f0 = min_f;
-      Clincomb[isym] = guess_C / V0 * eVA3_to_GPa; // unit now: GPa
-      cout << "Warning: Failed to obtain combination of linear constants for compound " + name + ". " +
-	"Using estimate " << guess_C << " GPa." << endl;
-    }
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      else if (csystem=="trigonal"){
 
-  } // End of loop over isym
 
+
+      }
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      else if (csystem=="tetragonal"){
+
+
+
+      }
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      else quit=true;
+#endif
+
+
+
+#if 0
 
 
   
   if (csystem=="cubic"){
-    C44 = Clincomb[2]/2.0;
-    C11 = (Clincomb[0] + Clincomb[1])/2.0;
-    C12 = Clincomb[0] - C11;
-    C.elem(0,0) = C11;
-    C.elem(0,1) = C12;
-    C.elem(3,3) = C44;
+    C44 = Clincomb.elem(4,4) / 2.0;
+    C11 = Clincomb.elem(1,1) * 2.0;
+    C12 = Clincomb.elem(1,2);
   }
   else if (csystem=="hexagonal"){
+
+
     C33 = 2.0 * Clincomb[2];
     C11 = (Clincomb[0] + Clincomb[1])/2.0;
     C12 = Clincomb[0] - C11;
@@ -1696,15 +1899,34 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 
 
 
-  for (k=0; k<6; ++k){
-    for (p=0; p<6; ++p){
-      if (prop_use.C.elem(k,p))
-	prop_pred.C.elem(k,p) = C.elem(k,p);
-    }
-  }
+  C.elem(0,0) = C11;
+  C.elem(0,1) = C12;
+  C.elem(0,2) = C13;
+  C.elem(0,3) = C14;
+  C.elem(0,4) = C15;
+  C.elem(0,5) = C16;
+
+  C.elem(1,1) = C22;
+  C.elem(1,2) = C23;
+  C.elem(1,3) = C24;
+  C.elem(1,4) = C25;
+  C.elem(1,5) = C26;
+
+  C.elem(2,2) = C33;
+  C.elem(2,3) = C34;
+  C.elem(2,4) = C35;
+  C.elem(2,5) = C36;
+
+  C.elem(3,3) = C44;
+  C.elem(3,4) = C45;
+  C.elem(3,5) = C46;
+
+  C.elem(4,4) = C55;
+  C.elem(4,5) = C56;
+
+  C.elem(5,5) = C66;
 
 
-}
-
+#endif
 
 

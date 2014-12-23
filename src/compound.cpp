@@ -64,7 +64,8 @@ CompoundStructure::CompoundStructure()
   name = "none";
   crystalname = "none";
   nelem = elemnames.size();
-  csystem = "cubic";
+  csystem     = "cubic";
+  csystem_sub = 0;
 
   scalefactor = -1;
   lpa = lpb = lpc = -1;

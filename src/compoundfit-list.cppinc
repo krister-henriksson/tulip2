@@ -626,6 +626,12 @@ CompoundListFit::CompoundListFit(const Elements & el,
     // algorithms:
     compounds[ilat].check_and_fix_uses();
 
+
+    compounds[ilat].check_and_fix_Cij();
+
+
+
+
     if (compounds[ilat].prop_use.frc &&
 	compounds[ilat].filename_frc=="none"){
       aborterror("ERROR: No file specified for reading in the forces for compound "

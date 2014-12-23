@@ -75,6 +75,10 @@ public:
 	       double                    & V0);
 
 
+  void check_and_fix_Cij(void);
+  void get_Cuse(Matrix<bool> & Cuse);
+
+
 } ;
   
 

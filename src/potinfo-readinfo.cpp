@@ -1235,13 +1235,13 @@ void PotentialInformationFit::read_info_fit(string filename){
 
 
 
-void PotentialInformationFit::limcheck(const string & pot,
-				       const string & parname,
-				       const string & elems,
+void PotentialInformationFit::limcheck(const string        & pot,
+				       const string        & parname,
+				       const string        & elems,
 				       const parametertype & partype,
-				       const double & parmin,
-				       const double & parmax,
-				       const double & parval
+				       const double        & parmin,
+				       const double        & parmax,
+				       const double        & parval
 				       ){
   double twoeps = std::numeric_limits<double>::epsilon();
   string intro = "ERROR: Potential " + pot + ": " + parname + ": "
