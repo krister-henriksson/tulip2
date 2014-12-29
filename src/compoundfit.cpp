@@ -250,9 +250,9 @@ void CompoundStructureFit::check_and_fix_Cij(){
     }
   }
 
-
-
 }
+
+
 
 
 
@@ -342,6 +342,121 @@ void CompoundStructureFit::get_Cuse(Matrix<bool> & Cuse){
       Cuse.elem(2,5) = true;
     }
   }
+
+}
+
+
+
+
+void CompoundStructureFit::get_Cresolved(Matrix<double> & Clincomb,
+					 Matrix<double> & Cfull
+					 ){
+  double C11, C12, C13, C14, C15, C16;
+  double C22, C23, C24, C25, C26;
+  double C33, C34, C35, C36;
+  double C44, C45, C46;
+  double C55, C56;
+  double C66;
+
+  C11 = C12 = C13 = C14 = C15 = C16 = 0.0;
+  C22 = C23 = C24 = C25 = C26 = 0.0;
+  C33 = C34 = C35 = C36 = 0.0;
+  C44 = C45 = C46 = 0.0;
+  C55 = C56 = 0.0;
+  C66 = 0.0;
+
+
+  // ----------------------------------------------------
+  // General diagonal elements:
+  // ----------------------------------------------------
+  C11 = Clincomb.elem(1,1) * 2;
+  C22 = Clincomb.elem(2,2) * 2;
+  C33 = Clincomb.elem(3,3) * 2;
+  C44 = Clincomb.elem(4,4) / 2;
+  C55 = Clincomb.elem(5,5) / 2;
+  C66 = Clincomb.elem(6,6) / 2;
+
+
+  // Make sure used diagonal elements are correct:
+  if (csystem=="cubic"){
+    C33 = C22 = C11;
+    C66 = C55 = C44;
+  }
+  else if (csystem=="hexagonal" ||
+	   csystem=="tetragonal" ||
+	   csystem=="trigonal"){
+    C22 = C11;
+    C55 = C44;
+  }
+
+
+  // ----------------------------------------------------
+  // General non-diagonal elements:
+  // ----------------------------------------------------
+  C12 = (Clincomb.elem(1,2) * 2 - C11 - C22 ) / 2.0;
+  C13 = (Clincomb.elem(1,3) * 2 - C11 - C33 ) / 2.0;
+  C14 = (Clincomb.elem(1,4) * 2 - C11 - 4 * C44 ) / 4.0;
+  C15 = (Clincomb.elem(1,5) * 2 - C11 - 4 * C55 ) / 4.0;
+  C16 = (Clincomb.elem(1,6) * 2 - C11 - 4 * C66 ) / 4.0;
+
+  C23 = (Clincomb.elem(2,3) * 2 - C22 - C33 ) / 2.0;
+  C24 = (Clincomb.elem(2,4) * 2 - C22 - 4 * C44 ) / 2.0;
+  C25 = (Clincomb.elem(2,5) * 2 - C22 - 4 * C55 ) / 2.0;
+  C26 = (Clincomb.elem(2,6) * 2 - C22 - 4 * C66 ) / 2.0;
+
+  C34 = (Clincomb.elem(3,4) * 2 - C33 - 4 * C44 ) / 2.0;
+  C35 = (Clincomb.elem(3,5) * 2 - C33 - 4 * C55 ) / 2.0;
+  C36 = (Clincomb.elem(3,6) * 2 - C33 - 4 * C66 ) / 2.0;
+
+  C45 = (Clincomb.elem(4,5) * 2 - 4 * C44 - 4 * C55 ) / 8.0;
+  C46 = (Clincomb.elem(4,6) * 2 - 4 * C44 - 4 * C66 ) / 8.0;
+
+  C56 = (Clincomb.elem(5,6) * 2 - 4 * C55 - 4 * C66 ) / 8.0;
+
+
+  // Make sure used non-diagonal elements are correct:
+  if (csystem=="cubic"){
+    C13 = C12;
+    C23 = C12;
+  }
+  else if (csystem=="hexagonal" ||
+	   csystem=="tetragonal" ||
+	   csystem=="trigonal"){
+    C23 = C13;
+  }
+
+
+
+  // ----------------------------------------------------
+  // Construct the upper triangular part of the elastic constants matrix:
+  // ----------------------------------------------------
+
+  Cfull.elem(0,0) = C11;
+  Cfull.elem(1,1) = C22;
+  Cfull.elem(2,2) = C33;
+  Cfull.elem(3,3) = C44;
+  Cfull.elem(4,4) = C55;
+  Cfull.elem(5,5) = C66;
+
+  Cfull.elem(0,1) = C12;
+  Cfull.elem(0,2) = C13;
+  Cfull.elem(0,3) = C14;
+  Cfull.elem(0,4) = C15;
+  Cfull.elem(0,5) = C16;
+
+  Cfull.elem(1,2) = C23;
+  Cfull.elem(1,3) = C24;
+  Cfull.elem(1,4) = C25;
+  Cfull.elem(1,5) = C26;
+
+  Cfull.elem(2,3) = C34;
+  Cfull.elem(2,4) = C35;
+  Cfull.elem(2,5) = C36;
+
+  Cfull.elem(3,4) = C45;
+  Cfull.elem(3,5) = C46;
+
+  Cfull.elem(4,5) = C56;
 
 }
 

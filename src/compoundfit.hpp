@@ -77,6 +77,9 @@ public:
 
   void check_and_fix_Cij(void);
   void get_Cuse(Matrix<bool> & Cuse);
+  void get_Cresolved(Matrix<double> & Clincomb,
+		     Matrix<double> & Cfull);
+					 
 
 
 } ;
