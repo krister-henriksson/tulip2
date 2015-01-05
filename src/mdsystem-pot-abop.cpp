@@ -202,7 +202,7 @@ double MDSystem::force_ABOP(){
       // ################################################################
       // reppot
       // ################################################################
-#if 1
+
       if ( (  sys_single_elem && se_use_reppot) ||
 	   (! sys_single_elem && p_potinfo->use_reppot(typei, typej)) ){
 
@@ -214,29 +214,40 @@ double MDSystem::force_ABOP(){
 
 	Nr = p_potinfo->pot_Reppot[ivec_reppot].r_rep.size();
 	td = p_potinfo->pot_Reppot[ivec_reppot].r_rep[Nr-1];
-	if (rij > td) break;
-	  
-	//              call splinereppot(ra(ij),V,df,bf(typei,typej),&
-	//                   & rf(typei,typej),typei,typej,fermi,dfermi)
-	//              !if (ra(ij) < 2.2) print '(A,4F10.3)','rep2',ra(ij),V,df,fermi
-	//
-	//              df=df+dfermi*(cpair+cmany)
+
 	bfermi = p_potinfo->pot_Reppot[ivec_reppot].bfermi;
 	rfermi = p_potinfo->pot_Reppot[ivec_reppot].rfermi;
 	  
 	td = exp(- bfermi * (rij - rfermi));
 	fermi  = 1.0/(1.0 + td);
 	dfermi = fermi*fermi * bfermi * td;
+
+
+	if (rij < td){
+	  V1 = splint(p_potinfo->pot_Reppot[ivec_reppot].r_rep,
+		      p_potinfo->pot_Reppot[ivec_reppot].V_rep,
+		      p_potinfo->pot_Reppot[ivec_reppot].d2_V_rep,
+		      rij);
 	  
-	V1 = splint(p_potinfo->pot_Reppot[ivec_reppot].r_rep,
-		    p_potinfo->pot_Reppot[ivec_reppot].V_rep,
-		    p_potinfo->pot_Reppot[ivec_reppot].d2_V_rep,
-		    rij);
+	  dV1 = splint_dy(p_potinfo->pot_Reppot[ivec_reppot].r_rep,
+			  p_potinfo->pot_Reppot[ivec_reppot].V_rep,
+			  p_potinfo->pot_Reppot[ivec_reppot].d2_V_rep,
+			  rij);
+	}
+	else {
+	  // reppot ended already, assume 0.0
+	  V1  = 0.0;
+	  dV1 = 0.0;
+	}
+
+
 	  
-	dV1 = splint_dy(p_potinfo->pot_Reppot[ivec_reppot].r_rep,
-			p_potinfo->pot_Reppot[ivec_reppot].V_rep,
-			p_potinfo->pot_Reppot[ivec_reppot].d2_V_rep,
-			rij);
+	//              call splinereppot(ra(ij),V,df,bf(typei,typej),&
+	//                   & rf(typei,typej),typei,typej,fermi,dfermi)
+	//              !if (ra(ij) < 2.2) print '(A,4F10.3)','rep2',ra(ij),V,df,fermi
+	//
+	//              df=df+dfermi*(cpair+cmany)
+	  
 	
 	VRij_r = (1.0 - fermi) * V1 + fermi * VRij;
 	VAij_r = (1.0 - fermi) * V1 + fermi * VAij;
@@ -250,7 +261,7 @@ double MDSystem::force_ABOP(){
 	dVRij = dVRij_r;
 	dVAij = dVAij_r;
       }
-#endif
+
 
 
       // kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
