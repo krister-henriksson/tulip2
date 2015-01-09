@@ -400,13 +400,13 @@ void CompoundStructureFit::get_Cresolved(Matrix<double> & Clincomb,
   C16 = (Clincomb.elem(1,6) * 2 - C11 - 4 * C66 ) / 4.0;
 
   C23 = (Clincomb.elem(2,3) * 2 - C22 - C33 ) / 2.0;
-  C24 = (Clincomb.elem(2,4) * 2 - C22 - 4 * C44 ) / 2.0;
-  C25 = (Clincomb.elem(2,5) * 2 - C22 - 4 * C55 ) / 2.0;
-  C26 = (Clincomb.elem(2,6) * 2 - C22 - 4 * C66 ) / 2.0;
+  C24 = (Clincomb.elem(2,4) * 2 - C22 - 4 * C44 ) / 4.0;
+  C25 = (Clincomb.elem(2,5) * 2 - C22 - 4 * C55 ) / 4.0;
+  C26 = (Clincomb.elem(2,6) * 2 - C22 - 4 * C66 ) / 4.0;
 
-  C34 = (Clincomb.elem(3,4) * 2 - C33 - 4 * C44 ) / 2.0;
-  C35 = (Clincomb.elem(3,5) * 2 - C33 - 4 * C55 ) / 2.0;
-  C36 = (Clincomb.elem(3,6) * 2 - C33 - 4 * C66 ) / 2.0;
+  C34 = (Clincomb.elem(3,4) * 2 - C33 - 4 * C44 ) / 4.0;
+  C35 = (Clincomb.elem(3,5) * 2 - C33 - 4 * C55 ) / 4.0;
+  C36 = (Clincomb.elem(3,6) * 2 - C33 - 4 * C66 ) / 4.0;
 
   C45 = (Clincomb.elem(4,5) * 2 - 4 * C44 - 4 * C55 ) / 8.0;
   C46 = (Clincomb.elem(4,6) * 2 - 4 * C44 - 4 * C66 ) / 8.0;
