@@ -220,6 +220,12 @@ public:
   Vector<string>           basis_elems;
   Vector< Vector<double> > basis_vecs;
 
+  // For construction of compound:
+  int Ndesired[3];
+  bool Neven_desired[3];
+  bool Nodd_desired[3];
+
+
 
   CompoundStructure();
   //CompoundStructure(const CompoundStructure & sv);

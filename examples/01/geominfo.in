@@ -51,6 +51,10 @@ file     = in/Fe-BCC.lat
 elements = Fe
 csystem  = cubic  # or 'hexagonal' or 'orthorombic' (relevant for elast.const.)
 
+Ndesired      = 2 2 2
+Neven_desired = 1 1 1
+Nodd_desired  = 0 0 0
+
 # Lattice parameter:
 a        = 2.9
 u_a      = 0.025

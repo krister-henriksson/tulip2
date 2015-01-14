@@ -806,6 +806,14 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
   Matrix<bool> Cuse(7,7,false);
   get_Cuse(Cuse);
 
+  // Diagonal elements needed for many non-diagonal elements.
+  // These may not have been specified by user, so we must force
+  // usage of them, without messing out the ''officially used''
+  // elements.
+  Matrix<bool> Cuse_hidden(7,7,false);
+  for (int i=1; i<=6; ++i)
+    Cuse_hidden.elem(i,i) = true;
+
 
 
   /* ###############################################################################
@@ -848,12 +856,16 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 
   quit = false;
 
+
   // Loop over particular symmetry changes
   for (int ik=1; ik<=6; ++ik){
     for (int ip=1; ip<=6; ++ip){
 
-      if (Cuse.elem(ik,ip)==false)
-	continue;
+      int choice_sum=0;
+      if (Cuse.elem(ik,ip)) choice_sum++;
+      if (ik==ip && Cuse_hidden.elem(ik,ip)) choice_sum++;
+
+      if (choice_sum==0) continue;
 
 
       // Loop over differential changes

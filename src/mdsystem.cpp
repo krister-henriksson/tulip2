@@ -138,6 +138,21 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
   }
 
 
+  if (cmp.Ndesired[0] > 0 && cmp.Ndesired[0] > N[0]) N[0] = cmp.Ndesired[0];
+  if (cmp.Neven_desired[0]){ if (N[0] % 2 != 0) N[0]++; }
+  if (cmp.Nodd_desired[0] ){ if (N[0] % 2 == 0) N[0]++; }
+
+  if (cmp.Ndesired[1] > 0 && cmp.Ndesired[1] > N[1]) N[1] = cmp.Ndesired[1];
+  if (cmp.Neven_desired[1]){ if (N[1] % 2 != 0) N[1]++; }
+  if (cmp.Nodd_desired[1] ){ if (N[1] % 2 == 0) N[1]++; }
+
+  if (cmp.Ndesired[2] > 0 && cmp.Ndesired[2] > N[2]) N[2] = cmp.Ndesired[2];
+  if (cmp.Neven_desired[2]){ if (N[2] % 2 != 0) N[2]++; }
+  if (cmp.Nodd_desired[2] ){ if (N[2] % 2 == 0) N[2]++; }
+
+
+
+  
   cout << "Creating MD system: Using N[0] N[1] N[2]  " << N[0] << " " << N[1] << " " << N[2] << endl;
 
   cout << "Creating MD system: scalefactor  " << cmp.scalefactor << endl;

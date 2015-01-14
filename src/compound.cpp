@@ -78,6 +78,17 @@ CompoundStructure::CompoundStructure()
 
   nbasis = basis_elems.size();
 
+
+  Ndesired[0]=-1;
+  Ndesired[1]=-1;
+  Ndesired[2]=-1;
+  Neven_desired[0]=false;
+  Neven_desired[1]=false;
+  Neven_desired[2]=false;
+  Nodd_desired[0]=false;
+  Nodd_desired[1]=false;
+  Nodd_desired[2]=false;
+
   // Crystal is:
   //
   // r(n1,n2,n3,j) = n1 * u1_vec + n2 * u2_vec + n3 * u3_vec + basis_vecs[j]

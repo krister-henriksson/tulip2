@@ -626,6 +626,21 @@ int main(int argc, char *argv[]){
 	 << format("%15.10f")  % complistfit.compounds[i].u3_vec[2] << endl;
     cout << "  Number of basis atoms: " << complistfit.compounds[i].nbasis << endl;
 
+    cout << "" << endl;
+    cout << "Desired N values for compound construction      : "
+	 << complistfit.compounds[i].Ndesired[0] << " "
+	 << complistfit.compounds[i].Ndesired[1] << " "
+	 << complistfit.compounds[i].Ndesired[2] << endl;
+    cout << "Desired even N values for compound construction?: "
+	 << complistfit.compounds[i].Neven_desired[0] << " "
+	 << complistfit.compounds[i].Neven_desired[1] << " "
+	 << complistfit.compounds[i].Neven_desired[2] << endl;
+    cout << "Desired odd N values for compound construction? : "
+	 << complistfit.compounds[i].Nodd_desired[0] << " "
+	 << complistfit.compounds[i].Nodd_desired[1] << " "
+	 << complistfit.compounds[i].Nodd_desired[2] << endl;
+    cout << "" << endl;
+
 
     string dumpfile(complistfit.compounds[i].filename + ".xyz");
     cout << "  Atom system will be written to file of format XYZ for debugging purposes: " << dumpfile << endl;

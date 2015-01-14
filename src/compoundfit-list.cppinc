@@ -196,7 +196,21 @@ CompoundListFit::CompoundListFit(const Elements & el,
       compounds[ilat].use_w.frc = true;
     }
 
-
+    else if (args[0]=="Ndesired"){
+      strbuf.str(args[1]); strbuf >> compounds[ilat].Ndesired[0]; strbuf.clear();
+      strbuf.str(args[2]); strbuf >> compounds[ilat].Ndesired[1]; strbuf.clear();
+      strbuf.str(args[3]); strbuf >> compounds[ilat].Ndesired[2]; strbuf.clear();
+    }
+    else if (args[0]=="Neven_desired"){
+      compounds[ilat].Neven_desired[0] = bool_in_string(args[1]);
+      compounds[ilat].Neven_desired[1] = bool_in_string(args[2]);
+      compounds[ilat].Neven_desired[2] = bool_in_string(args[3]);
+    }
+    else if (args[0]=="Nodd_desired"){
+      compounds[ilat].Nodd_desired[0] = bool_in_string(args[1]);
+      compounds[ilat].Nodd_desired[1] = bool_in_string(args[2]);
+      compounds[ilat].Nodd_desired[2] = bool_in_string(args[3]);
+    }
 
 
 
