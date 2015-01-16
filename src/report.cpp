@@ -77,8 +77,9 @@ void report_pot_prop_ext(ParamPot & param,
 
   cout << "-------------------------------------------------------------------------------" << endl;
 
+  param.update_pot();
+
   // Report the current settings of the potentials:
-  //param.update_pot();
   report_pot( param.p_potinfo, true, false, fout_pot );
 
   // Report the current properties of the compounds (assumes they have been
@@ -575,7 +576,7 @@ void report_prop(Vector<CompoundStructureFit> & DX,
 	  if (tb1) td3 = cmpfit.prop_u.frc[i][k];
 	  else     td4 = cmpfit.prop_w.frc[i][k];
 
-	  propstr = "Force component (iat," + tostring(k+1) + ")       : ";
+	  propstr = "Force component  iat " + tostring(nb) + " direction " + tostring(k+1) + ")       : ";
 	  print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
 	}
       }
@@ -616,6 +617,7 @@ void print_prop_readin_pred_comp(ostream & fout,
   if (abs(td2)<llim || abs(td2)>ulim) fout << format(formate) % td2;
   else                                fout << format(formatf) % td2;
 
+  // -----------------------------------------------------------------------
   if (!firsttime){
     fout << "  predicted  ";
     if (abs(td1)<llim || abs(td1)>ulim) fout << format(formate) % td1;
@@ -623,6 +625,8 @@ void print_prop_readin_pred_comp(ostream & fout,
 
     fout << "  rel. change  " << format("%10.3e")  % fp_divide(td1-td2, td2);
   }
+  // -----------------------------------------------------------------------
+
   if (tb1){
     fout << "  uncertainty  ";
     if (abs(td3)<llim || abs(td3)>ulim) fout << format(formate) % td3;

@@ -1450,6 +1450,9 @@ int main(int argc, char *argv[]){
     cs(Xopt);
     // Report:
     report_pot_prop( cs.Param(), cs.DataX(), cs.DataY(), cs.ModelDataY() );
+
+    DX = cs.DataX();
+
   }
   // ***********************************************************************************
   // ***********************************************************************************
@@ -1457,21 +1460,23 @@ int main(int argc, char *argv[]){
   // ***********************************************************************************
 
 
+
+
+
   cout << "Dumping potential parameters and compound properties to files ..." << endl;
   ofstream fout1, fout2;
   string fname1 = "report-potpar.dat";
   string fname2 = "report-compprop.dat";
-  fout1.open(fname1.c_str()); fout2.open(fname2.c_str());
+  fout1.open(fname1.c_str());
+  fout2.open(fname2.c_str());
+
   report_pot( &potinfo, true, true, fout1 );
+
   report_prop( DX, fout2 );
+
   fout1.close(); fout1.clear();
   fout2.close(); fout2.clear();
 
-
-  // ***********************************************************************************
-  // ***********************************************************************************
-  // ***********************************************************************************
-  // ***********************************************************************************
 
 
 
