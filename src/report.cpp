@@ -77,7 +77,9 @@ void report_pot_prop_ext(ParamPot & param,
 
   cout << "-------------------------------------------------------------------------------" << endl;
 
+
   param.update_pot();
+
 
   // Report the current settings of the potentials:
   report_pot( param.p_potinfo, true, false, fout_pot );

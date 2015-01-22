@@ -1,8 +1,8 @@
 
 # Ignore contents of some directories:
-./obj/
-./bin/
-./src/discarded/
+obj/
+bin/
+src/discarded/
 
 
 # Ignore stuff in current directory and recursively down:
