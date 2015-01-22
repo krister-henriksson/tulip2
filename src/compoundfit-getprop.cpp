@@ -256,9 +256,14 @@ void CompoundStructureFit::getprop(ParamPot & param){
     
   if (prop_use.Vatom)
     prop_pred.Vatom = mds.V/mds.natoms();
+
       
   if (prop_use.Ecoh)
     prop_pred.Ecoh = mds.Ep_tot/mds.natoms();
+
+  if (prop_use.Ecoh_delta)
+    prop_pred.Ecoh_delta = mds.Ep_tot/mds.natoms();
+
 
   if (prop_use.Emix){
     prop_pred.Emix = mds.Ep_tot;

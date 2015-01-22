@@ -1,0 +1,28 @@
+
+
+Typical command:
+
+$ tulip -sf specsfile.in -gf geominfo.in -pf potinfo.in  >& tulip.out
+
+Most important options:
+
+     -omp               Request maximal number of threads (8) for any OpenMP parts.
+     -omp_nt num        Request 'num' number of threads for any OpenMP parts. Default: 1
+
+-----------------------------------------------------------------
+
+Required files:
+
+(1) File containing technical specficiations for the fitting.
+    Name e.g. specsfile.in
+(2) File containing properties of the lattices to be fitted.
+    Name e.g. geominfo.in
+    This file contains paths to *.lat files, which describe the lattice.
+    These files are similar to POSCAR files used by VASP.
+    Commandline scripts are available for converting XYZ files to LAT files.
+(3) File containing initial potential parameters and related information.
+    Name e.g. potinfo.in
+
+(4) reppot files, when using the reppot parameters. Identical to the files
+    used by PARCAS.
+

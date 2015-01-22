@@ -78,6 +78,7 @@ int CompoundStructureFit::NData(){
   if (prop_use.angle_bc) N++;
   if (prop_use.Vatom) N++;
   if (prop_use.Ecoh) N++;
+  if (prop_use.Ecoh_delta) N++;
   if (prop_use.Emix) N++;
   if (prop_use.B) N++;
   if (prop_use.Bp) N++;
@@ -460,10 +461,5 @@ void CompoundStructureFit::get_Cresolved(Matrix<double> & Clincomb,
 
 }
 
-
-
-
-
-#include "compoundfit-list.cppinc"
 
 

@@ -41,6 +41,7 @@
 
 #include "atomsystem.hpp"
 #include "compound.hpp"
+#include "compoundfit-list.hpp"
 #include "elem-iacs.hpp"
 #include "helpfuns.hpp"
 #include "mdsystem.hpp"
@@ -639,9 +640,12 @@ int main(int argc, char *argv[]){
 	 << complistfit.compounds[i].Nodd_desired[0] << " "
 	 << complistfit.compounds[i].Nodd_desired[1] << " "
 	 << complistfit.compounds[i].Nodd_desired[2] << endl;
+
     cout << "" << endl;
+    cout << "Compound is a reference for changes in Ecoh (Ecoh_delta) ? : "
+	 << complistfit.compounds[i].Ecoh_delta_refcomp << endl;
 
-
+    cout << "" << endl;
     string dumpfile(complistfit.compounds[i].filename + ".xyz");
     cout << "  Atom system will be written to file of format XYZ for debugging purposes: " << dumpfile << endl;
     ofstream fout;
@@ -850,6 +854,17 @@ int main(int argc, char *argv[]){
       else {
 	DUY.push_back(-1.0);
 	DWY.push_back(complistfit.compounds[i].prop_w.Ecoh);
+      }
+    }
+
+    if (complistfit.compounds[i].prop_use.Ecoh_delta){ DY.push_back(complistfit.compounds[i].prop_readin.Ecoh_delta);
+      if (complistfit.compounds[i].use_u.Ecoh_delta){
+	DUY.push_back(complistfit.compounds[i].prop_u.Ecoh_delta);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.Ecoh_delta);
       }
     }
 

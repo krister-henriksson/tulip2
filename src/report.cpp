@@ -475,6 +475,18 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
+    if (cmpfit.prop_use.Ecoh_delta){
+      td1 = cmpfit.prop_pred.Ecoh_delta;
+      td2 = cmpfit.prop_readin.Ecoh_delta;
+      tb1 = cmpfit.use_u.Ecoh_delta;
+      tb2 = cmpfit.use_w.Ecoh_delta;
+      td3 = cmpfit.prop_u.Ecoh_delta;
+      td4 = cmpfit.prop_w.Ecoh_delta;
+
+      propstr = "Change in cohesive energy Ecoh_delta  : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
+    }
+
     if (cmpfit.prop_use.Emix){
       td1 = cmpfit.prop_pred.Emix;
       td2 = cmpfit.prop_readin.Emix;

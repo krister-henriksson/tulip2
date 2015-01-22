@@ -1,5 +1,43 @@
 
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <limits>
+
+#include <boost/format.hpp>
+
+#include <cstdio>
+
+#include "constants.hpp"
+#include "utils.hpp"
+#include "utils-vector.hpp"
+#include "utils-matrix.hpp"
+#include "utils-matrix3.hpp"
+#include "utils-string.hpp"
+#include "utils-streamio.hpp"
+#include "utils-errors.hpp"
+
+#include "elem-iacs.hpp"
+//#include "specs-fit-prop-pot.hpp"
+//#include "compound.hpp"
+#include "physconst.hpp"
+
+
+#include "compoundfit-list.hpp"
+
+
+using namespace std;
+using namespace utils;
+using namespace constants;
+using boost::format;
+
+
+
+
+
 CompoundListFit::CompoundListFit(const Elements & el,
 				 MDSettings & mds_specs_general,
 				 string filename)
@@ -63,9 +101,14 @@ CompoundListFit::CompoundListFit(const Elements & el,
   opts.push_back("V0");
   opts.push_back("Ecoh");
   opts.push_back("Ec");
+  opts.push_back("Ecoh_delta");
+  opts.push_back("Ec_delta");
+  opts.push_back("Ec");
   opts.push_back("E0");
   opts.push_back("Eatom");
+  opts.push_back("Eatom_delta");
   opts.push_back("Eat");
+  opts.push_back("Eat_delta");
   opts.push_back("Emix");
   opts.push_back("B");
   opts.push_back("B");
@@ -211,6 +254,12 @@ CompoundListFit::CompoundListFit(const Elements & el,
       compounds[ilat].Nodd_desired[1] = bool_in_string(args[2]);
       compounds[ilat].Nodd_desired[2] = bool_in_string(args[3]);
     }
+
+    else if (args[0]=="Ecoh_delta_ref" || args[0]=="Ecoh_delta_refcomp" || 
+	     args[0]=="Ecoh_delta_ref_comp"){
+      compounds[ilat].Ecoh_delta_refcomp = bool_in_string(args[1]);
+    }
+
 
 
 
@@ -497,6 +546,15 @@ CompoundListFit::CompoundListFit(const Elements & el,
 	else if (ot==2) { compounds[ilat].prop_w.Ecoh = td; compounds[ilat].use_w.Ecoh = true;  compounds[ilat].use_u.Ecoh = false; }
 	else if (ot==3) { compounds[ilat].prop_u.Ecoh = td; compounds[ilat].use_w.Ecoh = false; compounds[ilat].use_u.Ecoh = true; }
       }
+      else if (match=="Ec_delta" || match=="Ecoh_delta" || match=="Eat_delta" || match=="Eatom_delta"){
+	if (ot==1){
+	  compounds[ilat].prop_readin.Ecoh_delta = td;
+	  compounds[ilat].prop_use.Ecoh_delta    = true;
+	}
+	else if (ot==2) { compounds[ilat].prop_w.Ecoh_delta = td; compounds[ilat].use_w.Ecoh_delta = true;  compounds[ilat].use_u.Ecoh_delta = false; }
+	else if (ot==3) { compounds[ilat].prop_u.Ecoh_delta = td; compounds[ilat].use_w.Ecoh_delta = false; compounds[ilat].use_u.Ecoh_delta = true; }
+      }
+
       else if (match=="Emix"){
 	if (ot==1){
 	  compounds[ilat].prop_readin.Emix = td;
@@ -615,10 +673,26 @@ CompoundListFit::CompoundListFit(const Elements & el,
 
   cout << "Number of compounds read: " << compounds.size() << endl;
   cout << "Debugging compounds ..." << endl;
+
+
+
+  int nEcohref=0;
+  int nEcohdelta=0;
   /* -----------------------------------------------------------------------------
      Debugging of settings:
      ----------------------------------------------------------------------------- */
   for (ilat=0; ilat<compounds.size(); ++ilat){
+
+
+    if (compounds[ilat].Ecoh_delta_refcomp) nEcohref++;
+    if (compounds[ilat].prop_use.Ecoh_delta) nEcohdelta++;
+
+    if (compounds[ilat].prop_use.Ecoh &&
+	compounds[ilat].prop_use.Ecoh_delta)
+      aborterror("ERROR: Both Ecoh and Ecoh_delta are used for compound "
+		 + compounds[ilat].name + ". At most one of these can be used!");
+
+
 
     if (compounds[ilat].mds_specs.fixed_geometry){
       compounds[ilat].prop_use.displmax   = false;
@@ -654,6 +728,11 @@ CompoundListFit::CompoundListFit(const Elements & el,
 
   }
 
+  if (nEcohdelta>0 && nEcohref==0)
+    aborterror("ERROR: Ecoh_delta values are used, but there is no reference Ecoh compound!");
+
+  if (nEcohref>=1 && nEcohdelta==0)
+    cout << "Warning: Reference Ecoh compound is used, but no Ecoh_delta values.";
 
 
 
@@ -814,6 +893,9 @@ CompoundListFit::CompoundListFit(const Elements & el,
     if (compounds[ilat].prop_use.Ecoh && compounds[ilat].use_w.Ecoh)
       wsum += square( compounds[ilat].prop_w.Ecoh );
 
+    if (compounds[ilat].prop_use.Ecoh_delta && compounds[ilat].use_w.Ecoh_delta)
+      wsum += square( compounds[ilat].prop_w.Ecoh_delta );
+
     if (compounds[ilat].prop_use.Emix && compounds[ilat].use_w.Emix)
       wsum += square( compounds[ilat].prop_w.Emix );
 
@@ -886,6 +968,9 @@ CompoundListFit::CompoundListFit(const Elements & el,
     if (compounds[ilat].prop_use.Ecoh && compounds[ilat].use_w.Ecoh)
       compounds[ilat].prop_w.Ecoh *= wsum;
 
+    if (compounds[ilat].prop_use.Ecoh_delta && compounds[ilat].use_w.Ecoh_delta)
+      compounds[ilat].prop_w.Ecoh_delta *= wsum;
+
     if (compounds[ilat].prop_use.Emix && compounds[ilat].use_w.Emix)
       compounds[ilat].prop_w.Emix *= wsum;
 
@@ -935,6 +1020,10 @@ CompoundListFit::CompoundListFit(const Elements & el,
 
   return;
 }
+
+
+
+
 
 
 

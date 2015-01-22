@@ -45,6 +45,7 @@ public:
   bool angle_bc;
   bool Vatom;
   bool Ecoh;
+  bool Ecoh_delta;
   bool Emix;
   bool B;
   bool Bp;
@@ -73,6 +74,7 @@ public:
   double angle_bc;
   double Vatom;
   double Ecoh;
+  double Ecoh_delta;
   double Emix;
   double B;
   double Bp;
@@ -99,6 +101,7 @@ public:
   bool angle_bc;
   bool Vatom;
   bool Ecoh;
+  bool Ecoh_delta;
   bool Emix;
   bool B;
   bool Bp;
@@ -124,6 +127,7 @@ public:
   bool angle_bc;
   bool Vatom;
   bool Ecoh;
+  bool Ecoh_delta;
   bool Emix;
   bool B;
   bool Bp;
@@ -151,6 +155,7 @@ public:
   double angle_bc;
   double Vatom;
   double Ecoh;
+  double Ecoh_delta;
   double Emix;
   double B;
   double Bp;
@@ -177,6 +182,7 @@ public:
   double angle_bc;
   double Vatom;
   double Ecoh;
+  double Ecoh_delta;
   double Emix;
   double B;
   double Bp;
@@ -225,6 +231,7 @@ public:
   bool Neven_desired[3];
   bool Nodd_desired[3];
 
+  bool Ecoh_delta_refcomp;
 
 
   CompoundStructure();

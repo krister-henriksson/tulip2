@@ -56,6 +56,9 @@ using namespace funcfit;
 using boost::format;
 
 
+
+
+
 // ##############################################################################
 // ##############################################################################
 //
@@ -65,18 +68,28 @@ using boost::format;
 // ##############################################################################
 // ##############################################################################
 
+
+
 Vector<double> latcalc(ParamPot & param, Vector<CompoundStructureFit> & DX){
 
   Vector<double> MDY;
   CompoundStructureFit cmpfit;
-  int iDX,k,p;
+  int iDX,sizeDX,k,p;
   bad_point err_bad_point;
 
   // Make sure potentials have been updated from the fitting parameters:
   param.update_pot();
 
-  MDY.resize(0);
-  for (iDX=0; iDX<DX.size(); ++iDX){
+  sizeDX = DX.size();
+
+  // ###################################################################
+  // Get properties of fittable compounds
+  // ###################################################################
+  double Ecoh_delta_ref = 0.0;
+  for (iDX=0; iDX<sizeDX; ++iDX){
+    // -------------------------------------------------------------------
+    // Make a local copy which is easier to work with:
+    // -------------------------------------------------------------------
     cmpfit = DX[iDX];
 
     cout << "Getting properties of compound " << cmpfit.name << " ..." << endl;
@@ -88,15 +101,29 @@ Vector<double> latcalc(ParamPot & param, Vector<CompoundStructureFit> & DX){
       throw err_bad_point;
     }
 
-    // ###################################################################
-    // Make sure we get data back to calling function:
-    // ###################################################################
+    if (cmpfit.Ecoh_delta_refcomp){
+      Ecoh_delta_ref = cmpfit.prop_pred.Ecoh;
+      // cout << "Ecoh_delta_ref = " << Ecoh_delta_ref << " from compound " << cmpfit.name << endl;
+    }
+
+    // -------------------------------------------------------------------
+    // Make sure we get local updates back to calling function:
+    // -------------------------------------------------------------------
     DX[iDX] = cmpfit;
+  }
 
 
-    // ###################################################################
-    // Fill the ModelDataY vector
-    // ###################################################################
+
+  // ###################################################################
+  // Fill the ModelDataY vector
+  // ###################################################################
+  MDY.resize(0);
+  for (iDX=0; iDX<sizeDX; ++iDX){
+    // -------------------------------------------------------------------
+    // Make a local copy which is easier to work with:
+    // -------------------------------------------------------------------
+    cmpfit = DX[iDX];
+
     if (cmpfit.prop_use.a) MDY.push_back(cmpfit.prop_pred.a);
     if (cmpfit.prop_use.b) MDY.push_back(cmpfit.prop_pred.b);
     if (cmpfit.prop_use.c) MDY.push_back(cmpfit.prop_pred.c);
@@ -107,7 +134,20 @@ Vector<double> latcalc(ParamPot & param, Vector<CompoundStructureFit> & DX){
     if (cmpfit.prop_use.angle_ac) MDY.push_back(cmpfit.prop_pred.angle_ac);
     if (cmpfit.prop_use.angle_bc) MDY.push_back(cmpfit.prop_pred.angle_bc);
     if (cmpfit.prop_use.Vatom) MDY.push_back(cmpfit.prop_pred.Vatom);
+
     if (cmpfit.prop_use.Ecoh) MDY.push_back(cmpfit.prop_pred.Ecoh);
+
+    if (cmpfit.prop_use.Ecoh_delta){
+      // cout << "Using Ecoh_delta with preloaded value " << cmpfit.prop_pred.Ecoh_delta;
+      cmpfit.prop_pred.Ecoh_delta -= Ecoh_delta_ref;
+      MDY.push_back(cmpfit.prop_pred.Ecoh_delta);
+      /*
+	cout << " and subtracting a term " << Ecoh_delta_ref
+	<< " so that predicted value is " << cmpfit.prop_pred.Ecoh_delta;
+      */
+    }
+
+
     if (cmpfit.prop_use.Emix) MDY.push_back(cmpfit.prop_pred.Emix);
     if (cmpfit.prop_use.B) MDY.push_back(cmpfit.prop_pred.B);
     if (cmpfit.prop_use.Bp) MDY.push_back(cmpfit.prop_pred.Bp);
@@ -127,9 +167,13 @@ Vector<double> latcalc(ParamPot & param, Vector<CompoundStructureFit> & DX){
 	  MDY.push_back(cmpfit.prop_pred.frc[iat][k]);
     }
 
-
-
+    // -------------------------------------------------------------------
+    // Make sure we get local updates back to calling function:
+    // -------------------------------------------------------------------
+    DX[iDX] = cmpfit;
   }
+
+
 
 
   // If e.g. last compound checked is not a reference compound, then we have
