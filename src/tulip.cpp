@@ -647,15 +647,11 @@ int main(int argc, char *argv[]){
 
     cout << "" << endl;
     string dumpfile(complistfit.compounds[i].filename + ".xyz");
-    cout << "  Atom system will be written to file of format XYZ for debugging purposes: " << dumpfile << endl;
+    cout << "  Atom system will be written to file of format Extended XYZ for debugging purposes: " << dumpfile << endl;
     ofstream fout;
     fout.open(dumpfile.c_str());
     fout << complistfit.compounds[i].basis_vecs.size() << endl;
-    fout << "Frame number 0 time 0.0 fs boxsize "
-	 << format("%15.10f ") % complistfit.compounds[i].u1_vec.magn()
-	 << format("%15.10f ") % complistfit.compounds[i].u2_vec.magn()
-	 << format("%15.10f ") % complistfit.compounds[i].u3_vec.magn()
-	 << "   "
+    fout << "Lattice=\""
 	 << format("%10.6f ") % complistfit.compounds[i].u1_vec[0]
 	 << format("%10.6f ") % complistfit.compounds[i].u1_vec[1]
 	 << format("%10.6f")  % complistfit.compounds[i].u1_vec[2]
@@ -664,15 +660,22 @@ int main(int argc, char *argv[]){
 	 << format("%10.6f")  % complistfit.compounds[i].u2_vec[2]
 	 << format("%10.6f ") % complistfit.compounds[i].u3_vec[0]
 	 << format("%10.6f ") % complistfit.compounds[i].u3_vec[1]
-	 << format("%10.6f")  % complistfit.compounds[i].u3_vec[2] << endl;
-    for (j=0; j<complistfit.compounds[i].basis_vecs.size(); ++j)
-      fout << complistfit.compounds[i].basis_elems[j] << "  "
+	 << format("%10.6f")  % complistfit.compounds[i].u3_vec[2]
+	 << "\" Properties=species:S:1:pos:R:3:index:I:1 Time=0.0" << endl;
+    for (j=0; j<complistfit.compounds[i].basis_vecs.size(); ++j){
+      fout << complistfit.compounds[i].basis_elems[j]
+	   << "  "
 	   << format("%15.10f ") % complistfit.compounds[i].basis_vecs[j][0]
 	   << format("%15.10f ") % complistfit.compounds[i].basis_vecs[j][1]
 	   << format("%15.10f")  % complistfit.compounds[i].basis_vecs[j][2]
-	   << j << endl;
+	   << "  "
+	   << j
+	   << "  "
+	   << potinfo.elem.name2idx( complistfit.compounds[i].basis_elems[j] ) << endl;
+    }
     fout.close();
     fout.clear();
+
 
 
     cout << "  Compound-specific MD settings" << endl;

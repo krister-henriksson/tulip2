@@ -209,8 +209,18 @@ CompoundListFit::CompoundListFit(const Elements & el,
       else if ( args[1][0] == 'o' || args[1][0] == 'O' )
 	compounds[ilat].csystem = "orthorombic";
       else if ( (args[1][0] == 't' || args[1][0] == 'T') &&
-		(args[1][1] == 'r' || args[1][1] == 'R') )
+		(args[1][1] == 'r' || args[1][1] == 'R') &&
+		(args[1][2] == 'i' || args[1][2] == 'I') &&
+		(args[1][3] == 'c' || args[1][3] == 'C') )
 	compounds[ilat].csystem = "triclinic";
+      else if ( (args[1][0] == 't' || args[1][0] == 'T') &&
+		(args[1][1] == 'r' || args[1][1] == 'R') &&
+		(args[1][2] == 'i' || args[1][2] == 'I') &&
+		(args[1][3] == 'g' || args[1][3] == 'G') )
+	compounds[ilat].csystem = "trigonal";
+      else if ( (args[1][0] == 't' || args[1][0] == 'T') &&
+		(args[1][1] == 'e' || args[1][1] == 'E') )
+	compounds[ilat].csystem = "tetragonal";
       else if ( args[1][0] == 'm' || args[1][0] == 'M' )
 	compounds[ilat].csystem = "monoclinic";
       else {
