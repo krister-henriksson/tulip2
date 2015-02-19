@@ -27,6 +27,8 @@
 
 
 #include "compoundfit-list.hpp"
+#include "lattice-simple.hpp"
+
 
 
 using namespace std;
@@ -38,7 +40,7 @@ using boost::format;
 
 
 
-CompoundListFit::CompoundListFit(const Elements & el,
+CompoundListFit::CompoundListFit(Elements & el,
 				 MDSettings & mds_specs_general,
 				 string filename)
   : elem(el), ncompounds(0)
@@ -702,8 +704,6 @@ CompoundListFit::CompoundListFit(const Elements & el,
       aborterror("ERROR: Both Ecoh and Ecoh_delta are used for compound "
 		 + compounds[ilat].name + ". At most one of these can be used!");
 
-
-
     if (compounds[ilat].mds_specs.fixed_geometry){
       compounds[ilat].prop_use.displmax   = false;
       compounds[ilat].prop_use.a = false;
@@ -719,24 +719,25 @@ CompoundListFit::CompoundListFit(const Elements & el,
       compounds[ilat].prop_use.frc = false;
     }
 
-    // Make sure we are not using the same properties in different
-    // disguises, since this will lead to problems in some fitting
-    // algorithms:
-    compounds[ilat].check_and_fix_uses();
-
-
-    compounds[ilat].check_and_fix_Cij();
-
-
-
-
     if (compounds[ilat].prop_use.frc &&
 	compounds[ilat].filename_frc=="none"){
       aborterror("ERROR: No file specified for reading in the forces for compound "
 		 + compounds[ilat].name);
     }
+  }
+
+
+
+  for (ilat=0; ilat<compounds.size(); ++ilat){
+
+    // Make sure we are not using the same properties in different
+    // disguises, since this will lead to problems in some fitting
+    // algorithms:
+    compounds[ilat].check_and_fix_uses();
 
   }
+
+
 
   if (nEcohdelta>0 && nEcohref==0)
     aborterror("ERROR: Ecoh_delta values are used, but there is no reference Ecoh compound!");
@@ -769,43 +770,20 @@ CompoundListFit::CompoundListFit(const Elements & el,
      ##############################################################################    
   */
 
+
+
+
+
   int nc = compounds.size();
   cout << "Reading structural info for compounds ... " << endl;
   for (ilat=0; ilat<nc; ++ilat){
-    compounds[ilat].read_structure();
+    compounds[ilat].read_structure(el);
     // calls finalize() internally to insert a,b,c
+
+    //compounds[ilat].check_crystal_symm();
+    
+
   }
-
-
-
-
-  /* ##############################################################################
-     ##############################################################################
-     Get forces for the read-in structures.
-     ##############################################################################
-     ##############################################################################    
-  */
-
-  cout << "Reading forces for compounds ... " << endl;
-  for (ilat=0; ilat<nc; ++ilat){
-    if (compounds[ilat].prop_use.frc){
-      cout << "Forces used for compound " << ilat+1 << " of " << nc << endl;
-      compounds[ilat].read_forces();
-    }
-    else {
-      cout << "Forces NOT used for compound " << ilat+1 << " of " << nc << endl;
-    }
-  }
-
-
-
-
-
-
-
-
-
-
 
 
   /* -----------------------------------------------------------------------------
@@ -847,6 +825,7 @@ CompoundListFit::CompoundListFit(const Elements & el,
 	if (compounds[ilat].basis_elems[j] == compounds[ilat].elemnames[i]){
 	  // found the element
 	  elem_ok=true;
+	  compounds[ilat].basis_types[j] = i;
 	  break;
 	}
       }
@@ -857,6 +836,47 @@ CompoundListFit::CompoundListFit(const Elements & el,
       }
     }
   }
+
+
+  /* ##############################################################################
+     ##############################################################################
+     Get forces for the read-in structures.
+     ##############################################################################
+     ##############################################################################    
+  */
+
+  cout << "Reading forces for compounds ... " << endl;
+  for (ilat=0; ilat<nc; ++ilat){
+    if (compounds[ilat].prop_use.frc){
+      cout << "Forces used for compound " << ilat+1 << " of " << nc << endl;
+      compounds[ilat].read_forces();
+    }
+    else {
+      cout << "Forces NOT used for compound " << ilat+1 << " of " << nc << endl;
+    }
+  }
+
+
+
+
+  /* ##############################################################################
+     ##############################################################################
+     Lattice symmetries, elastic constants stuff
+     ##############################################################################
+     ##############################################################################    
+  */
+
+
+  latsymm(compounds);
+
+
+  for (ilat=0; ilat<nc; ++ilat){
+
+    compounds[ilat].check_and_fix_Cij();
+
+  }
+
+
 
 
 

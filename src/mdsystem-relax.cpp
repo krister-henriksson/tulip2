@@ -2,6 +2,52 @@
 
 
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <limits>
+#include <string>
+#include <vector>
+
+#include <boost/format.hpp>
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+
+#include "atomsystem.hpp"
+#include "constants.hpp"
+#include "utils.hpp"
+#include "utils-math.hpp"
+#include "utils-matrix3.hpp"
+#include "utils-matrix.hpp"
+#include "utils-string.hpp"
+#include "utils-vector.hpp"
+#include "utils-errors.hpp"
+
+#include "compound.hpp"
+#include "elem-iacs.hpp"
+#include "helpfuns.hpp"
+#include "mdsystem.hpp"
+#include "mdsettings.hpp"
+#include "mtwister.hpp"
+#include "physconst.hpp"
+#include "potclasses.hpp"
+#include "potinfo.hpp"
+#include "specs-fit-prop-pot.hpp"
+#include "errors.hpp"
+
+using namespace std;
+using namespace utils;
+using namespace constants;
+using boost::format;
+using std::ofstream;
+
+
+
+
+
 // ##############################################################################
 // ##############################################################################
 //
@@ -33,6 +79,16 @@ void MDSystem::relax(void){
   bool periodic = true;
   if (!pbc[0] || !pbc[1] || !pbc[2]) periodic = false;
 
+
+  const double liml=1.0e-6, limu=1.0e+6;
+  string fmt, fmtf = "%12.6f", fmte = "%12.6e";
+
+
+
+
+
+
+
   get_pot_force  = true;
   get_pot_energy = true;;
 
@@ -57,6 +113,9 @@ void MDSystem::relax(void){
     fdump.close();
   }
 
+
+  calc_volume();
+  cout << "Atomic volume " << vol_atom << endl;
 
   int type1;
   double mass1;
@@ -180,7 +239,7 @@ void MDSystem::relax(void){
      Get neighbors.
      ------------------------------------------------------------- */
   //cout << "Getting neighbors of all atoms ..." << endl;
-  get_all_neighborcollections();
+  get_all_neighborcollections( specs_common.report_step );
 
 
   T = 0.0;
@@ -195,18 +254,7 @@ void MDSystem::relax(void){
   if (!periodic)
     calc_closepacked_volume();
   else {
-    u = boxdir.col(0);
-    v = boxdir.col(1);
-    w = boxdir.col(2);
-
-    tv[0] = u[1]*v[2] - u[2]*v[1];
-    tv[1] = u[2]*v[0] - u[0]*v[2];
-    tv[2] = u[0]*v[1] - u[1]*v[0];
-
-    td = tv[0]*w[0] + tv[1]*w[1] + tv[2]*w[2];
-    if (td<0) td *= -1;
-
-    V = td * boxlen[0]*boxlen[1]*boxlen[2];
+    calc_volume();
   }
 
   //cout << "made it here 02*" << endl;
@@ -476,7 +524,7 @@ void MDSystem::relax(void){
       // printf("Updating neighbor list ...\n");
       //fflush(stdout);
       /* Update neighbor list. */
-      get_all_neighborcollections();
+      get_all_neighborcollections( specs_common.report_step );
 
       for (i=0; i<nat; ++i){
 	dpos[i][0] = 0.0;
@@ -772,18 +820,7 @@ void MDSystem::relax(void){
     if (!periodic)
       calc_closepacked_volume();
     else {
-      u = boxdir.col(0);
-      v = boxdir.col(1);
-      w = boxdir.col(2);
-
-      tv[0] = u[1]*v[2] - u[2]*v[1];
-      tv[1] = u[2]*v[0] - u[0]*v[2];
-      tv[2] = u[0]*v[1] - u[1]*v[0];
-
-      td = tv[0]*w[0] + tv[1]*w[1] + tv[2]*w[2];
-      if (td<0) td *= -1;
-
-      V = td * boxlen[0]*boxlen[1]*boxlen[2];
+      calc_volume();
     }
     /*
       cout << "After calc_volume():" << endl;
@@ -1006,18 +1043,7 @@ void MDSystem::relax(void){
 	if (!periodic)
 	  calc_closepacked_volume();
 	else {
-	  u = boxdir.col(0);
-	  v = boxdir.col(1);
-	  w = boxdir.col(2);
-
-	  tv[0] = u[1]*v[2] - u[2]*v[1];
-	  tv[1] = u[2]*v[0] - u[0]*v[2];
-	  tv[2] = u[0]*v[1] - u[1]*v[0];
-
-	  td = tv[0]*w[0] + tv[1]*w[1] + tv[2]*w[2];
-	  if (td<0) td *= -1;
-
-	  V = td * boxlen[0]*boxlen[1]*boxlen[2];
+	  calc_volume();
 	}
 
 
@@ -1195,13 +1221,29 @@ void MDSystem::relax(void){
       T = 0.0;
 
 
+    /*
+    // exponent-form:
+    // sign + single_digit_integer_part . fractional_part + e + sign + exponent
+    // 1 + 1 + n + 1 + 1 + 3 = 7 + n
+    // floating-form:
+    // sign + integer_part . fractional_part
+    // 1 + m + n
+
+  abs(td)<liml ? fmt=fmte : fmt=fmte;
+  abs(td)>limu ? fmt=fmte : fmt=fmtf;
+
+  if (abs(td)<llim || abs(td)>ulim) fout << format(formate) % td2;
+  else                              fout << format(formatf) % td2;
+
+    */
 
     if (specs_common.report_step && (istep % specs.ndump == 0)){
-      printf("time %20.10e  nat %d  Ecoh %20.10f  T %20.10f  Fmax %20.10e  P %20.10e  "
-	     "Px Py Pz  %10.5e %10.5e %10.5e    box1 box2 box3  %10.5f %10.5f %10.5f\n",
+      printf("time %15.5e  nat %d  Ecoh %10.5f  T %10.5f  Fmax %12.5e  P %12.5e  "
+	     "Px Py Pz  %12.5e %12.5e %12.5e    box1 box2 box3  %12.5e %12.5e %12.5e  Vol_at %12.5e\n",
 	     time, nat, Ep_tot/nat, T, F_max, P,
 	     stresstensor_xyz.elem(0,0), stresstensor_xyz.elem(1,1),stresstensor_xyz.elem(2,2),
-	     boxlen[0], boxlen[1], boxlen[2]);
+	     boxlen[0], boxlen[1], boxlen[2],
+	     vol_atom);
       // fflush(stdout);
     }
 
@@ -1388,8 +1430,10 @@ void MDSystem::get_virials(int nat, Matrix<double> & W,
     }
   }
   
+  calc_volume();
+
   // Volume and unit transformation factors:
-  td = (1.0/V) * eVA3_to_GPa;
+  td = (1.0/vol) * eVA3_to_GPa;
   for (v1=0; v1<3; ++v1){
     for (v2=0; v2<3; ++v2){
       W.elem(v1,v2) *= td;

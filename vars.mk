@@ -4,7 +4,7 @@ PREFIX = $(HOME)
 
 # Directory where to search for include files associated with
 # any local libraries. Only libutils headers needed for tulip 2.
-INCDIR = $(PREFIX)/include/libutils
+INCDIR = $(PREFIX)/include/libutils $(PREFIX)/include/spglib
 
 # Directory where to look for library files (libutils):
 LIBDIR = $(PREFIX)/lib

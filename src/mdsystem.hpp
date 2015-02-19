@@ -57,7 +57,6 @@ public:
   double dt;
   double T;
   double T_at_quench_start;
-  double V;
   double P, Px, Py, Pz;
   Matrix<double> stresstensor_xyz;
   Matrix<double> stresstensor_abc;
@@ -96,14 +95,11 @@ public:
 
 
 
-
-
   void create_from_structure(CompoundStructure & cmp,
 			     double distmin);
 
-  void handle_pbc_of_positions(const double lowlim=-1);
-
-  void calc_closepacked_volume();
+  void transform_cell(const Matrix<double> & alpha_cart,
+		      const double lowlim=-1);
 
   void calc_forces_and_energies();
 
@@ -119,11 +115,7 @@ public:
 
 
 
-  // MD:
   void relax(void);
-
-  void transform_cell(const Matrix<double> & alpha_cart,
-		      const double lowlim=-1);
 
   void get_virials(int nat, Matrix<double> & W,
 		   double mux=1.0, double muy=1.0, double muz=1.0);

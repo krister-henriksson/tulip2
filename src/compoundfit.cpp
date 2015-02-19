@@ -19,6 +19,8 @@
 #include "utils-string.hpp"
 #include "utils-streamio.hpp"
 #include "utils-errors.hpp"
+#include "utils-math.hpp"
+#include "utils-vecalg.hpp"
 
 #include "elem-iacs.hpp"
 #include "specs-fit-prop-pot.hpp"
@@ -26,6 +28,7 @@
 #include "physconst.hpp"
 
 #include "compoundfit.hpp"
+
 
 
 using namespace std;
@@ -192,12 +195,28 @@ void CompoundStructureFit::read_forces(void){
 
 
 
+// ##################################################################################
+// ##################################################################################
+// ##################################################################################
+// ##################################################################################
+
+
 
 void CompoundStructureFit::check_and_fix_Cij(){
   // Warn user and exit? Or rewrite to use "standard" settings?
 
 
-  csystem_sub=0;
+  if ( pbc[0] && pbc[1] && pbc[2] && csystem_sub<=0){
+    aborterror("ERROR: Failed to find symmetry operations for compound "
+	       + name + " with stated crystal system " + csystem
+	       + ". Exiting.");
+  }
+
+
+#if 0
+  // ############################################################################
+  // ############################################################################
+
 
   if (csystem=="monoclinic" || csystem=="tetragonal" || csystem=="trigonal"){
     int k=0, p=0;
@@ -213,25 +232,28 @@ void CompoundStructureFit::check_and_fix_Cij(){
       if (prop_use.C.elem(3,6)) p++;
       if (prop_use.C.elem(4,5)) p++;
 
-      if (k>0) csystem_sub=0;
-      if (p>0) csystem_sub=1;
+      if (k>0) csystem_sub=1;
+      if (p>0) csystem_sub=2;
       if (k>0 && p>0){
 	aborterror("ERROR: Monoclinic crystal system uses either C15,C25,C35,C46 or "
 		   "C16,C26,C36,C45, not Cij from both. Exiting.");
       }
     }
     else if (csystem=="tetragonal"){
-      if (prop_use.C.elem(1,6)) csystem_sub=0;
-      else csystem_sub=1;
+      if (prop_use.C.elem(1,6)) csystem_sub=1;
+      else csystem_sub=2;
     }
     else if (csystem=="trigonal"){
-      if (prop_use.C.elem(2,5)) csystem_sub=0;
-      else csystem_sub=1;
+      if (prop_use.C.elem(2,5)) csystem_sub=1;
+      else csystem_sub=2;
     }
   }
+#endif
 
 
-
+  // ###############################################################33
+  // Find standard Cij elements to use:
+  // ###############################################################33
   Matrix<bool> Cuse(7,7,false);
   get_Cuse(Cuse);
 
@@ -240,18 +262,24 @@ void CompoundStructureFit::check_and_fix_Cij(){
     for (int p=1; p<=6; ++p){
 
       if (prop_use.C.elem(k-1,p-1)==true && Cuse.elem(k,p)==false){
-	string mess = "ERROR: Crystal system " + csystem + " does not use elastic constant C"
+	string mess = "Warning: Crystal system " + csystem + " does not use elastic constant C"
 	  + tostring(k) + tostring(p) + ". Used Cij are:";
 	for (int ik=1; ik<=6; ++ik)
 	  for (int ip=1; ip<=6; ++ip)
 	    if (Cuse.elem(ik,ip)) mess += " C" + tostring(ik) + tostring(ip);
-	aborterror(mess);
+
+	prop_use.C.elem(k-1,p-1) = false;
+	cout << mess << endl;
+	cout << "Turned off wrong usage." << endl;
       }
 
     }
   }
 
 }
+
+
+
 
 
 
@@ -301,17 +329,21 @@ void CompoundStructureFit::get_Cuse(Matrix<bool> & Cuse){
     Cuse.elem(5,5) = true;
     Cuse.elem(6,6) = true;
 
-    if (csystem_sub==0){
+    if (csymaxis=="y"){
       Cuse.elem(1,5) = true;
       Cuse.elem(2,5) = true;
       Cuse.elem(3,5) = true;
       Cuse.elem(4,6) = true;
     }
-    else {
+    else if (csymaxis=="z"){
       Cuse.elem(1,6) = true;
       Cuse.elem(2,6) = true;
       Cuse.elem(3,6) = true;
       Cuse.elem(4,5) = true;
+    }
+    else {
+      aborterror("Error: Crystal symmetry axis for monoclinic compound " + name
+		 + " is neither y nor z. Fix and try again.");
     }
   }
   else if (csystem=="triclinic"){
@@ -326,8 +358,8 @@ void CompoundStructureFit::get_Cuse(Matrix<bool> & Cuse){
     Cuse.elem(3,3) = true;
     Cuse.elem(4,4) = true;
     Cuse.elem(6,6) = true;
-
-    if (csystem_sub==0){
+    
+    if (pointgroup=="4" || pointgroup=="bar(4)" || pointgroup=="4/m"){
       Cuse.elem(1,6) = true;
     }
   }
@@ -339,12 +371,14 @@ void CompoundStructureFit::get_Cuse(Matrix<bool> & Cuse){
     Cuse.elem(4,4) = true;
     Cuse.elem(1,4) = true;
 
-    if (csystem_sub==0){
+    if (pointgroup=="3" || pointgroup=="bar(3)"){
       Cuse.elem(2,5) = true;
     }
   }
 
 }
+
+
 
 
 

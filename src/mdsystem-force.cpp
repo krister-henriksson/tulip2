@@ -2,6 +2,52 @@
 
 
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <limits>
+#include <string>
+#include <vector>
+
+#include <boost/format.hpp>
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+
+#include "atomsystem.hpp"
+#include "constants.hpp"
+#include "utils.hpp"
+#include "utils-math.hpp"
+#include "utils-matrix3.hpp"
+#include "utils-matrix.hpp"
+#include "utils-string.hpp"
+#include "utils-vector.hpp"
+#include "utils-errors.hpp"
+
+#include "compound.hpp"
+#include "elem-iacs.hpp"
+#include "helpfuns.hpp"
+#include "mdsystem.hpp"
+#include "mdsettings.hpp"
+#include "mtwister.hpp"
+#include "physconst.hpp"
+#include "potclasses.hpp"
+#include "potinfo.hpp"
+#include "specs-fit-prop-pot.hpp"
+#include "errors.hpp"
+
+using namespace std;
+using namespace utils;
+using namespace constants;
+using boost::format;
+using std::ofstream;
+
+
+
+
+
 
 void MDSystem::calc_forces_and_energies(){
   get_pot_force  = true;

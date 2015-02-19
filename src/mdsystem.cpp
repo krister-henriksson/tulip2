@@ -80,7 +80,7 @@ MDSystem::MDSystem()
   pos_int_ini.resize(0);
   pos_int_fin.resize(0);
 
-  rcut_max = dt = T = T_at_quench_start = V = P = Px = Py = Pz = 0;
+  rcut_max = dt = T = T_at_quench_start = P = Px = Py = Pz = 0;
   Ep_tot = Ek_tot = P_max = F_max = displ_max = 0;
   get_pot_force = get_pot_energy = false;
 
@@ -152,7 +152,6 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 
 
 
-  
   cout << "Creating MD system: Using N[0] N[1] N[2]  " << N[0] << " " << N[1] << " " << N[2] << endl;
 
   cout << "Creating MD system: scalefactor  " << cmp.scalefactor << endl;
@@ -242,25 +241,6 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 
   return;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#include "mdsystem-relax.cppinc"
 
 
 
@@ -367,162 +347,3 @@ void MDSystem::transform_cell(const Matrix<double> & alpha_cart,
 
 
 
-void MDSystem::handle_pbc_of_positions(const double lowlim){
-  int i, nat = natoms();
-  double pf1=-0.5, pf2=0.5;
-  if (lowlim>0){
-    pf1 = 0.0;
-    pf2 = 1.0;
-  }
-
-
-#pragma omp parallel for schedule(static)
-  for (i=0; i<nat; ++i){
-
-    double drc0, drc1, drc2;
-    double drs0, drs1, drs2;
-
-    drc0 = pos[i][0];
-    drc1 = pos[i][1];
-    drc2 = pos[i][2];
-
-    // Get distance in skew coordinate system, where periodics can be checked:
-    drs0 = drc0;
-    drs1 = drc1;
-    drs2 = drc2;
-    if (! isCart){
-      drs0 = 0.0
-	+ Bravaismatrix_inv.elem(0,0) * drc0
-	+ Bravaismatrix_inv.elem(0,1) * drc1
-	+ Bravaismatrix_inv.elem(0,2) * drc2;
-      drs1 = 0.0
-	+ Bravaismatrix_inv.elem(1,0) * drc0
-	+ Bravaismatrix_inv.elem(1,1) * drc1
-	+ Bravaismatrix_inv.elem(1,2) * drc2;
-      drs2 = 0.0
-	+ Bravaismatrix_inv.elem(2,0) * drc0
-	+ Bravaismatrix_inv.elem(2,1) * drc1
-	+ Bravaismatrix_inv.elem(2,2) * drc2;
-    }
-      
-    // Periodics check:
-    while (pbc[0] && drs0 <  pf1 * boxlen[0]) drs0 += boxlen[0];
-    while (pbc[0] && drs0 >= pf2 * boxlen[0]) drs0 -= boxlen[0];
-    while (pbc[1] && drs1 <  pf1 * boxlen[1]) drs1 += boxlen[1];
-    while (pbc[1] && drs1 >= pf2 * boxlen[1]) drs1 -= boxlen[1];
-    while (pbc[2] && drs2 <  pf1 * boxlen[2]) drs2 += boxlen[2];
-    while (pbc[2] && drs2 >= pf2 * boxlen[2]) drs2 -= boxlen[2];
-
-    // Get distance in Cartesian coordinate system:
-    drc0 = drs0;
-    drc1 = drs1;
-    drc2 = drs2;
-    if (! isCart){
-      drc0 = boxdir.elem(0,0) * drs0 + boxdir.elem(0,1) * drs1 + boxdir.elem(0,2) * drs2;
-      drc1 = boxdir.elem(1,0) * drs0 + boxdir.elem(1,1) * drs1 + boxdir.elem(1,2) * drs2;
-      drc2 = boxdir.elem(2,0) * drs0 + boxdir.elem(2,1) * drs1 + boxdir.elem(2,2) * drs2;
-    }
-    pos[i][0] = drc0;
-    pos[i][1] = drc1;
-    pos[i][2] = drc2;
-      
-  }
-
-
-}
-
-
-
-void MDSystem::calc_closepacked_volume(){
-  V = 0;
-    
-  double drsqmin=100,drsq=0;
-  Vector<double> posi(3), posj(3), dr(3);
-  int i,j,ij,counter=0, nat = natoms();
-
-
-
-  for (i=0; i<nat; ++i){
-    posi[0] = pos[i][0];
-    posi[1] = pos[i][1];
-    posi[2] = pos[i][2];
-      
-    for (ij=0; ij<neighborcollection[i].size(); ++ij){
-      j = neighborcollection[i][ij];
-      posj[0] = pos[j][0];
-      posj[1] = pos[j][1];
-      posj[2] = pos[j][2];
-
-      if (isCart){
-	drsq = 0.0;
-	dr[0] = posi[0] - posj[0];
-	while (pbc[0] && dr[0]<-0.5*boxlen[0]) dr[0] += boxlen[0];
-	while (pbc[0] && dr[0]>=0.5*boxlen[0]) dr[0] -= boxlen[0];
-	drsq += dr[0] * dr[0];
-	dr[1] = posi[1] - posj[1];
-	while (pbc[1] && dr[1]<-0.5*boxlen[1]) dr[1] += boxlen[1];
-	while (pbc[1] && dr[1]>=0.5*boxlen[1]) dr[1] -= boxlen[1];
-	drsq += dr[1] * dr[1];
-	dr[2] = posi[2] - posj[2];
-	while (pbc[2] && dr[2]<-0.5*boxlen[2]) dr[2] += boxlen[2];
-	while (pbc[2] && dr[2]>=0.5*boxlen[2]) dr[2] -= boxlen[2];
-	drsq += dr[2] * dr[2];
-      }
-      else {
-	get_atom_distance_vec(posi, posj, dr);
-	drsq = dr[0]*dr[0] + dr[1]*dr[1] + dr[2]*dr[2];
-      }
-      if (counter==0 || (counter>0 && drsqmin<drsq)){
-	drsqmin = drsq;
-	counter++;
-      }
-    }
-
-    V += 4*PI*drsqmin * sqrt(drsqmin)/3.0;
-  }
-
-  return;
-}
-
-
-
-
-
-
-
-#include "mdsystem-force.cppinc"
-
-
-
-
-
-
-
-
-#if 0
-  for (i=0; i<nat; ++i){
-    // Get internal positions at end of simulation:
-    int_pos_matrix.col(0, boxdir.col(0));
-    int_pos_matrix.col(1, boxdir.col(1));
-    int_pos_matrix.col(2, boxdir.col(2));
-
-    int_pos_matrix.solve(pos[i], pos_int_fin[i], dummy_matrix);
-
-    // Scale internal positions at start with current box lenghts:
-    pos_int_ini[i][0] *= boxlen[0];
-    pos_int_ini[i][1] *= boxlen[1];
-    pos_int_ini[i][2] *= boxlen[2];
-
-
-    for (j=0; j<3; ++j){
-      tv1[j] = pos_int_fin[i][j] - pos_int_ini[i][j];
-      if (pbc[j]){
-	while (tv1[j] <= 0.0)       tv1[j] += boxlen[j];
-	while (tv1[j] >  boxlen[j]) tv1[j] -= boxlen[j];
-      }
-    }
-    tv2 = boxdir * tv1;
-    td = tv2.magn();
-    if (i==0 || (i>0 && (td>displ_max))) displ_max = td;
-  }
-#endif

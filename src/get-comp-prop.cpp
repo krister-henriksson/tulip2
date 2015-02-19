@@ -44,7 +44,7 @@
 #include "potinfo.hpp"
 #include "propfun.hpp"
 #include "specs-fit-prop-pot.hpp"
-#include "latcalc.hpp"
+#include "get-comp-prop.hpp"
 #include "errors.hpp"
 
 
@@ -70,7 +70,7 @@ using boost::format;
 
 
 
-Vector<double> latcalc(ParamPot & param, Vector<CompoundStructureFit> & DX){
+Vector<double> get_comp_prop(ParamPot & param, Vector<CompoundStructureFit> & DX){
 
   Vector<double> MDY;
   CompoundStructureFit cmpfit;

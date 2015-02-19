@@ -8,33 +8,63 @@ include vars.mk
 # --------------------------------------------------------------------------
 # Settings:
 
-CC      = g++
-WARN    = -Wstrict-aliasing #-Wall -Wextra 
+CC      = g++ 
+WARN    = -Wstrict-aliasing  #-Wall -Wextra 
 STD     = -ansi -pedantic -std=c++98 
 DEBUG   = -g 
 PROF    = -pg 
-OPT     = -O2 -fstrict-aliasing #-funsafe-loop-optimizations -funroll-loops
+OPT     = -O3 -fstrict-aliasing 
 OPENMP  = -fopenmp 
 CFLAGS  = -c $(WARN) $(STD) $(DEBUG) $(OPT) $(PROF) $(OPENMP)
 
-INC     = $(addprefix -I, $(INCDIR))
+INC     = -I$(INCDIR)
 
-LIB            = $(addprefix -L, $(LIBDIR))
-#LDFLAGS        = $(LIB) -lutils  -lsymspg  -lm -lrt
-LDFLAGS        = $(LIB) -lutils -lm -lrt
+LIB            = -L$(LIBDIR)
+LDFLAGS        = $(LIB) -lrt -lm -lutils
 LDFLAGS_STATIC = $(LDFLAGS) -static 
 
 
-EXECUTABLE := bin/tulip
+EXECUTABLE = bin/tulip
 
 
-SRC    := $(wildcard src/*.cpp)
 
-SOURCES = $(SRC)
+SRC    = compound.cpp \
+	compoundfit.cpp \
+	compoundfit-getprop.cpp \
+	compoundfit-list.cpp \
+	elem-iacs.cpp \
+	helpfuns.cpp \
+	latcalc.cpp \
+	mdsettings.cpp \
+	mdsystem.cpp \
+	mdsystem-pot-abop.cpp \
+	mdsystem-pot-eam.cpp \
+	param-pot.cpp \
+	potclasses-pot-abop.cpp \
+	potclasses-pot-eam.cpp \
+	potclasses-reppot.cpp \
+	potinfo.cpp \
+	potinfo-readeam.cpp \
+	potinfo-readinfo.cpp \
+	potinfo-readreppot.cpp \
+	potinfo-readspecs.cpp \
+	propfun.cpp \
+	report.cpp \
+	specs-fit-prop-pot.cpp \
+	tulip.cpp
+
+SOURCES = $(addprefix src/,$(SRC))
 OBJECTS = $(SOURCES:src/%.cpp=obj/%.o)
-DEPS = obj/make.dep
+
+#OBJECTS    = $(SOURCES:.cpp=.o)
 
 REBUILDABLES = $(OBJECTS) $(EXECUTABLE)
+
+
+
+
+
+
 
 
 
@@ -46,7 +76,7 @@ dynamic: dirs dynamic2 $(EXECUTABLE)
 
 dynamic2: $(OBJECTS)
 	$(CC) $(OBJECTS) $(OPENMP) -o $(EXECUTABLE)  $(LDFLAGS) $(PROF)
-	# strip -s $(EXECUTABLE)
+	#strip -s $(EXECUTABLE)
 	cp $(EXECUTABLE) $(BINDIR)/
 
 # --------------------------------------------------------------------------
@@ -67,24 +97,20 @@ obj/%.o: src/%.cpp
 	$(CC) $(INC) $(STD) $(WARN) $(DEBUG) $(OPT) $(PROF) $(OPENMP) -c  $< -o $@
 
 
-$(DEPS): $(SOURCES)
-	$(CC) -MM $(INC) $(SOURCES) | sed 's/\(.*\.o\)/obj\/\1/g' > $(DEPS)
-
-include $(DEPS)
 
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 # Phony rules:
 
 dirs:
-	- mkdir -p obj
-	- mkdir -p bin
+	- mkdir obj
+	- mkdir bin
 	- mkdir -p $(INCDIR)
 	- mkdir -p $(LIBDIR)
 	- mkdir -p $(BINDIR)
 
 clean:
-	- rm -f $(REBUILDABLES) $(DEPS)
+	- rm -f $(REBUILDABLES)
 
 
 # $@: the target filename.

@@ -44,7 +44,7 @@
 #include "potinfo.hpp"
 #include "propfun.hpp"
 #include "specs-fit-prop-pot.hpp"
-#include "latcalc.hpp"
+#include "get-comp-prop.hpp"
 #include "report.hpp"
 
 using namespace std;

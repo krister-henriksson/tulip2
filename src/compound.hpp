@@ -208,6 +208,8 @@ public:
   Vector<bool> pbc;
   string csystem;
   int    csystem_sub;
+  string csymaxis;
+  string pointgroup;
 
   double scalefactor;
   double lpa, lpb, lpc;
@@ -223,6 +225,7 @@ public:
   Vector<double> u3_vec;
 
   int nbasis;
+  Vector<int>              basis_types;
   Vector<string>           basis_elems;
   Vector< Vector<double> > basis_vecs;
 
@@ -240,15 +243,20 @@ public:
 
 
   // 1 ...
-  void create_from_model(string name, string elem1, string elem2,
+  void create_from_model(Elements & el,
+			 string name, string elem1, string elem2,
 			 double ai, double bi, double ci);
   // ... or 2
-  void read_structure(void);
+  void read_structure(Elements & el);
+
+
   // 1 and 2: Finalize basis vectors, etc:
   void finalize(const double ai, const double bi, const double ci);
 
   void origin_from_model(int & N1, int & N2, int & N3);
 
+  //bool matrix_is_a_symm_op(const Matrix<double> & R);
+  //void check_crystal_symm(void);
 
 } ;
 

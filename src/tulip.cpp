@@ -51,8 +51,9 @@
 #include "potclasses.hpp"
 #include "potinfo.hpp"
 #include "specs-fit-prop-pot.hpp"
-#include "latcalc.hpp"
+#include "get-comp-prop.hpp"
 #include "report.hpp"
+#include "lattice-simple.hpp"
 
 
 #include <omp.h>
@@ -669,9 +670,9 @@ int main(int argc, char *argv[]){
 	   << format("%15.10f ") % complistfit.compounds[i].basis_vecs[j][1]
 	   << format("%15.10f")  % complistfit.compounds[i].basis_vecs[j][2]
 	   << "  "
-	   << j
+	   << potinfo.elem.name2idx( complistfit.compounds[i].basis_elems[j] )
 	   << "  "
-	   << potinfo.elem.name2idx( complistfit.compounds[i].basis_elems[j] ) << endl;
+	   << j << endl;
     }
     fout.close();
     fout.clear();
@@ -1028,7 +1029,7 @@ int main(int argc, char *argv[]){
     a = potinfo.elem.reflat_a(sref);
     b = potinfo.elem.reflat_b(sref);
     c = potinfo.elem.reflat_c(sref);
-    cmpref[0].create_from_model(latref,sref,sref, a,b,c);
+    cmpref[0].create_from_model(elem,latref,sref,sref, a,b,c);
 
 
 
@@ -1111,11 +1112,15 @@ int main(int argc, char *argv[]){
     cmpref[0].mds_specs = potinfo.specs_prop.mds_specs_ref;
 
 
+    latsymm(cmpref);
+
+    //cmpref[0].check_crystal_symm();
+    cmpref[0].check_and_fix_Cij();
 
 
 
     // Calculate properties:
-    latcalc(param, cmpref);
+    get_comp_prop(param, cmpref);
 
     // Report:
     cout << "Properties of reference compound for element " << sref << ":" << endl;
@@ -1210,7 +1215,7 @@ int main(int argc, char *argv[]){
     cout << "----------------------------------------------------------------" << endl;
     report_pot( &potinfo, true, true );
     cout << "2. Relaxing read-in compounds and obtaining their properties ..." << endl;
-    latcalc( param, DX);
+    get_comp_prop( param, DX);
     cout << "----------------------------------------------------------------" << endl;
     report_prop( DX );
     cout << "Done." << endl;
@@ -1244,7 +1249,7 @@ int main(int argc, char *argv[]){
     cs.DataY() = DY;
     cs.DataUncertaintyY()  = DUY;
     cs.DataWeightY()       = DWY;
-    cs.ModelFuncPointer()  = latcalc;
+    cs.ModelFuncPointer()  = get_comp_prop;
     cs.ReportFuncPointer() = report_pot_prop;
 
     cs.barrier_scale() = potinfo.specs_pot.barrier_scale;

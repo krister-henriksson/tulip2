@@ -218,6 +218,7 @@ CompoundStructure::CompoundStructure()
   use_origin_spec(false),
   origin(3,0),
   u1_vec(3,0), u2_vec(3,0), u3_vec(3,0),
+  basis_types(1, 0),
   basis_elems(1, "none"),
   basis_vecs(1, Vector<double>(3, 0.0))
 {
@@ -228,8 +229,11 @@ CompoundStructure::CompoundStructure()
   name = "none";
   crystalname = "none";
   nelem = elemnames.size();
-  csystem     = "cubic";
+  csystem     = "unknown";
   csystem_sub = 0;
+  csymaxis = "z";
+  pointgroup = "1";
+
 
   scalefactor = -1;
   lpa = lpb = lpc = -1;
@@ -308,7 +312,8 @@ void CompoundStructure::origin_from_model(int & N1,
 
 
 
-void CompoundStructure::create_from_model(string name_in,
+void CompoundStructure::create_from_model(Elements & el,
+					  string name_in,
 					  string elem1,
 					  string elem2,
 					  double ai,
@@ -344,6 +349,7 @@ void CompoundStructure::create_from_model(string name_in,
     pbc = Vector<bool>(3, false);
 
     nbasis = 2;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -362,6 +368,7 @@ void CompoundStructure::create_from_model(string name_in,
     pbc = Vector<bool>(3, false);
 
     nbasis = 2;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -381,6 +388,7 @@ void CompoundStructure::create_from_model(string name_in,
     u3_vec[0] =  0.5; u3_vec[1] =  0.5; u3_vec[2] = -0.5;
 
     nbasis = 1;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -396,6 +404,7 @@ void CompoundStructure::create_from_model(string name_in,
     u3_vec[0] =  0.0; u3_vec[1] =  0.0; u3_vec[2] =  1.0;
 
     nbasis = 2;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -414,6 +423,7 @@ void CompoundStructure::create_from_model(string name_in,
     u3_vec[0] =  0.5; u3_vec[1] =  0.5; u3_vec[2] =  0.0;
 
     nbasis = 1;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -424,6 +434,7 @@ void CompoundStructure::create_from_model(string name_in,
   }
   else if (crystalname=="FCC" || crystalname=="FCC-C"){
     nbasis = 4;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -438,6 +449,7 @@ void CompoundStructure::create_from_model(string name_in,
   // ---------------------------------------------------------------------------
   else if (crystalname=="DIA"){
     nbasis = 8;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -467,6 +479,7 @@ void CompoundStructure::create_from_model(string name_in,
     // u2_vec[0] = 0.5; u2_vec[1] = 0.866025403784; u2_vec[2] = 0;
 
     nbasis = 4;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -502,6 +515,7 @@ void CompoundStructure::create_from_model(string name_in,
     u3_vec[0] = 0.0; u3_vec[1] = 0.0; u3_vec[2] = 1.0;
 
     nbasis = 4;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -536,6 +550,7 @@ void CompoundStructure::create_from_model(string name_in,
     u3_vec[0] = 0.0; u3_vec[1] = 0.0; u3_vec[2] = 1.0;
 
     nbasis = 8;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -562,6 +577,7 @@ void CompoundStructure::create_from_model(string name_in,
     elemnames[1] = elem2;
  
     nbasis = 2;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -580,6 +596,7 @@ void CompoundStructure::create_from_model(string name_in,
     elemnames[1] = elem2;
 
     nbasis = 8;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -605,6 +622,7 @@ void CompoundStructure::create_from_model(string name_in,
     elemnames[1] = elem2;
 
     nbasis = 8;
+    basis_types.resize(nbasis);
     basis_elems.resize(nbasis);
     basis_vecs.resize(nbasis);
 
@@ -626,6 +644,12 @@ void CompoundStructure::create_from_model(string name_in,
   }
   else {
     aborterror("Error: Compound type " + name + " not recognized. Exiting.");
+  }
+
+
+
+  for (i=0; i<nbasis; ++i){
+    basis_types[ el.name2idx( basis_elems[i] ) ];
   }
 
 
@@ -653,7 +677,7 @@ void CompoundStructure::create_from_model(string name_in,
 // ###########################################################################
 
 
-void CompoundStructure::read_structure(void){
+void CompoundStructure::read_structure(Elements & el){
   ifstream fp;
   string line;
   vector<string> args;
@@ -798,6 +822,13 @@ void CompoundStructure::read_structure(void){
   }
   fp.close();
   fp.clear();
+
+
+  basis_types.resize(nbasis);
+  for (i=0; i<nbasis; ++i){
+    basis_types[ el.name2idx( basis_elems[i] ) ];
+  }
+
 
   finalize(scalefactor, scalefactor, scalefactor);
 

@@ -1,6 +1,6 @@
 
-#ifndef LATCALC_HPP
-#define LATCALC_HPP
+#ifndef GET_COMP_PROP_HPP
+#define GET_COMP_PROP_HPP
 
 
 
@@ -16,7 +16,8 @@ using namespace std;
 using namespace utils;
 
 
-Vector<double> latcalc(ParamPot & param, Vector<CompoundStructureFit> & DX);
+Vector<double> get_comp_prop(ParamPot & param, Vector<CompoundStructureFit> & DX);
+
 
 
 

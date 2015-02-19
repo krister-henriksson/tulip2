@@ -162,7 +162,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
 
 
     E0 = mds.Ep_tot / mds.natoms();
-    V0 = mds.V / mds.natoms();
+    V0 = mds.vol / mds.natoms();
 
     retry = false;
     if (mds.N[0]<0 || mds.N[1]<0 || mds.N[2]<0) retry=true;
@@ -255,7 +255,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
 				      )/(2*PI) * 360.0;
     
   if (prop_use.Vatom)
-    prop_pred.Vatom = mds.V/mds.natoms();
+    prop_pred.Vatom = mds.vol/mds.natoms();
 
       
   if (prop_use.Ecoh)
@@ -295,7 +295,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
   pos_bak    = mds.pos;
   boxdir_bak = mds.boxdir;
   boxlen_bak = mds.boxlen;
-  V0         = mds.V/mds.natoms();
+  V0         = mds.vol/mds.natoms();
   E0         = mds.Ep_tot/mds.natoms();
 
 

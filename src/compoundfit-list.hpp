@@ -16,7 +16,7 @@
 #include "utils-matrix.hpp"
 #include "utils-matrix3.hpp"
 
-#include "elem-iacs.hpp"
+//#include "elem-iacs.hpp"
 //#include "specs-fit-prop-pot.hpp"
 #include "mdsettings.hpp"
 //#include "mdsystem.hpp"
@@ -46,7 +46,7 @@ public:
   Vector<CompoundStructureFit> compounds;
 
   // Read structures:
-  CompoundListFit(const Elements & el,
+  CompoundListFit(Elements & el,
 		  MDSettings     & mds_specs,
 		  string         filename);
   int NData();
