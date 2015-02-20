@@ -210,6 +210,8 @@ public:
   int    csystem_sub;
   string csymaxis;
   string pointgroup;
+  string spacegroup;
+  int spacegroup_number;
 
   double scalefactor;
   double lpa, lpb, lpc;

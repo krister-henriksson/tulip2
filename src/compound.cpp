@@ -229,10 +229,13 @@ CompoundStructure::CompoundStructure()
   name = "none";
   crystalname = "none";
   nelem = elemnames.size();
+
   csystem     = "unknown";
   csystem_sub = 0;
-  csymaxis = "z";
+  csymaxis = "";
   pointgroup = "1";
+  spacegroup = "1";
+  spacegroup_number = 0;
 
 
   scalefactor = -1;

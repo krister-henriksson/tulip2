@@ -20,8 +20,8 @@ CFLAGS  = -c $(WARN) $(STD) $(DEBUG) $(OPT) $(PROF) $(OPENMP)
 INC     = $(addprefix -I, $(INCDIR))
 
 LIB            = $(addprefix -L, $(LIBDIR))
-#LDFLAGS        = $(LIB) -lutils  -lsymspg  -lm -lrt
-LDFLAGS        = $(LIB) -lutils -lm -lrt
+LDFLAGS        = $(LIB) -lutils  -lsymspg  -lm -lrt
+#LDFLAGS        = $(LIB) -lutils -lm -lrt
 LDFLAGS_STATIC = $(LDFLAGS) -static 
 
 

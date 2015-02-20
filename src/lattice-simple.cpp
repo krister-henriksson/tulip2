@@ -26,11 +26,14 @@
 #include "lattice-simple.hpp"
 
 
+#define USE_SPGLIB
 
-#if 0
-// ********************************************
+
+
+#ifdef USE_SPGLIB
+
 #include "spglib.h"
-// ********************************************
+
 #endif
 
 
@@ -51,8 +54,10 @@ LatticeSimple::LatticeSimple(){
   pbc      = Vector<bool>(3, true);
   csystem  = "unknown";
   csystem_sub = 0;
-  csymaxis = "z";
+  csymaxis = "";
   pointgroup = "1";
+  spacegroup = "1";
+  spacegroup_number = 0;
 }
 
 
@@ -227,10 +232,27 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
      * cubic: x,y,z parallel to cube edges, body diagonals are the 3-fold axes
    */
 
+
+
+
+  int ic, nc=cmplist.size();
+  int nbasis;
+  int i, j;
+  int imin;
+  double sum,summin;
+  Matrix<double> A(3,3,0), Ainv(3,3,0);
+  Vector<double> b(3,0), x(3,0);
+  Vector<double> u1_vec, u2_vec, u3_vec;
+  string name;
+  Vector< Vector<double> > pos, ipos;
+  CompoundStructureFit cmp;
+
+
+#ifndef USE_SPGLIB
+
+
   double th;
-
   Vector<double> origin(3,0);
-
 
   // Proper Cartesian rotations
   Matrix<double> Rx60(3,3,0),  Ry60(3,3,0),  Rz60(3,3,0);
@@ -400,22 +422,7 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 
 
 
-
-  int ic, i, nc=cmplist.size();
-  int nbasis;
-  int j;
-  int imin;
-  double sum,summin;
-  Matrix<double> A(3,3,0), Ainv(3,3,0);
-  Vector<double> b(3,0), x(3,0);
-  Vector<double> u1_vec, u2_vec, u3_vec;
-
-  LatticeSimple lattice;
-  Vector< Vector<double> > pos, ipos;
-  Vector<int> types;
-  CompoundStructureFit cmp;
   int i_cub=0, i_hex=0, i_trig=0, i_tetr=0, i_tric=0, i_mon=0, i_or=0;
-  string name;
   bool is_cubic, is_cubic1, is_cubic2;
   bool is_trig;
   bool is_hex;
@@ -445,6 +452,7 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
   int smh1z, smu1z;
   int smh2z, smu2z;
   int smh3z, smu3z;
+#endif
 
 
 
@@ -453,15 +461,18 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
     cmp = cmplist[ic];
     cmp.csystem="unknown";
     cmp.csystem_sub=0;
+    cmp.csymaxis = "";
     cmp.pointgroup = "1";
+    cmp.spacegroup = "1";
+    cmp.spacegroup_number = 0;
 
     if (!cmp.pbc[0] || !cmp.pbc[1] || !cmp.pbc[2]) continue;
+
 
     name = cmp.name;
     nbasis = cmp.nbasis;
     pos  = cmp.basis_vecs;
     ipos = cmp.basis_vecs;
-    types = cmp.basis_types;
 
 
     string dumpfile("symana-" + name + ".out");
@@ -505,6 +516,8 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
     }
 
 
+    LatticeSimple lattice;
+
     lattice.nbasis   = nbasis;
     lattice.minpos   = pos[imin];
     lattice.origin   = Vector<double>(3,0);
@@ -527,6 +540,8 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
     */
 
 
+
+#ifndef USE_SPGLIB
 
 
     sinv=0;
@@ -1269,23 +1284,19 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
       cmp.csystem="triclinic"; cmp.csystem_sub=1;
       cmp.pointgroup = "1";
     }
+#endif
 
 
 
+#ifdef USE_SPGLIB
+    // ##########################################################################
+    // ##########################################################################
+    // ##########################################################################
+    // spglib stuff
+    // ##########################################################################
+    // ##########################################################################
+    // ##########################################################################
 
-
-    cout << "crystal system " << cmp.csystem << " subclass " << cmp.csystem_sub
-	 << " point group " << cmp.pointgroup << endl;
-    fout << "crystal system " << cmp.csystem << " subclass " << cmp.csystem_sub
-	 << " point group " << cmp.pointgroup << endl;
-
-
-#if 0
-    // **************************************************************************
-    // **************************************************************************
-    // spglib stuff:
-
-    string csystem;
     double lat[3][3];
     lat[0][0] = lattice.avec[0];
     lat[1][0] = lattice.avec[1];
@@ -1311,44 +1322,167 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
       position[i][2] = lattice.ipos[i][2];
     }
 
+    lattice.csystem_sub = 1;
+    cmp.csystem_sub = 1;
+
     int num_spg, num_atom = nbasis;
     char symbol[21];
+    double tol = sqrt( eps_d() );
 
     SpglibDataset *p_spg_dataset;
     p_spg_dataset = spg_get_dataset(lat, position, stypes, nbasis, 1e-5);
     cout << "spglib: spacegroup number   : " << p_spg_dataset->spacegroup_number << endl;
+    fout << "spglib: spacegroup number   : " << p_spg_dataset->spacegroup_number << endl;
+
+    lattice.spacegroup_number = p_spg_dataset->spacegroup_number;
+    cmp.spacegroup_number = p_spg_dataset->spacegroup_number;
 
     // http://pmsl.planet.sci.kobe-u.ac.jp/~seto/?page_id=37&lang=en
     int sp=p_spg_dataset->spacegroup_number;
-    if (sp<=0 || sp>530) aborterror("Spacegroup could not be found for compound " + name );
-    if      (sp<=2) csystem="triclinic";
-    else if (sp>=3 && sp<=107) csystem="monoclinic";
-    else if (sp>=108 && sp<=348) csystem="orthorombic";
-    else if (sp>=349 && sp<=429) csystem="tetragonal";
-    else if (sp>=430 && sp<=461) csystem="trigonal";
-    else if (sp>=462 && sp<=488) csystem="hexagonal";
-    else if (sp>=489 && sp<=530) csystem="cubic";
+    if (sp<=0 || sp>230) aborterror("Spacegroup could not be found for compound " + name );
+
+    string csystem;
+    if      (sp>=1   && sp<=2  ) csystem="triclinic";
+    else if (sp>=3   && sp<=15 ) csystem="monoclinic";
+    else if (sp>=16  && sp<=74 ) csystem="orthorombic";
+    else if (sp>=75  && sp<=142) csystem="tetragonal";
+    else if (sp>=143 && sp<=167) csystem="trigonal";
+    else if (sp>=168 && sp<=194) csystem="hexagonal";
+    else if (sp>=195 && sp<=230) csystem="cubic";
+
+    lattice.csystem = csystem;
+    cmp.csystem = csystem;
+
     cout << "Compound " << name << " has crystal system " << csystem << endl;
+    fout << "Compound " << name << " has crystal system " << csystem << endl;
 
     cout << "spglib: hall number         : " << p_spg_dataset->hall_number << endl;
     cout << "spglib: international symbol: " << p_spg_dataset->international_symbol << endl;
     cout << "spglib: hall symbol         : " << p_spg_dataset->hall_symbol << endl;
     cout << "spglib: setting             : " << p_spg_dataset->setting << endl;
+    fout << "spglib: hall number         : " << p_spg_dataset->hall_number << endl;
+    fout << "spglib: international symbol: " << p_spg_dataset->international_symbol << endl;
+    fout << "spglib: hall symbol         : " << p_spg_dataset->hall_symbol << endl;
+    fout << "spglib: setting             : " << p_spg_dataset->setting << endl;
     
-
     SpglibSpacegroupType spg_type = spg_get_spacegroup_type(p_spg_dataset->hall_number);
     cout << "spglib: international symbol (full) : " << spg_type.international_full << endl;
     cout << "spglib: international symbol (short): " << spg_type.international_short << endl;
     cout << "spglib: schoenflies                 : " << spg_type.schoenflies << endl;
+    fout << "spglib: international symbol (full) : " << spg_type.international_full << endl;
+    fout << "spglib: international symbol (short): " << spg_type.international_short << endl;
+    fout << "spglib: schoenflies                 : " << spg_type.schoenflies << endl;
+
+    lattice.spacegroup = spg_type.international_full;
+    cmp.spacegroup = spg_type.international_full;
+
+    
+    // triclinic
+    if (lattice.spacegroup_number>=  1 && lattice.spacegroup_number<=  1) lattice.pointgroup = "1";
+    if (lattice.spacegroup_number>=  2 && lattice.spacegroup_number<=  2) lattice.pointgroup = "bar(3)";
+    // monoclinic
+    if (lattice.spacegroup_number>=  3 && lattice.spacegroup_number<=  5) lattice.pointgroup = "2";
+    if (lattice.spacegroup_number>=  6 && lattice.spacegroup_number<=  9) lattice.pointgroup = "m";
+    if (lattice.spacegroup_number>= 10 && lattice.spacegroup_number<= 15) lattice.pointgroup = "2/m";
+    // orthorombic
+    if (lattice.spacegroup_number>= 16 && lattice.spacegroup_number<= 24) lattice.pointgroup = "222";
+    if (lattice.spacegroup_number>= 25 && lattice.spacegroup_number<= 46) lattice.pointgroup = "mm2";
+    if (lattice.spacegroup_number>= 47 && lattice.spacegroup_number<= 74) lattice.pointgroup = "2/m2/m2/m";
+    // tetragonal
+    if (lattice.spacegroup_number>= 75 && lattice.spacegroup_number<= 80) lattice.pointgroup = "4";
+    if (lattice.spacegroup_number>= 81 && lattice.spacegroup_number<= 82) lattice.pointgroup = "bar(4)";
+    if (lattice.spacegroup_number>= 83 && lattice.spacegroup_number<= 88) lattice.pointgroup = "4/m";
+    if (lattice.spacegroup_number>= 99 && lattice.spacegroup_number<=110) lattice.pointgroup = "4mm";
+    if (lattice.spacegroup_number>=111 && lattice.spacegroup_number<=122) lattice.pointgroup = "bar(4)2m";
+    if (lattice.spacegroup_number>= 89 && lattice.spacegroup_number<= 98) lattice.pointgroup = "422";
+    if (lattice.spacegroup_number>=123 && lattice.spacegroup_number<=142) lattice.pointgroup = "4/m2/m2/m";
+    // trigonal
+    if (lattice.spacegroup_number>=143 && lattice.spacegroup_number<=146) lattice.pointgroup = "3";
+    if (lattice.spacegroup_number>=147 && lattice.spacegroup_number<=148) lattice.pointgroup = "bar(3)";
+    if (lattice.spacegroup_number>=149 && lattice.spacegroup_number<=155) lattice.pointgroup = "32";
+    if (lattice.spacegroup_number>=162 && lattice.spacegroup_number<=167) lattice.pointgroup = "bar(3)2/m";
+    if (lattice.spacegroup_number>=156 && lattice.spacegroup_number<=161) lattice.pointgroup = "3m";
+    // hexagonal
+    if (lattice.spacegroup_number>=168 && lattice.spacegroup_number<=173) lattice.pointgroup = "6";
+    if (lattice.spacegroup_number>=174 && lattice.spacegroup_number<=174) lattice.pointgroup = "bar(6)";
+    if (lattice.spacegroup_number>=175 && lattice.spacegroup_number<=176) lattice.pointgroup = "6/m";
+    if (lattice.spacegroup_number>=177 && lattice.spacegroup_number<=182) lattice.pointgroup = "622";
+    if (lattice.spacegroup_number>=183 && lattice.spacegroup_number<=186) lattice.pointgroup = "6mm";
+    if (lattice.spacegroup_number>=187 && lattice.spacegroup_number<=190) lattice.pointgroup = "bar(6)m2";
+    if (lattice.spacegroup_number>=191 && lattice.spacegroup_number<=194) lattice.pointgroup = "6/m2/m2/m";
+    // cubic
+    if (lattice.spacegroup_number>=195 && lattice.spacegroup_number<=199) lattice.pointgroup = "23";
+    if (lattice.spacegroup_number>=200 && lattice.spacegroup_number<=206) lattice.pointgroup = "2/mbar(3)";
+    if (lattice.spacegroup_number>=207 && lattice.spacegroup_number<=214) lattice.pointgroup = "432";
+    if (lattice.spacegroup_number>=215 && lattice.spacegroup_number<=220) lattice.pointgroup = "bar(4)3m";
+    if (lattice.spacegroup_number>=221 && lattice.spacegroup_number<=230) lattice.pointgroup = "4/mbar(3)2/m";
+
+    cmp.pointgroup = lattice.pointgroup;
+
+
+
+    char c = p_spg_dataset->setting[0];
+    bool ax_is_small = fp_is_small_tol(lattice.avec[0], tol);
+    bool ay_is_small = fp_is_small_tol(lattice.avec[1], tol);
+    bool az_is_small = fp_is_small_tol(lattice.avec[2], tol);
+    bool bx_is_small = fp_is_small_tol(lattice.bvec[0], tol);
+    bool by_is_small = fp_is_small_tol(lattice.bvec[1], tol);
+    bool bz_is_small = fp_is_small_tol(lattice.bvec[2], tol);
+    bool cx_is_small = fp_is_small_tol(lattice.cvec[0], tol);
+    bool cy_is_small = fp_is_small_tol(lattice.cvec[1], tol);
+    bool cz_is_small = fp_is_small_tol(lattice.cvec[2], tol);
+    if      (c=='a'){
+      if      (ax_is_small && ay_is_small) cmp.csymaxis = "z";
+      else if (ax_is_small && az_is_small) cmp.csymaxis = "y";
+      else if (ay_is_small && az_is_small) cmp.csymaxis = "x";
+      else cmp.csymaxis = "a";
+    }
+    else if (c=='b'){
+      if      (bx_is_small && by_is_small) cmp.csymaxis = "z";
+      else if (bx_is_small && bz_is_small) cmp.csymaxis = "y";
+      else if (by_is_small && bz_is_small) cmp.csymaxis = "x";
+      else cmp.csymaxis = "b";
+    }
+    else if (c=='c'){
+      if      (cx_is_small && cy_is_small) cmp.csymaxis = "z";
+      else if (cx_is_small && cz_is_small) cmp.csymaxis = "y";
+      else if (cy_is_small && cz_is_small) cmp.csymaxis = "x";
+    }
+
+
+    if (cmp.csystem=="monoclinic"){
+      if ( ! (cmp.csymaxis == "y" || cmp.csymaxis == "z") ){
+	aborterror("ERROR: Compound " + name +
+		   " should have main symmetry axis either 'y' or 'z'." +
+		   " Now it is " + cmp.csymaxis);
+      }
+    }
+
 
     spg_free_dataset(p_spg_dataset);
     delete [] stypes;
     delete [] position;
 
+    // ##########################################################################
+    // ##########################################################################
+    // ##########################################################################
+    // ##########################################################################
+    // ##########################################################################
+    // ##########################################################################
 
-    // **************************************************************************
-    // **************************************************************************
 #endif
+
+
+    cout << "crystal system " << cmp.csystem
+	 << " subclass " << cmp.csystem_sub
+	 << " point group " << cmp.pointgroup
+	 << " symmetry axis " << cmp.csymaxis
+	 << endl;
+    fout << "crystal system " << cmp.csystem
+	 << " subclass " << cmp.csystem_sub
+	 << " point group " << cmp.pointgroup
+	 << " symmetry axis " << cmp.csymaxis
+	 << endl;
 
 
     fout.close();
