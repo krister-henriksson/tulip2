@@ -1,0 +1,27 @@
+
+
+1. Prepare for installation in your home directory:
+
+  ./configure --prefix=$HOME
+
+If you have include files in non-system places put them in CFLAGS,
+and the library locations in LDFLAGS:
+
+CXXFLAGS="-I/my/inc/dir -I/my/other/inc/dir"
+LDFLAGS="-L/my/lib/dir -L/my/other/lib/dir"
+
+Then use
+
+  ./configure --prefix=$HOME CXXFLAGS=... LDFLAGS=...
+
+These settings are added to the ones set in Makefile.am.
+
+2. Compile source code:
+
+  make
+
+3. Install librarires:
+
+  make install
+
+

@@ -32,7 +32,7 @@
 
 #ifdef USE_SPGLIB
 
-#include "spglib.h"
+#include <spglib/spglib.h>
 
 #endif
 
