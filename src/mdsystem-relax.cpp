@@ -70,10 +70,13 @@ void MDSystem::relax(void){
   Matrix<double> W(3,3,0);
   double mu[3];
   double drsq, drsq_max, drsq_max2;
-  double dt_v_max=-1, dt_a_max=-1, dt_F_max=-1;
-  Vector<double> dt_candidate(4, specs.max_dt);
+  double dmax = std::numeric_limits<double>::max();
+  double dt_s_max=-1.0, dt_v_max=-1.0, dt_a_max=-1.0, dt_F_max=-1.0, dt_Ek_max=-1.0;
+  Vector<double> dt_candidate(5, specs.max_dt);
   int nat;
   bad_mds err_bad_mds;
+
+
 
 
   bool periodic = true;
@@ -247,7 +250,7 @@ void MDSystem::relax(void){
   Ep_tot = 0.0;
   Ek_tot = 0.0;
   dt = specs.dt;
-  time = 0.0;
+  time = specs.tstart;
 
   //cout << "made it here 01*" << endl;
   // calc_volume();
@@ -330,36 +333,40 @@ void MDSystem::relax(void){
 
 
 
-  //cout << "made it here 03*" << endl;
+  //cout << "made it here 03" << endl;
   //calc_T();
   Ek_tot = 0.0;
   if (sys_single_elem){
-#pragma omp parallel for reduction(+:Ek_tot) schedule(static)
+    double td1 = 0.5 * mass1 * 1.660538782/1.60217653 * 100;
+#pragma omp parallel for schedule(static)
     for (i=0; i<nat; ++i){
-      Ek_tot += mass1 * ( vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2] );
+      double td2 = vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2];
+      Ek[i] = td1 * td2;
     }
   }
   else {
-#pragma omp parallel for reduction(+:Ek_tot) schedule(static)
+    double td1 = 0.5 * 1.660538782/1.60217653 * 100;
+#pragma omp parallel for schedule(static)
     for (i=0; i<nat; ++i){
       int n2i = elem.name2idx( matter[i] );
-      Ek_tot += elem.mass( n2i ) * ( vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2] );
-      //Ek_tot += elem.mass(matter[i]) * td;
+      double td2 = vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2];
+      Ek[i] = td1 * elem.mass( n2i ) * td2;
     }
   }
-  Ek_tot *= 0.5;
-  T = 2.0 * Ek_tot / (3.0 * nat * 8.817343e-5) * 1.660538782/1.60217653 * 100;
+
+  Ek_tot = 0.0;
+  for (i=0; i<nat; ++i){
+    if (i==0 || (i>0 && Ek[i]>dt_Ek_max)) dt_Ek_max = Ek[i];
+    Ek_tot += Ek[i];
+  }
+  T = 2.0 * Ek_tot / (3.0 * nat * 8.817343e-5);
+
   // amu * Ang^2/fs^2 = amu * 1e-20/1e-30 m^2/s^2 = amu * 1e10 m^2/s^2
   // = 1.660538782e-27 * 1e10 kg m^2/s^2
   // = 1.660538782e-17 J
   // = 1.660538782e-17 1/1.60217653e-19 eV
   // = 1.660538782/1.60217653e * 100 eV
   
-  //cout << "made it here 04*" << endl;
-
-
-
-
 
 
   /*
@@ -389,7 +396,11 @@ void MDSystem::relax(void){
 
   drsq_max = drsq_max2 = 0.0;
 
+
   while (true){
+
+
+
     //  while (fabs(P) > 1e-3 || Fmax > 1e-3 ){
 
     /* ----------------------------------------------------------------------
@@ -401,7 +412,30 @@ void MDSystem::relax(void){
     //predict();
 
 
-#pragma omp parallel for schedule(static)
+    dt_s_max = 0.0;
+    while (true){
+      if (! specs.fixed_geometry){
+	for (i=0; i<nat; ++i){
+	  double td1 = dt * vel[i][0] + 0.5 * dt*dt * acc[i][0];
+	  double td2 = dt * vel[i][1] + 0.5 * dt*dt * acc[i][1];
+	  double td3 = dt * vel[i][2] + 0.5 * dt*dt * acc[i][2];
+	  
+	  double td4 = td1*td1 + td2*td2 + td3*td3;
+	  if (i==0 || (i>0 && td4 > dt_s_max*dt_s_max))
+	    dt_s_max = sqrt(td4);
+	}
+      }
+      //cout << "dt_s_max  specs.max_dr  " << dt_s_max << "  " << specs.max_dr << endl;
+      if (dt_s_max > specs.max_dr)
+	dt = specs.max_dr/dt_s_max * dt;
+      else break;
+    }
+
+
+
+
+
+
     for (i=0; i<nat; ++i){
 
       double td1 = dt * vel[i][0] + 0.5 * dt*dt * acc[i][0];
@@ -420,6 +454,12 @@ void MDSystem::relax(void){
       dpos[i][1] += td2;
       dpos[i][2] += td3;
 
+      double td4 = td1*td1 + td2*td2 + td3*td3;
+      if (i==0 || (i>0 && td4 > dt_s_max*dt_s_max))
+	dt_s_max = sqrt(td4);
+
+
+      
       if (specs.heating_allowed){
 	vel[i][0] += 0.5 * dt * acc[i][0];
 	vel[i][1] += 0.5 * dt * acc[i][1];
@@ -447,9 +487,7 @@ void MDSystem::relax(void){
     for (i=0; i<nat; ++i){
       // time step
       td = vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2];
-      if (td>dt_v_max*dt_v_max) dt_v_max=sqrt(td);
-      dt_a_max = 0.0; //td = acc[i][0]*acc[i][0] + acc[i][1]*acc[i][1] + acc[i][2]*acc[i][2]; if (td>a_max) a_max=td;
-      dt_F_max = 0.0; //td = frc[i][0]*frc[i][0] + frc[i][1]*frc[i][1] + frc[i][2]*frc[i][2]; if (td>F_max) F_max=td;
+      if ((dt_v_max > 0) && (td > dt_v_max*dt_v_max)) dt_v_max = sqrt(td);
 
       // neighborlist stuff
       drsq = dpos[i][0] * dpos[i][0] + dpos[i][1] * dpos[i][1] + dpos[i][2] * dpos[i][2];
@@ -463,6 +501,9 @@ void MDSystem::relax(void){
 	}
       }
     }
+
+    dt_a_max = 0.0;
+    dt_F_max = 0.0;
 
 
 
@@ -498,17 +539,24 @@ void MDSystem::relax(void){
     //cout << "made it here 03" << endl;
     //check_timestep();
     
+
+
+    dt_candidate[0] = dmax;
     if (dt_v_max > 0.0)
       dt_candidate[0] = specs.max_dr / dt_v_max;
+    dt_candidate[1] = dmax;
     if (dt_F_max > 0.0 && dt_v_max > 0.0)
       dt_candidate[1] = specs.max_dE / (dt_F_max * dt_v_max);
-    dt_candidate[2] = 1.1 * dt;
-    dt_candidate[3] = specs.max_dt;
+    if (dt_a_max > 0.0)
+      dt_candidate[2] = sqrt(2.0 * specs.max_dr / dt_a_max);
+    dt_candidate[3] = 1.1 * dt;
+    dt_candidate[4] = specs.max_dt;
 
     // Find smallest choice for dt:
-    for (int k=0; k<4; ++k){
+    for (int k=0; k<5; ++k){
       if (k==0 || (k>0 && dt_candidate[k]<dt)) dt=dt_candidate[k];
     }
+    //cout << "dt now: " << dt << endl;
 
 
     //cout << "made it here 04" << endl;
@@ -765,12 +813,19 @@ void MDSystem::relax(void){
     T = 2.0 * Ek_tot / (3.0 * nat * 8.817343e-5) * 1.660538782/1.60217653 * 100;
 
 
+
+
+
     for (i=0; i<nat; ++i){
       // time step check
-      td = vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2]; if (td>dt_v_max*dt_v_max) dt_v_max=sqrt(td);
-      td = acc[i][0]*acc[i][0] + acc[i][1]*acc[i][1] + acc[i][2]*acc[i][2]; if (td>dt_a_max*dt_a_max) dt_a_max=sqrt(td);
-      td = frc[i][0]*frc[i][0] + frc[i][1]*frc[i][1] + frc[i][2]*frc[i][2]; if (td>dt_F_max*dt_F_max) dt_F_max=sqrt(td);
+      td = vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2];
+      if ((dt_v_max > 0) && (td > dt_v_max*dt_v_max)) dt_v_max = sqrt(td);
+      td = acc[i][0]*acc[i][0] + acc[i][1]*acc[i][1] + acc[i][2]*acc[i][2];
+      if ((dt_a_max > 0) && (td > dt_a_max*dt_a_max)) dt_a_max = sqrt(td);
+      td = frc[i][0]*frc[i][0] + frc[i][1]*frc[i][1] + frc[i][2]*frc[i][2];
+      if ((dt_F_max > 0) && (td > dt_F_max*dt_F_max)) dt_F_max = sqrt(td);
     }
+
 
     get_virials(nat, W);
 
@@ -795,19 +850,24 @@ void MDSystem::relax(void){
 
     //cout << "made it here 07" << endl;
     //check_timestep();
-    
+
+
+    dt_candidate[0] = dmax;
     if (dt_v_max > 0.0)
       dt_candidate[0] = specs.max_dr / dt_v_max;
+    dt_candidate[1] = dmax;
     if (dt_F_max > 0.0 && dt_v_max > 0.0)
       dt_candidate[1] = specs.max_dE / (dt_F_max * dt_v_max);
-    dt_candidate[2] = 1.1 * dt;
-    dt_candidate[3] = specs.max_dt;
+    if (dt_a_max > 0.0)
+      dt_candidate[2] = sqrt(2.0 * specs.max_dr / dt_a_max);
+    dt_candidate[3] = 1.1 * dt;
+    dt_candidate[4] = specs.max_dt;
 
     // Find smallest choice for dt:
-    for (int k=0; k<4; ++k){
+    for (int k=0; k<5; ++k){
       if (k==0 || (k>0 && dt_candidate[k]<dt)) dt=dt_candidate[k];
     }
-
+    //cout << "time step now: " << dt << endl;
 
     //cout << "made it here 08" << endl;
 

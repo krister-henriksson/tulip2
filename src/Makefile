@@ -82,7 +82,7 @@ POST_UNINSTALL = :
 bin_PROGRAMS = tulip$(EXEEXT) tulip_static$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(top_srcdir)/depcomp
+	$(top_srcdir)/config/depcomp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -97,9 +97,10 @@ am_tulip_OBJECTS = tulip-compound.$(OBJEXT) \
 	tulip-compoundfit.$(OBJEXT) \
 	tulip-compoundfit-getprop.$(OBJEXT) \
 	tulip-compoundfit-list.$(OBJEXT) tulip-elem-iacs.$(OBJEXT) \
-	tulip-get-comp-prop.$(OBJEXT) tulip-helpfuns.$(OBJEXT) \
-	tulip-lattice-simple.$(OBJEXT) tulip-mdsettings.$(OBJEXT) \
-	tulip-mdsystem.$(OBJEXT) tulip-mdsystem-force.$(OBJEXT) \
+	tulip-get-comp-prop.$(OBJEXT) tulip-get-ini-fit-data.$(OBJEXT) \
+	tulip-helpfuns.$(OBJEXT) tulip-lattice-simple.$(OBJEXT) \
+	tulip-mdsettings.$(OBJEXT) tulip-mdsystem.$(OBJEXT) \
+	tulip-mdsystem-force.$(OBJEXT) \
 	tulip-mdsystem-pot-abop.$(OBJEXT) \
 	tulip-mdsystem-pot-eam.$(OBJEXT) \
 	tulip-mdsystem-relax.$(OBJEXT) tulip-param-pot.$(OBJEXT) \
@@ -122,6 +123,7 @@ am__objects_1 = tulip_static-compound.$(OBJEXT) \
 	tulip_static-compoundfit-list.$(OBJEXT) \
 	tulip_static-elem-iacs.$(OBJEXT) \
 	tulip_static-get-comp-prop.$(OBJEXT) \
+	tulip_static-get-ini-fit-data.$(OBJEXT) \
 	tulip_static-helpfuns.$(OBJEXT) \
 	tulip_static-lattice-simple.$(OBJEXT) \
 	tulip_static-mdsettings.$(OBJEXT) \
@@ -160,7 +162,7 @@ am__v_at_ = $(am__v_at_$(AM_DEFAULT_VERBOSITY))
 am__v_at_0 = @
 am__v_at_1 = 
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
-depcomp = $(SHELL) $(top_srcdir)/depcomp
+depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_$(V))
@@ -219,12 +221,12 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/koehenri/bin/src/code-tulip2/missing aclocal-1.14
+ACLOCAL = ${SHELL} /home/koehenri/code/tulip2/config/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/koehenri/bin/src/code-tulip2/missing autoconf
-AUTOHEADER = ${SHELL} /home/koehenri/bin/src/code-tulip2/missing autoheader
-AUTOMAKE = ${SHELL} /home/koehenri/bin/src/code-tulip2/missing automake-1.14
+AUTOCONF = ${SHELL} /home/koehenri/code/tulip2/config/missing autoconf
+AUTOHEADER = ${SHELL} /home/koehenri/code/tulip2/config/missing autoheader
+AUTOMAKE = ${SHELL} /home/koehenri/code/tulip2/config/missing automake-1.14
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -233,7 +235,7 @@ CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -I/home/koehenri/include
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -248,11 +250,11 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LDFLAGS = -L/home/koehenri/lib
+LDFLAGS = 
 LIBOBJS = 
-LIBS = -lrt -lm 
+LIBS = -lsymspg -lrt -lm 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/koehenri/bin/src/code-tulip2/missing makeinfo
+MAKEINFO = ${SHELL} /home/koehenri/code/tulip2/config/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = tulip
@@ -267,10 +269,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = 
 VERSION = 2
-abs_builddir = /home/koehenri/bin/src/code-tulip2/src
-abs_srcdir = /home/koehenri/bin/src/code-tulip2/src
-abs_top_builddir = /home/koehenri/bin/src/code-tulip2
-abs_top_srcdir = /home/koehenri/bin/src/code-tulip2
+abs_builddir = /home/koehenri/code/tulip2/src
+abs_srcdir = /home/koehenri/code/tulip2/src
+abs_top_builddir = /home/koehenri/code/tulip2
+abs_top_srcdir = /home/koehenri/code/tulip2
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -290,7 +292,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/koehenri/bin/src/code-tulip2/install-sh
+install_sh = ${SHELL} /home/koehenri/code/tulip2/config/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -323,6 +325,7 @@ elem-iacs.hpp \
 errors.hpp \
 get-comp-prop.cpp \
 get-comp-prop.hpp \
+get-ini-fit-data.cpp \
 helpfuns.cpp \
 helpfuns.hpp \
 lattice-simple.cpp \
@@ -466,6 +469,7 @@ include ./$(DEPDIR)/tulip-compoundfit-list.Po
 include ./$(DEPDIR)/tulip-compoundfit.Po
 include ./$(DEPDIR)/tulip-elem-iacs.Po
 include ./$(DEPDIR)/tulip-get-comp-prop.Po
+include ./$(DEPDIR)/tulip-get-ini-fit-data.Po
 include ./$(DEPDIR)/tulip-helpfuns.Po
 include ./$(DEPDIR)/tulip-lattice-simple.Po
 include ./$(DEPDIR)/tulip-mdsettings.Po
@@ -493,6 +497,7 @@ include ./$(DEPDIR)/tulip_static-compoundfit-list.Po
 include ./$(DEPDIR)/tulip_static-compoundfit.Po
 include ./$(DEPDIR)/tulip_static-elem-iacs.Po
 include ./$(DEPDIR)/tulip_static-get-comp-prop.Po
+include ./$(DEPDIR)/tulip_static-get-ini-fit-data.Po
 include ./$(DEPDIR)/tulip_static-helpfuns.Po
 include ./$(DEPDIR)/tulip_static-lattice-simple.Po
 include ./$(DEPDIR)/tulip_static-mdsettings.Po
@@ -612,6 +617,20 @@ tulip-get-comp-prop.obj: get-comp-prop.cpp
 #	$(AM_V_CXX)source='get-comp-prop.cpp' object='tulip-get-comp-prop.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-get-comp-prop.obj `if test -f 'get-comp-prop.cpp'; then $(CYGPATH_W) 'get-comp-prop.cpp'; else $(CYGPATH_W) '$(srcdir)/get-comp-prop.cpp'; fi`
+
+tulip-get-ini-fit-data.o: get-ini-fit-data.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-get-ini-fit-data.o -MD -MP -MF $(DEPDIR)/tulip-get-ini-fit-data.Tpo -c -o tulip-get-ini-fit-data.o `test -f 'get-ini-fit-data.cpp' || echo '$(srcdir)/'`get-ini-fit-data.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-get-ini-fit-data.Tpo $(DEPDIR)/tulip-get-ini-fit-data.Po
+#	$(AM_V_CXX)source='get-ini-fit-data.cpp' object='tulip-get-ini-fit-data.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-get-ini-fit-data.o `test -f 'get-ini-fit-data.cpp' || echo '$(srcdir)/'`get-ini-fit-data.cpp
+
+tulip-get-ini-fit-data.obj: get-ini-fit-data.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-get-ini-fit-data.obj -MD -MP -MF $(DEPDIR)/tulip-get-ini-fit-data.Tpo -c -o tulip-get-ini-fit-data.obj `if test -f 'get-ini-fit-data.cpp'; then $(CYGPATH_W) 'get-ini-fit-data.cpp'; else $(CYGPATH_W) '$(srcdir)/get-ini-fit-data.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-get-ini-fit-data.Tpo $(DEPDIR)/tulip-get-ini-fit-data.Po
+#	$(AM_V_CXX)source='get-ini-fit-data.cpp' object='tulip-get-ini-fit-data.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-get-ini-fit-data.obj `if test -f 'get-ini-fit-data.cpp'; then $(CYGPATH_W) 'get-ini-fit-data.cpp'; else $(CYGPATH_W) '$(srcdir)/get-ini-fit-data.cpp'; fi`
 
 tulip-helpfuns.o: helpfuns.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-helpfuns.o -MD -MP -MF $(DEPDIR)/tulip-helpfuns.Tpo -c -o tulip-helpfuns.o `test -f 'helpfuns.cpp' || echo '$(srcdir)/'`helpfuns.cpp
@@ -990,6 +1009,20 @@ tulip_static-get-comp-prop.obj: get-comp-prop.cpp
 #	$(AM_V_CXX)source='get-comp-prop.cpp' object='tulip_static-get-comp-prop.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-get-comp-prop.obj `if test -f 'get-comp-prop.cpp'; then $(CYGPATH_W) 'get-comp-prop.cpp'; else $(CYGPATH_W) '$(srcdir)/get-comp-prop.cpp'; fi`
+
+tulip_static-get-ini-fit-data.o: get-ini-fit-data.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-get-ini-fit-data.o -MD -MP -MF $(DEPDIR)/tulip_static-get-ini-fit-data.Tpo -c -o tulip_static-get-ini-fit-data.o `test -f 'get-ini-fit-data.cpp' || echo '$(srcdir)/'`get-ini-fit-data.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-get-ini-fit-data.Tpo $(DEPDIR)/tulip_static-get-ini-fit-data.Po
+#	$(AM_V_CXX)source='get-ini-fit-data.cpp' object='tulip_static-get-ini-fit-data.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-get-ini-fit-data.o `test -f 'get-ini-fit-data.cpp' || echo '$(srcdir)/'`get-ini-fit-data.cpp
+
+tulip_static-get-ini-fit-data.obj: get-ini-fit-data.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-get-ini-fit-data.obj -MD -MP -MF $(DEPDIR)/tulip_static-get-ini-fit-data.Tpo -c -o tulip_static-get-ini-fit-data.obj `if test -f 'get-ini-fit-data.cpp'; then $(CYGPATH_W) 'get-ini-fit-data.cpp'; else $(CYGPATH_W) '$(srcdir)/get-ini-fit-data.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-get-ini-fit-data.Tpo $(DEPDIR)/tulip_static-get-ini-fit-data.Po
+#	$(AM_V_CXX)source='get-ini-fit-data.cpp' object='tulip_static-get-ini-fit-data.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-get-ini-fit-data.obj `if test -f 'get-ini-fit-data.cpp'; then $(CYGPATH_W) 'get-ini-fit-data.cpp'; else $(CYGPATH_W) '$(srcdir)/get-ini-fit-data.cpp'; fi`
 
 tulip_static-helpfuns.o: helpfuns.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-helpfuns.o -MD -MP -MF $(DEPDIR)/tulip_static-helpfuns.Tpo -c -o tulip_static-helpfuns.o `test -f 'helpfuns.cpp' || echo '$(srcdir)/'`helpfuns.cpp

@@ -17,7 +17,7 @@
 
 #include "elem-iacs.hpp"
 #include "specs-fit-prop-pot.hpp"
-#include "mdsettings.hpp"
+//#include "mdsettings.hpp"
 //#include "mdsystem.hpp"
 //#include "param-pot.hpp"
 
@@ -25,8 +25,8 @@ using namespace std;
 using namespace utils;
 
 
-class MDSystem;
-class ParamPot;
+//class MDSystem;
+//class ParamPot;
 
 
 

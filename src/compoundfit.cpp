@@ -269,8 +269,8 @@ void CompoundStructureFit::check_and_fix_Cij(){
 	    if (Cuse.elem(ik,ip)) mess += " C" + tostring(ik) + tostring(ip);
 
 	prop_use.C.elem(k-1,p-1) = false;
-	cout << mess << endl;
-	cout << "Turned off wrong usage." << endl;
+	cout << mess
+	     << " Turned off wrong usage." << endl;
       }
 
     }

@@ -1,0 +1,200 @@
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
+#include <boost/format.hpp>
+
+#include <cmath>
+
+#include "chisq-basics.hpp"
+#include "funcfit-basics.hpp"
+#include "funcfit-conjgrad.hpp"
+#include "funcfit-errors.hpp"
+#include "funcfit-ls-gauss-newton.hpp"
+#include "funcfit-ls-leve-marq.hpp"
+#include "funcfit-ls-powelldogleg.hpp"
+#include "funcfit-simplexfit.hpp"
+#include "constants.hpp"
+#include "nr-f1dim.hpp"
+#include "nr-golden.hpp"
+#include "nr-linemethod.hpp"
+#include "param.hpp"
+#include "utils.hpp"
+#include "utils-math.hpp"
+#include "utils-matrix3.hpp"
+#include "utils-matrix-Choleskydecomp.hpp"
+#include "utils-matrix.hpp"
+#include "utils-matrix-LUdecomp.hpp"
+#include "utils-matrix-QRdecomp.hpp"
+#include "utils-string.hpp"
+#include "utils-vector.hpp"
+#include "utils-errors.hpp"
+#include "bond-data.hpp"
+
+#include "atomsystem.hpp"
+#include "compound.hpp"
+#include "elem-iacs.hpp"
+#include "helpfuns.hpp"
+#include "mdsystem.hpp"
+#include "mtwister.hpp"
+#include "param-pot.hpp"
+#include "physconst.hpp"
+#include "potclasses.hpp"
+#include "potinfo.hpp"
+#include "propfun.hpp"
+#include "specs-fit-prop-pot.hpp"
+#include "get-comp-prop.hpp"
+#include "errors.hpp"
+
+#include "get-ini-fit-data.hpp"
+
+
+using namespace std;
+using namespace utils;
+using namespace constants;
+using namespace physconst;
+using namespace funcfit;
+using boost::format;
+
+
+
+
+
+void get_ini_fit_data(ParamPot & param,
+			Vector<CompoundStructureFit> & DX
+			){
+
+CompoundStructureFit cmpfit;
+  int iDX,sizeDX,i,j,k,p,q;
+
+
+  // Make sure potentials have been updated from the fitting parameters:
+  param.update_pot();
+
+  sizeDX = DX.size();
+
+  if (sizeDX==0){
+    cout << "No compounds to inspect!" << endl; return;
+  }
+
+
+  Vector<string> elnames = DX[0].elemnames;
+  int nelem = DX[0].nelem;
+  Vector<string> name1(0), name2(0);
+
+  for (i=0; i<nelem; ++i){
+    for (j=i; j<nelem; ++j){
+      if (param.p_potinfo->is_fittable(elnames[i], elnames[j])){
+	name1.push_back(elnames[i]);
+	name2.push_back(elnames[j]);
+      }
+    }
+  }
+
+
+  /* For each pair name1, name2 loop through compounds and determine
+     distances.
+
+  */
+  int ns=name1.size();
+  for (i=0; i<ns; ++i){
+    for (j=0; j<ns; ++j){
+
+
+      Vector<double>           Ep_list(sizeDX);
+      Vector<int>              n_list(sizeDX);
+Vect
+
+/*
+  Vector< Vector<double> > bond_dist_list(sizeDX);
+      Vector< Vector<int>    > bond_num_list(sizeDX);
+*/
+
+      // Cycle through compounds:
+      for (iDX=0; iDX<sizeDX; ++iDX){
+	// -------------------------------------------------------------------
+	// Make a local copy which is easier to work with:
+	// -------------------------------------------------------------------
+	cmpfit = DX[iDX];
+
+
+	MDSystem mds;
+
+	// Set potential:
+	mds.p_potinfo = param.p_potinfo;
+
+	// Set other settings:
+	mds.elem = param.p_potinfo->elem;
+	mds.iacs = param.p_potinfo->iacs;
+	mds.name = cmpfit.name;
+
+	// Initialize common MD settings for all compounds:
+	mds.specs_common = param.p_potinfo->specs_prop.mds_specs_common;
+	// Initialize MD settings:
+	mds.specs        = cmpfit.mds_specs;
+
+	// Other MD settings from different places ...:
+	mds.omp_info     = param.p_potinfo->omp_info;
+	mds.rcut         = mds.rcut_max = mds.p_potinfo->get_rcut_max( cmpfit.elemnames );
+	mds.skint        = mds.specs.skint;
+
+	// These settings are applied to inherited base class members:
+	mds.use_def_xyz_fmt = param.p_potinfo->specs_prop.mds_specs_common.use_def_dump_xyz_fmt;
+	mds.def_xyz_fmt     = param.p_potinfo->specs_prop.mds_specs_common.def_dump_xyz_fmt;
+
+	// Create mds:
+	double rm = mds.rcut + mds.skint;
+	mds.create_from_structure(cmpfit, 2.0*rm); // removes old atoms
+	// Single time step relax:
+	mds.specs.dt = 1e-7;
+	mds.specs.tend = mds.specs.tstart = 0.0;
+	mds.relax();
+
+	// Remove potential energy contributions from known interactions:
+	int nat = mds.natoms();
+	Ep_list[iDX] = nat * cmpfit.prop_readin.Ecoh - mds.calc_potential_energy()/nat;
+
+	// Bond distances d_i and their number n_i
+	// Vbond will be calculated from Ec and number of bonds
+	int n12;
+	mds.get_bond_list( bond_dist_list[iDX], bond_num_list[iDX], name1[i], name2[j], n12 );
+
+	n_list[iDX] = n12;
+
+      }
+
+
+
+      cout << "Species pair " << name1 << "-" << name2 << ":" << endl;
+      cout << "Compound:  Bond distances:  Bond energy:   Number of bonds:  Number of central atoms:" << endl;
+      for (iDX=0; iDX<sizeDX; ++iDX){
+	int nb = bond_dist_list[iDX].size();
+	if (nb==1){
+	  printf("%20s  %20.10f  %20.10f  %20.10f   %5d\n",
+		 DX[iDX].name.c_str(),
+		 bond_dist_list[iDX][0],
+		 Ep_list[iDX]/n_list[0],
+		 bond_num_list[iDX][0]*1.0/n_list[iDX],
+		 n_list[iDX]);
+	}
+	else {
+	  printf("%20s  %20.10f  %d\n", DX[iDX].name.c_str(), Ep_list[iDX], n_list[iDX]);
+	  for (int k=0; k<nb; ++k)
+	    printf("   Bonds:  %20.10f  %20.10f\n",
+		   bond_dist_list[iDX][k],
+		   bond_num_list[iDX][k]*1.0/n_list[iDX]);
+	}
+      }
+
+
+    }
+  }
+
+
+}
+
+
+
+

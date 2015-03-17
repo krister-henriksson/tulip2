@@ -20,6 +20,7 @@ elem-iacs.hpp \
 errors.hpp \
 get-comp-prop.cpp \
 get-comp-prop.hpp \
+get-ini-fit-data.cpp \
 helpfuns.cpp \
 helpfuns.hpp \
 lattice-simple.cpp \

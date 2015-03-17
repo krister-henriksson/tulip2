@@ -18,12 +18,16 @@
 
 #include "elem-iacs.hpp"
 #include "specs-fit-prop-pot.hpp"
-#include "mdsettings.hpp"
-//#include "mdsystem.hpp"
-//#include "param-pot.hpp"
-
+//#include "mdsettings.hpp"
 
 #include "compound.hpp"
+
+
+#include "mdsystem.hpp"
+#include "param-pot.hpp"
+
+
+
 
 
 using namespace std;

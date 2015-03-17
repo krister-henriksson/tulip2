@@ -350,7 +350,14 @@ tulip_static-compoundfit-list.o: compoundfit-list.cpp \
  /home/koehenri/include/utils-streamio.hpp \
  /home/koehenri/include/utils-errors.hpp elem-iacs.hpp physconst.hpp \
  compoundfit-list.hpp mdsettings.hpp compoundfit.hpp \
- specs-fit-prop-pot.hpp compound.hpp lattice-simple.hpp
+ specs-fit-prop-pot.hpp compound.hpp mdsystem.hpp \
+ /home/koehenri/include/atomsystem.hpp \
+ /home/koehenri/include/utils-matrix.hpp /home/koehenri/include/bond.hpp \
+ /home/koehenri/include/omp-basics.hpp \
+ /usr/lib/gcc/x86_64-linux-gnu/4.8/include/omp.h potinfo.hpp \
+ potclasses.hpp /home/koehenri/include/param.hpp \
+ /home/koehenri/include/omp-basics.hpp param-pot.hpp \
+ /home/koehenri/include/utils-math.hpp lattice-simple.hpp
 
 /usr/include/stdc-predef.h:
 
@@ -1175,5 +1182,29 @@ compoundfit.hpp:
 specs-fit-prop-pot.hpp:
 
 compound.hpp:
+
+mdsystem.hpp:
+
+/home/koehenri/include/atomsystem.hpp:
+
+/home/koehenri/include/utils-matrix.hpp:
+
+/home/koehenri/include/bond.hpp:
+
+/home/koehenri/include/omp-basics.hpp:
+
+/usr/lib/gcc/x86_64-linux-gnu/4.8/include/omp.h:
+
+potinfo.hpp:
+
+potclasses.hpp:
+
+/home/koehenri/include/param.hpp:
+
+/home/koehenri/include/omp-basics.hpp:
+
+param-pot.hpp:
+
+/home/koehenri/include/utils-math.hpp:
 
 lattice-simple.hpp:

@@ -29,6 +29,8 @@ w_r0     = 10.0   # weight (all weights are 1 by default, but become normalized 
 # Cohesive energy:
 Ecoh     = -2.0
 u_Ecoh   = 0.001  # uncertainty
+Ecoh_delta_ref = yes   # reference compound for delta Ecoh (=ground state structure)
+
 
 --------------------------------------------------------
 # Using MD settings from specsfile for this compound,
@@ -72,9 +74,9 @@ u_a      = 0.025
 # Atomic volume (cubic Angstroms):
 # Vatom = ...
 
-# Cohesive energy (eV):
-Ecoh     = -4.28
-w_Ecoh   = 0.004
+# Change in cohesive energy relative to reference:
+Ecoh_delta     = 0.01  (>0.0, i.e. more unstable than reference)
+w_Ecoh_delta   = 0.004
 
 # Formation energy Ef in 'mixing energy' Emix = Ef/natoms form:
 # Emix = ...
@@ -127,6 +129,9 @@ mds_tstart  = 0.0
 mds_tend    = 1000.0
 mds_dt      = 5.0    # initial time step (fs)
 mds_max_dt  = 5.0    # max. time step
+mds_max_dE  = 1.0    # max. energy change
+mds_max_dr  = 0.1    # max. atomic displacement
+
 
 mds_Tstart  = 300.1  # temperature at start (K)
 

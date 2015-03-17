@@ -17,7 +17,7 @@
 #define HAVE_LIBRT 1
 
 /* Define to 1 if you have the `symspg' library (-lsymspg). */
-/* #undef HAVE_LIBSYMSPG */
+#define HAVE_LIBSYMSPG 1
 
 /* Define to 1 if you have the `utils' library (-lutils). */
 /* #undef HAVE_LIBUTILS */

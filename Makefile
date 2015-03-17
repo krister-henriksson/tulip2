@@ -78,8 +78,9 @@ POST_UNINSTALL = :
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in README compile depcomp install-sh \
-	missing
+	$(srcdir)/config.h.in README config/compile config/install-sh \
+	missing config/missing $(top_srcdir)/config/compile \
+	$(top_srcdir)/config/install-sh $(top_srcdir)/config/missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -189,12 +190,12 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/koehenri/bin/src/code-tulip2/missing aclocal-1.14
+ACLOCAL = ${SHELL} /home/koehenri/code/tulip2/config/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/koehenri/bin/src/code-tulip2/missing autoconf
-AUTOHEADER = ${SHELL} /home/koehenri/bin/src/code-tulip2/missing autoheader
-AUTOMAKE = ${SHELL} /home/koehenri/bin/src/code-tulip2/missing automake-1.14
+AUTOCONF = ${SHELL} /home/koehenri/code/tulip2/config/missing autoconf
+AUTOHEADER = ${SHELL} /home/koehenri/code/tulip2/config/missing autoheader
+AUTOMAKE = ${SHELL} /home/koehenri/code/tulip2/config/missing automake-1.14
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -203,7 +204,7 @@ CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -I/home/koehenri/include
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -218,11 +219,11 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LDFLAGS = -L/home/koehenri/lib
+LDFLAGS = 
 LIBOBJS = 
-LIBS = -lrt -lm 
+LIBS = -lsymspg -lrt -lm 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/koehenri/bin/src/code-tulip2/missing makeinfo
+MAKEINFO = ${SHELL} /home/koehenri/code/tulip2/config/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = tulip
@@ -237,10 +238,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = 
 VERSION = 2
-abs_builddir = /home/koehenri/bin/src/code-tulip2
-abs_srcdir = /home/koehenri/bin/src/code-tulip2
-abs_top_builddir = /home/koehenri/bin/src/code-tulip2
-abs_top_srcdir = /home/koehenri/bin/src/code-tulip2
+abs_builddir = /home/koehenri/code/tulip2
+abs_srcdir = /home/koehenri/code/tulip2
+abs_top_builddir = /home/koehenri/code/tulip2
+abs_top_srcdir = /home/koehenri/code/tulip2
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -260,7 +261,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/koehenri/bin/src/code-tulip2/install-sh
+install_sh = ${SHELL} /home/koehenri/code/tulip2/config/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale

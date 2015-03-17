@@ -352,7 +352,7 @@ tulip_static-mdsystem-pot-eam.o: mdsystem-pot-eam.cpp \
  /home/koehenri/include/utils-vector.hpp \
  /home/koehenri/include/utils-errors.hpp \
  /home/koehenri/include/atomsystem.hpp \
- /home/koehenri/include/utils-matrix.hpp \
+ /home/koehenri/include/utils-matrix.hpp /home/koehenri/include/bond.hpp \
  /home/koehenri/include/omp-basics.hpp \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/omp.h compound.hpp \
  elem-iacs.hpp specs-fit-prop-pot.hpp mdsettings.hpp helpfuns.hpp \
@@ -1218,6 +1218,8 @@ tulip_static-mdsystem-pot-eam.o: mdsystem-pot-eam.cpp \
 /home/koehenri/include/atomsystem.hpp:
 
 /home/koehenri/include/utils-matrix.hpp:
+
+/home/koehenri/include/bond.hpp:
 
 /home/koehenri/include/omp-basics.hpp:
 

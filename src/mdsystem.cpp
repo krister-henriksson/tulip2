@@ -152,6 +152,7 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 
 
 
+  cout << "Creating MD system: name " << cmp.name << endl;
   cout << "Creating MD system: Using N[0] N[1] N[2]  " << N[0] << " " << N[1] << " " << N[2] << endl;
 
   cout << "Creating MD system: scalefactor  " << cmp.scalefactor << endl;
@@ -228,6 +229,7 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 	    + cmp.basis_vecs[p];
 
 	  // Atom type info will be filled in later. Now just put something here:
+	  sitetype[iat] = p;
 	  type[iat] = 0;
 	  idx[iat] = atom_counter++;
 	  matter[iat] = cmp.basis_elems[p];
@@ -237,7 +239,7 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
   }
 
   //  if (debug_creation)
-  //cout << "Created system of " << pos.size() << " atoms." << endl;
+  cout << "Created system of " << pos.size() << " atoms." << endl;
 
   return;
 }

@@ -353,7 +353,11 @@ tulip-compoundfit.o: compoundfit.cpp /usr/include/stdc-predef.h \
  /home/koehenri/include/utils-vecalg.hpp \
  /home/koehenri/include/utils-matrix.hpp elem-iacs.hpp \
  specs-fit-prop-pot.hpp mdsettings.hpp compound.hpp physconst.hpp \
- compoundfit.hpp
+ compoundfit.hpp mdsystem.hpp /home/koehenri/include/atomsystem.hpp \
+ /home/koehenri/include/bond.hpp /home/koehenri/include/omp-basics.hpp \
+ /usr/lib/gcc/x86_64-linux-gnu/4.8/include/omp.h potinfo.hpp \
+ potclasses.hpp /home/koehenri/include/param.hpp \
+ /home/koehenri/include/omp-basics.hpp param-pot.hpp
 
 /usr/include/stdc-predef.h:
 
@@ -1182,3 +1186,23 @@ compound.hpp:
 physconst.hpp:
 
 compoundfit.hpp:
+
+mdsystem.hpp:
+
+/home/koehenri/include/atomsystem.hpp:
+
+/home/koehenri/include/bond.hpp:
+
+/home/koehenri/include/omp-basics.hpp:
+
+/usr/lib/gcc/x86_64-linux-gnu/4.8/include/omp.h:
+
+potinfo.hpp:
+
+potclasses.hpp:
+
+/home/koehenri/include/param.hpp:
+
+/home/koehenri/include/omp-basics.hpp:
+
+param-pot.hpp:

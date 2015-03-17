@@ -156,7 +156,7 @@ CompoundPropertiesUseWeights::CompoundPropertiesUseWeights()
 }
 
 CompoundPropertiesUncertainties::CompoundPropertiesUncertainties()
-  : C(6,6,1)
+  : C(6,6,0.1)
 {
   a = 0.1;
   b = 0.1;
@@ -179,7 +179,7 @@ CompoundPropertiesUncertainties::CompoundPropertiesUncertainties()
 }
 
 CompoundPropertiesWeights::CompoundPropertiesWeights()
-  : C(6,6,0)
+  : C(6,6,1)
 {
   a = 1;
   b = 1;
@@ -360,7 +360,6 @@ void CompoundStructure::create_from_model(Elements & el,
     i=0; basis_vecs[i] = Vector<double>(3, 0.0);
     i=1; basis_vecs[i] = Vector<double>(3, 0.0); basis_vecs[i][0] = 1.0; // bond axis in X direction
 
-
   }
   else if (crystalname=="DIM2"){
     nelem = 2;
@@ -468,7 +467,6 @@ void CompoundStructure::create_from_model(Elements & el,
     i=6; basis_vecs[i][0] += 0.5; basis_vecs[i][1] += 0.0; basis_vecs[i][2] += 0.5;
     i=7; basis_vecs[i][0] += 0.0; basis_vecs[i][1] += 0.5; basis_vecs[i][2] += 0.5;
 
-
   }
   else if (crystalname=="HCP"){
     csystem = "hexagonal";
@@ -494,7 +492,6 @@ void CompoundStructure::create_from_model(Elements & el,
     i=1; basis_vecs[i][0] = 1.0/2.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 0;
     i=2; basis_vecs[i][0] = 0.0;     basis_vecs[i][1] = 1.0/3.0; basis_vecs[i][2] = 1.0/2.0;
     i=3; basis_vecs[i][0] = 1.0/2.0; basis_vecs[i][1] = 5.0/6.0; basis_vecs[i][2] = 1.0/2.0;
-
 
   }
   else if (crystalname=="GRP"){ // graphene
@@ -530,7 +527,6 @@ void CompoundStructure::create_from_model(Elements & el,
     i=1; basis_vecs[i][0] = 1.0/3.0; basis_vecs[i][1] = 0;       basis_vecs[i][2] = 0;
     i=2; basis_vecs[i][0] = 1.0/2.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 0;
     i=3; basis_vecs[i][0] = 5.0/6.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 0;
-
 
   }
   else if (crystalname=="SH" || crystalname=="GRA"){
@@ -571,7 +567,6 @@ void CompoundStructure::create_from_model(Elements & el,
     i=6; basis_vecs[i][0] = 2.0/3.0; basis_vecs[i][1] = 0;       basis_vecs[i][2] = 1.0/2.0;
     i=7; basis_vecs[i][0] = 5.0/6.0; basis_vecs[i][1] = 1.0/2.0; basis_vecs[i][2] = 1.0/2.0;
 
-
   }
   else if (crystalname=="CsCl"){
     name = name + "-" + elem2;
@@ -589,7 +584,6 @@ void CompoundStructure::create_from_model(Elements & el,
     for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector<double>(3, 0.0);
 
     i=1; basis_vecs[i][0] = 0.5; basis_vecs[i][1] = 0.5; basis_vecs[i][2] = 0.5;
-
 
   }
   else if (crystalname=="NaCl"){
@@ -615,7 +609,6 @@ void CompoundStructure::create_from_model(Elements & el,
     i=5; basis_vecs[i][0] = 0.0; basis_vecs[i][1] = 0.5; basis_vecs[i][2] = 0.0;
     i=6; basis_vecs[i][0] = 0.0; basis_vecs[i][1] = 0.0; basis_vecs[i][2] = 0.5;
     i=7; basis_vecs[i][0] = 0.5; basis_vecs[i][1] = 0.5; basis_vecs[i][2] = 0.5;
-
 
   }
   else if (crystalname=="ZnS"){
@@ -983,6 +976,11 @@ void CompoundStructure::finalize(double ma, double mb, double mc){
 
     basis_vecs[i] = drc;
   }
+
+
+
+
+
 
 
 

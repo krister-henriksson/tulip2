@@ -54,6 +54,7 @@
 #include "get-comp-prop.hpp"
 #include "report.hpp"
 #include "lattice-simple.hpp"
+#include "get-ini-fit-data.hpp"
 
 
 #include <omp.h>
@@ -79,7 +80,7 @@ using boost::format;
 int main(int argc, char *argv[]){
   // double eps = numeric_limits<double>::epsilon();
   int i,j,k,p,iref, ivec;
-  bool run_refonly, use_relonly, debug_forces, debug_pressure, report_mds_steps;
+  bool run_refonly, use_relonly, ini_fit_data_mode, debug_forces, debug_pressure, report_mds_steps;
   Vector<bool> debug_fit_prop(5, false),debug_fit_pot(5,false);
   string arg, potfile, geomfile, specsfile;
   bool potfileOK, geomfileOK, specsfileOK;
@@ -137,6 +138,10 @@ int main(int argc, char *argv[]){
     cout << "     -dmdsprop          Debug MDS runs of the structures. Default: not used" << endl;
 
     cout << "     -dall              Activate all debugging options (top level only). Default: not used" << endl;
+
+    cout << "" << endl;
+    cout << "     -mif               Suggest an initial fit and exit. Default: not used" << endl;
+    cout << "" << endl;
     
     cout << "" << endl;
     cout << "     -omp               Request maximal number of threads ("
@@ -152,6 +157,7 @@ int main(int argc, char *argv[]){
   potfileOK = geomfileOK = specsfileOK = false;
   run_refonly = false;
   use_relonly = false;
+  ini_fit_data_mode = false;
   debug_forces = false;
   debug_pressure = false;
   report_mds_steps = false;
@@ -229,14 +235,16 @@ int main(int argc, char *argv[]){
       debug_pressure = true;
       report_mds_steps = true;
     }
+    else if (string(argv[i])=="-mif"){
+      ini_fit_data_mode = true;
+    }
     else if (string(argv[i])=="-omp"){
       omp_nt_try = omp_info.nt_max();
     }
     else if (string(argv[i])=="-omp_nt"){
-      arg = string(argv[i+1]); sstream.str(arg);
+      arg = string(argv[i+1]); sstream.str(arg); i++;
       sstream >> omp_nt_try;
       sstream.clear();
-      i++;
     }
     
   }
@@ -1011,7 +1019,7 @@ int main(int argc, char *argv[]){
     string sref = potinfo.elem.idx2name(iref);
     string latref = potinfo.elem.reflat(sref);
 
-    if (latref=="none"){
+    if (potinfo.is_fittable(sref,sref)){
       cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
       cout << "Elemental combination " << sref << "-" << sref << " is to be fitted."
 	   << " No reference lattice calculation possible. Continuing." << endl;
@@ -1202,7 +1210,14 @@ int main(int argc, char *argv[]){
   // ***********************************************************************************
   // ***********************************************************************************
   // ***********************************************************************************
-  if (use_relonly){
+  if (ini_fit_data_mode){
+
+    cout << "Getting some info on the specified compounds ..." << endl;
+    get_ini_fit_data(param, DX);
+
+
+  }
+  else if (use_relonly){
 
     // ################################################################################
     // A
@@ -1215,7 +1230,7 @@ int main(int argc, char *argv[]){
     cout << "----------------------------------------------------------------" << endl;
     report_pot( &potinfo, true, true );
     cout << "2. Relaxing read-in compounds and obtaining their properties ..." << endl;
-    get_comp_prop( param, DX);
+    get_comp_prop(param, DX);
     cout << "----------------------------------------------------------------" << endl;
     report_prop( DX );
     cout << "Done." << endl;
@@ -1323,6 +1338,11 @@ int main(int argc, char *argv[]){
     cout << "INFO: Number of data points           : " << complistfit.NData() << endl;
     cout << endl;
 
+
+
+    if (param.NXfree() == 0)
+      aborterror("ERROR: There are no fitting parameters used, so fitting cannot be performed. Exiting.");
+    
 
     int seed = potinfo.specs_pot.seed;
 

@@ -410,7 +410,7 @@ tulip_static-get-comp-prop.o: get-comp-prop.cpp \
  /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-vector.hpp \
  /home/koehenri/include/utils-errors.hpp \
- /home/koehenri/include/atomsystem.hpp \
+ /home/koehenri/include/atomsystem.hpp /home/koehenri/include/bond.hpp \
  /home/koehenri/include/omp-basics.hpp \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/omp.h compound.hpp \
  elem-iacs.hpp specs-fit-prop-pot.hpp mdsettings.hpp helpfuns.hpp \
@@ -1362,6 +1362,8 @@ tulip_static-get-comp-prop.o: get-comp-prop.cpp \
 /home/koehenri/include/utils-errors.hpp:
 
 /home/koehenri/include/atomsystem.hpp:
+
+/home/koehenri/include/bond.hpp:
 
 /home/koehenri/include/omp-basics.hpp:
 

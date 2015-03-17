@@ -32,7 +32,10 @@
 
 #ifdef USE_SPGLIB
 
+// Thanks to Morten for pointing out this construct for e.g. clang++:
+extern "C" {
 #include <spglib/spglib.h>
+}
 
 #endif
 
@@ -1327,7 +1330,7 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 
     int num_spg, num_atom = nbasis;
     char symbol[21];
-    double tol = sqrt( eps_d() );
+    double tol = 1.0e-5;//sqrt( eps_d() );
 
     SpglibDataset *p_spg_dataset;
     p_spg_dataset = spg_get_dataset(lat, position, stypes, nbasis, 1e-5);
