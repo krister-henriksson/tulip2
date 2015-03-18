@@ -28,9 +28,16 @@
 
 
 
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
 
 
-using namespace std;
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
+
+
 using namespace utils;
 
 
@@ -65,16 +72,16 @@ public:
   void getprop(ParamPot                  & param);
   void get_B_Bp(MDSystem                 & mds,
 		ParamPot                 & param,
-		Vector< Vector<double> > & pos_bak,
-		Matrix<double>           & boxdir_bak,
-		Vector<double>           & boxlen_bak,
+		Vector< Vector3<double> > & pos_bak,
+		MatrixSq3<double>           & boxdir_bak,
+		Vector3<double>           & boxlen_bak,
 		double                   & E0,
 		double                   & V0);
   void get_Cij(MDSystem                  & mds,
 	       ParamPot                  & param,
-	       Vector< Vector<double> >  & pos_bak,
-	       Matrix<double>            & boxdir_bak,
-	       Vector<double>            & boxlen_bak,
+	       Vector< Vector3<double> >  & pos_bak,
+	       MatrixSq3<double>            & boxdir_bak,
+	       Vector3<double>            & boxlen_bak,
 	       double                    & E0,
 	       double                    & V0);
 

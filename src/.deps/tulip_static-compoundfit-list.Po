@@ -341,6 +341,7 @@ tulip_static-compoundfit-list.o: compoundfit-list.cpp \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
  /home/koehenri/include/utils.hpp /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-errors.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
  /home/koehenri/include/utils-matrix.hpp \
  /home/koehenri/include/utils-math.hpp /usr/include/c++/4.8/cfloat \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/float.h \
@@ -348,12 +349,15 @@ tulip_static-compoundfit-list.o: compoundfit-list.cpp \
  /home/koehenri/include/utils-matrix3.hpp \
  /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-streamio.hpp \
- /home/koehenri/include/utils-errors.hpp elem-iacs.hpp physconst.hpp \
+ /home/koehenri/include/utils-errors.hpp elem-iacs.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
+ /home/koehenri/include/utils-matrixsq3.hpp physconst.hpp \
  compoundfit-list.hpp mdsettings.hpp compoundfit.hpp \
  specs-fit-prop-pot.hpp compound.hpp mdsystem.hpp \
  /home/koehenri/include/atomsystem.hpp \
- /home/koehenri/include/utils-matrix.hpp /home/koehenri/include/bond.hpp \
- /home/koehenri/include/omp-basics.hpp \
+ /home/koehenri/include/utils-matrix.hpp \
+ /home/koehenri/include/utils-matrixsq3.hpp \
+ /home/koehenri/include/bond.hpp /home/koehenri/include/omp-basics.hpp \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/omp.h potinfo.hpp \
  potclasses.hpp /home/koehenri/include/param.hpp \
  /home/koehenri/include/omp-basics.hpp param-pot.hpp \
@@ -1151,6 +1155,8 @@ tulip_static-compoundfit-list.o: compoundfit-list.cpp \
 
 /home/koehenri/include/utils-errors.hpp:
 
+/home/koehenri/include/utils-vector3.hpp:
+
 /home/koehenri/include/utils-matrix.hpp:
 
 /home/koehenri/include/utils-math.hpp:
@@ -1171,6 +1177,10 @@ tulip_static-compoundfit-list.o: compoundfit-list.cpp \
 
 elem-iacs.hpp:
 
+/home/koehenri/include/utils-vector3.hpp:
+
+/home/koehenri/include/utils-matrixsq3.hpp:
+
 physconst.hpp:
 
 compoundfit-list.hpp:
@@ -1188,6 +1198,8 @@ mdsystem.hpp:
 /home/koehenri/include/atomsystem.hpp:
 
 /home/koehenri/include/utils-matrix.hpp:
+
+/home/koehenri/include/utils-matrixsq3.hpp:
 
 /home/koehenri/include/bond.hpp:
 

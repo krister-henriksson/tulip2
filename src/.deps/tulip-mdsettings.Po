@@ -81,8 +81,8 @@ tulip-mdsettings.o: mdsettings.cpp /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/bits/stdio2.h \
  /home/koehenri/include/utils.hpp /home/koehenri/include/utils-vector.hpp \
  /usr/include/c++/4.8/sstream /usr/include/c++/4.8/bits/sstream.tcc \
- /usr/include/c++/4.8/cstdlib /usr/include/stdlib.h \
- /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+ /usr/include/c++/4.8/stdexcept /usr/include/c++/4.8/cstdlib \
+ /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
  /usr/include/x86_64-linux-gnu/sys/select.h \
@@ -329,7 +329,7 @@ tulip-mdsettings.o: mdsettings.cpp /usr/include/stdc-predef.h \
  /usr/include/boost/smart_ptr/detail/operator_bool.hpp \
  /usr/include/boost/format/alt_sstream_impl.hpp \
  /usr/include/boost/format/format_class.hpp \
- /usr/include/boost/format/exceptions.hpp /usr/include/c++/4.8/stdexcept \
+ /usr/include/boost/format/exceptions.hpp \
  /usr/include/boost/format/format_implementation.hpp \
  /usr/include/boost/format/group.hpp \
  /usr/include/boost/format/feed_args.hpp \
@@ -338,12 +338,15 @@ tulip-mdsettings.o: mdsettings.cpp /usr/include/stdc-predef.h \
  /usr/include/boost/format/free_funcs.hpp \
  /usr/include/boost/format/detail/unset_macros.hpp \
  /home/koehenri/include/utils-errors.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
  /home/koehenri/include/utils-matrix.hpp \
  /home/koehenri/include/utils-math.hpp /usr/include/c++/4.8/cfloat \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/float.h \
  /home/koehenri/include/utils-vector.hpp \
  /home/koehenri/include/utils-matrix3.hpp elem-iacs.hpp \
- specs-fit-prop-pot.hpp mdsettings.hpp
+ /home/koehenri/include/utils-vector3.hpp \
+ /home/koehenri/include/utils-matrixsq3.hpp specs-fit-prop-pot.hpp \
+ mdsettings.hpp
 
 /usr/include/stdc-predef.h:
 
@@ -556,6 +559,8 @@ compound.hpp:
 /usr/include/c++/4.8/sstream:
 
 /usr/include/c++/4.8/bits/sstream.tcc:
+
+/usr/include/c++/4.8/stdexcept:
 
 /usr/include/c++/4.8/cstdlib:
 
@@ -1111,8 +1116,6 @@ compound.hpp:
 
 /usr/include/boost/format/exceptions.hpp:
 
-/usr/include/c++/4.8/stdexcept:
-
 /usr/include/boost/format/format_implementation.hpp:
 
 /usr/include/boost/format/group.hpp:
@@ -1129,6 +1132,8 @@ compound.hpp:
 
 /home/koehenri/include/utils-errors.hpp:
 
+/home/koehenri/include/utils-vector3.hpp:
+
 /home/koehenri/include/utils-matrix.hpp:
 
 /home/koehenri/include/utils-math.hpp:
@@ -1142,6 +1147,10 @@ compound.hpp:
 /home/koehenri/include/utils-matrix3.hpp:
 
 elem-iacs.hpp:
+
+/home/koehenri/include/utils-vector3.hpp:
+
+/home/koehenri/include/utils-matrixsq3.hpp:
 
 specs-fit-prop-pot.hpp:
 

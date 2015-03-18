@@ -10,7 +10,7 @@
 #include "utils-matrix3.hpp"
 #include "potclasses.hpp"
 
-using namespace std;
+
 using namespace utils;
 
 

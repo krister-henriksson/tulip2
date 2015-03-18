@@ -69,7 +69,7 @@ void ParamPot::update_pot(){
     aborterror("Error: update_pot(): Potentialinformation is not set. Exiting.");
   }
 
-  cout << "Updating potential from parameters ..." << endl;
+  std::cout << "Updating potential from parameters ..." << std::endl;
 
 
   int ipar=0,j,k, nel = (*p_potinfo).elem.nelem();
@@ -79,8 +79,8 @@ void ParamPot::update_pot(){
 
       j = (*p_potinfo).basepot_vecidx(i1,i2);
       /*
-      string s1 = (*p_potinfo).elem.idx2name(i1);
-      string s2 = (*p_potinfo).elem.idx2name(i2);
+      std::string s1 = (*p_potinfo).elem.idx2name(i1);
+      std::string s2 = (*p_potinfo).elem.idx2name(i2);
 
       j = (*p_potinfo).basepot_vecidx(s1,s2);
       */
@@ -167,18 +167,18 @@ void ParamPot::update_par(){
   xitype.resize(0);
 
 
-  cout << "Updating parameters from potential ..." << endl;
+  std::cout << "Updating parameters from potential ..." << std::endl;
 
   /*
-  cout << "PARAM_FIXED " << PARAM_FIXED << endl;
-  cout << "PARAM_FREE " << PARAM_FREE << endl;
-  cout << "PARAM_FREE_WITH_LIMITS " << PARAM_FREE_WITH_LIMITS << endl;
+  std::cout << "PARAM_FIXED " << PARAM_FIXED << std::endl;
+  std::cout << "PARAM_FREE " << PARAM_FREE << std::endl;
+  std::cout << "PARAM_FREE_WITH_LIMITS " << PARAM_FREE_WITH_LIMITS << std::endl;
   */
 
   for (int i1=0; i1<nel; ++i1){
-    string s1 = (*p_potinfo).elem.idx2name(i1);
+    std::string s1 = (*p_potinfo).elem.idx2name(i1);
     for (int i2=i1; i2<nel; ++i2){
-      string s2 = (*p_potinfo).elem.idx2name(i2);
+      std::string s2 = (*p_potinfo).elem.idx2name(i2);
 
       j = (*p_potinfo).basepot_vecidx(s1,s2);
       if (j<0) continue;
@@ -204,11 +204,11 @@ void ParamPot::update_par(){
 
 
   for (int i1=0; i1<nel; ++i1){
-    string s1 = (*p_potinfo).elem.idx2name(i1);
+    std::string s1 = (*p_potinfo).elem.idx2name(i1);
     for (int i2=0; i2<nel; ++i2){
-      string s2 = (*p_potinfo).elem.idx2name(i2);
+      std::string s2 = (*p_potinfo).elem.idx2name(i2);
       for (int i3=0; i3<nel; ++i3){
-	string s3 = (*p_potinfo).elem.idx2name(i3);
+	std::string s3 = (*p_potinfo).elem.idx2name(i3);
 
 	if ((*p_potinfo).use_abop_alpha.elem(i1,i2,i3)){
 
@@ -228,11 +228,11 @@ void ParamPot::update_par(){
 
 
   for (int i1=0; i1<nel; ++i1){
-    string s1 = (*p_potinfo).elem.idx2name(i1);
+    std::string s1 = (*p_potinfo).elem.idx2name(i1);
     for (int i2=0; i2<nel; ++i2){
-      string s2 = (*p_potinfo).elem.idx2name(i2);
+      std::string s2 = (*p_potinfo).elem.idx2name(i2);
       for (int i3=0; i3<nel; ++i3){
-	string s3 = (*p_potinfo).elem.idx2name(i3);
+	std::string s3 = (*p_potinfo).elem.idx2name(i3);
 
 	if ((*p_potinfo).use_abop_omega.elem(i1,i2,i3)){
 
@@ -251,9 +251,9 @@ void ParamPot::update_par(){
 
 
   for (int i1=0; i1<nel; ++i1){
-    string s1 = (*p_potinfo).elem.idx2name(i1);
+    std::string s1 = (*p_potinfo).elem.idx2name(i1);
     for (int i2=0; i2<nel; ++i2){
-      string s2 = (*p_potinfo).elem.idx2name(i2);
+      std::string s2 = (*p_potinfo).elem.idx2name(i2);
 
       if ((*p_potinfo).use_abop_2mu.elem(i1,i2)){
 

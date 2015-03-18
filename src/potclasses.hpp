@@ -12,7 +12,7 @@
 #include "utils-matrix3.hpp"
 #include "param.hpp"
 
-using namespace std;
+
 using namespace utils;
 
 
@@ -29,8 +29,8 @@ enum PotentialClasses { Reppot, EAMpot, ABOPpot };
 
 class Potential_Reppot {
 public:
-  string elemname1;
-  string elemname2;
+  std::string elemname1;
+  std::string elemname2;
 
   int Nr_rep;
   Vector<double> r_rep;
@@ -46,8 +46,8 @@ public:
 
 class Potential_EAM {
 public:
-  string elemname1;
-  string elemname2;
+  std::string elemname1;
+  std::string elemname2;
 
   int Nr;
   int Nrho_s;
@@ -91,11 +91,11 @@ public:
 
 class Potential_ABOP {
 public:
-  string elemname1;
-  string elemname2;
+  std::string elemname1;
+  std::string elemname2;
 
   Vector<double> parval;
-  Vector<string> parname;
+  Vector<std::string> parname;
 
   // for fittable versions:
   Vector<parametertype> partype;
@@ -109,7 +109,7 @@ public:
   Potential_ABOP & operator=(const Potential_ABOP & sv);
   */
 
-  int   parname2idx(string name){
+  int   parname2idx(std::string name){
     if      (name=="D0") return 0;
     else if (name=="r0") return 1;
     else if (name=="beta") return 2;
@@ -122,11 +122,11 @@ public:
     else if (name=="D") return 9;
     else return -1;
   }
-  string paridx2name(int idx){
+  std::string paridx2name(int idx){
     if (idx<0 || idx>=10) return "none";
     else return parname[idx];
   }
-  double & parname2val(string name){
+  double & parname2val(std::string name){
     int i = parname2idx(name);
     return parval[i];
   }

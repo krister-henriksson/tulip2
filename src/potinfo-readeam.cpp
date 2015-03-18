@@ -25,7 +25,7 @@
 #include "helpfuns.hpp"
 #include "utils-streamio.hpp"
 
-using namespace std;
+
 using namespace utils;
 using boost::format;
 
@@ -33,7 +33,7 @@ using boost::format;
 void PotentialInformation::read_eampot(void){
 
 
-  cout << "Checking for EAM potentials to read in ..." << endl;
+  std::cout << "Checking for EAM potentials to read in ..." << std::endl;
   int nread=0;
 
   for (int i=0; i<elem.nelem(); ++i){
@@ -49,24 +49,24 @@ void PotentialInformation::read_eampot(void){
 	i1 = k;
       }
 
-      string s1 = elem.idx2name(i1);
-      string s2 = elem.idx2name(i2);
+      std::string s1 = elem.idx2name(i1);
+      std::string s2 = elem.idx2name(i2);
 
       if (basepot(s1,s2) != "EAM") continue;
 
       int ivec = basepot_vecidx(s1, s2);
 
 
-      string filename;
+      std::string filename;
 
       double r, dr;
       double rho, drho;
 
-      ifstream fp;
-      ofstream fpo;
-      string line;
-      vector<string> args;
-      istringstream strbuf;
+      std::ifstream fp;
+      std::ofstream fpo;
+      std::string line;
+      std::vector<std::string> args;
+      std::istringstream strbuf;
 
   
       pot_EAM[ivec].elemname1 = elem.idx2name(i1);
@@ -137,7 +137,7 @@ void PotentialInformation::read_eampot(void){
       filename = "eam." + s1 + "." + s2 + ".in";
       fp.open(filename.c_str());
       if (!fp){
-	cout << "ERROR: Could not find file " << filename << ". Trying symmetric version ..." << endl;
+	std::cout << "ERROR: Could not find file " << filename << ". Trying symmetric version ..." << std::endl;
 	filename = "eam." + s2 + "." + s1 + ".in";
 	aborterror("ERROR: Could not find file " + filename + ". Exiting.");
       }
@@ -218,8 +218,8 @@ void PotentialInformation::read_eampot(void){
 
       /*
 	if (pot_EAM[ivec].Nr * pot_EAM[ivec].dr <= pot_EAM[ivec].rcut){
-	cout << "ERROR: The number of points for (r, V2) is too small for interaction "
-	<< i1 << "-" << i2 << ". Exiting." << endl;
+	std::cout << "ERROR: The number of points for (r, V2) is too small for interaction "
+	<< i1 << "-" << i2 << ". Exiting." << std::endl;
 	exit(EXIT_FAILURE);
 	}
       */
@@ -427,17 +427,17 @@ void PotentialInformation::read_eampot(void){
 
 
 
-      cout << "Interaction " << s1 << "-" << s2 << ": Read in " << pot_EAM[ivec].Nr << " "
-	   << "data points for V2 in EAM, with rcut " << pot_EAM[ivec].rcut() << endl;
+      std::cout << "Interaction " << s1 << "-" << s2 << ": Read in " << pot_EAM[ivec].Nr << " "
+	   << "data points for V2 in EAM, with rcut " << pot_EAM[ivec].rcut() << std::endl;
       if (pot_EAM[ivec].Nrho_s > 0)
-	cout << "Interaction " << s1 << "-" << s2 << ": Read in " << pot_EAM[ivec].Nrho_s << " "
-	     << "data points for Fs in EAM, with rcut " << pot_EAM[ivec].rcut() << endl;
+	std::cout << "Interaction " << s1 << "-" << s2 << ": Read in " << pot_EAM[ivec].Nrho_s << " "
+	     << "data points for Fs in EAM, with rcut " << pot_EAM[ivec].rcut() << std::endl;
       if (pot_EAM[ivec].Nrho_p > 0)
-	cout << "Interaction " << s1 << "-" << s2 << ": Read in " << pot_EAM[ivec].Nrho_p << " "
-	     << "data points for Fp in EAM, with rcut " << pot_EAM[ivec].rcut() << endl;
+	std::cout << "Interaction " << s1 << "-" << s2 << ": Read in " << pot_EAM[ivec].Nrho_p << " "
+	     << "data points for Fp in EAM, with rcut " << pot_EAM[ivec].rcut() << std::endl;
       if (pot_EAM[ivec].Nrho_d > 0)
-	cout << "Interaction " << s1 << "-" << s2 << ": Read in " << pot_EAM[ivec].Nrho_d << " "
-	     << "data points for Fd in EAM, with rcut " << pot_EAM[ivec].rcut() << endl;
+	std::cout << "Interaction " << s1 << "-" << s2 << ": Read in " << pot_EAM[ivec].Nrho_d << " "
+	     << "data points for Fd in EAM, with rcut " << pot_EAM[ivec].rcut() << std::endl;
 
 
 
@@ -504,7 +504,7 @@ void PotentialInformation::read_eampot(void){
 			 pot_EAM[ivec].V2, 
 			 pot_EAM[ivec].d2_V2,
 			 r)
-	    << endl;
+	    << std::endl;
 	r+=dr;
       }
       fpo.close();
@@ -533,7 +533,7 @@ void PotentialInformation::read_eampot(void){
 			   pot_EAM[ivec].rho_s, 
 			   pot_EAM[ivec].d2_rho_s,
 			   r)
-	      << endl;
+	      << std::endl;
 	  r+=dr;
 	}
 	fpo.close();
@@ -557,7 +557,7 @@ void PotentialInformation::read_eampot(void){
 			   pot_EAM[ivec].F_s, 
 			   pot_EAM[ivec].d2_F_s,
 			   r)
-	      << endl;
+	      << std::endl;
 	  rho+=drho;
 	}
 	fpo.close();
@@ -584,7 +584,7 @@ void PotentialInformation::read_eampot(void){
 			   pot_EAM[ivec].rho_p, 
 			   pot_EAM[ivec].d2_rho_p,
 			   r)
-	      << endl;
+	      << std::endl;
 	  r+=dr;
 	}
 	fpo.close();
@@ -608,7 +608,7 @@ void PotentialInformation::read_eampot(void){
 			   pot_EAM[ivec].F_p, 
 			   pot_EAM[ivec].d2_F_p,
 			   r)
-	      << endl;
+	      << std::endl;
 	  rho+=drho;
 	}
 	fpo.close();
@@ -634,7 +634,7 @@ void PotentialInformation::read_eampot(void){
 			   pot_EAM[ivec].rho_d, 
 			   pot_EAM[ivec].d2_rho_d,
 			   r)
-	      << endl;
+	      << std::endl;
 	  r+=dr;
 	}
 	fpo.close();
@@ -657,7 +657,7 @@ void PotentialInformation::read_eampot(void){
 			   pot_EAM[ivec].F_d, 
 			   pot_EAM[ivec].d2_F_d,
 			   r)
-	      << endl;
+	      << std::endl;
 	  rho+=drho;
 	}
 	fpo.close();
@@ -670,6 +670,6 @@ void PotentialInformation::read_eampot(void){
   }
 
 
-  cout << "Read in " << nread << " EAM potentials." << endl;
+  std::cout << "Read in " << nread << " EAM potentials." << std::endl;
 }
   

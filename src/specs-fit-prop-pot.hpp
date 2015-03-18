@@ -10,8 +10,6 @@
 #include "mdsettings.hpp"
 
 
-using namespace std;
-
 
 
 
@@ -20,7 +18,7 @@ class SpecsFitProp
 public:
   int seed;
 
-  string fitmet;
+  std::string fitmet;
 
   int   nitermax;
   int   nitermin;
@@ -79,7 +77,7 @@ class SpecsFitPot
 public:
   int seed;
 
-  string fitmet;
+  std::string fitmet;
   int   nitermax;
   int   nitermin;
 

@@ -7,6 +7,7 @@
 #include <boost/format.hpp>
 
 #include "utils-vector.hpp"
+#include "utils-vector3.hpp"
 #include "utils-math.hpp"
 #include "utils-string.hpp"
 #include "utils-errors.hpp"
@@ -14,8 +15,6 @@
 
 using namespace utils;
 using boost::format;
-using std::cout;
-using std::endl;
 
 
 /*
@@ -187,8 +186,8 @@ bool get_boolean_choice(std::string ts){
 
 
 
-void get_parabolic_fit_from_triplet(Vector<double> x,
-				    Vector<double> y,
+void get_parabolic_fit_from_triplet(Vector3<double> x,
+				    Vector3<double> y,
 				    double & a0,
 				    double & a2,
 				    double & x0,
@@ -199,8 +198,8 @@ void get_parabolic_fit_from_triplet(Vector<double> x,
   double y1 = y[0], y2 = y[1], y3 = y[2];
 
   if (debug){
-    cout << "x1 x2 x3 : " << x1 << " " << x2 << " " << x3 <<endl;
-    cout << "y1 y2 y3 : " << y1 << " " << y2 << " " << y3 <<endl;
+    std::cout << "x1 x2 x3 : " << x1 << " " << x2 << " " << x3 << std::endl;
+    std::cout << "y1 y2 y3 : " << y1 << " " << y2 << " " << y3 << std::endl;
   }
 
   td1 = (y1-y2)*(x1*x1 - x3*x3) - (y1-y3)*(x1*x1 - x2*x2);
@@ -213,9 +212,9 @@ void get_parabolic_fit_from_triplet(Vector<double> x,
   a0 = y3 - a2 * (x3-x0)*(x3-x0);
 
   if (debug){
-    cout << "parabolic fit: xmin: " << x0 << endl;
-    cout << "parabolic fit: ymin: " << a0 << endl;
-    cout << "parabolic fit: curvature: " << a2 << endl;
+    std::cout << "parabolic fit: xmin: " << x0 << std::endl;
+    std::cout << "parabolic fit: ymin: " << a0 << std::endl;
+    std::cout << "parabolic fit: curvature: " << a2 << std::endl;
   }
 
 }

@@ -12,7 +12,6 @@
 #include "param-pot.hpp"
 
 
-using namespace std;
 using namespace utils;
 
 

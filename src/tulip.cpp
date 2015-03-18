@@ -64,7 +64,14 @@
 #include <ctime>
 
 
-using namespace std;
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
 using namespace utils;
 using namespace funcfit;
 using namespace constants;
@@ -82,10 +89,10 @@ int main(int argc, char *argv[]){
   int i,j,k,p,iref, ivec;
   bool run_refonly, use_relonly, ini_fit_data_mode, debug_forces, debug_pressure, report_mds_steps;
   Vector<bool> debug_fit_prop(5, false),debug_fit_pot(5,false);
-  string arg, potfile, geomfile, specsfile;
+  std::string arg, potfile, geomfile, specsfile;
   bool potfileOK, geomfileOK, specsfileOK;
-  istringstream sstream;
-  string tulip_info, dformat("%15.10f");
+  std::istringstream sstream;
+  std::string tulip_info, dformat("%15.10f");
 
   OMP_Info omp_info;
   int omp_tid;
@@ -96,7 +103,7 @@ int main(int argc, char *argv[]){
   //clock_t clock1 = std::clock();
 
   bool u_d_xyz_fmt=true;
-  string d_xyz_fmt="extxyz";
+  std::string d_xyz_fmt="extxyz";
 
 
 
@@ -104,51 +111,51 @@ int main(int argc, char *argv[]){
   tulip_info = "TULIP version " + tostring(VERSION) + " (c) Krister Henriksson 2006-2014";
 
   if (argc < 6){
-    cout << tulip_info << endl;
-    cout << "Purpose: Fit data to an interatomic potential." << endl;
-    cout << "Usage:" << endl;
-    cout << "     " << string(argv[0]) << " arguments [options]" << endl;
-    cout << "Arguments:" << endl;
-    cout << "     -pf file           Path to file containing potential information." << endl;
-    cout << "     -gf file           Path to file containing geometry information." << endl;
-    cout << "     -sf file           Path to file containing technical specifications about the calculations." << endl;
-    cout << "" << endl;
+    std::cout << tulip_info << std::endl;
+    std::cout << "Purpose: Fit data to an interatomic potential." << std::endl;
+    std::cout << "Usage:" << std::endl;
+    std::cout << "     " << std::string(argv[0]) << " arguments [options]" << std::endl;
+    std::cout << "Arguments:" << std::endl;
+    std::cout << "     -pf file           Path to file containing potential information." << std::endl;
+    std::cout << "     -gf file           Path to file containing geometry information." << std::endl;
+    std::cout << "     -sf file           Path to file containing technical specifications about the calculations." << std::endl;
+    std::cout << "" << std::endl;
 
-    cout << "Options:" << endl;
+    std::cout << "Options:" << std::endl;
 
-    cout << "     -ro                Only calculate properties of reference compounds, then exit. Default: not used." << endl;
-    cout << "     -nof               Only calculate properties of reference and read-in compounds, then exit. Default: not used." << endl;
-    cout << "     -xyz               Use traditional XYZ format when writing XYZ files. Default: not used." << endl;
-    cout << "                        The extended XYZ format (http://jrkermode.co.uk/quippy/io.html#extendedxyz)" << endl;
-    cout << "                        is used by default." << endl;
-    cout << "" << endl;
+    std::cout << "     -ro                Only calculate properties of reference compounds, then exit. Default: not used." << std::endl;
+    std::cout << "     -nof               Only calculate properties of reference and read-in compounds, then exit. Default: not used." << std::endl;
+    std::cout << "     -xyz               Use traditional XYZ format when writing XYZ files. Default: not used." << std::endl;
+    std::cout << "                        The extended XYZ format (http://jrkermode.co.uk/quippy/io.html#extendedxyz)" << std::endl;
+    std::cout << "                        is used by default." << std::endl;
+    std::cout << "" << std::endl;
 
-    cout << "     -dfitpropn         Show information about fitting of properties. Here 'n' must be" << endl;
-    cout << "                        an integer. Supported: 0-4. 0: debug fitting method. 1-4: debug deeper." << endl;
-    cout << "                        lying methods used by the fitting method. Default: not used" << endl;
-    cout << "                        NOTE: 0 also shows some info about the initial Chi^2 object." << endl;
-    cout << "     -dfitpotn          Show information about fitting of potentials. Here 'n' have a similar" << endl;
-    cout << "                        role as for fitting of the properties." << endl;
-    cout << "                        NOTE 1: 0 also shows some info about the initial Chi^2 object." << endl;
-    cout << "                        NOTE 2: 'fitpot0' is always set to true, others are false by default." << endl;
-    cout << "" << endl;
+    std::cout << "     -dfitpropn         Show information about fitting of properties. Here 'n' must be" << std::endl;
+    std::cout << "                        an integer. Supported: 0-4. 0: debug fitting method. 1-4: debug deeper." << std::endl;
+    std::cout << "                        lying methods used by the fitting method. Default: not used" << std::endl;
+    std::cout << "                        NOTE: 0 also shows some info about the initial Chi^2 object." << std::endl;
+    std::cout << "     -dfitpotn          Show information about fitting of potentials. Here 'n' have a similar" << std::endl;
+    std::cout << "                        role as for fitting of the properties." << std::endl;
+    std::cout << "                        NOTE 1: 0 also shows some info about the initial Chi^2 object." << std::endl;
+    std::cout << "                        NOTE 2: 'fitpot0' is always set to true, others are false by default." << std::endl;
+    std::cout << "" << std::endl;
 
-    cout << "     -dforces           Debug the forces. Default: not used" << endl;
-    cout << "     -dpressure         Debug the pressure. Default: not used" << endl;
-    cout << "     -dmdsprop          Debug MDS runs of the structures. Default: not used" << endl;
+    std::cout << "     -dforces           Debug the forces. Default: not used" << std::endl;
+    std::cout << "     -dpressure         Debug the pressure. Default: not used" << std::endl;
+    std::cout << "     -dmdsprop          Debug MDS runs of the structures. Default: not used" << std::endl;
 
-    cout << "     -dall              Activate all debugging options (top level only). Default: not used" << endl;
+    std::cout << "     -dall              Activate all debugging options (top level only). Default: not used" << std::endl;
 
-    cout << "" << endl;
-    cout << "     -mif               Suggest an initial fit and exit. Default: not used" << endl;
-    cout << "" << endl;
+    std::cout << "" << std::endl;
+    std::cout << "     -mif               Suggest an initial fit and exit. Default: not used" << std::endl;
+    std::cout << "" << std::endl;
     
-    cout << "" << endl;
-    cout << "     -omp               Request maximal number of threads ("
-	 << omp_info.nt_max() << ") for any OpenMP parts." << endl;
-    cout << "     -omp_nt num        Request 'num' number of threads for any OpenMP parts. Default: "
-	 << omp_info.nt_use() << endl;
-    cout << "" << endl;
+    std::cout << "" << std::endl;
+    std::cout << "     -omp               Request maximal number of threads ("
+	 << omp_info.nt_max() << ") for any OpenMP parts." << std::endl;
+    std::cout << "     -omp_nt num        Request 'num' number of threads for any OpenMP parts. Default: "
+	 << omp_info.nt_use() << std::endl;
+    std::cout << "" << std::endl;
 
     return 0;
   }
@@ -171,19 +178,19 @@ int main(int argc, char *argv[]){
   for (i=1; i<argc; i++){
 
     if (string(argv[i])=="-pf"){
-      arg = string(argv[i+1]); sstream.str(arg); i++;
+      arg = std::string(argv[i+1]); sstream.str(arg); i++;
       sstream >> potfile;
       sstream.clear();
       potfileOK = true;
     }
     else if (string(argv[i])=="-gf"){
-      arg = string(argv[i+1]); sstream.str(arg); i++;
+      arg = std::string(argv[i+1]); sstream.str(arg); i++;
       sstream >> geomfile;
       sstream.clear();
       geomfileOK = true;
     }
     else if (string(argv[i])=="-sf"){
-      arg = string(argv[i+1]); sstream.str(arg); i++;
+      arg = std::string(argv[i+1]); sstream.str(arg); i++;
       sstream >> specsfile;
       sstream.clear();
       specsfileOK = true;
@@ -242,7 +249,7 @@ int main(int argc, char *argv[]){
       omp_nt_try = omp_info.nt_max();
     }
     else if (string(argv[i])=="-omp_nt"){
-      arg = string(argv[i+1]); sstream.str(arg); i++;
+      arg = std::string(argv[i+1]); sstream.str(arg); i++;
       sstream >> omp_nt_try;
       sstream.clear();
     }
@@ -256,53 +263,53 @@ int main(int argc, char *argv[]){
   if (! geomfileOK) aborterror("Error: Geometry information file not specified. Exiting.");
   if (! specsfileOK) aborterror("Error: Specifications file not specified. Exiting.");
 
-  cout << "Potential info file     : " << potfile << endl;
-  cout << "Geometry info file      : " << geomfile << endl;
-  cout << "Specifications info file: " << specsfile << endl;
+  std::cout << "Potential info file     : " << potfile << std::endl;
+  std::cout << "Geometry info file      : " << geomfile << std::endl;
+  std::cout << "Specifications info file: " << specsfile << std::endl;
 
 
-  cout << "|||||||||||||||||||||||||||||||||||||||||||||||" << endl;
+  std::cout << "|||||||||||||||||||||||||||||||||||||||||||||||" << std::endl;
 
   omp_info.nt_use( omp_nt_try );
 #pragma omp parallel private(omp_tid)
   {
     omp_tid = omp_info.tid();
     if (omp_tid==0){
-      cout << "OpenMP threads used     : " << omp_info.nt_use() << endl;
-      cout << "OpenMP threads max count: " << omp_info.nt_max() << endl;
+      std::cout << "OpenMP threads used     : " << omp_info.nt_use() << std::endl;
+      std::cout << "OpenMP threads max count: " << omp_info.nt_max() << std::endl;
     }
   }
 
-  cout << "|||||||||||||||||||||||||||||||||||||||||||||||" << endl;
+  std::cout << "|||||||||||||||||||||||||||||||||||||||||||||||" << std::endl;
 
 
 
 
-  cout << "**************************************************************" << endl;
-  cout << "**************************************************************" << endl;
-  cout << "" << endl;
-  cout << tulip_info << endl;
-  cout << "" << endl;
-  cout << "**************************************************************" << endl;
-  cout << "**************************************************************" << endl;
+  std::cout << "**************************************************************" << std::endl;
+  std::cout << "**************************************************************" << std::endl;
+  std::cout << "" << std::endl;
+  std::cout << tulip_info << std::endl;
+  std::cout << "" << std::endl;
+  std::cout << "**************************************************************" << std::endl;
+  std::cout << "**************************************************************" << std::endl;
 
-  cout << "" << endl;
-  cout << "STARTING UP" << endl;
-  cout << "  1. Constructing potential information object using potential and specifications files ..." << endl;
+  std::cout << "" << std::endl;
+  std::cout << "STARTING UP" << std::endl;
+  std::cout << "  1. Constructing potential information object using potential and specifications files ..." << std::endl;
 
   PotentialInformationFit potinfo(potfile, specsfile);
   Elements elem = potinfo.elem;
 
-  cout << "  2. Constructing list of compounds to use for fitting, using geometry information file ..." << endl;
+  std::cout << "  2. Constructing list of compounds to use for fitting, using geometry information file ..." << std::endl;
   CompoundListFit complistfit(elem, potinfo.specs_prop.mds_specs, geomfile);
   int ncomp = complistfit.compounds.size();
 
-  cout << "  3. Constructing parameter object ..." << endl;
+  std::cout << "  3. Constructing parameter object ..." << std::endl;
   ParamPot param( &potinfo );
 
-  cout << "" << endl;
-  cout << "STARTUP COMPLETE" << endl;
-  cout << "" << endl;
+  std::cout << "" << std::endl;
+  std::cout << "STARTUP COMPLETE" << std::endl;
+  std::cout << "" << std::endl;
 
 
   potinfo.omp_info = omp_info;
@@ -342,39 +349,39 @@ int main(int argc, char *argv[]){
   // ################################################################################
 
   int nref;
-  string s1, s2, s3;
+  std::string s1, s2, s3;
 
   // ################################################################################  
   // Elements
   // ################################################################################
-  cout << "" << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
-  cout << "Elements:" << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
+  std::cout << "" << std::endl;
+  std::cout << "--------------------------------------------------------------------------" << std::endl;
+  std::cout << "Elements:" << std::endl;
+  std::cout << "--------------------------------------------------------------------------" << std::endl;
   nref = potinfo.elem.nelem();
   for (i=0; i<nref; ++i){
     s1 = potinfo.elem.idx2name(i);
-    cout << s1
+    std::cout << s1
 	 << " element index " << potinfo.elem.name2idx(s1)
 	 << " atom type " << potinfo.elem.atomtype(s1)
 	 << " mass (amu)  " << potinfo.elem.mass(s1)
-	 << " reference lattice " << potinfo.elem.reflat(s1) << endl;
+	 << " reference lattice " << potinfo.elem.reflat(s1) << std::endl;
   }
 
   // ################################################################################  
   // Interactions
   // ################################################################################  
-  cout << "" << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
-  cout << "Interactions:" << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
+  std::cout << "" << std::endl;
+  std::cout << "--------------------------------------------------------------------------" << std::endl;
+  std::cout << "Interactions:" << std::endl;
+  std::cout << "--------------------------------------------------------------------------" << std::endl;
   nref = potinfo.elem.nelem();
   for (i=0; i<nref; ++i){
     for (j=i; j<nref; ++j){
       s1 = potinfo.elem.idx2name(i);
       s2 = potinfo.elem.idx2name(j);
       
-      cout << s1 << "-" << s2 << " iac " << potinfo.iacs.name(s1,s2)
+      std::cout << s1 << "-" << s2 << " iac " << potinfo.iacs.name(s1,s2)
 	   << "(" << potinfo.basepot(s1,s2) << ")"
 	   << " is fittable? " << potinfo.is_fittable(s1,s2)
 	   << " uses reppot? " << potinfo.use_reppot(s1,s2);
@@ -385,20 +392,20 @@ int main(int argc, char *argv[]){
 	     << " rfermi= " << potinfo.pot_Reppot[ivec].rfermi;
       }
 
-      cout << endl;
+      std::cout << std::endl;
     }
   }
 
-  cout << "" << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
-  cout << "FIXED interactions which are parametrized:" << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
+  std::cout << "" << std::endl;
+  std::cout << "--------------------------------------------------------------------------" << std::endl;
+  std::cout << "FIXED interactions which are parametrized:" << std::endl;
+  std::cout << "--------------------------------------------------------------------------" << std::endl;
   report_pot( &potinfo, false, true );
 
-  cout << "" << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
-  cout << "FITTABLE interactions (parametrized):" << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
+  std::cout << "" << std::endl;
+  std::cout << "--------------------------------------------------------------------------" << std::endl;
+  std::cout << "FITTABLE interactions (parametrized):" << std::endl;
+  std::cout << "--------------------------------------------------------------------------" << std::endl;
   report_pot( &potinfo, true, false );
 
 
@@ -407,184 +414,184 @@ int main(int argc, char *argv[]){
   // ################################################################################
   // Specifications for compounds
   // ################################################################################
-  cout << "" << endl;
-  cout << "##########################################################################" << endl;
-  cout << "Specifications for calculation of properties of compounds:" << endl;
-  cout << "##########################################################################" << endl;
-  cout << endl;
+  std::cout << "" << std::endl;
+  std::cout << "##########################################################################" << std::endl;
+  std::cout << "Specifications for calculation of properties of compounds:" << std::endl;
+  std::cout << "##########################################################################" << std::endl;
+  std::cout << std::endl;
 
-  cout << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
-  cout << "General" << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
-  cout << endl;
+  std::cout << std::endl;
+  std::cout << "--------------------------------------------------------------------------" << std::endl;
+  std::cout << "General" << std::endl;
+  std::cout << "--------------------------------------------------------------------------" << std::endl;
+  std::cout << std::endl;
 
-  cout << "Random number seed                                 : " << potinfo.specs_prop.seed << endl;
-  cout << "Fitting method                                     : " << potinfo.specs_prop.fitmet << endl;
-  cout << "Min. iterations                                    : " << potinfo.specs_prop.nitermin << endl;
-  cout << "Max. iterations                                    : " << potinfo.specs_prop.nitermax << endl;
-  cout << "Tolerance for convergence of ChiSq                 : " << potinfo.specs_prop.functolabs << endl;
-  cout << "Tolerance for convergence of ChiSq changes         : " << potinfo.specs_prop.functolrel << endl;
-  cout << "Tolerance for convergence of ChiSq gradient        : " << potinfo.specs_prop.gradtolabs << endl;
-  cout << "Tolerance for convergence of step length           : " << potinfo.specs_prop.steptolabs << endl;
-  cout << "Tolerance for convergence of step length changes   : " << potinfo.specs_prop.steptolrel << endl;
-  cout << "DOG-LEG: Initial trust region radius               : " << potinfo.specs_prop.dogleg_radius << endl;
-  cout << "DOG-LEG: Smallest allowed trust region radius      : " << potinfo.specs_prop.dogleg_minradius << endl;
-  cout << "SIMPLEX: Displacement when creating initial simplex: " << potinfo.specs_prop.simplex_delta << endl;
-  cout << "Debug: level0                                      : " << potinfo.specs_prop.debug_fit_level0 << endl;
-  cout << "Debug: level1                                      : " << potinfo.specs_prop.debug_fit_level1 << endl;
-  cout << "Debug: level2                                      : " << potinfo.specs_prop.debug_fit_level2 << endl;
-  cout << "Debug: level3                                      : " << potinfo.specs_prop.debug_fit_level3 << endl;
-  cout << "Debug: level4                                      : " << potinfo.specs_prop.debug_fit_level4<< endl;
-  cout << "Lattice tolerance                                  : " << potinfo.specs_prop.lattol << endl;
-  cout << endl;
-  cout << "Bulk modulus: Relax strained systems?              : " << potinfo.specs_prop.BM_rel_sys << endl;
-  cout << "Bulk modulus: Minimum strain (e.g. -0.01)          : " << potinfo.specs_prop.BM_fmin << endl;
-  cout << "Bulk modulus: Maximum strain (e.g.  0.01)          : " << potinfo.specs_prop.BM_fmax << endl;
-  cout << "Bulk modulus: Number of strain points (e.g. 10)    : " << potinfo.specs_prop.BM_Nf << endl;
-  cout << "Bulk modulus: Multiplicative uncertainty factor (e.g. 0.10): " << potinfo.specs_prop.BM_ef << endl;
-  cout << endl;
-  cout << "Elastic moduli: Relax strained systems?            : " << potinfo.specs_prop.C_rel_sys << endl;
-  cout << "Elastic moduli: Minimum strain (e.g. -0.01)        : " << potinfo.specs_prop.C_fmin << endl;
-  cout << "Elastic moduli: Maximum strain (e.g.  0.01)        : " << potinfo.specs_prop.C_fmax << endl;
-  cout << "Elastic moduli: Number of strain points (e.g. 10)  : " << potinfo.specs_prop.C_Nf << endl;
-  cout << "Elastic moduli: Multiplicative uncertainty factor (e.g. 0.10): " << potinfo.specs_prop.C_ef << endl;
+  std::cout << "Random number seed                                 : " << potinfo.specs_prop.seed << std::endl;
+  std::cout << "Fitting method                                     : " << potinfo.specs_prop.fitmet << std::endl;
+  std::cout << "Min. iterations                                    : " << potinfo.specs_prop.nitermin << std::endl;
+  std::cout << "Max. iterations                                    : " << potinfo.specs_prop.nitermax << std::endl;
+  std::cout << "Tolerance for convergence of ChiSq                 : " << potinfo.specs_prop.functolabs << std::endl;
+  std::cout << "Tolerance for convergence of ChiSq changes         : " << potinfo.specs_prop.functolrel << std::endl;
+  std::cout << "Tolerance for convergence of ChiSq gradient        : " << potinfo.specs_prop.gradtolabs << std::endl;
+  std::cout << "Tolerance for convergence of step length           : " << potinfo.specs_prop.steptolabs << std::endl;
+  std::cout << "Tolerance for convergence of step length changes   : " << potinfo.specs_prop.steptolrel << std::endl;
+  std::cout << "DOG-LEG: Initial trust region radius               : " << potinfo.specs_prop.dogleg_radius << std::endl;
+  std::cout << "DOG-LEG: Smallest allowed trust region radius      : " << potinfo.specs_prop.dogleg_minradius << std::endl;
+  std::cout << "SIMPLEX: Displacement when creating initial simplex: " << potinfo.specs_prop.simplex_delta << std::endl;
+  std::cout << "Debug: level0                                      : " << potinfo.specs_prop.debug_fit_level0 << std::endl;
+  std::cout << "Debug: level1                                      : " << potinfo.specs_prop.debug_fit_level1 << std::endl;
+  std::cout << "Debug: level2                                      : " << potinfo.specs_prop.debug_fit_level2 << std::endl;
+  std::cout << "Debug: level3                                      : " << potinfo.specs_prop.debug_fit_level3 << std::endl;
+  std::cout << "Debug: level4                                      : " << potinfo.specs_prop.debug_fit_level4<< std::endl;
+  std::cout << "Lattice tolerance                                  : " << potinfo.specs_prop.lattol << std::endl;
+  std::cout << std::endl;
+  std::cout << "Bulk modulus: Relax strained systems?              : " << potinfo.specs_prop.BM_rel_sys << std::endl;
+  std::cout << "Bulk modulus: Minimum strain (e.g. -0.01)          : " << potinfo.specs_prop.BM_fmin << std::endl;
+  std::cout << "Bulk modulus: Maximum strain (e.g.  0.01)          : " << potinfo.specs_prop.BM_fmax << std::endl;
+  std::cout << "Bulk modulus: Number of strain points (e.g. 10)    : " << potinfo.specs_prop.BM_Nf << std::endl;
+  std::cout << "Bulk modulus: Multiplicative uncertainty factor (e.g. 0.10): " << potinfo.specs_prop.BM_ef << std::endl;
+  std::cout << std::endl;
+  std::cout << "Elastic moduli: Relax strained systems?            : " << potinfo.specs_prop.C_rel_sys << std::endl;
+  std::cout << "Elastic moduli: Minimum strain (e.g. -0.01)        : " << potinfo.specs_prop.C_fmin << std::endl;
+  std::cout << "Elastic moduli: Maximum strain (e.g.  0.01)        : " << potinfo.specs_prop.C_fmax << std::endl;
+  std::cout << "Elastic moduli: Number of strain points (e.g. 10)  : " << potinfo.specs_prop.C_Nf << std::endl;
+  std::cout << "Elastic moduli: Multiplicative uncertainty factor (e.g. 0.10): " << potinfo.specs_prop.C_ef << std::endl;
 
 
-  cout << endl;
-  cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-  cout << "Settings for MD simulations of read-in compounds" << endl;
-  cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-  cout << endl;
+  std::cout << std::endl;
+  std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+  std::cout << "Settings for MD simulations of read-in compounds" << std::endl;
+  std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+  std::cout << std::endl;
 
-  cout << "Skin thickness of neighbor list                         : " << potinfo.specs_prop.mds_specs.skint << endl;
-  cout << "Seed for random numbers                                 : " << potinfo.specs_prop.mds_specs.seed << endl;
-  cout << "Starting time for simulation (usually 0.0)              : " << potinfo.specs_prop.mds_specs.tstart << endl;
-  cout << "Ending time for simulation                              : " << potinfo.specs_prop.mds_specs.tend << endl;
-  cout << "Dump info every n:th step, n is                         : " << potinfo.specs_prop.mds_specs.ndump << endl;
-  cout << "Starting/desired temperature (e.g. 300.0)               : " << potinfo.specs_prop.mds_specs.Tstart << endl;
-  cout << "Initial time step                                       : " << potinfo.specs_prop.mds_specs.dt << endl;
-  cout << "  Maximum time step                                     : " << potinfo.specs_prop.mds_specs.max_dt << endl;
-  cout << "  Maximum allowed energy change for an atom/timestep    : " << potinfo.specs_prop.mds_specs.max_dE << endl;
-  cout << "  Maximum allowed distance traveled for an atom/timestep: " << potinfo.specs_prop.mds_specs.max_dr << endl;
-  cout << "Use temperature control (Berendsen)?                    : " << potinfo.specs_prop.mds_specs.use_Tcontrol << endl;
-  cout << "  T control: time constant (fs)                         : " << potinfo.specs_prop.mds_specs.btc_tau << endl;
-  cout << "  T control: desired temperature                        : " << potinfo.specs_prop.mds_specs.btc_T0 << endl;
-  cout << "Use quench?                                             : " << potinfo.specs_prop.mds_specs.use_quench << endl;
-  cout << "  Quench: start time (fs)                               : " << potinfo.specs_prop.mds_specs.quench_tstart << endl;
-  cout << "  Quench: rate (K/fs) (always pos. value)               : " << potinfo.specs_prop.mds_specs.quench_rate << endl;
-  cout << "Use pressure control (Berendsen)?                       : " << potinfo.specs_prop.mds_specs.use_Pcontrol << endl;
-  cout << "  P control: time constant (fs)                         : " << potinfo.specs_prop.mds_specs.bpc_tau << endl;
-  cout << "  P control: desired pressure (GPa)                     : " << potinfo.specs_prop.mds_specs.bpc_P0 << endl; 
-  cout << "  P control: scale                                      : " << potinfo.specs_prop.mds_specs.bpc_scale << endl; 
-  cout << "    The scale is usually equal to the approximate bulk modulus (GPa)." << endl;
-  cout << "Terminate program is T > T_limit?                       : " << potinfo.specs_prop.mds_specs.use_error_T_gt << endl; 
-  cout << "  T_limit                                               : " << potinfo.specs_prop.mds_specs.error_T_gt << endl; 
-  cout << "Terminate program is dt < dt_limit?                     : " << potinfo.specs_prop.mds_specs.use_error_dt_lt << endl; 
-  cout << "  dt_limit                                              : " << potinfo.specs_prop.mds_specs.error_dt_lt << endl; 
-  cout << "Terminate program is boxlen[1/2/3] > bl_limit?          : " << potinfo.specs_prop.mds_specs.use_error_boxlen_gt << endl; 
-  cout << "  bl_limit                                              : " << potinfo.specs_prop.mds_specs.error_boxlen_gt << endl; 
-  cout << "" << endl;
+  std::cout << "Skin thickness of neighbor list                         : " << potinfo.specs_prop.mds_specs.skint << std::endl;
+  std::cout << "Seed for random numbers                                 : " << potinfo.specs_prop.mds_specs.seed << std::endl;
+  std::cout << "Starting time for simulation (usually 0.0)              : " << potinfo.specs_prop.mds_specs.tstart << std::endl;
+  std::cout << "Ending time for simulation                              : " << potinfo.specs_prop.mds_specs.tend << std::endl;
+  std::cout << "Dump info every n:th step, n is                         : " << potinfo.specs_prop.mds_specs.ndump << std::endl;
+  std::cout << "Starting/desired temperature (e.g. 300.0)               : " << potinfo.specs_prop.mds_specs.Tstart << std::endl;
+  std::cout << "Initial time step                                       : " << potinfo.specs_prop.mds_specs.dt << std::endl;
+  std::cout << "  Maximum time step                                     : " << potinfo.specs_prop.mds_specs.max_dt << std::endl;
+  std::cout << "  Maximum allowed energy change for an atom/timestep    : " << potinfo.specs_prop.mds_specs.max_dE << std::endl;
+  std::cout << "  Maximum allowed distance traveled for an atom/timestep: " << potinfo.specs_prop.mds_specs.max_dr << std::endl;
+  std::cout << "Use temperature control (Berendsen)?                    : " << potinfo.specs_prop.mds_specs.use_Tcontrol << std::endl;
+  std::cout << "  T control: time constant (fs)                         : " << potinfo.specs_prop.mds_specs.btc_tau << std::endl;
+  std::cout << "  T control: desired temperature                        : " << potinfo.specs_prop.mds_specs.btc_T0 << std::endl;
+  std::cout << "Use quench?                                             : " << potinfo.specs_prop.mds_specs.use_quench << std::endl;
+  std::cout << "  Quench: start time (fs)                               : " << potinfo.specs_prop.mds_specs.quench_tstart << std::endl;
+  std::cout << "  Quench: rate (K/fs) (always pos. value)               : " << potinfo.specs_prop.mds_specs.quench_rate << std::endl;
+  std::cout << "Use pressure control (Berendsen)?                       : " << potinfo.specs_prop.mds_specs.use_Pcontrol << std::endl;
+  std::cout << "  P control: time constant (fs)                         : " << potinfo.specs_prop.mds_specs.bpc_tau << std::endl;
+  std::cout << "  P control: desired pressure (GPa)                     : " << potinfo.specs_prop.mds_specs.bpc_P0 << std::endl; 
+  std::cout << "  P control: scale                                      : " << potinfo.specs_prop.mds_specs.bpc_scale << std::endl; 
+  std::cout << "    The scale is usually equal to the approximate bulk modulus (GPa)." << std::endl;
+  std::cout << "Terminate program is T > T_limit?                       : " << potinfo.specs_prop.mds_specs.use_error_T_gt << std::endl; 
+  std::cout << "  T_limit                                               : " << potinfo.specs_prop.mds_specs.error_T_gt << std::endl; 
+  std::cout << "Terminate program is dt < dt_limit?                     : " << potinfo.specs_prop.mds_specs.use_error_dt_lt << std::endl; 
+  std::cout << "  dt_limit                                              : " << potinfo.specs_prop.mds_specs.error_dt_lt << std::endl; 
+  std::cout << "Terminate program is boxlen[1/2/3] > bl_limit?          : " << potinfo.specs_prop.mds_specs.use_error_boxlen_gt << std::endl; 
+  std::cout << "  bl_limit                                              : " << potinfo.specs_prop.mds_specs.error_boxlen_gt << std::endl; 
+  std::cout << "" << std::endl;
 
-  cout << "Options: heating allowed?                               : " << potinfo.specs_prop.mds_specs.heating_allowed << endl; 
-  cout << "Options: fixed geometry?                                : " << potinfo.specs_prop.mds_specs.fixed_geometry << endl; 
-  cout << "Options: quench always?                                 : " << potinfo.specs_prop.mds_specs.quench_always << endl; 
-  cout << "  If true, all velocities zeroed at every time step." << endl;
-  cout << "" << endl;
+  std::cout << "Options: heating allowed?                               : " << potinfo.specs_prop.mds_specs.heating_allowed << std::endl; 
+  std::cout << "Options: fixed geometry?                                : " << potinfo.specs_prop.mds_specs.fixed_geometry << std::endl; 
+  std::cout << "Options: quench always?                                 : " << potinfo.specs_prop.mds_specs.quench_always << std::endl; 
+  std::cout << "  If true, all velocities zeroed at every time step." << std::endl;
+  std::cout << "" << std::endl;
 
-  cout << endl;
-  cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-  cout << "Settings for MD simulations of reference compounds" << endl;
-  cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-  cout << endl;
+  std::cout << std::endl;
+  std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+  std::cout << "Settings for MD simulations of reference compounds" << std::endl;
+  std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+  std::cout << std::endl;
 
-  cout << "Skin thickness of neighbor list                         : " << potinfo.specs_prop.mds_specs_ref.skint << endl;
-  cout << "Seed for random numbers                                 : " << potinfo.specs_prop.mds_specs_ref.seed << endl;
-  cout << "Starting time for simulation (usually 0.0)              : " << potinfo.specs_prop.mds_specs_ref.tstart << endl;
-  cout << "Ending time for simulation                              : " << potinfo.specs_prop.mds_specs_ref.tend << endl;
-  cout << "Dump info every n:th step, n is                         : " << potinfo.specs_prop.mds_specs_ref.ndump << endl;
-  cout << "Starting/desired temperature (e.g. 300.0)               : " << potinfo.specs_prop.mds_specs_ref.Tstart << endl;
-  cout << "Initial time step                                       : " << potinfo.specs_prop.mds_specs_ref.dt << endl;
-  cout << "  Maximum time step                                     : " << potinfo.specs_prop.mds_specs_ref.max_dt << endl;
-  cout << "  Maximum allowed energy change for an atom/timestep    : " << potinfo.specs_prop.mds_specs_ref.max_dE << endl;
-  cout << "  Maximum allowed distance traveled for an atom/timestep: " << potinfo.specs_prop.mds_specs_ref.max_dr << endl;
-  cout << "Use temperature control (Berendsen)?                    : " << potinfo.specs_prop.mds_specs_ref.use_Tcontrol << endl;
-  cout << "  T control: time constant (fs)                         : " << potinfo.specs_prop.mds_specs_ref.btc_tau << endl;
-  cout << "  T control: desired temperature                        : " << potinfo.specs_prop.mds_specs_ref.btc_T0 << endl;
-  cout << "Use quench?                                             : " << potinfo.specs_prop.mds_specs_ref.use_quench << endl;
-  cout << "  Quench: start time (fs)                               : " << potinfo.specs_prop.mds_specs_ref.quench_tstart << endl;
-  cout << "  Quench: rate (K/fs) (always pos. value)               : " << potinfo.specs_prop.mds_specs_ref.quench_rate << endl;
-  cout << "Use pressure control (Berendsen)?                       : " << potinfo.specs_prop.mds_specs_ref.use_Pcontrol << endl;
-  cout << "  P control: time constant (fs)                         : " << potinfo.specs_prop.mds_specs_ref.bpc_tau << endl;
-  cout << "  P control: desired pressure (GPa)                     : " << potinfo.specs_prop.mds_specs_ref.bpc_P0 << endl; 
-  cout << "  P control: scale                                      : " << potinfo.specs_prop.mds_specs_ref.bpc_scale << endl; 
-  cout << "    The scale is usually equal to the approximate bulk modulus (GPa)." << endl;
-  cout << "Terminate program is T > T_limit?                       : " << potinfo.specs_prop.mds_specs_ref.use_error_T_gt << endl; 
-  cout << "  T_limit                                               : " << potinfo.specs_prop.mds_specs_ref.error_T_gt << endl; 
-  cout << "Terminate program is dt < dt_limit?                     : " << potinfo.specs_prop.mds_specs_ref.use_error_dt_lt << endl; 
-  cout << "  dt_limit                                              : " << potinfo.specs_prop.mds_specs_ref.error_dt_lt << endl; 
-  cout << "Terminate program is boxlen[1/2/3] > bl_limit?          : " << potinfo.specs_prop.mds_specs_ref.use_error_boxlen_gt << endl; 
-  cout << "  bl_limit                                              : " << potinfo.specs_prop.mds_specs_ref.error_boxlen_gt << endl; 
+  std::cout << "Skin thickness of neighbor list                         : " << potinfo.specs_prop.mds_specs_ref.skint << std::endl;
+  std::cout << "Seed for random numbers                                 : " << potinfo.specs_prop.mds_specs_ref.seed << std::endl;
+  std::cout << "Starting time for simulation (usually 0.0)              : " << potinfo.specs_prop.mds_specs_ref.tstart << std::endl;
+  std::cout << "Ending time for simulation                              : " << potinfo.specs_prop.mds_specs_ref.tend << std::endl;
+  std::cout << "Dump info every n:th step, n is                         : " << potinfo.specs_prop.mds_specs_ref.ndump << std::endl;
+  std::cout << "Starting/desired temperature (e.g. 300.0)               : " << potinfo.specs_prop.mds_specs_ref.Tstart << std::endl;
+  std::cout << "Initial time step                                       : " << potinfo.specs_prop.mds_specs_ref.dt << std::endl;
+  std::cout << "  Maximum time step                                     : " << potinfo.specs_prop.mds_specs_ref.max_dt << std::endl;
+  std::cout << "  Maximum allowed energy change for an atom/timestep    : " << potinfo.specs_prop.mds_specs_ref.max_dE << std::endl;
+  std::cout << "  Maximum allowed distance traveled for an atom/timestep: " << potinfo.specs_prop.mds_specs_ref.max_dr << std::endl;
+  std::cout << "Use temperature control (Berendsen)?                    : " << potinfo.specs_prop.mds_specs_ref.use_Tcontrol << std::endl;
+  std::cout << "  T control: time constant (fs)                         : " << potinfo.specs_prop.mds_specs_ref.btc_tau << std::endl;
+  std::cout << "  T control: desired temperature                        : " << potinfo.specs_prop.mds_specs_ref.btc_T0 << std::endl;
+  std::cout << "Use quench?                                             : " << potinfo.specs_prop.mds_specs_ref.use_quench << std::endl;
+  std::cout << "  Quench: start time (fs)                               : " << potinfo.specs_prop.mds_specs_ref.quench_tstart << std::endl;
+  std::cout << "  Quench: rate (K/fs) (always pos. value)               : " << potinfo.specs_prop.mds_specs_ref.quench_rate << std::endl;
+  std::cout << "Use pressure control (Berendsen)?                       : " << potinfo.specs_prop.mds_specs_ref.use_Pcontrol << std::endl;
+  std::cout << "  P control: time constant (fs)                         : " << potinfo.specs_prop.mds_specs_ref.bpc_tau << std::endl;
+  std::cout << "  P control: desired pressure (GPa)                     : " << potinfo.specs_prop.mds_specs_ref.bpc_P0 << std::endl; 
+  std::cout << "  P control: scale                                      : " << potinfo.specs_prop.mds_specs_ref.bpc_scale << std::endl; 
+  std::cout << "    The scale is usually equal to the approximate bulk modulus (GPa)." << std::endl;
+  std::cout << "Terminate program is T > T_limit?                       : " << potinfo.specs_prop.mds_specs_ref.use_error_T_gt << std::endl; 
+  std::cout << "  T_limit                                               : " << potinfo.specs_prop.mds_specs_ref.error_T_gt << std::endl; 
+  std::cout << "Terminate program is dt < dt_limit?                     : " << potinfo.specs_prop.mds_specs_ref.use_error_dt_lt << std::endl; 
+  std::cout << "  dt_limit                                              : " << potinfo.specs_prop.mds_specs_ref.error_dt_lt << std::endl; 
+  std::cout << "Terminate program is boxlen[1/2/3] > bl_limit?          : " << potinfo.specs_prop.mds_specs_ref.use_error_boxlen_gt << std::endl; 
+  std::cout << "  bl_limit                                              : " << potinfo.specs_prop.mds_specs_ref.error_boxlen_gt << std::endl; 
 
-  cout << "" << endl;
-  cout << "Options: heating allowed?                               : " << potinfo.specs_prop.mds_specs_ref.heating_allowed << endl; 
-  cout << "Options: fixed geometry?                                : " << potinfo.specs_prop.mds_specs_ref.fixed_geometry << endl; 
-  cout << "Options: quench always?                                 : " << potinfo.specs_prop.mds_specs_ref.quench_always << endl; 
-  cout << "  If true, all velocities zeroed at every time step." << endl;
-  cout << "" << endl;
+  std::cout << "" << std::endl;
+  std::cout << "Options: heating allowed?                               : " << potinfo.specs_prop.mds_specs_ref.heating_allowed << std::endl; 
+  std::cout << "Options: fixed geometry?                                : " << potinfo.specs_prop.mds_specs_ref.fixed_geometry << std::endl; 
+  std::cout << "Options: quench always?                                 : " << potinfo.specs_prop.mds_specs_ref.quench_always << std::endl; 
+  std::cout << "  If true, all velocities zeroed at every time step." << std::endl;
+  std::cout << "" << std::endl;
 
-  cout << endl;
-  cout << "**************************************************************************" << endl;
-  cout << "Common settings for MD simulations of any compound" << endl;
-  cout << "**************************************************************************" << endl;
-  cout << endl;
+  std::cout << std::endl;
+  std::cout << "**************************************************************************" << std::endl;
+  std::cout << "Common settings for MD simulations of any compound" << std::endl;
+  std::cout << "**************************************************************************" << std::endl;
+  std::cout << std::endl;
 
-  cout << "Report step?                                   : " << potinfo.specs_prop.mds_specs_common.report_step << endl;
-  cout << "  If true, writes out physical info of the system at every time step." << endl;
-  cout << "Debug forces?                                  : " << potinfo.specs_prop.mds_specs_common.debug_forces << endl; 
-  cout << "Debug pressure?                                : " << potinfo.specs_prop.mds_specs_common.debug_pressure << endl; 
-  cout << "Use default XYZ format?                        : " << potinfo.specs_prop.mds_specs_common.use_def_dump_xyz_fmt << endl;
-  cout << "Default XYZ format?                            : " << potinfo.specs_prop.mds_specs_common.def_dump_xyz_fmt << endl;
-  cout << "" << endl;
+  std::cout << "Report step?                                   : " << potinfo.specs_prop.mds_specs_common.report_step << std::endl;
+  std::cout << "  If true, writes out physical info of the system at every time step." << std::endl;
+  std::cout << "Debug forces?                                  : " << potinfo.specs_prop.mds_specs_common.debug_forces << std::endl; 
+  std::cout << "Debug pressure?                                : " << potinfo.specs_prop.mds_specs_common.debug_pressure << std::endl; 
+  std::cout << "Use default XYZ format?                        : " << potinfo.specs_prop.mds_specs_common.use_def_dump_xyz_fmt << std::endl;
+  std::cout << "Default XYZ format?                            : " << potinfo.specs_prop.mds_specs_common.def_dump_xyz_fmt << std::endl;
+  std::cout << "" << std::endl;
 
-  cout << endl;
-  cout << "//////////////////////////////////////////////////////////////////////////" << endl;
-  cout << "Special settings for various types of MDS cases" << endl;
-  cout << "//////////////////////////////////////////////////////////////////////////" << endl;
-  cout << endl;
+  std::cout << std::endl;
+  std::cout << "//////////////////////////////////////////////////////////////////////////" << std::endl;
+  std::cout << "Special settings for various types of MDS cases" << std::endl;
+  std::cout << "//////////////////////////////////////////////////////////////////////////" << std::endl;
+  std::cout << std::endl;
 
-  cout << "'''''''''''''''''''' Elastic properties ''''''''''''''''''''" << endl;
-  cout << "  quench_always = true" << endl;
-  cout << endl;
+  std::cout << "'''''''''''''''''''' Elastic properties ''''''''''''''''''''" << std::endl;
+  std::cout << "  quench_always = true" << std::endl;
+  std::cout << std::endl;
 
 
 
   // ################################################################################  
   // Specifications for potentials
   // ################################################################################  
-  cout << "" << endl;
-  cout << "##########################################################################" << endl;
-  cout << "Specifications for potential fitting:" << endl;
-  cout << "##########################################################################" << endl;
-  cout << "" << endl;
-  cout << "Random number seed                                 : " << potinfo.specs_pot.seed << endl;
-  cout << "Fitting method                                     : " << potinfo.specs_pot.fitmet << endl;
-  cout << "Min. iterations                                    : " << potinfo.specs_pot.nitermin << endl;
-  cout << "Max. iterations                                    : " << potinfo.specs_pot.nitermax << endl;
-  cout << "Tolerance for convergence of ChiSq                 : " << potinfo.specs_pot.functolabs << endl;
-  cout << "Tolerance for convergence of ChiSq changes         : " << potinfo.specs_pot.functolrel << endl;
-  cout << "Tolerance for convergence of ChiSq gradient        : " << potinfo.specs_pot.gradtolabs << endl;
-  cout << "Tolerance for convergence of step length           : " << potinfo.specs_pot.steptolabs << endl;
-  cout << "Tolerance for convergence of step length changes   : " << potinfo.specs_pot.steptolrel << endl;
-  cout << "DOG-LEG: Initial trust region radius               : " << potinfo.specs_pot.dogleg_radius << endl;
-  cout << "DOG-LEG: Smallest allowed trust region radius      : " << potinfo.specs_pot.dogleg_minradius << endl;
-  cout << "SIMPLEX: Displacement when creating initial simplex: " << potinfo.specs_pot.simplex_delta << endl;
-  cout << "Debug: level0                                      : " << potinfo.specs_pot.debug_fit_level0 << endl;
-  cout << "Debug: level1                                      : " << potinfo.specs_pot.debug_fit_level1 << endl;
-  cout << "Debug: level2                                      : " << potinfo.specs_pot.debug_fit_level2 << endl;
-  cout << "Debug: level3                                      : " << potinfo.specs_pot.debug_fit_level3 << endl;
-  cout << "Debug: level4                                      : " << potinfo.specs_pot.debug_fit_level4 << endl;
-  cout << "Penalty function: barrier                          : " << potinfo.specs_pot.barrier_scale << endl;
+  std::cout << "" << std::endl;
+  std::cout << "##########################################################################" << std::endl;
+  std::cout << "Specifications for potential fitting:" << std::endl;
+  std::cout << "##########################################################################" << std::endl;
+  std::cout << "" << std::endl;
+  std::cout << "Random number seed                                 : " << potinfo.specs_pot.seed << std::endl;
+  std::cout << "Fitting method                                     : " << potinfo.specs_pot.fitmet << std::endl;
+  std::cout << "Min. iterations                                    : " << potinfo.specs_pot.nitermin << std::endl;
+  std::cout << "Max. iterations                                    : " << potinfo.specs_pot.nitermax << std::endl;
+  std::cout << "Tolerance for convergence of ChiSq                 : " << potinfo.specs_pot.functolabs << std::endl;
+  std::cout << "Tolerance for convergence of ChiSq changes         : " << potinfo.specs_pot.functolrel << std::endl;
+  std::cout << "Tolerance for convergence of ChiSq gradient        : " << potinfo.specs_pot.gradtolabs << std::endl;
+  std::cout << "Tolerance for convergence of step length           : " << potinfo.specs_pot.steptolabs << std::endl;
+  std::cout << "Tolerance for convergence of step length changes   : " << potinfo.specs_pot.steptolrel << std::endl;
+  std::cout << "DOG-LEG: Initial trust region radius               : " << potinfo.specs_pot.dogleg_radius << std::endl;
+  std::cout << "DOG-LEG: Smallest allowed trust region radius      : " << potinfo.specs_pot.dogleg_minradius << std::endl;
+  std::cout << "SIMPLEX: Displacement when creating initial simplex: " << potinfo.specs_pot.simplex_delta << std::endl;
+  std::cout << "Debug: level0                                      : " << potinfo.specs_pot.debug_fit_level0 << std::endl;
+  std::cout << "Debug: level1                                      : " << potinfo.specs_pot.debug_fit_level1 << std::endl;
+  std::cout << "Debug: level2                                      : " << potinfo.specs_pot.debug_fit_level2 << std::endl;
+  std::cout << "Debug: level3                                      : " << potinfo.specs_pot.debug_fit_level3 << std::endl;
+  std::cout << "Debug: level4                                      : " << potinfo.specs_pot.debug_fit_level4 << std::endl;
+  std::cout << "Penalty function: barrier                          : " << potinfo.specs_pot.barrier_scale << std::endl;
 
 
 
@@ -606,60 +613,60 @@ int main(int argc, char *argv[]){
   }
 
   // Report:
-  cout << "" << endl;
-  cout << "##########################################################################" << endl;
-  cout << "Compounds used for fitting:" << endl;
-  cout << "##########################################################################" << endl;
-  cout << "" << endl;
+  std::cout << "" << std::endl;
+  std::cout << "##########################################################################" << std::endl;
+  std::cout << "Compounds used for fitting:" << std::endl;
+  std::cout << "##########################################################################" << std::endl;
+  std::cout << "" << std::endl;
   
   for (i=0; i<ncomp; ++i){
-    cout << "Compound " << i+1 << " of " << ncomp << endl;
-    cout << "  Name                : " << complistfit.compounds[i].name << endl;
-    cout << "  Read from file      : " << complistfit.compounds[i].filename << endl;
-    cout << "  PBC                 : " << complistfit.compounds[i].pbc[0] << " "
+    std::cout << "Compound " << i+1 << " of " << ncomp << std::endl;
+    std::cout << "  Name                : " << complistfit.compounds[i].name << std::endl;
+    std::cout << "  Read from file      : " << complistfit.compounds[i].filename << std::endl;
+    std::cout << "  PBC                 : " << complistfit.compounds[i].pbc[0] << " "
 	 << complistfit.compounds[i].pbc[1] << " "
-	 << complistfit.compounds[i].pbc[2] << endl;
-    cout << "  Crystal system      : " << complistfit.compounds[i].csystem << endl;
-    cout << "  Scale factor        : " << complistfit.compounds[i].scalefactor << endl;
-    cout << "  Use internal format?: " << complistfit.compounds[i].use_int << endl;
-    cout << "  Direction vector 1  : " 
+	 << complistfit.compounds[i].pbc[2] << std::endl;
+    std::cout << "  Crystal system      : " << complistfit.compounds[i].csystem << std::endl;
+    std::cout << "  Scale factor        : " << complistfit.compounds[i].scalefactor << std::endl;
+    std::cout << "  Use internal format?: " << complistfit.compounds[i].use_int << std::endl;
+    std::cout << "  Direction vector 1  : " 
 	 << format("%15.10f ") % complistfit.compounds[i].u1_vec[0]
 	 << format("%15.10f ") % complistfit.compounds[i].u1_vec[1]
-	 << format("%15.10f")  % complistfit.compounds[i].u1_vec[2] << endl;
-    cout << "  Direction vector 2  : " 
+	 << format("%15.10f")  % complistfit.compounds[i].u1_vec[2] << std::endl;
+    std::cout << "  Direction vector 2  : " 
 	 << format("%15.10f ") % complistfit.compounds[i].u2_vec[0]
 	 << format("%15.10f ") % complistfit.compounds[i].u2_vec[1]
-	 << format("%15.10f")  % complistfit.compounds[i].u2_vec[2] << endl;
-    cout << "  Direction vector 3  : " 
+	 << format("%15.10f")  % complistfit.compounds[i].u2_vec[2] << std::endl;
+    std::cout << "  Direction vector 3  : " 
 	 << format("%15.10f ") % complistfit.compounds[i].u3_vec[0]
 	 << format("%15.10f ") % complistfit.compounds[i].u3_vec[1]
-	 << format("%15.10f")  % complistfit.compounds[i].u3_vec[2] << endl;
-    cout << "  Number of basis atoms: " << complistfit.compounds[i].nbasis << endl;
+	 << format("%15.10f")  % complistfit.compounds[i].u3_vec[2] << std::endl;
+    std::cout << "  Number of basis atoms: " << complistfit.compounds[i].nbasis << std::endl;
 
-    cout << "" << endl;
-    cout << "Desired N values for compound construction      : "
+    std::cout << "" << std::endl;
+    std::cout << "Desired N values for compound construction      : "
 	 << complistfit.compounds[i].Ndesired[0] << " "
 	 << complistfit.compounds[i].Ndesired[1] << " "
-	 << complistfit.compounds[i].Ndesired[2] << endl;
-    cout << "Desired even N values for compound construction?: "
+	 << complistfit.compounds[i].Ndesired[2] << std::endl;
+    std::cout << "Desired even N values for compound construction?: "
 	 << complistfit.compounds[i].Neven_desired[0] << " "
 	 << complistfit.compounds[i].Neven_desired[1] << " "
-	 << complistfit.compounds[i].Neven_desired[2] << endl;
-    cout << "Desired odd N values for compound construction? : "
+	 << complistfit.compounds[i].Neven_desired[2] << std::endl;
+    std::cout << "Desired odd N values for compound construction? : "
 	 << complistfit.compounds[i].Nodd_desired[0] << " "
 	 << complistfit.compounds[i].Nodd_desired[1] << " "
-	 << complistfit.compounds[i].Nodd_desired[2] << endl;
+	 << complistfit.compounds[i].Nodd_desired[2] << std::endl;
 
-    cout << "" << endl;
-    cout << "Compound is a reference for changes in Ecoh (Ecoh_delta) ? : "
-	 << complistfit.compounds[i].Ecoh_delta_refcomp << endl;
+    std::cout << "" << std::endl;
+    std::cout << "Compound is a reference for changes in Ecoh (Ecoh_delta) ? : "
+	 << complistfit.compounds[i].Ecoh_delta_refcomp << std::endl;
 
-    cout << "" << endl;
-    string dumpfile(complistfit.compounds[i].filename + ".xyz");
-    cout << "  Atom system will be written to file of format Extended XYZ for debugging purposes: " << dumpfile << endl;
-    ofstream fout;
+    std::cout << "" << std::endl;
+    std::string dumpfile(complistfit.compounds[i].filename + ".xyz");
+    std::cout << "  Atom system will be written to file of format Extended XYZ for debugging purposes: " << dumpfile << std::endl;
+    std::ofstream fout;
     fout.open(dumpfile.c_str());
-    fout << complistfit.compounds[i].basis_vecs.size() << endl;
+    fout << complistfit.compounds[i].basis_vecs.size() << std::endl;
     fout << "Lattice=\""
 	 << format("%10.6f ") % complistfit.compounds[i].u1_vec[0]
 	 << format("%10.6f ") % complistfit.compounds[i].u1_vec[1]
@@ -670,7 +677,7 @@ int main(int argc, char *argv[]){
 	 << format("%10.6f ") % complistfit.compounds[i].u3_vec[0]
 	 << format("%10.6f ") % complistfit.compounds[i].u3_vec[1]
 	 << format("%10.6f")  % complistfit.compounds[i].u3_vec[2]
-	 << "\" Properties=species:S:1:pos:R:3:index:I:1 Time=0.0" << endl;
+	 << "\" Properties=species:S:1:pos:R:3:index:I:1 Time=0.0" << std::endl;
     for (j=0; j<complistfit.compounds[i].basis_vecs.size(); ++j){
       fout << complistfit.compounds[i].basis_elems[j]
 	   << "  "
@@ -680,51 +687,51 @@ int main(int argc, char *argv[]){
 	   << "  "
 	   << potinfo.elem.name2idx( complistfit.compounds[i].basis_elems[j] )
 	   << "  "
-	   << j << endl;
+	   << j << std::endl;
     }
     fout.close();
     fout.clear();
 
 
 
-    cout << "  Compound-specific MD settings" << endl;
-    cout << "  -----------------------------" << endl;
-    cout << "Skin thickness of neighbor list                         : " << complistfit.compounds[i].mds_specs.skint << endl;
-    cout << "Seed for random numbers                                 : " << complistfit.compounds[i].mds_specs.seed << endl;
-    cout << "Starting time for simulation (usually 0.0)              : " << complistfit.compounds[i].mds_specs.tstart << endl;
-    cout << "Ending time for simulation                              : " << complistfit.compounds[i].mds_specs.tend << endl;
-    cout << "Dump info every n:th step, n is                         : " << complistfit.compounds[i].mds_specs.ndump << endl;
-    cout << "Starting/desired temperature (e.g. 300.0)               : " << complistfit.compounds[i].mds_specs.Tstart << endl;
-    cout << "Initial time step                                       : " << complistfit.compounds[i].mds_specs.dt << endl;
-    cout << "  Maximum time step                                     : " << complistfit.compounds[i].mds_specs.max_dt << endl;
-    cout << "  Maximum allowed energy change for an atom/timestep    : " << complistfit.compounds[i].mds_specs.max_dE << endl;
-    cout << "  Maximum allowed distance traveled for an atom/timestep: " << complistfit.compounds[i].mds_specs.max_dr << endl;
-    cout << "Use temperature control (Berendsen)?                    : " << complistfit.compounds[i].mds_specs.use_Tcontrol << endl;
-    cout << "  T control: time constant (fs)                         : " << complistfit.compounds[i].mds_specs.btc_tau << endl;
-    cout << "  T control: desired temperature                        : " << complistfit.compounds[i].mds_specs.btc_T0 << endl;
-    cout << "Use quench?                                             : " << complistfit.compounds[i].mds_specs.use_quench << endl;
-    cout << "  Quench: start time (fs)                               : " << complistfit.compounds[i].mds_specs.quench_tstart << endl;
-    cout << "  Quench: rate (K/fs) (always pos. value)               : " << complistfit.compounds[i].mds_specs.quench_rate << endl;
-    cout << "Use pressure control (Berendsen)?                       : " << complistfit.compounds[i].mds_specs.use_Pcontrol << endl;
-    cout << "  P control: time constant (fs)                         : " << complistfit.compounds[i].mds_specs.bpc_tau << endl;
-    cout << "  P control: desired pressure (GPa)                     : " << complistfit.compounds[i].mds_specs.bpc_P0 << endl; 
-    cout << "  P control: scale                                      : " << complistfit.compounds[i].mds_specs.bpc_scale << endl; 
-    cout << "    The scale is usually equal to the approximate bulk modulus (GPa)." << endl;
-    cout << "" << endl;
-    cout << "Options: heating allowed?                               : " << complistfit.compounds[i].mds_specs.heating_allowed << endl; 
-    cout << "Options: fixed geometry?                                : " << complistfit.compounds[i].mds_specs.fixed_geometry << endl; 
-    cout << "Options: quench always?                                 : " << complistfit.compounds[i].mds_specs.quench_always << endl; 
-    cout << "  If true, all velocities zeroed at every time step." << endl;
+    std::cout << "  Compound-specific MD settings" << std::endl;
+    std::cout << "  -----------------------------" << std::endl;
+    std::cout << "Skin thickness of neighbor list                         : " << complistfit.compounds[i].mds_specs.skint << std::endl;
+    std::cout << "Seed for random numbers                                 : " << complistfit.compounds[i].mds_specs.seed << std::endl;
+    std::cout << "Starting time for simulation (usually 0.0)              : " << complistfit.compounds[i].mds_specs.tstart << std::endl;
+    std::cout << "Ending time for simulation                              : " << complistfit.compounds[i].mds_specs.tend << std::endl;
+    std::cout << "Dump info every n:th step, n is                         : " << complistfit.compounds[i].mds_specs.ndump << std::endl;
+    std::cout << "Starting/desired temperature (e.g. 300.0)               : " << complistfit.compounds[i].mds_specs.Tstart << std::endl;
+    std::cout << "Initial time step                                       : " << complistfit.compounds[i].mds_specs.dt << std::endl;
+    std::cout << "  Maximum time step                                     : " << complistfit.compounds[i].mds_specs.max_dt << std::endl;
+    std::cout << "  Maximum allowed energy change for an atom/timestep    : " << complistfit.compounds[i].mds_specs.max_dE << std::endl;
+    std::cout << "  Maximum allowed distance traveled for an atom/timestep: " << complistfit.compounds[i].mds_specs.max_dr << std::endl;
+    std::cout << "Use temperature control (Berendsen)?                    : " << complistfit.compounds[i].mds_specs.use_Tcontrol << std::endl;
+    std::cout << "  T control: time constant (fs)                         : " << complistfit.compounds[i].mds_specs.btc_tau << std::endl;
+    std::cout << "  T control: desired temperature                        : " << complistfit.compounds[i].mds_specs.btc_T0 << std::endl;
+    std::cout << "Use quench?                                             : " << complistfit.compounds[i].mds_specs.use_quench << std::endl;
+    std::cout << "  Quench: start time (fs)                               : " << complistfit.compounds[i].mds_specs.quench_tstart << std::endl;
+    std::cout << "  Quench: rate (K/fs) (always pos. value)               : " << complistfit.compounds[i].mds_specs.quench_rate << std::endl;
+    std::cout << "Use pressure control (Berendsen)?                       : " << complistfit.compounds[i].mds_specs.use_Pcontrol << std::endl;
+    std::cout << "  P control: time constant (fs)                         : " << complistfit.compounds[i].mds_specs.bpc_tau << std::endl;
+    std::cout << "  P control: desired pressure (GPa)                     : " << complistfit.compounds[i].mds_specs.bpc_P0 << std::endl; 
+    std::cout << "  P control: scale                                      : " << complistfit.compounds[i].mds_specs.bpc_scale << std::endl; 
+    std::cout << "    The scale is usually equal to the approximate bulk modulus (GPa)." << std::endl;
+    std::cout << "" << std::endl;
+    std::cout << "Options: heating allowed?                               : " << complistfit.compounds[i].mds_specs.heating_allowed << std::endl; 
+    std::cout << "Options: fixed geometry?                                : " << complistfit.compounds[i].mds_specs.fixed_geometry << std::endl; 
+    std::cout << "Options: quench always?                                 : " << complistfit.compounds[i].mds_specs.quench_always << std::endl; 
+    std::cout << "  If true, all velocities zeroed at every time step." << std::endl;
 
-    cout << "--------------------------------------------------------------------------" << endl;
+    std::cout << "--------------------------------------------------------------------------" << std::endl;
   }
 
 
 
 
-  cout << "INFO: Number of free fitting prameters: " << param.NXfree() << endl;
-  cout << "INFO: Number of data points           : " << complistfit.NData() << endl;
-  cout << "--------------------------------------------------------------------------" << endl;
+  std::cout << "INFO: Number of free fitting prameters: " << param.NXfree() << std::endl;
+  std::cout << "INFO: Number of data points           : " << complistfit.NData() << std::endl;
+  std::cout << "--------------------------------------------------------------------------" << std::endl;
 
 
   Vector<CompoundStructureFit> DX;
@@ -989,7 +996,7 @@ int main(int argc, char *argv[]){
   }
 
 
-  report_prop( complistfit.compounds, cout, true );
+  report_prop( complistfit.compounds, std::cout, true );
 
 
 
@@ -1002,11 +1009,11 @@ int main(int argc, char *argv[]){
   // Get properties (at least cohesive energies) of reference structures !!!
   // ################################################################################
 
-  cout << "" << endl;
-  cout << "##########################################################################" << endl;
-  cout << "Reference compounds" << endl;
-  cout << "##########################################################################" << endl;
-  cout << "" << endl;
+  std::cout << "" << std::endl;
+  std::cout << "##########################################################################" << std::endl;
+  std::cout << "Reference compounds" << std::endl;
+  std::cout << "##########################################################################" << std::endl;
+  std::cout << "" << std::endl;
 
   nref = potinfo.elem.nelem();
 
@@ -1016,14 +1023,14 @@ int main(int argc, char *argv[]){
 
 
   for (iref=0; iref<nref; ++iref){
-    string sref = potinfo.elem.idx2name(iref);
-    string latref = potinfo.elem.reflat(sref);
+    std::string sref = potinfo.elem.idx2name(iref);
+    std::string latref = potinfo.elem.reflat(sref);
 
     if (potinfo.is_fittable(sref,sref)){
-      cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
-      cout << "Elemental combination " << sref << "-" << sref << " is to be fitted."
-	   << " No reference lattice calculation possible. Continuing." << endl;
-      cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
+      std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+      std::cout << "Elemental combination " << sref << "-" << sref << " is to be fitted."
+	   << " No reference lattice calculation possible. Continuing." << std::endl;
+      std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       continue;
     }
 
@@ -1043,32 +1050,32 @@ int main(int argc, char *argv[]){
 
 
 
-    cout << "Reference compound " << iref+1 << " of " << nref << endl;
-    cout << "  Name                : " << cmpref[0].name << endl;
-    cout << "  PBC                 : " << cmpref[0].pbc[0] << " "
+    std::cout << "Reference compound " << iref+1 << " of " << nref << std::endl;
+    std::cout << "  Name                : " << cmpref[0].name << std::endl;
+    std::cout << "  PBC                 : " << cmpref[0].pbc[0] << " "
 	 << cmpref[0].pbc[1] << " "
-	 << cmpref[0].pbc[2] << endl;
-    cout << "  Crystal system      : " << cmpref[0].csystem << endl;
-    cout << "  Scale factor        : " << cmpref[0].scalefactor << endl;
-    cout << "  Lattice parameters provided" << endl;
-    cout << "                     a: " << a << endl;
-    cout << "                     b: " << b << endl;
-    cout << "                     c: " << c << endl;
-    cout << "                => c/a: " << c/a << endl;
-    cout << "  Use internal format?: " << cmpref[0].use_int << endl;
-    cout << "  Direction vector 1  : " 
+	 << cmpref[0].pbc[2] << std::endl;
+    std::cout << "  Crystal system      : " << cmpref[0].csystem << std::endl;
+    std::cout << "  Scale factor        : " << cmpref[0].scalefactor << std::endl;
+    std::cout << "  Lattice parameters provided" << std::endl;
+    std::cout << "                     a: " << a << std::endl;
+    std::cout << "                     b: " << b << std::endl;
+    std::cout << "                     c: " << c << std::endl;
+    std::cout << "                => c/a: " << c/a << std::endl;
+    std::cout << "  Use internal format?: " << cmpref[0].use_int << std::endl;
+    std::cout << "  Direction vector 1  : " 
 	 << format("%15.10f ") % cmpref[0].u1_vec[0]
 	 << format("%15.10f ") % cmpref[0].u1_vec[1]
-	 << format("%15.10f")  % cmpref[0].u1_vec[2] << endl;
-    cout << "  Direction vector 2  : " 
+	 << format("%15.10f")  % cmpref[0].u1_vec[2] << std::endl;
+    std::cout << "  Direction vector 2  : " 
 	 << format("%15.10f ") % cmpref[0].u2_vec[0]
 	 << format("%15.10f ") % cmpref[0].u2_vec[1]
-	 << format("%15.10f")  % cmpref[0].u2_vec[2] << endl;
-    cout << "  Direction vector 3  : " 
+	 << format("%15.10f")  % cmpref[0].u2_vec[2] << std::endl;
+    std::cout << "  Direction vector 3  : " 
 	 << format("%15.10f ") % cmpref[0].u3_vec[0]
 	 << format("%15.10f ") % cmpref[0].u3_vec[1]
-	 << format("%15.10f")  % cmpref[0].u3_vec[2] << endl;
-    cout << "  Number of basis atoms: " << cmpref[0].nbasis << endl;
+	 << format("%15.10f")  % cmpref[0].u3_vec[2] << std::endl;
+    std::cout << "  Number of basis atoms: " << cmpref[0].nbasis << std::endl;
 
 
 
@@ -1131,57 +1138,57 @@ int main(int argc, char *argv[]){
     get_comp_prop(param, cmpref);
 
     // Report:
-    cout << "Properties of reference compound for element " << sref << ":" << endl;
-    cout << "  Lattice parameter a     : " << format("%15.10f") % cmpref[0].prop_pred.a << endl;
-    cout << "  Lattice parameter b     : " << format("%15.10f") % cmpref[0].prop_pred.b << endl;
-    cout << "  Lattice parameter c     : " << format("%15.10f") % cmpref[0].prop_pred.c << endl;
-    cout << "  Cohesive energy   Ecoh  : " << format("%15.10f") % cmpref[0].prop_pred.Ecoh
+    std::cout << "Properties of reference compound for element " << sref << ":" << std::endl;
+    std::cout << "  Lattice parameter a     : " << format("%15.10f") % cmpref[0].prop_pred.a << std::endl;
+    std::cout << "  Lattice parameter b     : " << format("%15.10f") % cmpref[0].prop_pred.b << std::endl;
+    std::cout << "  Lattice parameter c     : " << format("%15.10f") % cmpref[0].prop_pred.c << std::endl;
+    std::cout << "  Cohesive energy   Ecoh  : " << format("%15.10f") % cmpref[0].prop_pred.Ecoh
 	 << " for element index " << potinfo.elem.name2idx(sref)
 	 << " having atom type " << potinfo.elem.atomtype(sref)
-	 << endl;
+	 << std::endl;
 
     potinfo.Ecoh_ref[ potinfo.elem.name2idx(sref) ] = cmpref[0].prop_pred.Ecoh;
 
     if (cmpref[0].prop_use.r0)
-      cout << "  Dimer bond lenght r0    : " << format("%15.10f") % cmpref[0].prop_pred.r0 << endl;
+      std::cout << "  Dimer bond lenght r0    : " << format("%15.10f") % cmpref[0].prop_pred.r0 << std::endl;
 
     if (cmpref[0].prop_use.B)
-      cout << "  Bulk modulus      B     : " << format("%15.10f") % cmpref[0].prop_pred.B << endl;
+      std::cout << "  Bulk modulus      B     : " << format("%15.10f") % cmpref[0].prop_pred.B << std::endl;
     if (cmpref[0].prop_use.Bp)
-      cout << "  Pressure derivative of B: " << format("%15.10f") % cmpref[0].prop_pred.Bp << endl;
+      std::cout << "  Pressure derivative of B: " << format("%15.10f") % cmpref[0].prop_pred.Bp << std::endl;
 
     if (anyC){
       if (cmpref[0].csystem=="cubic"){
-	cout << "  Elastic constant     C11: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,0) << endl;
-	cout << "  Elastic constant     C12: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,1) << endl;
-	cout << "  Elastic constant     C44: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(3,3) << endl;
+	cout << "  Elastic constant     C11: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,0) << std::endl;
+	cout << "  Elastic constant     C12: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,1) << std::endl;
+	cout << "  Elastic constant     C44: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(3,3) << std::endl;
       }
       else if (cmpref[0].csystem=="hexagonal"){
-	cout << "  Elastic constant     C11: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,0) << endl;
-	cout << "  Elastic constant     C12: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,1) << endl;
-	cout << "  Elastic constant     C13: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,2) << endl;
-	cout << "  Elastic constant     C33: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(2,2) << endl;
-	cout << "  Elastic constant     C44: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(3,3) << endl;
+	cout << "  Elastic constant     C11: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,0) << std::endl;
+	cout << "  Elastic constant     C12: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,1) << std::endl;
+	cout << "  Elastic constant     C13: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,2) << std::endl;
+	cout << "  Elastic constant     C33: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(2,2) << std::endl;
+	cout << "  Elastic constant     C44: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(3,3) << std::endl;
       }
       else if (cmpref[0].csystem=="orthorombic"){
-	cout << "  Elastic constant     C11: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,0) << endl;
-	cout << "  Elastic constant     C12: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,1) << endl;
-	cout << "  Elastic constant     C13: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,2) << endl;
-	cout << "  Elastic constant     C22: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(1,1) << endl;
-	cout << "  Elastic constant     C23: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(1,2) << endl;
-	cout << "  Elastic constant     C33: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(2,2) << endl;
-	cout << "  Elastic constant     C44: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(3,3) << endl;
-	cout << "  Elastic constant     C55: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(4,4) << endl;
-	cout << "  Elastic constant     C66: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(5,5) << endl;
+	cout << "  Elastic constant     C11: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,0) << std::endl;
+	cout << "  Elastic constant     C12: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,1) << std::endl;
+	cout << "  Elastic constant     C13: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(0,2) << std::endl;
+	cout << "  Elastic constant     C22: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(1,1) << std::endl;
+	cout << "  Elastic constant     C23: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(1,2) << std::endl;
+	cout << "  Elastic constant     C33: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(2,2) << std::endl;
+	cout << "  Elastic constant     C44: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(3,3) << std::endl;
+	cout << "  Elastic constant     C55: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(4,4) << std::endl;
+	cout << "  Elastic constant     C66: " << format("%15.10f") % cmpref[0].prop_pred.C.elem(5,5) << std::endl;
       }
     }
-    cout << "  Maximum force           : " << format("%15.10f") % cmpref[0].prop_pred.Fmax << endl;
+    std::cout << "  Maximum force           : " << format("%15.10f") % cmpref[0].prop_pred.Fmax << std::endl;
     if (cmpref[0].prop_use.Pmax)
-      cout << "  Maximum pressure        : " << format("%15.10f") % cmpref[0].prop_pred.Pmax << endl;
-    cout << "  Maximum displacement    : " << format("%15.10f") % cmpref[0].prop_pred.displmax << endl;
+      std::cout << "  Maximum pressure        : " << format("%15.10f") % cmpref[0].prop_pred.Pmax << std::endl;
+    std::cout << "  Maximum displacement    : " << format("%15.10f") % cmpref[0].prop_pred.displmax << std::endl;
 
 
-    cout << "--------------------------------------------------------------------------" << endl;
+    std::cout << "--------------------------------------------------------------------------" << std::endl;
 
 
 
@@ -1194,9 +1201,9 @@ int main(int argc, char *argv[]){
 
 
   if (run_refonly){
-    cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
-    cout << "Done with reference compounds. Quitting." << endl;
-    cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
+    std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    std::cout << "Done with reference compounds. Quitting." << std::endl;
+    std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     return EXIT_SUCCESS;
   }
 
@@ -1212,7 +1219,7 @@ int main(int argc, char *argv[]){
   // ***********************************************************************************
   if (ini_fit_data_mode){
 
-    cout << "Getting some info on the specified compounds ..." << endl;
+    std::cout << "Getting some info on the specified compounds ..." << std::endl;
     get_ini_fit_data(param, DX);
 
 
@@ -1225,15 +1232,15 @@ int main(int argc, char *argv[]){
 
     //report_pot_prop( param, DX, DY, MDY );
 
-    cout << "'Relax only' option used." << endl;
-    cout << "1. Report on potential parameters:" << endl;
-    cout << "----------------------------------------------------------------" << endl;
+    std::cout << "'Relax only' option used." << std::endl;
+    std::cout << "1. Report on potential parameters:" << std::endl;
+    std::cout << "----------------------------------------------------------------" << std::endl;
     report_pot( &potinfo, true, true );
-    cout << "2. Relaxing read-in compounds and obtaining their properties ..." << endl;
+    std::cout << "2. Relaxing read-in compounds and obtaining their properties ..." << std::endl;
     get_comp_prop(param, DX);
-    cout << "----------------------------------------------------------------" << endl;
+    std::cout << "----------------------------------------------------------------" << std::endl;
     report_prop( DX );
-    cout << "Done." << endl;
+    std::cout << "Done." << std::endl;
 
   }
   else {
@@ -1249,7 +1256,7 @@ int main(int argc, char *argv[]){
     // Form merit function object
     // #############################################################
 
-    cout << "Setting up merit function ..." << endl;
+    std::cout << "Setting up merit function ..." << std::endl;
 
 
     ChiSqFunc<ParamPot, CompoundStructureFit, double> cs;
@@ -1325,18 +1332,18 @@ int main(int argc, char *argv[]){
 
     // Vector<double> latcalc(ParamPot & parpot, Vector<CompoundStructureFit> & cmpvec);
 
-    cout << endl;
-    cout << "******************************************************" << endl;
-    cout << "******************************************************" << endl;
-    cout << "**                                                  **" << endl;
-    cout << "**          Starting potential fitting ...          **" << endl;
-    cout << "**                                                  **" << endl;
-    cout << "******************************************************" << endl;
-    cout << "******************************************************" << endl;
-    cout << endl;
-    cout << "INFO: Number of free fitting prameters: " << param.NXfree() << endl;
-    cout << "INFO: Number of data points           : " << complistfit.NData() << endl;
-    cout << endl;
+    std::cout << std::endl;
+    std::cout << "******************************************************" << std::endl;
+    std::cout << "******************************************************" << std::endl;
+    std::cout << "**                                                  **" << std::endl;
+    std::cout << "**          Starting potential fitting ...          **" << std::endl;
+    std::cout << "**                                                  **" << std::endl;
+    std::cout << "******************************************************" << std::endl;
+    std::cout << "******************************************************" << std::endl;
+    std::cout << std::endl;
+    std::cout << "INFO: Number of free fitting prameters: " << param.NXfree() << std::endl;
+    std::cout << "INFO: Number of data points           : " << complistfit.NData() << std::endl;
+    std::cout << std::endl;
 
 
 
@@ -1351,7 +1358,7 @@ int main(int argc, char *argv[]){
        ############################################################################### */
     if (potinfo.specs_pot.fitmet=="CG"){
       // Conjugate Gradients
-      cout << "Using conjugate gradients method." << endl;
+      std::cout << "Using conjugate gradients method." << std::endl;
       ConjGrad< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
       Xopt = fm.minimize(cs.Param().X(),
 			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -1359,7 +1366,7 @@ int main(int argc, char *argv[]){
     }
     else if (potinfo.specs_pot.fitmet=="PM"){
       // Powell's method
-      cout << "Using Powell's method." << endl;
+      std::cout << "Using Powell's method." << std::endl;
       Powell< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
       Xopt = fm.minimize(cs.Param().X(),
 			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -1367,7 +1374,7 @@ int main(int argc, char *argv[]){
     }
     else if (potinfo.specs_pot.fitmet=="GN"){
       // Gauss-Newton
-      cout << "Using Gauss-Newton method." << endl;
+      std::cout << "Using Gauss-Newton method." << std::endl;
       GaussNewton< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
       Xopt = fm.minimize(cs.Param().X(),
 			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -1375,7 +1382,7 @@ int main(int argc, char *argv[]){
     }
     else if (potinfo.specs_pot.fitmet=="LM"){
       // Levenberg-Marquardt
-      cout << "Using Levenberg-Marquardt method." << endl;
+      std::cout << "Using Levenberg-Marquardt method." << std::endl;
       LeveMarq< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
       Xopt = fm.minimize(cs.Param().X(),
 			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -1383,7 +1390,7 @@ int main(int argc, char *argv[]){
     }
     else if (potinfo.specs_pot.fitmet=="DL"){
       // Powell dog-leg
-      cout << "Using Powell dog-leg method." << endl;
+      std::cout << "Using Powell dog-leg method." << std::endl;
       PowellDogLeg< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
       Xopt = fm.minimize(cs.Param().X(),
 			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -1393,7 +1400,7 @@ int main(int argc, char *argv[]){
     }
     else if (potinfo.specs_pot.fitmet=="SM"){
       // Simplex method
-      cout << "Using Simplex method." << endl;
+      std::cout << "Using Simplex method." << std::endl;
       SimplexFit< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
       /*
 	Vector<double> X_displ( cs.Param().X().size(), 
@@ -1474,19 +1481,19 @@ int main(int argc, char *argv[]){
        ############################################################################### */
 
     //cs.Param().X() = Xopt;
-    //cout << "Made it here" << endl;
-    //cout << "Xopt - cs.Param().X() is " << endl;
-    //cout << Xopt - cs.Param().X() << endl;
+    //cout << "Made it here" << std::endl;
+    //cout << "Xopt - cs.Param().X() is " << std::endl;
+    //cout << Xopt - cs.Param().X() << std::endl;
 
-    cout << endl;
-    cout << "******************************************************" << endl;
-    cout << "******************************************************" << endl;
-    cout << "**                                                  **" << endl;
-    cout << "**          Potential fitting terminated.           **" << endl;
-    cout << "**                                                  **" << endl;
-    cout << "******************************************************" << endl;
-    cout << "******************************************************" << endl;
-    cout << endl;
+    std::cout << std::endl;
+    std::cout << "******************************************************" << std::endl;
+    std::cout << "******************************************************" << std::endl;
+    std::cout << "**                                                  **" << std::endl;
+    std::cout << "**          Potential fitting terminated.           **" << std::endl;
+    std::cout << "**                                                  **" << std::endl;
+    std::cout << "******************************************************" << std::endl;
+    std::cout << "******************************************************" << std::endl;
+    std::cout << std::endl;
 
 
     // Calculate properties using optimized parameters:
@@ -1506,10 +1513,10 @@ int main(int argc, char *argv[]){
 
 
 
-  cout << "Dumping potential parameters and compound properties to files ..." << endl;
-  ofstream fout1, fout2;
-  string fname1 = "report-potpar.dat";
-  string fname2 = "report-compprop.dat";
+  std::cout << "Dumping potential parameters and compound properties to files ..." << std::endl;
+  std::ofstream fout1, fout2;
+  std::string fname1 = "report-potpar.dat";
+  std::string fname2 = "report-compprop.dat";
   fout1.open(fname1.c_str());
   fout2.open(fname2.c_str());
 
@@ -1526,11 +1533,11 @@ int main(int argc, char *argv[]){
   double ts2 = omp_get_wtime();
   //clock_t clock2 = std::clock();
   
-  cout << "**********************************************************************" << endl;
-  cout << "Total time (seconds) spent in program: "
+  std::cout << "**********************************************************************" << std::endl;
+  std::cout << "Total time (seconds) spent in program: "
        << ts2 - ts1
-       << endl;
-  cout << "**********************************************************************" << endl;
+       << std::endl;
+  std::cout << "**********************************************************************" << std::endl;
 
 
 
@@ -1552,14 +1559,14 @@ int main(int argc, char *argv[]){
   for (i=0; i!=NXf; ++i)
     dXfopt[i] = sqrt(2.0 / H.elem(i,i));
 
-  cout << "####################################################################" << endl;
-  cout << "Fitted parameters and their uncertainties:" << endl;
-  cout << "Parameter    Value      Uncertainty    Rel. uncertainty:" << endl;
-  cout << "####################################################################" << endl;
+  std::cout << "####################################################################" << std::endl;
+  std::cout << "Fitted parameters and their uncertainties:" << std::endl;
+  std::cout << "Parameter    Value      Uncertainty    Rel. uncertainty:" << std::endl;
+  std::cout << "####################################################################" << std::endl;
   for (i=0; i<NXf; i++){
     re = 0.0;
     if (abs(Xfopt[i])>eps) re = abs(dXfopt[i] / Xfopt[i]);
-    cout << "x" << i << " " << Xfopt[i] << " " << dXfopt[i] << " " << re << endl;
+    std::cout << "x" << i << " " << Xfopt[i] << " " << dXfopt[i] << " " << re << std::endl;
   }
-  cout << "####################################################################" << endl;
+  std::cout << "####################################################################" << std::endl;
 #endif

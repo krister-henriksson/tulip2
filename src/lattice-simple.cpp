@@ -26,6 +26,15 @@
 #include "lattice-simple.hpp"
 
 
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
 #define USE_SPGLIB
 
 
@@ -40,7 +49,6 @@ extern "C" {
 #endif
 
 
-using namespace std;
 using namespace utils;
 using namespace constants;
 using namespace physconst;
@@ -49,12 +57,12 @@ using boost::format;
 
 LatticeSimple::LatticeSimple(){
   nbasis   = 0;
-  origin   = Vector<double>(3, 0.0);
-  minpos   = Vector<double>(3, 0.0);
-  avec     = Vector<double>(3, 0.0);
-  bvec     = Vector<double>(3, 0.0);
-  cvec     = Vector<double>(3, 0.0);
-  pbc      = Vector<bool>(3, true);
+  origin   = Vector3<double>(0.0);
+  minpos   = Vector3<double>(0.0);
+  avec     = Vector3<double>(0.0);
+  bvec     = Vector3<double>(0.0);
+  cvec     = Vector3<double>(0.0);
+  pbc      = Vector3<bool>(true);
   csystem  = "unknown";
   csystem_sub = 0;
   csymaxis = "";
@@ -65,8 +73,8 @@ LatticeSimple::LatticeSimple(){
 
 
 void LatticeSimple::get_ipos(void){
-  Matrix<double> A(3,3,0), Ainv(3,3,0);
-  Vector<double> b(3,0), x(3,0);
+  MatrixSq3<double> A(0), Ainv(0);
+  Vector3<double> b(0), x(0);
 
   A.elem(0,0)=avec[0];
   A.elem(1,0)=avec[1];
@@ -90,8 +98,8 @@ void LatticeSimple::get_ipos(void){
 }
 
 
-void LatticeSimple::rotate(const Matrix<double> & R){
-  Vector<double> tvec(3,0);
+void LatticeSimple::rotate(const MatrixSq3<double> & R){
+  Vector3<double> tvec(0);
   tvec = R * avec; avec = tvec;
   tvec = R * bvec; bvec = tvec;
   tvec = R * cvec; cvec = tvec;
@@ -101,7 +109,7 @@ void LatticeSimple::rotate(const Matrix<double> & R){
   get_ipos();
 }
 
-void LatticeSimple::shift(const Vector<double> & svec){
+void LatticeSimple::shift(const Vector3<double> & svec){
   for (int i=0; i<nbasis; ++i){
     pos[i][0] += svec[0];
     pos[i][1] += svec[1];
@@ -113,17 +121,17 @@ void LatticeSimple::shift(const Vector<double> & svec){
 
 
 
-void LatticeSimple::dump_xyz(const string & filename){
-  string dumpfile(filename);
-  ofstream fout;
+void LatticeSimple::dump_xyz(const std::string & filename){
+  std::string dumpfile(filename);
+  std::ofstream fout;
   fout.open(dumpfile.c_str());
-  fout << nbasis << endl;
-  fout << "" << endl;
+  fout << nbasis << std::endl;
+  fout << "" << std::endl;
   for (int i=0; i<nbasis; ++i){
     fout << "Au " 
 	 << pos[i][0] << " "
 	 << pos[i][1] << " "
-	 << pos[i][2] << " " << i << " 1" << endl;
+	 << pos[i][2] << " " << i << " 1" << std::endl;
   }
   fout.close();
   fout.clear();
@@ -132,9 +140,9 @@ void LatticeSimple::dump_xyz(const string & filename){
 
 
 
-bool LatticeSimple::matrix_is_a_symm_op(const Matrix<double> & R){
+bool LatticeSimple::matrix_is_a_symm_op(const MatrixSq3<double> & R){
   int i,j,k,p,q, ts, tt;
-  Vector<double> bv, r(3), rs(3), rt(3), dr(3);
+  Vector3<double> bv, r, rs, rt, dr;
   bool found;
   int nfound=0;
   double tol = 1e-3;
@@ -243,11 +251,11 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
   int i, j;
   int imin;
   double sum,summin;
-  Matrix<double> A(3,3,0), Ainv(3,3,0);
-  Vector<double> b(3,0), x(3,0);
-  Vector<double> u1_vec, u2_vec, u3_vec;
-  string name;
-  Vector< Vector<double> > pos, ipos;
+  MatrixSq3<double> A, Ainv;
+  Vector3<double> b, x;
+  Vector3<double> u1_vec, u2_vec, u3_vec;
+  std::string name;
+  Vector< Vector3<double> > pos, ipos;
   CompoundStructureFit cmp;
 
 
@@ -255,57 +263,57 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 
 
   double th;
-  Vector<double> origin(3,0);
+  Vector3<double> origin(0);
 
   // Proper Cartesian rotations
-  Matrix<double> Rx60(3,3,0),  Ry60(3,3,0),  Rz60(3,3,0);
-  Matrix<double> Rx90(3,3,0),  Ry90(3,3,0),  Rz90(3,3,0);
-  Matrix<double> Rx120(3,3,0), Ry120(3,3,0), Rz120(3,3,0);
-  Matrix<double> Rx180(3,3,0), Ry180(3,3,0), Rz180(3,3,0);
+  MatrixSq3<double> Rx60,  Ry60,  Rz60;
+  MatrixSq3<double> Rx90,  Ry90,  Rz90;
+  MatrixSq3<double> Rx120, Ry120, Rz120;
+  MatrixSq3<double> Rx180, Ry180, Rz180;
 
   // Improper Cartesian rotations
-  Matrix<double> IRx60(3,3,0),  IRy60(3,3,0),  IRz60(3,3,0);
-  Matrix<double> IRx90(3,3,0),  IRy90(3,3,0),  IRz90(3,3,0);
-  Matrix<double> IRx120(3,3,0), IRy120(3,3,0), IRz120(3,3,0);
-  Matrix<double> IRx180(3,3,0), IRy180(3,3,0), IRz180(3,3,0);
+  MatrixSq3<double> IRx60,  IRy60,  IRz60;
+  MatrixSq3<double> IRx90,  IRy90,  IRz90;
+  MatrixSq3<double> IRx120, IRy120, IRz120;
+  MatrixSq3<double> IRx180, IRy180, IRz180;
 
   // Inversion:
-  Matrix<double> Inv(3,3,0);
+  MatrixSq3<double> Inv;
 
-  Matrix<double> Mx(3,3,0), My(3,3,0), Mz(3,3,0); // same as IR*180(*)
+  MatrixSq3<double> Mx, My, Mz; // same as IR*180(*)
 
-  Vector<double> dir_x(3), dir_y(3), dir_z(3);
+  Vector3<double> dir_x, dir_y, dir_z;
 
   // Trigonal/hexagonal directions:
-  Vector<double> dir_h1(3), dir_h2(3), dir_h3(3);
-  Vector<double> dir_u1(3), dir_u2(3), dir_u3(3);
+  Vector3<double> dir_h1, dir_h2, dir_h3;
+  Vector3<double> dir_u1, dir_u2, dir_u3;
   // Planes:
-  Vector<double> dir_h1z(3), dir_h2z(3), dir_h3z(3);
-  Vector<double> dir_u1z(3), dir_u2z(3), dir_u3z(3);
+  Vector3<double> dir_h1z, dir_h2z, dir_h3z;
+  Vector3<double> dir_u1z, dir_u2z, dir_u3z;
 
-  Matrix<double> R180dh1(3,3), R180dh2(3,3), R180dh3(3,3);
-  Matrix<double> R180du1(3,3), R180du2(3,3), R180du3(3,3);
+  MatrixSq3<double> R180dh1, R180dh2, R180dh3;
+  MatrixSq3<double> R180du1, R180du2, R180du3;
 
-  Matrix<double> IR180dh1(3,3), IR180dh2(3,3), IR180dh3(3,3);
-  Matrix<double> IR180du1(3,3), IR180du2(3,3), IR180du3(3,3);
+  MatrixSq3<double> IR180dh1, IR180dh2, IR180dh3;
+  MatrixSq3<double> IR180du1, IR180du2, IR180du3;
 
-  Matrix<double> IR180dh1z(3,3), IR180dh2z(3,3), IR180dh3z(3,3);
-  Matrix<double> IR180du1z(3,3), IR180du2z(3,3), IR180du3z(3,3);
+  MatrixSq3<double> IR180dh1z, IR180dh2z, IR180dh3z;
+  MatrixSq3<double> IR180du1z, IR180du2z, IR180du3z;
 
   // Cartesian directions:
-  Vector<double> dir_110(3), dir_bar110(3);
+  Vector3<double> dir_110, dir_bar110;
 
   // Cubic-cartesian directions:
-  Vector<double> dir_111(3), dir_bar111(3), dir_1bar11(3), dir_11bar1(3);
+  Vector3<double> dir_111, dir_bar111, dir_1bar11, dir_11bar1;
 
-  Matrix<double> R180d110(3,3), R180dbar110(3,3);
-  Matrix<double> IR180d110(3,3), IR180dbar110(3,3);
+  MatrixSq3<double> R180d110, R180dbar110;
+  MatrixSq3<double> IR180d110, IR180dbar110;
 
-  Matrix<double> R120d111(3,3), R120dbar111(3,3), R120d1bar11(3,3), R120d11bar1(3,3);
-  Matrix<double> IR120d111(3,3), IR120dbar111(3,3), IR120d1bar11(3,3), IR120d11bar1(3,3);
+  MatrixSq3<double> R120d111, R120dbar111, R120d1bar11, R120d11bar1;
+  MatrixSq3<double> IR120d111, IR120dbar111, IR120d1bar11, IR120d11bar1;
 
 
-  cout << "Performing lattice symmetry analysis to obtain point group of compounds ..." << endl;
+  std::cout << "Performing lattice symmetry analysis to obtain point group of compounds ..." << std::endl;
 
 
   get_rotation_matrix(Rx60, 2*PI/6, 0);
@@ -478,10 +486,10 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
     ipos = cmp.basis_vecs;
 
 
-    string dumpfile("symana-" + name + ".out");
-    ofstream fout;
+    std::string dumpfile("symana-" + name + ".out");
+    std::ofstream fout;
     fout.open(dumpfile.c_str());
-    fout << "Symmetry analysis log for compound " << name << endl;
+    fout << "Symmetry analysis log for compound " << name << std::endl;
 
 
     //cout << "nbasis " << nbasis << endl;
@@ -523,7 +531,7 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 
     lattice.nbasis   = nbasis;
     lattice.minpos   = pos[imin];
-    lattice.origin   = Vector<double>(3,0);
+    lattice.origin   = Vector3<double>(0);
     lattice.avec  = cmp.u1_vec;
     lattice.bvec  = cmp.u2_vec;
     lattice.cvec  = cmp.u3_vec;
@@ -585,8 +593,8 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
     */
 
     int ir, il, ish, nsh;
-    Vector< Vector<double> > shifts;
-    Vector<double> tv(3, 0.0);
+    Vector< Vector3<double> > shifts;
+    Vector3<double> tv;
 
     shifts.push_back(tv);
 
@@ -659,7 +667,7 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 	lattmp.shift(shifts[ish]);
 
 	// Rotation:
-	Matrix<double> Rdir(3,3,0);
+	MatrixSq3<double> Rdir;
 	if (ir==0){
 	  // Unit matrix:
 	  for (int i1=0; i1<3; ++i1)
@@ -672,87 +680,87 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 	  get_matrix_for_rotation_to_coincide_with_axis(Rdir, dir_111, lattice.cvec);
 	  lattmp.rotate(Rdir);
 	}
-	fout << "Using shift " << shifts[ish] << " and rotation " << Rdir << endl;
+	std::fout << "Using shift " << shifts[ish] << " and rotation " << Rdir << std::endl;
 
 
 
 
 
-	if (lattmp.matrix_is_a_symm_op(Inv)){ sinv++; fout << "Compound " << name << " has symmetry Inv" << endl; }
+	if (lattmp.matrix_is_a_symm_op(Inv)){ sinv++; fout << "Compound " << name << " has symmetry Inv" << std::endl; }
 
 	// ***********************************************************************
 	// Proper rotations:
 	// ***********************************************************************
 
-	if (lattmp.matrix_is_a_symm_op(Rx90)){ s4x++; fout << "Compound " << name << " has symmetry Rot x 90deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(Ry90)){ s4y++; fout << "Compound " << name << " has symmetry Rot y 90deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(Rz90)){ s4z++; fout << "Compound " << name << " has symmetry Rot z 90deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(Rx90)){ s4x++; fout << "Compound " << name << " has symmetry Rot x 90deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(Ry90)){ s4y++; fout << "Compound " << name << " has symmetry Rot y 90deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(Rz90)){ s4z++; fout << "Compound " << name << " has symmetry Rot z 90deg" << std::endl; }
 
-	if (lattmp.matrix_is_a_symm_op(Rx180)){ s2x++; fout << "Compound " << name << " has symmetry Rot x 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(Ry180)){ s2y++; fout << "Compound " << name << " has symmetry Rot y 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(Rz180)){ s2z++; fout << "Compound " << name << " has symmetry Rot z 180deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(Rx180)){ s2x++; fout << "Compound " << name << " has symmetry Rot x 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(Ry180)){ s2y++; fout << "Compound " << name << " has symmetry Rot y 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(Rz180)){ s2z++; fout << "Compound " << name << " has symmetry Rot z 180deg" << std::endl; }
 
-	if (lattmp.matrix_is_a_symm_op(Rx60)){ s6x++; fout << "Compound " << name << " has symmetry Rot x 60deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(Ry60)){ s6y++; fout << "Compound " << name << " has symmetry Rot y 60deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(Rz60)){ s6z++; fout << "Compound " << name << " has symmetry Rot z 60deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(Rx60)){ s6x++; fout << "Compound " << name << " has symmetry Rot x 60deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(Ry60)){ s6y++; fout << "Compound " << name << " has symmetry Rot y 60deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(Rz60)){ s6z++; fout << "Compound " << name << " has symmetry Rot z 60deg" << std::endl; }
 
-	if (lattmp.matrix_is_a_symm_op(Rx120)){ s3x++; fout << "Compound " << name << " has symmetry Rot x 120deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(Ry120)){ s3y++; fout << "Compound " << name << " has symmetry Rot y 120deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(Rz120)){ s3z++; fout << "Compound " << name << " has symmetry Rot z 120deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(Rx120)){ s3x++; fout << "Compound " << name << " has symmetry Rot x 120deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(Ry120)){ s3y++; fout << "Compound " << name << " has symmetry Rot y 120deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(Rz120)){ s3z++; fout << "Compound " << name << " has symmetry Rot z 120deg" << std::endl; }
 
 
 	// ***********************************************************************
 	// Improper rotations (Rotation + inversion in the origin):
 	// ***********************************************************************
 	/*
-	if (lattmp.matrix_is_a_symm_op(Mx)){ smx++; fout << "Compound " << name << " has symmetry Mx (yz plane)" << endl; }
-	if (lattmp.matrix_is_a_symm_op(My)){ smy++; fout << "Compound " << name << " has symmetry My (xz plane)" << endl; }
-	if (lattmp.matrix_is_a_symm_op(Mz)){ smz++; fout << "Compound " << name << " has symmetry Mz (xy plane)" << endl; }
+	if (lattmp.matrix_is_a_symm_op(Mx)){ smx++; fout << "Compound " << name << " has symmetry Mx (yz plane)" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(My)){ smy++; fout << "Compound " << name << " has symmetry My (xz plane)" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(Mz)){ smz++; fout << "Compound " << name << " has symmetry Mz (xy plane)" << std::endl; }
 	*/
-	if (lattmp.matrix_is_a_symm_op(IRx90)){ sbar4x++; fout << "Compound " << name << " has symmetry ImpRot x 90deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IRy90)){ sbar4y++; fout << "Compound " << name << " has symmetry ImpRot y 90deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IRz90)){ sbar4z++; fout << "Compound " << name << " has symmetry ImpRot z 90deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(IRx90)){ sbar4x++; fout << "Compound " << name << " has symmetry ImpRot x 90deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IRy90)){ sbar4y++; fout << "Compound " << name << " has symmetry ImpRot y 90deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IRz90)){ sbar4z++; fout << "Compound " << name << " has symmetry ImpRot z 90deg" << std::endl; }
 
-	if (lattmp.matrix_is_a_symm_op(IRx180)){ smx++; fout << "Compound " << name << " has symmetry ImpRot x 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IRy180)){ smy++; fout << "Compound " << name << " has symmetry ImpRot y 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IRz180)){ smz++; fout << "Compound " << name << " has symmetry ImpRot z 180deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(IRx180)){ smx++; fout << "Compound " << name << " has symmetry ImpRot x 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IRy180)){ smy++; fout << "Compound " << name << " has symmetry ImpRot y 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IRz180)){ smz++; fout << "Compound " << name << " has symmetry ImpRot z 180deg" << std::endl; }
 
-	if (lattmp.matrix_is_a_symm_op(IRx60)){ sbar6x++; fout << "Compound " << name << " has symmetry ImpRot x 60deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IRy60)){ sbar6y++; fout << "Compound " << name << " has symmetry ImpRot y 60deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IRz60)){ sbar6z++; fout << "Compound " << name << " has symmetry ImpRot z 60deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(IRx60)){ sbar6x++; fout << "Compound " << name << " has symmetry ImpRot x 60deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IRy60)){ sbar6y++; fout << "Compound " << name << " has symmetry ImpRot y 60deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IRz60)){ sbar6z++; fout << "Compound " << name << " has symmetry ImpRot z 60deg" << std::endl; }
 
-	if (lattmp.matrix_is_a_symm_op(IRx120)){ sbar3x++; fout << "Compound " << name << " has symmetry ImpRot x 120deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IRy120)){ sbar3y++; fout << "Compound " << name << " has symmetry ImpRot y 120deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IRz120)){ sbar3z++; fout << "Compound " << name << " has symmetry ImpRot z 120deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(IRx120)){ sbar3x++; fout << "Compound " << name << " has symmetry ImpRot x 120deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IRy120)){ sbar3y++; fout << "Compound " << name << " has symmetry ImpRot y 120deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IRz120)){ sbar3z++; fout << "Compound " << name << " has symmetry ImpRot z 120deg" << std::endl; }
 
   
 	// ***********************************************************************
 	// Rotations around cube space diagonals:
 	// ***********************************************************************
 
-	if (lattmp.matrix_is_a_symm_op(R120d111)){ s3d111++; fout << "Compound " << name << " has symmetry Rot (1,1,1) 120deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(R120dbar111)){ s3dbar111++; fout << "Compound " << name << " has symmetry Rot (-1,1,1) 120deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(R120d1bar11)){ s3d1bar11++; fout << "Compound " << name << " has symmetry Rot (1,-1,1) 120deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(R120d11bar1)){ s3d11bar1++; fout << "Compound " << name << " has symmetry Rot (1,1,-1) 120deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(R120d111)){ s3d111++; fout << "Compound " << name << " has symmetry Rot (1,1,1) 120deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(R120dbar111)){ s3dbar111++; fout << "Compound " << name << " has symmetry Rot (-1,1,1) 120deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(R120d1bar11)){ s3d1bar11++; fout << "Compound " << name << " has symmetry Rot (1,-1,1) 120deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(R120d11bar1)){ s3d11bar1++; fout << "Compound " << name << " has symmetry Rot (1,1,-1) 120deg" << std::endl; }
 
-	if (lattmp.matrix_is_a_symm_op(IR120d111)){ sbar3d111++; fout << "Compound " << name << " has symmetry Imp Rot (1,1,1) 120deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR120dbar111)){ sbar3dbar111++; fout << "Compound " << name << " has symmetry Imp Rot (-1,1,1) 120deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR120d1bar11)){ sbar3d1bar11++; fout << "Compound " << name << " has symmetry Imp Rot (1,-1,1) 120deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR120d11bar1)){ sbar3d11bar1++; fout << "Compound " << name << " has symmetry Imp Rot (1,1,-1) 120deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(IR120d111)){ sbar3d111++; fout << "Compound " << name << " has symmetry Imp Rot (1,1,1) 120deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR120dbar111)){ sbar3dbar111++; fout << "Compound " << name << " has symmetry Imp Rot (-1,1,1) 120deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR120d1bar11)){ sbar3d1bar11++; fout << "Compound " << name << " has symmetry Imp Rot (1,-1,1) 120deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR120d11bar1)){ sbar3d11bar1++; fout << "Compound " << name << " has symmetry Imp Rot (1,1,-1) 120deg" << std::endl; }
 
 	// ***********************************************************************
 	// Improper rotations (reflections) around (in planes containing) cube side diagonals:
 	// ***********************************************************************
 
-	if (lattmp.matrix_is_a_symm_op(IR180d110)){ smd110++; fout << "Compound " << name << " has symmetry Imp Rot (1,1,0) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR180dbar110)){ smdbar110++; fout << "Compound " << name << " has symmetry Imp Rot (-1,1,0) 180deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180d110)){ smd110++; fout << "Compound " << name << " has symmetry Imp Rot (1,1,0) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180dbar110)){ smdbar110++; fout << "Compound " << name << " has symmetry Imp Rot (-1,1,0) 180deg" << std::endl; }
 
 	// ***********************************************************************
 	// Rotations around cube side diagonals:
 	// ***********************************************************************
 
-	if (lattmp.matrix_is_a_symm_op(R180d110)){ s2d110++; fout << "Compound " << name << " has symmetry Rot (1,1,0) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(R180dbar110)){ s2dbar110++; fout << "Compound " << name << " has symmetry Rot (-1,1,0) 180deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(R180d110)){ s2d110++; fout << "Compound " << name << " has symmetry Rot (1,1,0) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(R180dbar110)){ s2dbar110++; fout << "Compound " << name << " has symmetry Rot (-1,1,0) 180deg" << std::endl; }
 
 	// ***********************************************************************
 	// Rotations relevant for trigonal/hexagonal systems:
@@ -760,14 +768,14 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 	// Directions: h1:=x, h2, h3, h4:=z
 	// Angle between h1 and h2, h2 and h3, and h3 and h1 is 120 deg = 2*PI/3
 
-	if (lattmp.matrix_is_a_symm_op(R180dh1)){ s2dh1++; fout << "Compound " << name << " has symmetry Rot (h1) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(R180dh2)){ s2dh2++; fout << "Compound " << name << " has symmetry Rot (h2) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(R180dh3)){ s2dh3++; fout << "Compound " << name << " has symmetry Rot (h3) 180deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(R180dh1)){ s2dh1++; fout << "Compound " << name << " has symmetry Rot (h1) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(R180dh2)){ s2dh2++; fout << "Compound " << name << " has symmetry Rot (h2) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(R180dh3)){ s2dh3++; fout << "Compound " << name << " has symmetry Rot (h3) 180deg" << std::endl; }
 
 	// Axes orthogonal to h1,h2,h3:
-	if (lattmp.matrix_is_a_symm_op(R180du1)){ s2du1++; fout << "Compound " << name << " has symmetry Rot (h1+30deg) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(R180du2)){ s2du2++; fout << "Compound " << name << " has symmetry Rot (h1+90deg) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(R180du3)){ s2du3++; fout << "Compound " << name << " has symmetry Rot (h1+150deg) 180deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(R180du1)){ s2du1++; fout << "Compound " << name << " has symmetry Rot (h1+30deg) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(R180du2)){ s2du2++; fout << "Compound " << name << " has symmetry Rot (h1+90deg) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(R180du3)){ s2du3++; fout << "Compound " << name << " has symmetry Rot (h1+150deg) 180deg" << std::endl; }
 
 
 
@@ -776,13 +784,13 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 	// Relevant for trigonal/hexagonal systems.
 	// ***********************************************************************
 
-	if (lattmp.matrix_is_a_symm_op(IR180dh1)){ smdh1++; fout << "Compound " << name << " has symmetry Imp Rot (h1) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR180dh2)){ smdh2++; fout << "Compound " << name << " has symmetry Imp Rot (h2) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR180dh3)){ smdh3++; fout << "Compound " << name << " has symmetry Imp Rot (h3) 180deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180dh1)){ smdh1++; fout << "Compound " << name << " has symmetry Imp Rot (h1) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180dh2)){ smdh2++; fout << "Compound " << name << " has symmetry Imp Rot (h2) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180dh3)){ smdh3++; fout << "Compound " << name << " has symmetry Imp Rot (h3) 180deg" << std::endl; }
 
-	if (lattmp.matrix_is_a_symm_op(IR180du1)){ smdu1++; fout << "Compound " << name << " has symmetry Imp Rot (h1+30deg) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR180du2)){ smdu2++; fout << "Compound " << name << " has symmetry Imp Rot (h1+90deg) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR180du3)){ smdu3++; fout << "Compound " << name << " has symmetry Imp Rot (h1+150deg) 180deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180du1)){ smdu1++; fout << "Compound " << name << " has symmetry Imp Rot (h1+30deg) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180du2)){ smdu2++; fout << "Compound " << name << " has symmetry Imp Rot (h1+90deg) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180du3)){ smdu3++; fout << "Compound " << name << " has symmetry Imp Rot (h1+150deg) 180deg" << std::endl; }
 
 
 
@@ -790,12 +798,12 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 	// Reflections in planes (hi, z) and (u1, z), i=1,2,3. Plane normal is e.g. h1 x z (vector product).
 	// Relevant for trigonal/hexagonal systems.
 	// ***********************************************************************
-	if (lattmp.matrix_is_a_symm_op(IR180dh1z)){ smh1z++; fout << "Compound " << name << " has symmetry Imp Rot (h1 x z) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR180dh2z)){ smh2z++; fout << "Compound " << name << " has symmetry Imp Rot (h2 x z) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR180dh3z)){ smh3z++; fout << "Compound " << name << " has symmetry Imp Rot (h3 x z) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR180du1z)){ smu1z++; fout << "Compound " << name << " has symmetry Imp Rot (u1 x z) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR180du2z)){ smu2z++; fout << "Compound " << name << " has symmetry Imp Rot (u2 x z) 180deg" << endl; }
-	if (lattmp.matrix_is_a_symm_op(IR180du3z)){ smu3z++; fout << "Compound " << name << " has symmetry Imp Rot (u3 x z) 180deg" << endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180dh1z)){ smh1z++; fout << "Compound " << name << " has symmetry Imp Rot (h1 x z) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180dh2z)){ smh2z++; fout << "Compound " << name << " has symmetry Imp Rot (h2 x z) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180dh3z)){ smh3z++; fout << "Compound " << name << " has symmetry Imp Rot (h3 x z) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180du1z)){ smu1z++; fout << "Compound " << name << " has symmetry Imp Rot (u1 x z) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180du2z)){ smu2z++; fout << "Compound " << name << " has symmetry Imp Rot (u2 x z) 180deg" << std::endl; }
+	if (lattmp.matrix_is_a_symm_op(IR180du3z)){ smu3z++; fout << "Compound " << name << " has symmetry Imp Rot (u3 x z) 180deg" << std::endl; }
 
       }
 
@@ -826,74 +834,74 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 
     // Summary:
 
-    if (sinv) cout << "Compound " << name << " has symmetry Inv" << endl;
-    if (s4x) cout << "Compound " << name << " has symmetry Rot x 90deg" << endl;
-    if (s4y) cout << "Compound " << name << " has symmetry Rot y 90deg" << endl;
-    if (s4z) cout << "Compound " << name << " has symmetry Rot z 90deg" << endl;
-    if (s2x) cout << "Compound " << name << " has symmetry Rot x 180deg" << endl;
-    if (s2y) cout << "Compound " << name << " has symmetry Rot y 180deg" << endl;
-    if (s2z) cout << "Compound " << name << " has symmetry Rot z 180deg" << endl;
-    if (s6x) cout << "Compound " << name << " has symmetry Rot x 60deg" << endl;
-    if (s6y) cout << "Compound " << name << " has symmetry Rot y 60deg" << endl;
-    if (s6z) cout << "Compound " << name << " has symmetry Rot z 60deg" << endl;
-    if (s3x) cout << "Compound " << name << " has symmetry Rot x 120deg" << endl;
-    if (s3y) cout << "Compound " << name << " has symmetry Rot y 120deg" << endl;
-    if (s3z) cout << "Compound " << name << " has symmetry Rot z 120deg" << endl;
-    if (smx) cout << "Compound " << name << " has symmetry Mx (yz plane)" << endl;
-    if (smy) cout << "Compound " << name << " has symmetry My (xz plane)" << endl;
-    if (smz) cout << "Compound " << name << " has symmetry Mz (xy plane)" << endl;
-    if (sbar4x) cout << "Compound " << name << " has symmetry ImpRot x 90deg" << endl;
-    if (sbar4y) cout << "Compound " << name << " has symmetry ImpRot y 90deg" << endl;
-    if (sbar4z) cout << "Compound " << name << " has symmetry ImpRot z 90deg" << endl;
-    if (smx) cout << "Compound " << name << " has symmetry ImpRot x 180deg" << endl;
-    if (smy) cout << "Compound " << name << " has symmetry ImpRot y 180deg" << endl;
-    if (smz) cout << "Compound " << name << " has symmetry ImpRot z 180deg" << endl;
-    if (sbar6x) cout << "Compound " << name << " has symmetry ImpRot x 60deg" << endl;
-    if (sbar6y) cout << "Compound " << name << " has symmetry ImpRot y 60deg" << endl;
-    if (sbar6z) cout << "Compound " << name << " has symmetry ImpRot z 60deg" << endl;
-    if (sbar3x) cout << "Compound " << name << " has symmetry ImpRot x 120deg" << endl;
-    if (sbar3y) cout << "Compound " << name << " has symmetry ImpRot y 120deg" << endl;
-    if (sbar3z) cout << "Compound " << name << " has symmetry ImpRot z 120deg" << endl;
+    if (sinv) std::cout << "Compound " << name << " has symmetry Inv" << std::endl;
+    if (s4x) std::cout << "Compound " << name << " has symmetry Rot x 90deg" << std::endl;
+    if (s4y) std::cout << "Compound " << name << " has symmetry Rot y 90deg" << std::endl;
+    if (s4z) std::cout << "Compound " << name << " has symmetry Rot z 90deg" << std::endl;
+    if (s2x) std::cout << "Compound " << name << " has symmetry Rot x 180deg" << std::endl;
+    if (s2y) std::cout << "Compound " << name << " has symmetry Rot y 180deg" << std::endl;
+    if (s2z) std::cout << "Compound " << name << " has symmetry Rot z 180deg" << std::endl;
+    if (s6x) std::cout << "Compound " << name << " has symmetry Rot x 60deg" << std::endl;
+    if (s6y) std::cout << "Compound " << name << " has symmetry Rot y 60deg" << std::endl;
+    if (s6z) std::cout << "Compound " << name << " has symmetry Rot z 60deg" << std::endl;
+    if (s3x) std::cout << "Compound " << name << " has symmetry Rot x 120deg" << std::endl;
+    if (s3y) std::cout << "Compound " << name << " has symmetry Rot y 120deg" << std::endl;
+    if (s3z) std::cout << "Compound " << name << " has symmetry Rot z 120deg" << std::endl;
+    if (smx) std::cout << "Compound " << name << " has symmetry Mx (yz plane)" << std::endl;
+    if (smy) std::cout << "Compound " << name << " has symmetry My (xz plane)" << std::endl;
+    if (smz) std::cout << "Compound " << name << " has symmetry Mz (xy plane)" << std::endl;
+    if (sbar4x) std::cout << "Compound " << name << " has symmetry ImpRot x 90deg" << std::endl;
+    if (sbar4y) std::cout << "Compound " << name << " has symmetry ImpRot y 90deg" << std::endl;
+    if (sbar4z) std::cout << "Compound " << name << " has symmetry ImpRot z 90deg" << std::endl;
+    if (smx) std::cout << "Compound " << name << " has symmetry ImpRot x 180deg" << std::endl;
+    if (smy) std::cout << "Compound " << name << " has symmetry ImpRot y 180deg" << std::endl;
+    if (smz) std::cout << "Compound " << name << " has symmetry ImpRot z 180deg" << std::endl;
+    if (sbar6x) std::cout << "Compound " << name << " has symmetry ImpRot x 60deg" << std::endl;
+    if (sbar6y) std::cout << "Compound " << name << " has symmetry ImpRot y 60deg" << std::endl;
+    if (sbar6z) std::cout << "Compound " << name << " has symmetry ImpRot z 60deg" << std::endl;
+    if (sbar3x) std::cout << "Compound " << name << " has symmetry ImpRot x 120deg" << std::endl;
+    if (sbar3y) std::cout << "Compound " << name << " has symmetry ImpRot y 120deg" << std::endl;
+    if (sbar3z) std::cout << "Compound " << name << " has symmetry ImpRot z 120deg" << std::endl;
 
-    if (s3d111) cout << "Compound " << name << " has symmetry Rot (1,1,1) 120deg" << endl;
-    if (s3dbar111) cout << "Compound " << name << " has symmetry Rot (-1,1,1) 120deg" << endl;
-    if (s3d1bar11) cout << "Compound " << name << " has symmetry Rot (1,-1,1) 120deg" << endl;
-    if (s3d11bar1) cout << "Compound " << name << " has symmetry Rot (1,1,-1) 120deg" << endl;
+    if (s3d111) std::cout << "Compound " << name << " has symmetry Rot (1,1,1) 120deg" << std::endl;
+    if (s3dbar111) std::cout << "Compound " << name << " has symmetry Rot (-1,1,1) 120deg" << std::endl;
+    if (s3d1bar11) std::cout << "Compound " << name << " has symmetry Rot (1,-1,1) 120deg" << std::endl;
+    if (s3d11bar1) std::cout << "Compound " << name << " has symmetry Rot (1,1,-1) 120deg" << std::endl;
 
-    if (sbar3d111) cout << "Compound " << name << " has symmetry Imp Rot (1,1,1) 120deg" << endl;
-    if (sbar3dbar111) cout << "Compound " << name << " has symmetry Imp Rot (-1,1,1) 120deg" << endl;
-    if (sbar3d1bar11) cout << "Compound " << name << " has symmetry Imp Rot (1,-1,1) 120deg" << endl;
-    if (sbar3d11bar1) cout << "Compound " << name << " has symmetry Imp Rot (1,1,-1) 120deg" << endl;
+    if (sbar3d111) std::cout << "Compound " << name << " has symmetry Imp Rot (1,1,1) 120deg" << std::endl;
+    if (sbar3dbar111) std::cout << "Compound " << name << " has symmetry Imp Rot (-1,1,1) 120deg" << std::endl;
+    if (sbar3d1bar11) std::cout << "Compound " << name << " has symmetry Imp Rot (1,-1,1) 120deg" << std::endl;
+    if (sbar3d11bar1) std::cout << "Compound " << name << " has symmetry Imp Rot (1,1,-1) 120deg" << std::endl;
 
-    if (smd110) cout << "Compound " << name << " has symmetry Imp Rot (1,1,0) 180deg" << endl;
-    if (smdbar110) cout << "Compound " << name << " has symmetry Imp Rot (-1,1,0) 180deg" << endl;
+    if (smd110) std::cout << "Compound " << name << " has symmetry Imp Rot (1,1,0) 180deg" << std::endl;
+    if (smdbar110) std::cout << "Compound " << name << " has symmetry Imp Rot (-1,1,0) 180deg" << std::endl;
 
-    if (s2d110) cout << "Compound " << name << " has symmetry Rot (1,1,0) 180deg" << endl;
-    if (s2dbar110) cout << "Compound " << name << " has symmetry Rot (-1,1,0) 180deg" << endl;
+    if (s2d110) std::cout << "Compound " << name << " has symmetry Rot (1,1,0) 180deg" << std::endl;
+    if (s2dbar110) std::cout << "Compound " << name << " has symmetry Rot (-1,1,0) 180deg" << std::endl;
 
-    if (s2dh1) cout << "Compound " << name << " has symmetry Rot (h1) 180deg" << endl;
-    if (s2dh2) cout << "Compound " << name << " has symmetry Rot (h2) 180deg" << endl;
-    if (s2dh3) cout << "Compound " << name << " has symmetry Rot (h3) 180deg" << endl;
+    if (s2dh1) std::cout << "Compound " << name << " has symmetry Rot (h1) 180deg" << std::endl;
+    if (s2dh2) std::cout << "Compound " << name << " has symmetry Rot (h2) 180deg" << std::endl;
+    if (s2dh3) std::cout << "Compound " << name << " has symmetry Rot (h3) 180deg" << std::endl;
 
-    if (s2du1) cout << "Compound " << name << " has symmetry Rot (h1+30deg) 180deg" << endl;
-    if (s2du2) cout << "Compound " << name << " has symmetry Rot (h2+30deg) 180deg" << endl;
-    if (s2du3) cout << "Compound " << name << " has symmetry Rot (h3+30deg) 180deg" << endl;
+    if (s2du1) std::cout << "Compound " << name << " has symmetry Rot (h1+30deg) 180deg" << std::endl;
+    if (s2du2) std::cout << "Compound " << name << " has symmetry Rot (h2+30deg) 180deg" << std::endl;
+    if (s2du3) std::cout << "Compound " << name << " has symmetry Rot (h3+30deg) 180deg" << std::endl;
 
-    if (smdh1) cout << "Compound " << name << " has symmetry Imp Rot (h1) 180deg" << endl;
-    if (smdh2) cout << "Compound " << name << " has symmetry Imp Rot (h2) 180deg" << endl;
-    if (smdh3) cout << "Compound " << name << " has symmetry Imp Rot (h3) 180deg" << endl;
+    if (smdh1) std::cout << "Compound " << name << " has symmetry Imp Rot (h1) 180deg" << std::endl;
+    if (smdh2) std::cout << "Compound " << name << " has symmetry Imp Rot (h2) 180deg" << std::endl;
+    if (smdh3) std::cout << "Compound " << name << " has symmetry Imp Rot (h3) 180deg" << std::endl;
 
-    if (smdu1) cout << "Compound " << name << " has symmetry Imp Rot (h1+30deg) 180deg" << endl;
-    if (smdu2) cout << "Compound " << name << " has symmetry Imp Rot (h2+30deg) 180deg" << endl;
-    if (smdu3) cout << "Compound " << name << " has symmetry Imp Rot (h3+30deg) 180deg" << endl;
+    if (smdu1) std::cout << "Compound " << name << " has symmetry Imp Rot (h1+30deg) 180deg" << std::endl;
+    if (smdu2) std::cout << "Compound " << name << " has symmetry Imp Rot (h2+30deg) 180deg" << std::endl;
+    if (smdu3) std::cout << "Compound " << name << " has symmetry Imp Rot (h3+30deg) 180deg" << std::endl;
 
-    if (smh1z) cout << "Compound " << name << " has symmetry Imp Rot (h1 x z) 180deg" << endl;
-    if (smh2z) cout << "Compound " << name << " has symmetry Imp Rot (h2 x z) 180deg" << endl;
-    if (smh3z) cout << "Compound " << name << " has symmetry Imp Rot (h3 x z) 180deg" << endl;
+    if (smh1z) std::cout << "Compound " << name << " has symmetry Imp Rot (h1 x z) 180deg" << std::endl;
+    if (smh2z) std::cout << "Compound " << name << " has symmetry Imp Rot (h2 x z) 180deg" << std::endl;
+    if (smh3z) std::cout << "Compound " << name << " has symmetry Imp Rot (h3 x z) 180deg" << std::endl;
 
-    if (smu1z) cout << "Compound " << name << " has symmetry Imp Rot (u1 x z) 180deg" << endl;
-    if (smu2z) cout << "Compound " << name << " has symmetry Imp Rot (u2 x z) 180deg" << endl;
-    if (smu3z) cout << "Compound " << name << " has symmetry Imp Rot (u3 x z) 180deg" << endl;
+    if (smu1z) std::cout << "Compound " << name << " has symmetry Imp Rot (u1 x z) 180deg" << std::endl;
+    if (smu2z) std::cout << "Compound " << name << " has symmetry Imp Rot (u2 x z) 180deg" << std::endl;
+    if (smu3z) std::cout << "Compound " << name << " has symmetry Imp Rot (u3 x z) 180deg" << std::endl;
 
 
 
@@ -932,9 +940,9 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
     is_cubic = is_cubic1 && is_cubic2;
 
     /*
-    cout << "is_cubic1 " << is_cubic1 << endl;
-    cout << "is_cubic2 " << is_cubic2 << endl;
-    cout << "is_cubic  " << is_cubic  << endl;
+    std::cout << "is_cubic1 " << is_cubic1 << std::endl;
+    std::cout << "is_cubic2 " << is_cubic2 << std::endl;
+    std::cout << "is_cubic  " << is_cubic  << std::endl;
     */
 
     is_trig = false;
@@ -1334,8 +1342,8 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 
     SpglibDataset *p_spg_dataset;
     p_spg_dataset = spg_get_dataset(lat, position, stypes, nbasis, 1e-5);
-    cout << "spglib: spacegroup number   : " << p_spg_dataset->spacegroup_number << endl;
-    fout << "spglib: spacegroup number   : " << p_spg_dataset->spacegroup_number << endl;
+    std::cout << "spglib: spacegroup number   : " << p_spg_dataset->spacegroup_number << std::endl;
+    fout << "spglib: spacegroup number   : " << p_spg_dataset->spacegroup_number << std::endl;
 
     lattice.spacegroup_number = p_spg_dataset->spacegroup_number;
     cmp.spacegroup_number = p_spg_dataset->spacegroup_number;
@@ -1344,7 +1352,7 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
     int sp=p_spg_dataset->spacegroup_number;
     if (sp<=0 || sp>230) aborterror("Spacegroup could not be found for compound " + name );
 
-    string csystem;
+    std::string csystem;
     if      (sp>=1   && sp<=2  ) csystem="triclinic";
     else if (sp>=3   && sp<=15 ) csystem="monoclinic";
     else if (sp>=16  && sp<=74 ) csystem="orthorombic";
@@ -1356,25 +1364,25 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
     lattice.csystem = csystem;
     cmp.csystem = csystem;
 
-    cout << "Compound " << name << " has crystal system " << csystem << endl;
-    fout << "Compound " << name << " has crystal system " << csystem << endl;
+    std::cout << "Compound " << name << " has crystal system " << csystem << std::endl;
+    fout << "Compound " << name << " has crystal system " << csystem << std::endl;
 
-    cout << "spglib: hall number         : " << p_spg_dataset->hall_number << endl;
-    cout << "spglib: international symbol: " << p_spg_dataset->international_symbol << endl;
-    cout << "spglib: hall symbol         : " << p_spg_dataset->hall_symbol << endl;
-    cout << "spglib: setting             : " << p_spg_dataset->setting << endl;
-    fout << "spglib: hall number         : " << p_spg_dataset->hall_number << endl;
-    fout << "spglib: international symbol: " << p_spg_dataset->international_symbol << endl;
-    fout << "spglib: hall symbol         : " << p_spg_dataset->hall_symbol << endl;
-    fout << "spglib: setting             : " << p_spg_dataset->setting << endl;
+    std::cout << "spglib: hall number         : " << p_spg_dataset->hall_number << std::endl;
+    std::cout << "spglib: international symbol: " << p_spg_dataset->international_symbol << std::endl;
+    std::cout << "spglib: hall symbol         : " << p_spg_dataset->hall_symbol << std::endl;
+    std::cout << "spglib: setting             : " << p_spg_dataset->setting << std::endl;
+    fout << "spglib: hall number         : " << p_spg_dataset->hall_number << std::endl;
+    fout << "spglib: international symbol: " << p_spg_dataset->international_symbol << std::endl;
+    fout << "spglib: hall symbol         : " << p_spg_dataset->hall_symbol << std::endl;
+    fout << "spglib: setting             : " << p_spg_dataset->setting << std::endl;
     
     SpglibSpacegroupType spg_type = spg_get_spacegroup_type(p_spg_dataset->hall_number);
-    cout << "spglib: international symbol (full) : " << spg_type.international_full << endl;
-    cout << "spglib: international symbol (short): " << spg_type.international_short << endl;
-    cout << "spglib: schoenflies                 : " << spg_type.schoenflies << endl;
-    fout << "spglib: international symbol (full) : " << spg_type.international_full << endl;
-    fout << "spglib: international symbol (short): " << spg_type.international_short << endl;
-    fout << "spglib: schoenflies                 : " << spg_type.schoenflies << endl;
+    std::cout << "spglib: international symbol (full) : " << spg_type.international_full << std::endl;
+    std::cout << "spglib: international symbol (short): " << spg_type.international_short << std::endl;
+    std::cout << "spglib: schoenflies                 : " << spg_type.schoenflies << std::endl;
+    fout << "spglib: international symbol (full) : " << spg_type.international_full << std::endl;
+    fout << "spglib: international symbol (short): " << spg_type.international_short << std::endl;
+    fout << "spglib: schoenflies                 : " << spg_type.schoenflies << std::endl;
 
     lattice.spacegroup = spg_type.international_full;
     cmp.spacegroup = spg_type.international_full;
@@ -1476,16 +1484,16 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 #endif
 
 
-    cout << "crystal system " << cmp.csystem
+    std::cout << "crystal system " << cmp.csystem
 	 << " subclass " << cmp.csystem_sub
 	 << " point group " << cmp.pointgroup
 	 << " symmetry axis " << cmp.csymaxis
-	 << endl;
+	 << std::endl;
     fout << "crystal system " << cmp.csystem
 	 << " subclass " << cmp.csystem_sub
 	 << " point group " << cmp.pointgroup
 	 << " symmetry axis " << cmp.csymaxis
-	 << endl;
+	 << std::endl;
 
 
     fout.close();

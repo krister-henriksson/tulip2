@@ -339,6 +339,7 @@ tulip-potinfo.o: potinfo.cpp /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
  /home/koehenri/include/utils.hpp /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-errors.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
  /home/koehenri/include/utils-matrix.hpp \
  /home/koehenri/include/utils-math.hpp /usr/include/c++/4.8/cfloat \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/float.h \
@@ -346,7 +347,9 @@ tulip-potinfo.o: potinfo.cpp /usr/include/stdc-predef.h \
  /home/koehenri/include/utils-matrix3.hpp \
  /home/koehenri/include/utils-errors.hpp \
  /home/koehenri/include/utils-string.hpp elem-iacs.hpp \
- specs-fit-prop-pot.hpp mdsettings.hpp potinfo.hpp potclasses.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
+ /home/koehenri/include/utils-matrixsq3.hpp specs-fit-prop-pot.hpp \
+ mdsettings.hpp potinfo.hpp potclasses.hpp \
  /home/koehenri/include/param.hpp /home/koehenri/include/omp-basics.hpp \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/omp.h compound.hpp
 
@@ -1132,6 +1135,8 @@ tulip-potinfo.o: potinfo.cpp /usr/include/stdc-predef.h \
 
 /home/koehenri/include/utils-errors.hpp:
 
+/home/koehenri/include/utils-vector3.hpp:
+
 /home/koehenri/include/utils-matrix.hpp:
 
 /home/koehenri/include/utils-math.hpp:
@@ -1149,6 +1154,10 @@ tulip-potinfo.o: potinfo.cpp /usr/include/stdc-predef.h \
 /home/koehenri/include/utils-string.hpp:
 
 elem-iacs.hpp:
+
+/home/koehenri/include/utils-vector3.hpp:
+
+/home/koehenri/include/utils-matrixsq3.hpp:
 
 specs-fit-prop-pot.hpp:
 

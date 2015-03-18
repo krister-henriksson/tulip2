@@ -37,7 +37,16 @@
 #include "potinfo.hpp"
 #include "specs-fit-prop-pot.hpp"
 
-using namespace std;
+
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
 using namespace utils;
 using namespace constants;
 using boost::format;
@@ -75,8 +84,8 @@ double MDSystem::force_ABOP(){
 
 
   /*
-  cout << "sys_single_elem: " << sys_single_elem << endl;
-  cout << "iac_pure_ABOP  : " << iac_pure_ABOP << endl;
+  std::cout << "sys_single_elem: " << sys_single_elem << std::endl;
+  std::cout << "iac_pure_ABOP  : " << iac_pure_ABOP << std::endl;
   exit(0);
   */
 
@@ -95,10 +104,10 @@ double MDSystem::force_ABOP(){
   double dVRij, dVAij, dgijk;
   double dfcij, dfcik, threebodyfactor;
 
-  Vector<double> dposij(3,0),dposik(3,0);
-  Vector<double> dcost_i(3,0), dcost_j(3,0), dcost_k(3,0);
-  Vector<double> dgijk_i(3,0), dgijk_j(3,0), dgijk_k(3,0);
-  Vector<double> frci(3,0), frcj(3,0), frck(3,0);
+  Vector3<double> dposij,dposik;
+  Vector3<double> dcost_i, dcost_j, dcost_k;
+  Vector3<double> dgijk_i, dgijk_j, dgijk_k;
+  Vector3<double> frci, frcj, frck;
 
   double td, td1,td2;
   int ivecij, ivecik, ivec_reppot, Nr;
@@ -108,8 +117,8 @@ double MDSystem::force_ABOP(){
   double frc_ij, frc_ik, frc_jk;
 
   double F1, F2, dF1, dF2;
-  Vector<double> dF1_i(3,0), dF1_j(3,0), dF1_k(3,0);
-  Vector<double> dF2_i(3,0), dF2_j(3,0), dF2_k(3,0);
+  Vector3<double> dF1_i, dF1_j, dF1_k;
+  Vector3<double> dF2_i, dF2_j, dF2_k;
 
 
 
@@ -167,9 +176,9 @@ double MDSystem::force_ABOP(){
       betaij = p_potinfo->pot_ABOP[ivecij].parval[2];
       Sij    = p_potinfo->pot_ABOP[ivecij].parval[3];
       /*
-      cout << "D0ij " << D0ij << " r0ij " << r0ij << " betaij " << betaij << " Sij " << Sij
+      std::cout << "D0ij " << D0ij << " r0ij " << r0ij << " betaij " << betaij << " Sij " << Sij
 	   << " gammaij " << gammaij << " cij " << cij << " dij " << dij << " hij " << hij
-	   << " Rij " << Rij << " Dij " << Dij << endl;
+	   << " Rij " << Rij << " Dij " << Dij << std::endl;
       */
 
       if (rij < Rij-Dij){
@@ -187,7 +196,7 @@ double MDSystem::force_ABOP(){
 	fcij  = 0.5 * (1.0 - sin( td ));
 	dfcij = -0.5 * 0.5*PI/Dij * cos( td );
       }
-      //cout << "rij " << rij << " rcutij " << rcutij << " fcij " << fcij << endl;
+      //std::cout << "rij " << rij << " rcutij " << rcutij << " fcij " << fcij << std::endl;
 
       td1 = - betaij*sqrt(2.0*Sij);
       td2 = - betaij*sqrt(2.0/Sij);
@@ -274,7 +283,7 @@ double MDSystem::force_ABOP(){
 
 	if (k==i) continue;
 	if (k==j) continue;
-	//cout << "ijk " << i << j << k << endl;
+	//std::cout << "ijk " << i << j << k << std::endl;
 
 	typek = elem.name2idx( matter[k] );
 	//s3 = matter[k]; //p_potinfo->elem.idx2name(typek);
@@ -305,9 +314,9 @@ double MDSystem::force_ABOP(){
 	dik = p_potinfo->pot_ABOP[ivecik].parval[6];
 	hik = p_potinfo->pot_ABOP[ivecik].parval[7];
 	/*
-	cout << "D0ik " << D0ik << " r0ik " << r0ik << " betaik " << betaik << " Sik " << Sik
+	std::cout << "D0ik " << D0ik << " r0ik " << r0ik << " betaik " << betaik << " Sik " << Sik
 	     << " gammaik " << gammaik << " cik " << cik << " dik " << dik << " hik " << hik
-	     << " Rik " << Rik << " Dik " << Dik << endl;
+	     << " Rik " << Rik << " Dik " << Dik << std::endl;
 	*/
 
 	if (rik < Rik-Dik){
@@ -368,7 +377,7 @@ double MDSystem::force_ABOP(){
 	Chiij += fcik * gijk * F1 * F2;
       } // end of loop over neighbors k
       bij = 1.0/sqrt(1.0 + Chiij);
-      //cout << "bij " << bij << endl;
+      //std::cout << "bij " << bij << std::endl;
 
 
       // ################################################################
@@ -595,7 +604,7 @@ double MDSystem::force_ABOP(){
 	// *****************************************************************
 
 
-	//cout << "alpha omega  " << p_potinfo->abop_alpha.elem(typei, typej, typek) << " " << omegaijk << endl;
+	//std::cout << "alpha omega  " << p_potinfo->abop_alpha.elem(typei, typej, typek) << " " << omegaijk << std::endl;
 
 	for (p=0; p<3; ++p){
 	  frci[p] = 0.0
@@ -677,7 +686,7 @@ double MDSystem::force_ABOP(){
       } // end of loop over neighbors k
 
     } // end of loop over neighbors j
-    //cout << "Atom i energy " << Ep[i] << endl;
+    //std::cout << "Atom i energy " << Ep[i] << std::endl;
   } // end of loop over atoms
 
 

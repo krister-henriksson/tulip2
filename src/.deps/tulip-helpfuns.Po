@@ -334,6 +334,8 @@ tulip-helpfuns.o: helpfuns.cpp /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
  /home/koehenri/include/utils.hpp /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-errors.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
  /home/koehenri/include/utils-math.hpp /usr/include/c++/4.8/cfloat \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/float.h \
  /home/koehenri/include/utils-string.hpp \
@@ -1104,6 +1106,10 @@ tulip-helpfuns.o: helpfuns.cpp /usr/include/stdc-predef.h \
 /home/koehenri/include/utils-string.hpp:
 
 /home/koehenri/include/utils-errors.hpp:
+
+/home/koehenri/include/utils-vector3.hpp:
+
+/home/koehenri/include/utils-vector3.hpp:
 
 /home/koehenri/include/utils-math.hpp:
 

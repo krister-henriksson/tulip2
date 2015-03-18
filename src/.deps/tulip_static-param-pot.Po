@@ -87,8 +87,9 @@ tulip_static-param-pot.o: param-pot.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/4.8/bits/basic_ios.tcc \
  /usr/include/c++/4.8/bits/ostream.tcc /usr/include/c++/4.8/istream \
  /usr/include/c++/4.8/bits/istream.tcc /usr/include/c++/4.8/sstream \
- /usr/include/c++/4.8/bits/sstream.tcc /usr/include/c++/4.8/cstdlib \
- /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+ /usr/include/c++/4.8/bits/sstream.tcc /usr/include/c++/4.8/stdexcept \
+ /usr/include/c++/4.8/cstdlib /usr/include/stdlib.h \
+ /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
  /usr/include/x86_64-linux-gnu/sys/select.h \
@@ -326,7 +327,7 @@ tulip_static-param-pot.o: param-pot.cpp /usr/include/stdc-predef.h \
  /usr/include/boost/smart_ptr/detail/operator_bool.hpp \
  /usr/include/boost/format/alt_sstream_impl.hpp \
  /usr/include/boost/format/format_class.hpp \
- /usr/include/boost/format/exceptions.hpp /usr/include/c++/4.8/stdexcept \
+ /usr/include/boost/format/exceptions.hpp \
  /usr/include/boost/format/format_implementation.hpp \
  /usr/include/boost/format/group.hpp \
  /usr/include/boost/format/feed_args.hpp \
@@ -335,10 +336,13 @@ tulip_static-param-pot.o: param-pot.cpp /usr/include/stdc-predef.h \
  /usr/include/boost/format/free_funcs.hpp \
  /usr/include/boost/format/detail/unset_macros.hpp \
  /home/koehenri/include/utils-errors.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
  /home/koehenri/include/utils-errors.hpp elem-iacs.hpp \
  /home/koehenri/include/utils-matrix.hpp \
  /home/koehenri/include/utils-math.hpp \
- /home/koehenri/include/utils-vector.hpp potinfo.hpp \
+ /home/koehenri/include/utils-vector.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
+ /home/koehenri/include/utils-matrixsq3.hpp potinfo.hpp \
  /usr/include/c++/4.8/cstdio /usr/include/libio.h \
  /usr/include/_G_config.h /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
@@ -572,6 +576,8 @@ tulip_static-param-pot.o: param-pot.cpp /usr/include/stdc-predef.h \
 /usr/include/c++/4.8/sstream:
 
 /usr/include/c++/4.8/bits/sstream.tcc:
+
+/usr/include/c++/4.8/stdexcept:
 
 /usr/include/c++/4.8/cstdlib:
 
@@ -1105,8 +1111,6 @@ tulip_static-param-pot.o: param-pot.cpp /usr/include/stdc-predef.h \
 
 /usr/include/boost/format/exceptions.hpp:
 
-/usr/include/c++/4.8/stdexcept:
-
 /usr/include/boost/format/format_implementation.hpp:
 
 /usr/include/boost/format/group.hpp:
@@ -1123,6 +1127,8 @@ tulip_static-param-pot.o: param-pot.cpp /usr/include/stdc-predef.h \
 
 /home/koehenri/include/utils-errors.hpp:
 
+/home/koehenri/include/utils-vector3.hpp:
+
 /home/koehenri/include/utils-errors.hpp:
 
 elem-iacs.hpp:
@@ -1132,6 +1138,10 @@ elem-iacs.hpp:
 /home/koehenri/include/utils-math.hpp:
 
 /home/koehenri/include/utils-vector.hpp:
+
+/home/koehenri/include/utils-vector3.hpp:
+
+/home/koehenri/include/utils-matrixsq3.hpp:
 
 potinfo.hpp:
 

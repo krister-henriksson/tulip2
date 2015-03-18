@@ -345,6 +345,7 @@ tulip-report.o: report.cpp /usr/include/stdc-predef.h \
  /home/koehenri/include/utils-vector.hpp \
  /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-errors.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
  /home/koehenri/include/utils-matrix.hpp /home/koehenri/include/param.hpp \
  /home/koehenri/include/funcfit-errors.hpp \
  /home/koehenri/include/funcfit-basics.hpp \
@@ -410,11 +411,13 @@ tulip-report.o: report.cpp /usr/include/stdc-predef.h \
  /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-vector.hpp \
  /home/koehenri/include/utils-errors.hpp \
- /home/koehenri/include/atomsystem.hpp /home/koehenri/include/bond.hpp \
- /home/koehenri/include/omp-basics.hpp \
+ /home/koehenri/include/atomsystem.hpp \
+ /home/koehenri/include/utils-matrixsq3.hpp \
+ /home/koehenri/include/bond.hpp /home/koehenri/include/omp-basics.hpp \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/omp.h compound.hpp \
- elem-iacs.hpp specs-fit-prop-pot.hpp mdsettings.hpp helpfuns.hpp \
- mdsystem.hpp potinfo.hpp potclasses.hpp \
+ elem-iacs.hpp /home/koehenri/include/utils-vector3.hpp \
+ /home/koehenri/include/utils-matrixsq3.hpp specs-fit-prop-pot.hpp \
+ mdsettings.hpp helpfuns.hpp mdsystem.hpp potinfo.hpp potclasses.hpp \
  /home/koehenri/include/omp-basics.hpp physconst.hpp \
  /home/koehenri/include/mtwister.hpp param-pot.hpp propfun.hpp \
  get-comp-prop.hpp compoundfit.hpp report.hpp
@@ -1215,6 +1218,8 @@ tulip-report.o: report.cpp /usr/include/stdc-predef.h \
 
 /home/koehenri/include/utils-errors.hpp:
 
+/home/koehenri/include/utils-vector3.hpp:
+
 /home/koehenri/include/utils-matrix.hpp:
 
 /home/koehenri/include/param.hpp:
@@ -1363,6 +1368,8 @@ tulip-report.o: report.cpp /usr/include/stdc-predef.h \
 
 /home/koehenri/include/atomsystem.hpp:
 
+/home/koehenri/include/utils-matrixsq3.hpp:
+
 /home/koehenri/include/bond.hpp:
 
 /home/koehenri/include/omp-basics.hpp:
@@ -1372,6 +1379,10 @@ tulip-report.o: report.cpp /usr/include/stdc-predef.h \
 compound.hpp:
 
 elem-iacs.hpp:
+
+/home/koehenri/include/utils-vector3.hpp:
+
+/home/koehenri/include/utils-matrixsq3.hpp:
 
 specs-fit-prop-pot.hpp:
 

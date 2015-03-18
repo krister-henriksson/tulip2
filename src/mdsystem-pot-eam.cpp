@@ -37,7 +37,15 @@
 #include "potinfo.hpp"
 #include "specs-fit-prop-pot.hpp"
 
-using namespace std;
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
 using namespace utils;
 using boost::format;
 
@@ -51,9 +59,9 @@ double MDSystem::force_EAM(){
   double drsq, rcutsq;
   double td, dx,dy,dz, eps=numeric_limits<double>::epsilon(), dr_ij, dx_ij, dy_ij, dz_ij;
   int ivec=-1;
-  Vector<double> pos1(3,0.0), pos2(3,0.0), drvec(3,0.0);
+  Vector3<double> pos1, pos2, drvec;
   Vector<double> dF_drho_d(natoms(), 0), dF_drho_p(natoms(), 0), dF_drho_s(natoms(), 0);
-  string s1, s2;
+  std::string s1, s2;
   double Ep_tot_local = 0.0;
   int type1, type2;
 

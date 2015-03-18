@@ -12,14 +12,22 @@
 
 #include "utils.hpp"
 #include "utils-vector.hpp"
+
 #include "utils-matrix.hpp"
 #include "utils-matrix3.hpp"
-
 #include "elem-iacs.hpp"
 #include "specs-fit-prop-pot.hpp"
 //#include "mdsettings.hpp"
 //#include "mdsystem.hpp"
 //#include "param-pot.hpp"
+
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
 
 using namespace std;
 using namespace utils;
@@ -82,7 +90,7 @@ public:
   double Fmax;
   double Pmax;
   double displmax;
-  Vector< Vector<double> > frc;
+  Vector< Vector3<double> > frc;
 
   CompoundProperties();
 } ;
@@ -163,7 +171,7 @@ public:
   double Fmax;
   double Pmax;
   double displmax;
-  Vector< Vector<double> > frc;
+  Vector< Vector3<double> > frc;
 
   CompoundPropertiesUncertainties();
 } ;
@@ -190,7 +198,7 @@ public:
   double Fmax;
   double Pmax;
   double displmax;
-  Vector< Vector<double> > frc;
+  Vector< Vector3<double> > frc;
 
   CompoundPropertiesWeights();
 } ;
@@ -205,7 +213,7 @@ public:
   string crystalname;
   int nelem;
   Vector<string> elemnames;
-  Vector<bool> pbc;
+  Vector3<bool> pbc;
   string csystem;
   int    csystem_sub;
   string csymaxis;
@@ -220,16 +228,16 @@ public:
   bool use_int;
   bool use_origin_spec;
 
-  Vector<double> origin;
+  Vector3<double> origin;
 
-  Vector<double> u1_vec;
-  Vector<double> u2_vec;
-  Vector<double> u3_vec;
+  Vector3<double> u1_vec;
+  Vector3<double> u2_vec;
+  Vector3<double> u3_vec;
 
   int nbasis;
   Vector<int>              basis_types;
   Vector<string>           basis_elems;
-  Vector< Vector<double> > basis_vecs;
+  Vector< Vector3<double> > basis_vecs;
 
   // For construction of compound:
   int Ndesired[3];

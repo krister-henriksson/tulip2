@@ -29,7 +29,7 @@
 #include "param.hpp"
 #include "helpfuns.hpp"
 
-using namespace std;
+
 using namespace utils;
 using boost::format;
 
@@ -45,17 +45,17 @@ using boost::format;
 
 
 void PotentialInformation::read_info(string filename){
-  ifstream fp;
-  ofstream fpo;
-  string line, ts, ts1, ts2, ts3, tsm, tsi, s1, s2, tso, tsoi, ts0;
-  vector<string> args;
-  istringstream strbuf;
+  std::ifstream fp;
+  std::ofstream fpo;
+  std::string line, ts, ts1, ts2, ts3, tsm, tsi, s1, s2, tso, tsoi, ts0;
+  std::vector<std::string> args;
+  std::istringstream strbuf;
   double td;
   int tl, i1,i2,i3, ivec;
-  string potname;
+  std::string potname;
   int ns;
 
-  cout << "Reading general information about potentials ..." << endl;
+  std::cout << "Reading general information about potentials ..." << std::endl;
 
 
   /* ############################################################################
@@ -69,7 +69,7 @@ void PotentialInformation::read_info(string filename){
 
 
 
-  cout << "Pass 1 ... " << endl;
+  std::cout << "Pass 1 ... " << std::endl;
 
   fp.open(filename.c_str());
   if (!fp)
@@ -85,12 +85,12 @@ void PotentialInformation::read_info(string filename){
 
     /*
     for (int i=0; i<ns; ++i)
-      cout << args[i] << endl;
+      std::cout << args[i] << std::endl;
     */
 
     if (args[0]=="elem"){
       strbuf.str(args[2]); strbuf >> ts; strbuf.clear();
-      //cout << ts << endl;
+      //std::cout << ts << std::endl;
       elem.add_elem(ts);
     }
     /*
@@ -166,7 +166,7 @@ void PotentialInformation::read_info(string filename){
      ############################################################################
      ############################################################################ */
 
-  cout << "Pass 2 ... " << endl;
+  std::cout << "Pass 2 ... " << std::endl;
 
 
   iacs.init( elem );
@@ -203,8 +203,8 @@ void PotentialInformation::read_info(string filename){
 
   for (int i=0; i<elem.nelem(); i++){
     for (int j=i; j<elem.nelem(); j++){
-      string ts1 = elem.idx2name(i);
-      string ts2 = elem.idx2name(j);
+      std::string ts1 = elem.idx2name(i);
+      std::string ts2 = elem.idx2name(j);
       if (iacs.name(ts1, ts2)=="none"){
 	aborterror("ERROR: Interaction type for species " + ts1 + "-" + ts2 +
 		   " has not been specified. Exiting.");
@@ -225,7 +225,7 @@ void PotentialInformation::read_info(string filename){
 
   //  init(el, ia);
   
-  cout << "Initializing interactions ..." << endl;
+  std::cout << "Initializing interactions ..." << std::endl;
 
   mbasepot.resize(       elem.nelem(), elem.nelem());
   mbasepot_vecidx.resize(elem.nelem(), elem.nelem());
@@ -238,8 +238,8 @@ void PotentialInformation::read_info(string filename){
   for (int i=0; i<elem.nelem(); ++i){
     for (int j=i; j<elem.nelem(); ++j){
 
-      string si = elem.idx2name(i);
-      string sj = elem.idx2name(j);
+      std::string si = elem.idx2name(i);
+      std::string sj = elem.idx2name(j);
 
       mbasepot.elem(i,j) = "none";
 
@@ -361,7 +361,7 @@ void PotentialInformation::read_info(string filename){
      ############################################################################
      ############################################################################ */
 
-  cout << "Pass 3 ..." << endl;
+  std::cout << "Pass 3 ..." << std::endl;
 
 
   fp.open(filename.c_str());
@@ -413,7 +413,7 @@ void PotentialInformation::read_info(string filename){
      ############################################################################
      ############################################################################ */
 
-  cout << "Pass 4 ... " << endl;
+  std::cout << "Pass 4 ... " << std::endl;
 
 
   fp.open(filename.c_str());
@@ -586,8 +586,8 @@ void PotentialInformation::read_info(string filename){
 
   for (int i=0; i<elem.nelem(); i++){
     for (int j=i; j<elem.nelem(); j++){
-      string s1 = elem.idx2name(i);
-      string s2 = elem.idx2name(j);
+      std::string s1 = elem.idx2name(i);
+      std::string s2 = elem.idx2name(j);
 
       if (basepot(s1,s2)=="none")
 	aborterror("Interaction type for " + s1 + "-" + s2 + " is unknown. Exiting.");
@@ -597,24 +597,24 @@ void PotentialInformation::read_info(string filename){
   }
 
 
-  cout << "#########################################################################" << endl;
-  cout << "Debugging ABOP alpha/omega/2mu parameters ..." << endl;
-  cout << "#########################################################################" << endl;
+  std::cout << "#########################################################################" << std::endl;
+  std::cout << "Debugging ABOP alpha/omega/2mu parameters ..." << std::endl;
+  std::cout << "#########################################################################" << std::endl;
 
   for (int i1=0; i1<elem.nelem(); i1++){
     for (int i2=0; i2<elem.nelem(); i2++){
       for (int i3=0; i3<elem.nelem(); i3++){
-	string s1 = elem.idx2name(i1);
-	string s2 = elem.idx2name(i2);
-	string s3 = elem.idx2name(i3);
+	std::string s1 = elem.idx2name(i1);
+	std::string s2 = elem.idx2name(i2);
+	std::string s3 = elem.idx2name(i3);
 	
-	cout << "Using abop_alpha(" << s1 << "," << s2 << "," << s3 << ")?: " << use_abop_alpha.elem(i1, i2, i3) << endl;
-	cout << "Using abop_omega(" << s1 << "," << s2 << "," << s3 << ")?: " << use_abop_omega.elem(i1, i2, i3) << endl;
+	std::cout << "Using abop_alpha(" << s1 << "," << s2 << "," << s3 << ")?: " << use_abop_alpha.elem(i1, i2, i3) << std::endl;
+	std::cout << "Using abop_omega(" << s1 << "," << s2 << "," << s3 << ")?: " << use_abop_omega.elem(i1, i2, i3) << std::endl;
       }
-      cout << "Using abop_2mu(" << s1 << "," << s2 << ")?: " << use_abop_2mu.elem(i1, i2) << endl;
+      std::cout << "Using abop_2mu(" << s1 << "," << s2 << ")?: " << use_abop_2mu.elem(i1, i2) << std::endl;
     }
   }
-  cout << "-------------------------------------------------------------------------" << endl;  
+  std::cout << "-------------------------------------------------------------------------" << std::endl;  
 
   for (int i1=0; i1<elem.nelem(); i1++){
     for (int i3=0; i3<elem.nelem(); i3++){
@@ -624,45 +624,45 @@ void PotentialInformation::read_info(string filename){
       int n_abop_alpha_abop_omega=0;
       int n_abop_alpha_Brenner_omega=0;
       for (int i2=0; i2<elem.nelem(); i2++){
-	string s1 = elem.idx2name(i1);
-	string s2 = elem.idx2name(i2);
-	string s3 = elem.idx2name(i3);
+	std::string s1 = elem.idx2name(i1);
+	std::string s2 = elem.idx2name(i2);
+	std::string s3 = elem.idx2name(i3);
 
 	if (use_abop_alpha.elem(i1,i2,i3)==true) n_abop_alpha++;
 	if (use_abop_omega.elem(i1,i2,i3)==true) n_abop_omega++;
 
 	if      (use_abop_alpha.elem(i1,i2,i3)==true && use_abop_omega.elem(i1,i2,i3)==true){
 	  n_abop_alpha_abop_omega++;
-	  cout << "NOTE: Using ABOP alpha and ABOP omega for combination (ijk) "
-	       << s1 << "-" << s2 << "-" << s3 << endl;
+	  std::cout << "NOTE: Using ABOP alpha and ABOP omega for combination (ijk) "
+	       << s1 << "-" << s2 << "-" << s3 << std::endl;
 	}
 	else if (use_abop_alpha.elem(i1,i2,i3)==true && use_abop_omega.elem(i1,i2,i3)==false){
 	  n_abop_alpha_Brenner_omega++;
-	  cout << "NOTE: Using ABOP alpha and *Brenner omega* for combination (ijk) "
-	       << s1 << "-" << s2 << "-" << s3 << endl;
+	  std::cout << "NOTE: Using ABOP alpha and *Brenner omega* for combination (ijk) "
+	       << s1 << "-" << s2 << "-" << s3 << std::endl;
 	}
       }
 
       if (n_abop_alpha_abop_omega==0 && n_abop_alpha_Brenner_omega==0 &&
 	  use_abop_2mu.elem(i1,i3)==true){
-	cout << "NOTE: Using ABOP 2mu(i,k) for combination "
-	     << s1 << "-" << s2 << endl;
+	std::cout << "NOTE: Using ABOP 2mu(i,k) for combination "
+	     << s1 << "-" << s2 << std::endl;
       }
 
       if (use_abop_2mu.elem(i1,i3)==true && (n_abop_alpha>0 || n_abop_omega>0)){
-	cout << "*** ERROR *** There is a clash between usage of alpha/omega and 2mu parameters! Exiting." << endl;
+	std::cout << "*** ERROR *** There is a clash between usage of alpha/omega and 2mu parameters! Exiting." << std::endl;
 	exit(EXIT_FAILURE);
       }
 
 
     }
   }
-  cout << "#########################################################################" << endl;
+  std::cout << "#########################################################################" << std::endl;
 
 
   
 
-  cout << "Read-in of general information about potentials completed." << endl;
+  std::cout << "Read-in of general information about potentials completed." << std::endl;
 
   return;
 }
@@ -691,14 +691,14 @@ void PotentialInformation::read_info(string filename){
 
 
 void PotentialInformationFit::read_info_fit(string filename){
-  ifstream fp;
-  ofstream fpo;
-  string line, ts, ts1, ts2, ts3, tsm, tsi, s1, s2;
-  vector<string> args;
-  istringstream strbuf;
+  std::ifstream fp;
+  std::ofstream fpo;
+  std::string line, ts, ts1, ts2, ts3, tsm, tsi, s1, s2;
+  std::vector<std::string> args;
+  std::istringstream strbuf;
   double td;
   int ns, i1,i2,i3, ivec;
-  string potname;
+  std::string potname;
 
 
 
@@ -706,7 +706,7 @@ void PotentialInformationFit::read_info_fit(string filename){
 
   int npairs = 0;
 
-  cout << "Initializing some info about fittable potentials ..." << endl;
+  std::cout << "Initializing some info about fittable potentials ..." << std::endl;
 
 
   for (int i=0; i<elem.nelem(); ++i){
@@ -773,9 +773,9 @@ void PotentialInformationFit::read_info_fit(string filename){
      ############################################################################ */
 
 
-  cout << "Reading information about fittable potentials ..." << endl;
+  std::cout << "Reading information about fittable potentials ..." << std::endl;
 
-  cout << "Pass 1 ... " << endl;
+  std::cout << "Pass 1 ... " << std::endl;
 
   fp.open(filename.c_str());
   if (!fp)
@@ -819,7 +819,7 @@ void PotentialInformationFit::read_info_fit(string filename){
   // Some delayed debugging for same-element interaction:
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   for (int i=0; i<elem.nelem(); ++i){
-    string ts = elem.idx2name(i);
+    std::string ts = elem.idx2name(i);
 
     if ( is_fittable(ts,ts) ) continue;
 
@@ -852,7 +852,7 @@ void PotentialInformationFit::read_info_fit(string filename){
      ############################################################################
      ############################################################################ */
 
-  cout << "Pass 2 ... " << endl;
+  std::cout << "Pass 2 ... " << std::endl;
 
   fp.open(filename.c_str());
   if (!fp)
@@ -1023,7 +1023,7 @@ void PotentialInformationFit::read_info_fit(string filename){
 
 
 
-  cout << "Some debugging of fittable potentials ..." << endl;
+  std::cout << "Some debugging of fittable potentials ..." << std::endl;
 
   /* ############################################################################
      Debug the potential settings:
@@ -1031,8 +1031,8 @@ void PotentialInformationFit::read_info_fit(string filename){
 
   for (int i=0; i<elem.nelem(); i++){
     for (int j=i; j<elem.nelem(); j++){
-      string s1 = elem.idx2name(i);
-      string s2 = elem.idx2name(j);
+      std::string s1 = elem.idx2name(i);
+      std::string s2 = elem.idx2name(j);
 
       if (basepot(s1,s2)=="none"){
 	aborterror("Interaction type for " + s1 + "-" + s2 + " is unknown. Exiting.");
@@ -1115,9 +1115,9 @@ void PotentialInformationFit::read_info_fit(string filename){
     for (int j=0; j<elem.nelem(); j++){
       for (int k=0; k<elem.nelem(); k++){
 
-	string s1 = elem.idx2name(i);
-	string s2 = elem.idx2name(j);
-	string s3 = elem.idx2name(k);
+	std::string s1 = elem.idx2name(i);
+	std::string s2 = elem.idx2name(j);
+	std::string s3 = elem.idx2name(k);
 
 	if (use_abop_alpha.elem(i,j,k)){
 
@@ -1140,9 +1140,9 @@ void PotentialInformationFit::read_info_fit(string filename){
     for (int j=0; j<elem.nelem(); j++){
       for (int k=0; k<elem.nelem(); k++){
 
-	string s1 = elem.idx2name(i);
-	string s2 = elem.idx2name(j);
-	string s3 = elem.idx2name(k);
+	std::string s1 = elem.idx2name(i);
+	std::string s2 = elem.idx2name(j);
+	std::string s3 = elem.idx2name(k);
 
 	if (use_abop_omega.elem(i,j,k)){
 
@@ -1165,8 +1165,8 @@ void PotentialInformationFit::read_info_fit(string filename){
   for (int i=0; i<elem.nelem(); i++){
     for (int j=0; j<elem.nelem(); j++){
 
-      string s1 = elem.idx2name(i);
-      string s2 = elem.idx2name(j);
+      std::string s1 = elem.idx2name(i);
+      std::string s2 = elem.idx2name(j);
 
       if (use_abop_2mu.elem(i,j)){
 
@@ -1183,51 +1183,51 @@ void PotentialInformationFit::read_info_fit(string filename){
   }
 
 
-  cout << "##############################################################################" << endl;
+  std::cout << "##############################################################################" << std::endl;
 
   for (int i=0; i<elem.nelem(); i++){
     for (int j=0; j<elem.nelem(); j++){
       for (int k=0; k<elem.nelem(); k++){
-	string s1 = elem.idx2name(i);
-	string s2 = elem.idx2name(j);
-	string s3 = elem.idx2name(k);
+	std::string s1 = elem.idx2name(i);
+	std::string s2 = elem.idx2name(j);
+	std::string s3 = elem.idx2name(k);
 
-	cout << "ABOP alpha(" << s1 << "," << s2 << "," << s3 << "): ";
-	if (use_abop_alpha.elem(i,j,k)) cout << "used";
-	else cout << "NOT used";
-	cout << endl;
+	std::cout << "ABOP alpha(" << s1 << "," << s2 << "," << s3 << "): ";
+	if (use_abop_alpha.elem(i,j,k)) std::cout << "used";
+	else std::cout << "NOT used";
+	std::cout << std::endl;
       }
     }
   }
   for (int i=0; i<elem.nelem(); i++){
     for (int j=0; j<elem.nelem(); j++){
       for (int k=0; k<elem.nelem(); k++){
-	string s1 = elem.idx2name(i);
-	string s2 = elem.idx2name(j);
-	string s3 = elem.idx2name(k);
+	std::string s1 = elem.idx2name(i);
+	std::string s2 = elem.idx2name(j);
+	std::string s3 = elem.idx2name(k);
 
-	cout << "ABOP omega(" << s1 << "," << s2 << "," << s3 << "): ";
-	if (use_abop_omega.elem(i,j,k)) cout << "used";
-	else cout << "NOT used";
-	cout << endl;
+	std::cout << "ABOP omega(" << s1 << "," << s2 << "," << s3 << "): ";
+	if (use_abop_omega.elem(i,j,k)) std::cout << "used";
+	else std::cout << "NOT used";
+	std::cout << std::endl;
       }
     }
   }
   for (int i=0; i<elem.nelem(); i++){
     for (int j=0; j<elem.nelem(); j++){
-      string s1 = elem.idx2name(i);
-      string s2 = elem.idx2name(j);
+      std::string s1 = elem.idx2name(i);
+      std::string s2 = elem.idx2name(j);
 
-      cout << "ABOP 2mu(" << s1 << "," << s2 << "): ";
-      if (use_abop_2mu.elem(i,j)) cout << "used";
-      else cout << "NOT used";
-      cout << endl;
+      std::cout << "ABOP 2mu(" << s1 << "," << s2 << "): ";
+      if (use_abop_2mu.elem(i,j)) std::cout << "used";
+      else std::cout << "NOT used";
+      std::cout << std::endl;
     }
   }
 
-  cout << "##############################################################################" << endl;
+  std::cout << "##############################################################################" << std::endl;
 
-  cout << "Read-in of information about fittable potentials completed." << endl;
+  std::cout << "Read-in of information about fittable potentials completed." << std::endl;
 
 }
 
@@ -1235,16 +1235,16 @@ void PotentialInformationFit::read_info_fit(string filename){
 
 
 
-void PotentialInformationFit::limcheck(const string        & pot,
-				       const string        & parname,
-				       const string        & elems,
+void PotentialInformationFit::limcheck(const std::string        & pot,
+				       const std::string        & parname,
+				       const std::string        & elems,
 				       const parametertype & partype,
 				       const double        & parmin,
 				       const double        & parmax,
 				       const double        & parval
 				       ){
   double twoeps = std::numeric_limits<double>::epsilon();
-  string intro = "ERROR: Potential " + pot + ": " + parname + ": "
+  std::string intro = "ERROR: Potential " + pot + ": " + parname + ": "
     + elems + ": ";
 
   if (partype==PARAM_FREE_WITH_LIMITS){

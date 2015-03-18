@@ -7,6 +7,7 @@
 #include <string>
 
 #include "utils-vector.hpp"
+#include "utils-vector3.hpp"
 
 
 using utils::Vector;
@@ -35,8 +36,8 @@ Vector<double> convert_unc_to_wei(Vector<double> & x);
 
 bool get_boolean_choice(std::string ts);
 
-void get_parabolic_fit_from_triplet(utils::Vector<double> x,
-				    utils::Vector<double> y,
+void get_parabolic_fit_from_triplet(utils::Vector3<double> x,
+				    utils::Vector3<double> y,
 				    double & a0,
 				    double & a2,
 				    double & x0,

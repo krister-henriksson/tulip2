@@ -25,7 +25,7 @@
 
 #include "omp-basics.hpp"
 
-using namespace std;
+
 using namespace utils;
 using boost::format;
 
@@ -35,7 +35,7 @@ PotentialInformation::PotentialInformation() { }
 // call read_info(...) manually
 
 
-PotentialInformation::PotentialInformation(string filename_info){
+PotentialInformation::PotentialInformation(std::string filename_info){
   read_info(filename_info);
 }
 
@@ -45,13 +45,13 @@ PotentialInformation::PotentialInformation(string filename_info){
 // ###############################################################################
 
 // For any pair of elements, report the base potential used:
-string PotentialInformation::basepot(string s1, string s2){
+std::string PotentialInformation::basepot(std::string s1, std::string s2){
   int i1 = elem.name2idx(s1);
   int i2 = elem.name2idx(s2);
   if (i1<=i2) return mbasepot.elem(i1, i2);
   else        return mbasepot.elem(i2, i1);
 }
-string PotentialInformation::basepot(int i1, int i2){
+std::string PotentialInformation::basepot(int i1, int i2){
   if (i1<=i2) return mbasepot.elem(i1, i2);
   else        return mbasepot.elem(i2, i1);
 }
@@ -60,7 +60,7 @@ string PotentialInformation::basepot(int i1, int i2){
 // For any pair of elements, report the index of the potential vector
 // where the parametrization is stored. Base potential type is
 // also needed, to determine which potential vector to select.
-int PotentialInformation::basepot_vecidx(string s1, string s2){
+int PotentialInformation::basepot_vecidx(std::string s1, std::string s2){
   int i1 = elem.name2idx(s1);
   int i2 = elem.name2idx(s2);
   if (i1<=i2) return mbasepot_vecidx.elem(i1, i2);
@@ -75,7 +75,7 @@ int PotentialInformation::basepot_vecidx(int i1, int i2){
 // ###############################################################################
 
 // Record if reppot is used or not:
-bool & PotentialInformation::use_reppot(string s1, string s2){
+bool & PotentialInformation::use_reppot(std::string s1, std::string s2){
   int i1 = elem.name2idx(s1);
   int i2 = elem.name2idx(s2);
   return PotentialInformation::use_reppot(i1, i2);
@@ -122,7 +122,7 @@ void PotentialInformation::reppot_finalize(void){
   }
 }
 
-int PotentialInformation::reppot_vecidx(string s1, string s2){
+int PotentialInformation::reppot_vecidx(std::string s1, std::string s2){
   if (!use_reppot(s1,s2))
     return -1;
 
@@ -146,7 +146,7 @@ int PotentialInformation::reppot_vecidx(int i1, int i2){
 // ###############################################################################
 
 
-double PotentialInformation::get_abop_omega(string s1, string s2, string s3){
+double PotentialInformation::get_abop_omega(std::string s1, std::string s2, std::string s3){
   int i = elem.name2idx(s1);
   int j = elem.name2idx(s2);
   int k = elem.name2idx(s3);
@@ -167,7 +167,7 @@ double PotentialInformation::get_abop_omega(int i, int j, int k){
 
 
 
-void PotentialInformation::set_abop_omega(string s1, string s2, string s3, double val){
+void PotentialInformation::set_abop_omega(std::string s1, std::string s2, std::string s3, double val){
   int i = elem.name2idx(s1);
   int j = elem.name2idx(s2);
   int k = elem.name2idx(s3);
@@ -203,8 +203,8 @@ double PotentialInformation::get_rcut_max(void){
   for (i=0; i<nel; ++i){
     for (j=i; j<nel; ++j){
       /*
-      string s1 = elem.idx2name(i);
-      string s2 = elem.idx2name(j);
+      std::string s1 = elem.idx2name(i);
+      std::string s2 = elem.idx2name(j);
 
       if (basepot(s1,s2) == "EAM"){
 	ipair = basepot_vecidx(s1,s2);
@@ -236,7 +236,7 @@ double PotentialInformation::get_rcut_max(void){
 }
 
 
-double PotentialInformation::get_rcut_max(Vector<string> elemnames){
+double PotentialInformation::get_rcut_max(Vector<std::string> elemnames){
   int i,j,ipair,p;
   double rc=0.0, rcut_max=0.0;
 
@@ -244,8 +244,8 @@ double PotentialInformation::get_rcut_max(Vector<string> elemnames){
   for (i=0; i<elemnames.size(); ++i){
     for (j=i; j<elemnames.size(); ++j){
 
-      string s1 = elemnames[i];
-      string s2 = elemnames[j];
+      std::string s1 = elemnames[i];
+      std::string s2 = elemnames[j];
 
       if (basepot(s1,s2) == "EAM"){
 	ipair = basepot_vecidx(s1,s2);
@@ -277,8 +277,8 @@ double PotentialInformation::get_rcut_max(Vector<string> elemnames){
 PotentialInformationFit::PotentialInformationFit(){ }
 
 
-PotentialInformationFit::PotentialInformationFit(string filename_info,
-						 string filename_specs
+PotentialInformationFit::PotentialInformationFit(std::string filename_info,
+						 std::string filename_specs
 						 )
   : PotentialInformation::PotentialInformation(filename_info)
 {
@@ -289,7 +289,7 @@ PotentialInformationFit::PotentialInformationFit(string filename_info,
 
 // ###############################################################################
 
-bool & PotentialInformationFit::is_fittable(string s1, string s2){
+bool & PotentialInformationFit::is_fittable(std::string s1, std::string s2){
   int i1 = elem.name2idx(s1);
   int i2 = elem.name2idx(s2);
   int k, res=-1;

@@ -30,8 +30,15 @@
 #include "lattice-simple.hpp"
 
 
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
 
-using namespace std;
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
+
 using namespace utils;
 using namespace constants;
 using boost::format;
@@ -42,18 +49,18 @@ using boost::format;
 
 CompoundListFit::CompoundListFit(Elements & el,
 				 MDSettings & mds_specs_general,
-				 string filename)
+				 std::string filename)
   : elem(el), ncompounds(0)
 {
 
-  ifstream fp;
-  ofstream fpo;
-  string line;
-  vector<string> args, opts, opts_special;
-  istringstream strbuf;
+  std::ifstream fp;
+  std::ofstream fpo;
+  std::string line;
+  std::vector<std::string> args, opts, opts_special;
+  std::istringstream strbuf;
   int ns, nlats, ilat, nelem;
   double td;
-  Vector< Vector<double> > bv;
+  Vector< Vector3<double> > bv;
   int itr, its, ot;
   bool reading_latinfo, elem_ok;
   int i, j, k, p;
@@ -82,7 +89,7 @@ CompoundListFit::CompoundListFit(Elements & el,
   fp.close();
   fp.clear();
 
-  cout << "Detected " << nlats << " compounds." << endl;
+  std::cout << "Detected " << nlats << " compounds." << std::endl;
 
   compounds.resize(nlats);
   ncompounds = compounds.size();
@@ -460,7 +467,7 @@ CompoundListFit::CompoundListFit(Elements & el,
 
 
 
-      string match="n";
+      std::string match="n";
       if (itr>=0) match = opts[itr];
       if (its>=0) match = opts_special[its];
       if (itr>=0 || its>=0){
@@ -631,7 +638,7 @@ CompoundListFit::CompoundListFit(Elements & el,
 	}
 	// Now get integers:
 	int u, v;
-	stringstream sstream;
+	std::stringstream sstream;
 	sstream.clear(); sstream << k; sstream >> u;
 	sstream.clear(); sstream << p; sstream >> v;
 	//cout << "u v " << u << " " << v << endl;
@@ -668,8 +675,8 @@ CompoundListFit::CompoundListFit(Elements & el,
   }
   fp.clear();
   fp.close();
-
-  cout << "Compounds information collected." << endl;
+  
+  std::cout << "Compounds information collected." << std::endl;
 
 
 
@@ -683,8 +690,8 @@ CompoundListFit::CompoundListFit(Elements & el,
 
 
 
-  cout << "Number of compounds read: " << compounds.size() << endl;
-  cout << "Debugging compounds ..." << endl;
+  std::cout << "Number of compounds read: " << compounds.size() << std::endl;
+  std::cout << "Debugging compounds ..." << std::endl;
 
 
 
@@ -743,7 +750,7 @@ CompoundListFit::CompoundListFit(Elements & el,
     aborterror("ERROR: Ecoh_delta values are used, but there is no reference Ecoh compound!");
 
   if (nEcohref>=1 && nEcohdelta==0)
-    cout << "Warning: Reference Ecoh compound is used, but no Ecoh_delta values.";
+    std::cout << "Warning: Reference Ecoh compound is used, but no Ecoh_delta values." << std::endl;
 
 
 
@@ -775,7 +782,7 @@ CompoundListFit::CompoundListFit(Elements & el,
 
 
   int nc = compounds.size();
-  cout << "Reading structural info for compounds ... " << endl;
+  std::cout << "Reading structural info for compounds ... " << std::endl;
   for (ilat=0; ilat<nc; ++ilat){
     compounds[ilat].read_structure(el);
     // calls finalize() internally to insert a,b,c
@@ -845,14 +852,14 @@ CompoundListFit::CompoundListFit(Elements & el,
      ##############################################################################    
   */
 
-  cout << "Reading forces for compounds ... " << endl;
+  std::cout << "Reading forces for compounds ... " << std::endl;
   for (ilat=0; ilat<nc; ++ilat){
     if (compounds[ilat].prop_use.frc){
-      cout << "Forces used for compound " << ilat+1 << " of " << nc << endl;
+      std::cout << "Forces used for compound " << ilat+1 << " of " << nc << std::endl;
       compounds[ilat].read_forces();
     }
     else {
-      cout << "Forces NOT used for compound " << ilat+1 << " of " << nc << endl;
+      std::cout << "Forces NOT used for compound " << ilat+1 << " of " << nc << std::endl;
     }
   }
 
@@ -1046,7 +1053,7 @@ CompoundListFit::CompoundListFit(Elements & el,
 
 
 
-  cout << "Compound information read-in completed." << endl;
+  std::cout << "Compound information read-in completed." << std::endl;
 
   return;
 }

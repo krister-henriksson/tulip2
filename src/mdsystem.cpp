@@ -36,18 +36,29 @@
 #include "specs-fit-prop-pot.hpp"
 #include "errors.hpp"
 
-using namespace std;
+
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
+
+
 using namespace utils;
 using namespace constants;
 using boost::format;
-using std::ofstream;
+
 
 
 
 MDSystem::MDSystem()
   : AtomSystem(),
-    stresstensor_xyz(3,3,0.0),
-    stresstensor_abc(3,3,0.0)
+    stresstensor_xyz(0.0),
+    stresstensor_abc(0.0)
 {
   name = "none";
   p_potinfo = 0;
@@ -108,8 +119,8 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 				     double distmin // only makes sense for periodic directions
 				     ){
   int i,j,k,p,iat;
-  Vector<double> tv;
-  Vector<double> origin(3, 0);
+  Vector3<double> tv;
+  Vector3<double> origin(0);
 
 
 
@@ -152,14 +163,14 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 
 
 
-  cout << "Creating MD system: name " << cmp.name << endl;
-  cout << "Creating MD system: Using N[0] N[1] N[2]  " << N[0] << " " << N[1] << " " << N[2] << endl;
+  std::cout << "Creating MD system: name " << cmp.name << std::endl;
+  std::cout << "Creating MD system: Using N[0] N[1] N[2]  " << N[0] << " " << N[1] << " " << N[2] << std::endl;
 
-  cout << "Creating MD system: scalefactor  " << cmp.scalefactor << endl;
-  cout << "Creating MD system: internal lattice parameters  " 
+  std::cout << "Creating MD system: scalefactor  " << cmp.scalefactor << std::endl;
+  std::cout << "Creating MD system: internal lattice parameters  " 
        << cmp.lpa << " "
        << cmp.lpb << " "
-       << cmp.lpc << endl;
+       << cmp.lpc << std::endl;
 
 
   name = cmp.name;
@@ -177,7 +188,7 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 
   update_box_geometry();
 
-  cout << "Creating MD system: Box lengths: " << boxlen[0] << " " << boxlen[1] << " " << boxlen[2] << endl;
+  std::cout << "Creating MD system: Box lengths: " << boxlen[0] << " " << boxlen[1] << " " << boxlen[2] << std::endl;
 
   // Default:
   origin[0] = -0.5 * boxlen[0];
@@ -193,7 +204,7 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
   }
 
 
-  cout << "Creating MD system: Origin: " << origin[0] << " " << origin[1] << " " << origin[2] << endl;
+  std::cout << "Creating MD system: Origin: " << origin[0] << " " << origin[1] << " " << origin[2] << std::endl;
 
 
 
@@ -202,15 +213,15 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 
 
   /*
-    cout << "boxlen 0: " << boxlen[0] << endl;
-    cout << "boxlen 1: " << boxlen[1] << endl;
-    cout << "boxlen 2: " << boxlen[2] << endl;
+    std::cout << "boxlen 0: " << boxlen[0] << std::endl;
+    std::cout << "boxlen 1: " << boxlen[1] << std::endl;
+    std::cout << "boxlen 2: " << boxlen[2] << std::endl;
 
-    cout << "boxdir 0: " << get_boxdir(0) << endl;
-    cout << "boxdir 1: " << get_boxdir(1) << endl;
-    cout << "boxdir 2: " << get_boxdir(2) << endl;
+    std::cout << "boxdir 0: " << get_boxdir(0) << std::endl;
+    std::cout << "boxdir 1: " << get_boxdir(1) << std::endl;
+    std::cout << "boxdir 2: " << get_boxdir(2) << std::endl;
 
-    cout << "N[0] N[1] N[2]: " << N[0] << " " << N[1] << " " << N[2] << endl;
+    std::cout << "N[0] N[1] N[2]: " << N[0] << " " << N[1] << " " << N[2] << std::endl;
   */
 
   // Create atom system:
@@ -239,7 +250,7 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
   }
 
   //  if (debug_creation)
-  cout << "Created system of " << pos.size() << " atoms." << endl;
+  std::cout << "Created system of " << pos.size() << " atoms." << std::endl;
 
   return;
 }
@@ -247,11 +258,11 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 
 
 
-void MDSystem::transform_cell(const Matrix<double> & alpha_cart,
+void MDSystem::transform_cell(const MatrixSq3<double> & alpha_cart,
 			      const double lowlim){
   int i, nat = natoms();
-  Vector<double> boxlen_new(3,0), tv(3,0);
-  Matrix<double> boxdir_new(3,3,0);
+  Vector3<double> boxlen_new(0), tv(0);
+  MatrixSq3<double> boxdir_new(0);
 
   double pf1=-0.5, pf2=0.5;
   if (lowlim>0){
@@ -263,7 +274,7 @@ void MDSystem::transform_cell(const Matrix<double> & alpha_cart,
 
   if (pos_int_tmp.size()!=nat) pos_int_tmp.resize(nat);
   for (i=0; i<nat; ++i){
-    if (pos_int_tmp[i].size()!=3) pos_int_tmp[i].resize(3);
+    pos_int_tmp[i] = Vector3<double>(0);
   }
 
 

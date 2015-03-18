@@ -51,7 +51,15 @@
 #include "propfun.hpp"
 #include "specs-fit-prop-pot.hpp"
 
-using namespace std;
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
 using namespace utils;
 using namespace constants;
 using namespace physconst;
@@ -66,12 +74,12 @@ using boost::format;
 void CompoundStructureFit::getprop(ParamPot & param){
 
   int N1,N2,N3;
-  Vector<double> b_ini(3,0), b_fin(3,0), boxlen_bak(3,0);
-  Vector< Vector<double> > bdir_ini(3, Vector<double>(3,0)), bdir_fin(3, Vector<double>(3,0));
+  Vector3<double> b_ini(0), b_fin(0), boxlen_bak(0);
+  Vector< Vector3<double> > bdir_ini(3, Vector3<double>(0)), bdir_fin(3, Vector3<double>(0));
   int i,j,k,p;
-  Vector< Vector<double> > pos_bak;
-  Matrix<double> boxdir_bak;
-  Matrix<double> alpha(3,3,0);
+  Vector< Vector3<double> > pos_bak;
+  MatrixSq3<double> boxdir_bak;
+  MatrixSq3<double> alpha(0);
   Vector<double> X_opt;
   double E0, V0;
 
@@ -124,7 +132,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
   int max_mds_box_iter = 10;
   while (true){
 
-    cout << "Creating atom system ... " << endl;
+    std::cout << "Creating atom system ... " << std::endl;
     double rm = mds.rcut_max + mds.skint;
     mds.create_from_structure(*this, 2.0*rm); // removes old atoms
 
@@ -152,7 +160,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
     }
 
 
-    cout << "Relaxing atom system ... " << endl;
+    std::cout << "Relaxing atom system ... " << std::endl;
     mds.relax();
     /*
     if (mds_box_iter>0){
@@ -237,7 +245,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
   if (prop_use.r0){
     if (mds.natoms()!=2)
       aborterror("Error: No dimer in cell, cannot calculate r0 distance. Exiting.");
-    Vector<double> tv = mds.pos[0] - mds.pos[1];
+    Vector3<double> tv = mds.pos[0] - mds.pos[1];
     prop_pred.r0 = tv.magn();
   }
   
@@ -304,7 +312,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
   // Bulk modulus and its pressure derivative
   // ############################################################################
   if (prop_use.B || prop_use.Bp){
-    cout << "Calculating for B and B'(P) ..." << endl;
+    std::cout << "Calculating for B and B'(P) ..." << std::endl;
     get_B_Bp(mds, param, pos_bak, boxdir_bak, boxlen_bak, E0, V0);
   }
 
@@ -319,7 +327,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
     }
   }
   if (j>0){
-    cout << "Calculating for Cij ..." << flush << endl;
+    std::cout << "Calculating for Cij ..." << flush << std::endl;
     get_Cij(mds, param, pos_bak, boxdir_bak, boxlen_bak, E0, V0);
   }
 
@@ -337,15 +345,15 @@ void CompoundStructureFit::getprop(ParamPot & param){
 
 void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 				    ParamPot             & param,
-				    Vector< Vector<double> > & pos_bak,
-				    Matrix<double>           & boxdir_bak,
-				    Vector<double>           & boxlen_bak,
+				    Vector< Vector3<double> > & pos_bak,
+				    MatrixSq3<double>           & boxdir_bak,
+				    Vector3<double>           & boxlen_bak,
 				    double & E0,
 				    double & V0
 				    ){
 
   int j,k,p,Nf;
-  Matrix<double> alpha(3,3,0);
+  MatrixSq3<double> alpha(0);
   double fmin, fmax, ef, f, df, g, td;
   Vector<double> xp, yp, dyp;
   Vector<double> Xopt;
@@ -434,8 +442,8 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
     dyp[j] = ((Epa<0)? -Epa: Epa) * ef;
 
     {
-      ofstream fdump;
-      string dumpfn = "mds-frame-B-calc-" + mds.name + "-step-" + tostring(j) + ".xyz";
+      std::ofstream fdump;
+      std::string dumpfn = "mds-frame-B-calc-" + mds.name + "-step-" + tostring(j) + ".xyz";
       fdump.open(dumpfn.c_str());
       mds.dumpframe(fdump);
       fdump.close();
@@ -466,11 +474,11 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 
 
   {
-    ofstream fdump;
-    string dumpfn = "data-V-Epa-dEpa-" + name + ".dat";
+    std::ofstream fdump;
+    std::string dumpfn = "data-V-Epa-dEpa-" + name + ".dat";
     fdump.open(dumpfn.c_str());
     for (j=0; j<Nf; ++j)
-      fdump << format("%20.10e  %20.10e  %20.10e") % xp[j] % yp[j] % dyp[j] << endl;
+      fdump << format("%20.10e  %20.10e  %20.10e") % xp[j] % yp[j] % dyp[j] << std::endl;
     fdump.close();
   }
 
@@ -729,8 +737,8 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 
     B0  = guess_B * eVA3_to_GPa;
     Bp0 = guess_Bp;
-    cout << "Warning: Failed to obtain bulk modulus and/or its pressure derivative for compound " + name + ". " +
-      "Using numerical estimates " << B0 << " GPa and " << Bp0 << endl;
+    std::cout << "Warning: Failed to obtain bulk modulus and/or its pressure derivative for compound " + name + ". " +
+      "Using numerical estimates " << B0 << " GPa and " << Bp0 << std::endl;
     // **************************************************************
     // **************************************************************
   }
@@ -754,9 +762,9 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 
 void CompoundStructureFit::get_Cij(MDSystem             & mds,
 				   ParamPot             & param,
-				   Vector< Vector<double> > & pos_bak,
-				   Matrix<double>           & boxdir_bak,
-				   Vector<double>           & boxlen_bak,
+				   Vector< Vector3<double> > & pos_bak,
+				   MatrixSq3<double>           & boxdir_bak,
+				   Vector3<double>           & boxlen_bak,
 				   double & E0,
 				   double & V0
 				   ){
@@ -767,7 +775,8 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
   int NC=21;
   Matrix<double> Clincomb(7,7,0);
   double epsi[7];
-  Matrix<double> alpha(3,3,0), C(6,6,0);
+  MatrixSq3<double> alpha(0);
+  Matrix<double> C(6,6,0);
   double fmin, fmax, ef, df, f, td;
   double C11, C12, C13, C14, C15, C16;
   double C22, C23, C24, C25, C26;
@@ -972,8 +981,8 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 
 
 	{
-	  ofstream fdump;
-	  string dumpfn = "mds-frame-C-calc-" + mds.name + "-isym-"
+	  std::ofstream fdump;
+	  std::string dumpfn = "mds-frame-C-calc-" + mds.name + "-isym-"
 	    + tostring(ik) + tostring(ip)
 	    + "-step-" + tostring(j) + ".xyz";
 	  fdump.open(dumpfn.c_str());
@@ -992,11 +1001,11 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 
 
       {
-	ofstream fdump;
-	string dumpfn = "data-f-Epa-dEpa-" + name + "-" + tostring(ik) + tostring(ip) + ".dat";
+	std::ofstream fdump;
+	std::string dumpfn = "data-f-Epa-dEpa-" + name + "-" + tostring(ik) + tostring(ip) + ".dat";
 	fdump.open(dumpfn.c_str());
 	for (j=0; j<Nf; ++j)
-	  fdump << format("%20.10e  %20.10e  %20.10e") % xp[j] % yp[j] % dyp[j] << endl;
+	  fdump << format("%20.10e  %20.10e  %20.10e") % xp[j] % yp[j] % dyp[j] << std::endl;
 	fdump.close();
       }
 
@@ -1233,7 +1242,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 	    td = yp[k]; min_idx = k;
 	  }
 	}
-	Vector<double> vx(3,0), vy(3,0);
+	Vector3<double> vx(0), vy(0);
 	int im=0;
 	if ((min_idx-1)>=0 && (min_idx+1)<yp.size()) im = min_idx - 1;
 	else if (min_idx==0)                         im = min_idx;
@@ -1248,8 +1257,8 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 	E0 = min_E;
 	//f0 = min_f;
 	Clincomb.elem(ik,ip) = guess_C / V0 * eVA3_to_GPa; // unit now: GPa
-	cout << "Warning: Failed to obtain combination of linear constants for compound " + name + ". " +
-	  "Using estimate " << guess_C << " GPa." << endl;
+	std::cout << "Warning: Failed to obtain combination of linear constants for compound " + name + ". " +
+	  "Using estimate " << guess_C << " GPa." << std::endl;
       }
 
 

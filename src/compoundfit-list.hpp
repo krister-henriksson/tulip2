@@ -26,7 +26,15 @@
 #include "compoundfit.hpp"
 
 
-using namespace std;
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
 using namespace utils;
 
 
@@ -48,7 +56,7 @@ public:
   // Read structures:
   CompoundListFit(Elements & el,
 		  MDSettings     & mds_specs,
-		  string         filename);
+		  std::string         filename);
   int NData();
 } ;
 

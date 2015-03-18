@@ -10,19 +10,30 @@
 #include "utils-matrix.hpp"
 #include "elem-iacs.hpp"
 
-using namespace std;
+
+
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
+
 using namespace utils;
 using boost::format;
 
 
 
-void Elements::add_elem(string name){
+void Elements::add_elem(std::string name){
   int ie = -1;
   for (int i=0; i<melemnames.size(); i++){
     if (melemnames[i]==name){ ie=i; break;}
   }
   if (ie==-1){// element not already stored
-    cout << "trying to push back " << name << " at end of vector " << melemnames << endl; 
+    std::cout << "trying to push back " << name << " at end of vector " << melemnames << std::endl; 
     melemnames.push_back(name);
     int m = melemnames.size();
     // Initialize other properties to defaults:
@@ -45,7 +56,7 @@ int Elements::nelem(void){
 }
 
 
-int Elements::name2idx(string name){
+int Elements::name2idx(std::string name){
   for (int i=0; i<melemnames.size(); ++i)
     if (melemnames[i]==name) return i;
   // If we make it here then element name has not been stored. Store it now.
@@ -53,38 +64,38 @@ int Elements::name2idx(string name){
   return nelem()-1;
 }
 
-string Elements::idx2name(int i){
+std::string Elements::idx2name(int i){
   return melemnames[i];
 }
 
 
 
 
-int & Elements::atomtype(string s){
+int & Elements::atomtype(std::string s){
   return matomtype[name2idx(s)];
 }
 
-double & Elements::mass(string s){
+double & Elements::mass(std::string s){
   return mmass[name2idx(s)];
 }
 
-string & Elements::reflat(string s){
+std::string & Elements::reflat(std::string s){
   return mreflat[name2idx(s)];
 }
 
-double & Elements::reflat_a(string s){
+double & Elements::reflat_a(std::string s){
   return mreflat_a[name2idx(s)];
 }
-double & Elements::reflat_b(string s){
+double & Elements::reflat_b(std::string s){
   return mreflat_b[name2idx(s)];
 }
-double & Elements::reflat_c(string s){
+double & Elements::reflat_c(std::string s){
   return mreflat_c[name2idx(s)];
 }
-double & Elements::reflat_bpa(string s){
+double & Elements::reflat_bpa(std::string s){
   return mreflat_bpa[name2idx(s)];
 }
-double & Elements::reflat_cpa(string s){
+double & Elements::reflat_cpa(std::string s){
   return mreflat_cpa[name2idx(s)];
 }
 
@@ -100,7 +111,7 @@ double & Elements::mass(int i){
   return mmass[i];
 }
 
-string & Elements::reflat(int i){
+std::string & Elements::reflat(int i){
   return mreflat[i];
 }
 
@@ -137,14 +148,14 @@ void Interactions::init(Elements el){
       miacnames.elem(i,j) = "none";
 }
 
-string & Interactions::name(string n1, string n2){
+std::string & Interactions::name(std::string n1, std::string n2){
   int i = mel.name2idx(n1);
   int j = mel.name2idx(n2);
   if (i<=j) return miacnames.elem(i,j);
   else      return miacnames.elem(j,i);
 }
 
-string & Interactions::name(int i, int j){
+std::string & Interactions::name(int i, int j){
   if (i<=j) return miacnames.elem(i,j);
   else      return miacnames.elem(j,i);
 }

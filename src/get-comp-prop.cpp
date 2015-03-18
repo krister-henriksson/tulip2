@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <vector>
 
 #include <boost/format.hpp>
@@ -48,7 +47,19 @@
 #include "errors.hpp"
 
 
-using namespace std;
+
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
+
+
+
 using namespace utils;
 using namespace constants;
 using namespace physconst;
@@ -92,18 +103,18 @@ Vector<double> get_comp_prop(ParamPot & param, Vector<CompoundStructureFit> & DX
     // -------------------------------------------------------------------
     cmpfit = DX[iDX];
 
-    cout << "Getting properties of compound " << cmpfit.name << " ..." << endl;
+    std::cout << "Getting properties of compound " << cmpfit.name << " ..." << std::endl;
     try {
       cmpfit.getprop(param);
     }
     catch (bad_mds & err_bad_mds){
-      cout << "ERROR: Bad MDS run detected!" << endl;
+      std::cout << "ERROR: Bad MDS run detected!" << std::endl;
       throw err_bad_point;
     }
 
     if (cmpfit.Ecoh_delta_refcomp){
       Ecoh_delta_ref = cmpfit.prop_pred.Ecoh;
-      // cout << "Ecoh_delta_ref = " << Ecoh_delta_ref << " from compound " << cmpfit.name << endl;
+      // std::cout << "Ecoh_delta_ref = " << Ecoh_delta_ref << " from compound " << cmpfit.name << std::endl;
     }
 
     // -------------------------------------------------------------------
@@ -138,11 +149,11 @@ Vector<double> get_comp_prop(ParamPot & param, Vector<CompoundStructureFit> & DX
     if (cmpfit.prop_use.Ecoh) MDY.push_back(cmpfit.prop_pred.Ecoh);
 
     if (cmpfit.prop_use.Ecoh_delta){
-      // cout << "Using Ecoh_delta with preloaded value " << cmpfit.prop_pred.Ecoh_delta;
+      // std::cout << "Using Ecoh_delta with preloaded value " << cmpfit.prop_pred.Ecoh_delta;
       cmpfit.prop_pred.Ecoh_delta -= Ecoh_delta_ref;
       MDY.push_back(cmpfit.prop_pred.Ecoh_delta);
       /*
-	cout << " and subtracting a term " << Ecoh_delta_ref
+	std::cout << " and subtracting a term " << Ecoh_delta_ref
 	<< " so that predicted value is " << cmpfit.prop_pred.Ecoh_delta;
       */
     }

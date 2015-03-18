@@ -21,22 +21,21 @@
 #include "utils-math.hpp"
 #include "utils-errors.hpp"
 
-using namespace std;
 using namespace utils;
 using boost::format;
 
 
 
-void PotentialInformationFit::read_specs(string filename){
-  ifstream fp;
-  string line;
-  vector<string> args;
-  istringstream strbuf;
+void PotentialInformationFit::read_specs(std::string filename){
+  std::ifstream fp;
+  std::string line;
+  std::vector<std::string> args;
+  std::istringstream strbuf;
   int ns;
   double eps = std::numeric_limits<double>::epsilon();
 
 
-  cout << "Reading specifications ... " << endl;
+  std::cout << "Reading specifications ... " << std::endl;
 
 
 
@@ -144,9 +143,9 @@ void PotentialInformationFit::read_specs(string filename){
     if (args[0]=="prop" && args[1]=="ref" && args[2]=="mds" &&
 	args[3]=="prop" && args[4]=="mds"){
       // prop:ref:mds = prop:mds
-      cout << "" << endl;
-      cout << "NOTE: Copying mds settings for reference compounds from the general mds settings" << endl;
-      cout << "" << endl;
+      std::cout << "" << std::endl;
+      std::cout << "NOTE: Copying mds settings for reference compounds from the general mds settings" << std::endl;
+      std::cout << "" << std::endl;
       specs_prop.mds_specs_ref = specs_prop.mds_specs;
     }
 
@@ -162,7 +161,7 @@ void PotentialInformationFit::read_specs(string filename){
       }
 
       else if (args[1]=="BM_rel_sys"){
-	string ri;
+	std::string ri;
 	strbuf.str(args[2]); strbuf >> ri; strbuf.clear();
 	if (ri[0]=='y' || ri[0]=='Y' || ri[0]=='t' || ri[0]=='T')
 	  specs_prop.BM_rel_sys=true;
@@ -191,7 +190,7 @@ void PotentialInformationFit::read_specs(string filename){
       }
       
       else if (args[1]=="C_rel_sys"){
-	string ri;
+	std::string ri;
 	strbuf.str(args[2]); strbuf >> ri; strbuf.clear();
 	if (ri[0]=='y' || ri[0]=='Y' || ri[0]=='t' || ri[0]=='T')
 	  specs_prop.C_rel_sys=true;
@@ -412,7 +411,7 @@ void PotentialInformationFit::read_specs(string filename){
   fp.clear();
 
 
-  cout << "Read-in of specifications completed." << endl;
+  std::cout << "Read-in of specifications completed." << std::endl;
 
 }
 

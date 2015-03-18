@@ -21,14 +21,13 @@
 
 #include "omp-basics.hpp"
 
-using namespace std;
 using namespace utils;
 
 
 
 class PotentialInformation {
 private:
-  Matrix<string>  mbasepot;
+  Matrix<std::string>  mbasepot;
   Matrix<int>     mbasepot_vecidx;
   Matrix<int>     mreppot_vecidx;
   Vector<bool>    muse_reppot;
@@ -55,26 +54,26 @@ public:
 
 
   PotentialInformation();
-  PotentialInformation(string filename_info);
+  PotentialInformation(std::string filename_info);
 
   // -------------------------------------------------------------------------------
   // Called from constructor:
   // Read settings about potentials:
-  void read_info(string file);
+  void read_info(std::string file);
 
   // calls:
   //  void init(Elements & el, Interactions & ia);
 
-  string basepot(string s1, string s2);
-  string basepot(int i1, int i2);
-  int basepot_vecidx(string s1, string s2);
+  std::string basepot(std::string s1, std::string s2);
+  std::string basepot(int i1, int i2);
+  int basepot_vecidx(std::string s1, std::string s2);
   int basepot_vecidx(int i1, int i2);
 
-  bool & use_reppot(string s1, string s2);
+  bool & use_reppot(std::string s1, std::string s2);
   bool & use_reppot(int i1, int i2);
 
   void reppot_finalize(void);
-  int reppot_vecidx(string s1, string s2);
+  int reppot_vecidx(std::string s1, std::string s2);
   int reppot_vecidx(int i1, int i2);
 
   void read_eampot(void);
@@ -83,13 +82,13 @@ public:
   // -------------------------------------------------------------------------------
 
   // General utilities for later use:
-  double get_abop_omega(string s1, string s2, string s3);
+  double get_abop_omega(std::string s1, std::string s2, std::string s3);
   double get_abop_omega(int i1, int i2, int i3);
-  void   set_abop_omega(string s1, string s2, string s3, double val);
+  void   set_abop_omega(std::string s1, std::string s2, std::string s3, double val);
   void   set_abop_omega(int i1, int i2, int i3, double val);
 
   double get_rcut_max(void);
-  double get_rcut_max(Vector<string> elemnames);
+  double get_rcut_max(Vector<std::string> elemnames);
 
 
 
@@ -126,21 +125,21 @@ public:
 
 
   PotentialInformationFit();
-  PotentialInformationFit(string filename_info,
-			  string filename_specs);
+  PotentialInformationFit(std::string filename_info,
+			  std::string filename_specs);
 
-  bool & is_fittable(string s1, string s2);
+  bool & is_fittable(std::string s1, std::string s2);
   bool & is_fittable(int i1, int i2);
 
-  void read_info_fit(string filename_info);
+  void read_info_fit(std::string filename_info);
 
   // Read settings about fitting structure properties and potential:
-  void read_specs(string filename_specs);
+  void read_specs(std::string filename_specs);
 
 
-  void limcheck(const string        & pot,
-		const string        & parname,
-		const string        & elems,
+  void limcheck(const std::string        & pot,
+		const std::string        & parname,
+		const std::string        & elems,
 		const parametertype & partype,
 		const double        & parmin,
 		const double        & parmax,

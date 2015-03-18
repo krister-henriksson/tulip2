@@ -51,9 +51,19 @@
 #include "get-ini-fit-data.hpp"
 
 
-using std::cout;
-using std::endl;
-using std::string;
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
+
+
+
+
 using utils::Vector;
 using namespace constants;
 using namespace physconst;
@@ -77,13 +87,13 @@ void get_ini_fit_data(ParamPot & param,
   sizeDX = DX.size();
 
   if (sizeDX==0){
-    cout << "No compounds to inspect!" << endl; return;
+    std::cout << "No compounds to inspect!" << std::endl; return;
   }
 
 
-  Vector<string> elnames = DX[0].elemnames;
+  Vector<std::string> elnames = DX[0].elemnames;
   int nelem = DX[0].nelem;
-  string name1, name2;
+  std::string name1, name2;
 
   k=0;
   for (i=0; i<nelem; ++i){
@@ -122,7 +132,7 @@ void get_ini_fit_data(ParamPot & param,
   double Djj = param.p_potinfo->pot_ABOP[ivecjj].parval[9];
   double rcutjj = Rjj + Djj;
 
-  string ts1, ts2;
+  std::string ts1, ts2;
 
 
 
@@ -174,7 +184,7 @@ void get_ini_fit_data(ParamPot & param,
 
     // Remove potential energy contributions from known interactions:
     int nat = mds.natoms();
-    cout << "Energy from system: " << mds.calc_potential_energy()/nat << endl;
+    std::cout << "Energy from system: " << mds.calc_potential_energy()/nat << std::endl;
     Ep_list[iDX] = nat * cmpfit.prop_readin.Ecoh - mds.calc_potential_energy()/nat;
 
 
@@ -199,9 +209,9 @@ void get_ini_fit_data(ParamPot & param,
 
 
 
-  cout << "----------------------------------------------------------" << endl;
+  std::cout << "----------------------------------------------------------" << std::endl;
 
-  Vector<string> tr(8);
+  Vector<std::string> tr(8);
   tr[0] = name1 + "-" + name1 + "-" + name1;
   tr[1] = name1 + "-" + name1 + "-" + name2;
   tr[2] = name1 + "-" + name2 + "-" + name1;
@@ -214,52 +224,52 @@ void get_ini_fit_data(ParamPot & param,
   for (int it=0; it<8; ++it){
     if (name1 == name2 && it>=1) break;
 
-    cout << "Species triplet " << tr[it] << endl;
+    std::cout << "Species triplet " << tr[it] << std::endl;
     for (iDX=0; iDX<sizeDX; ++iDX){
-      string dumpfile("bondangles-" + DX[iDX].name + "-" + tr[it] + ".dat");
-      ofstream fout;
+      std::string dumpfile("bondangles-" + DX[iDX].name + "-" + tr[it] + ".dat");
+      std::ofstream fout;
       fout.open(dumpfile.c_str());
 
-      cout << "Compound: " << format("%20s") % DX[iDX].name << endl;
+      std::cout << "Compound: " << format("%20s") % DX[iDX].name << std::endl;
       for (k=0; k<bondangle_list[iDX].size(); ++k){
-	cout << format("%20.10f") % bondangle_list[iDX][k].costheta_ijk[it] << "  "
-	     << format("%20d") % bondangle_list[iDX][k].ntheta_ijk[it] << endl;
+	std::cout << format("%20.10f") % bondangle_list[iDX][k].costheta_ijk[it] << "  "
+	     << format("%20d") % bondangle_list[iDX][k].ntheta_ijk[it] << std::endl;
 	fout << format("%20.10f") % bondangle_list[iDX][k].costheta_ijk[it] << "  "
-	     << format("%20d") % bondangle_list[iDX][k].ntheta_ijk[it] << endl;
+	     << format("%20d") % bondangle_list[iDX][k].ntheta_ijk[it] << std::endl;
       }
       fout.close();
       fout.clear();
     }
   }
 
-  cout << "----------------------------------------------------------" << endl;
+  std::cout << "----------------------------------------------------------" << std::endl;
 
-  string dumpfile("bonds-num.dat");
-  ofstream fout;
+  std::string dumpfile("bonds-num.dat");
+  std::ofstream fout;
   fout.open(dumpfile.c_str());
 
   ts1="Distance";
   ts2="Num_bonds";
-  cout << "Species pair " << name1 << "-" << name2 << ":" << endl;
+  std::cout << "Species pair " << name1 << "-" << name2 << ":" << std::endl;
   for (iDX=0; iDX<sizeDX; ++iDX){
-    cout << "Compound: " << format("%20s") % DX[iDX].name
-	 << "  Potential energy to assign: " << format("%10.5e") % Ep_list[iDX] << endl;
-    cout << format("%20s") % ts1 << "  " << format("%20s") % ts2 << endl;
+    std::cout << "Compound: " << format("%20s") % DX[iDX].name
+	 << "  Potential energy to assign: " << format("%10.5e") % Ep_list[iDX] << std::endl;
+    std::cout << format("%20s") % ts1 << "  " << format("%20s") % ts2 << std::endl;
 
-    string dumpfile2("bonds-num-" + DX[iDX].name + ".dat");
-    ofstream fout2;
+    std::string dumpfile2("bonds-num-" + DX[iDX].name + ".dat");
+    std::ofstream fout2;
     fout2.open(dumpfile2.c_str());
     
     for (k=0; k<bond_list[iDX].size(); ++k){
-      cout << format("%20.10f") % bond_list[iDX][k].dist << "  "
-	   << format("%20d") % bond_list[iDX][k].nbonds << endl;
+      std::cout << format("%20.10f") % bond_list[iDX][k].dist << "  "
+	   << format("%20d") % bond_list[iDX][k].nbonds << std::endl;
       fout << format("%20.10f") % bond_list[iDX][k].dist << "  "
 	   << format("%20d") % bond_list[iDX][k].nbonds
 	   << format("%20s") % DX[iDX].name
-	   << endl;
+	   << std::endl;
       fout2 << format("%20.10f") % bond_list[iDX][k].dist << "  "
 	    << format("%20d") % bond_list[iDX][k].nbonds
-	    << endl;
+	    << std::endl;
     }
     fout2.close();
     fout2.clear();
@@ -267,7 +277,7 @@ void get_ini_fit_data(ParamPot & param,
   fout.close();
   fout.clear();
 
-  cout << "----------------------------------------------------------" << endl;
+  std::cout << "----------------------------------------------------------" << std::endl;
 
   for (iDX=0; iDX<sizeDX; ++iDX){
 

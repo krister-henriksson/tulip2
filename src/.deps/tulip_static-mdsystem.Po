@@ -343,9 +343,11 @@ tulip_static-mdsystem.o: mdsystem.cpp /usr/include/stdc-predef.h \
  /home/koehenri/include/utils-vector.hpp \
  /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-errors.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
  /home/koehenri/include/utils-matrix.hpp \
  /home/koehenri/include/utils-math.hpp /usr/include/c++/4.8/cfloat \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/float.h \
+ /home/koehenri/include/utils-matrixsq3.hpp \
  /home/koehenri/include/bond.hpp /home/koehenri/include/omp-basics.hpp \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/omp.h \
  /home/koehenri/include/constants.hpp /home/koehenri/include/utils.hpp \
@@ -355,10 +357,11 @@ tulip_static-mdsystem.o: mdsystem.cpp /usr/include/stdc-predef.h \
  /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-vector.hpp \
  /home/koehenri/include/utils-errors.hpp compound.hpp elem-iacs.hpp \
- specs-fit-prop-pot.hpp mdsettings.hpp helpfuns.hpp mdsystem.hpp \
- potinfo.hpp potclasses.hpp /home/koehenri/include/param.hpp \
- /home/koehenri/include/omp-basics.hpp physconst.hpp \
- /home/koehenri/include/mtwister.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
+ /home/koehenri/include/utils-matrixsq3.hpp specs-fit-prop-pot.hpp \
+ mdsettings.hpp helpfuns.hpp mdsystem.hpp potinfo.hpp potclasses.hpp \
+ /home/koehenri/include/param.hpp /home/koehenri/include/omp-basics.hpp \
+ physconst.hpp /home/koehenri/include/mtwister.hpp \
  /usr/include/boost/random/mersenne_twister.hpp \
  /usr/include/boost/cstdint.hpp \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
@@ -1195,6 +1198,8 @@ tulip_static-mdsystem.o: mdsystem.cpp /usr/include/stdc-predef.h \
 
 /home/koehenri/include/utils-errors.hpp:
 
+/home/koehenri/include/utils-vector3.hpp:
+
 /home/koehenri/include/utils-matrix.hpp:
 
 /home/koehenri/include/utils-math.hpp:
@@ -1202,6 +1207,8 @@ tulip_static-mdsystem.o: mdsystem.cpp /usr/include/stdc-predef.h \
 /usr/include/c++/4.8/cfloat:
 
 /usr/lib/gcc/x86_64-linux-gnu/4.8/include/float.h:
+
+/home/koehenri/include/utils-matrixsq3.hpp:
 
 /home/koehenri/include/bond.hpp:
 
@@ -1228,6 +1235,10 @@ tulip_static-mdsystem.o: mdsystem.cpp /usr/include/stdc-predef.h \
 compound.hpp:
 
 elem-iacs.hpp:
+
+/home/koehenri/include/utils-vector3.hpp:
+
+/home/koehenri/include/utils-matrixsq3.hpp:
 
 specs-fit-prop-pot.hpp:
 

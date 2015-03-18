@@ -14,7 +14,15 @@
 
 
 
-using namespace std;
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
+
 using namespace utils;
 
 
@@ -22,31 +30,31 @@ using namespace utils;
 class LatticeSimple {
 public:
   int nbasis;
-  Vector<double> origin;
-  Vector<double> minpos;
-  Vector<double> avec;
-  Vector<double> bvec;
-  Vector<double> cvec;
-  Vector<bool> pbc;
+  Vector3<double> origin;
+  Vector3<double> minpos;
+  Vector3<double> avec;
+  Vector3<double> bvec;
+  Vector3<double> cvec;
+  Vector3<bool> pbc;
   Vector<int>              types;
-  Vector< Vector<double> > pos;
-  Vector< Vector<double> > ipos;
-  string csystem;
+  Vector< Vector3<double> > pos;
+  Vector< Vector3<double> > ipos;
+  std::string csystem;
   int    csystem_sub;
-  string csymaxis;
-  string pointgroup;
-  string spacegroup;
+  std::string csymaxis;
+  std::string pointgroup;
+  std::string spacegroup;
   int spacegroup_number;
 
   LatticeSimple();
 
   void get_ipos(void);
-  void rotate(const Matrix<double> & R);
-  void shift(const Vector<double> & svec);
+  void rotate(const MatrixSq3<double> & R);
+  void shift(const Vector3<double> & svec);
 
-  void dump_xyz(const string & filename);
+  void dump_xyz(const std::string & filename);
 
-  bool matrix_is_a_symm_op(const Matrix<double> & R);
+  bool matrix_is_a_symm_op(const MatrixSq3<double> & R);
 
 } ;
 

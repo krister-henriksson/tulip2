@@ -7,8 +7,6 @@
 #include "mdsettings.hpp"
 #include "specs-fit-prop-pot.hpp"
 
-using namespace std;
-
 
 
 

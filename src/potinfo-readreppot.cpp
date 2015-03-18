@@ -26,7 +26,6 @@
 #include "potclasses.hpp"
 #include "utils-string.hpp"
 
-using namespace std;
 using namespace utils;
 using boost::format;
 
@@ -34,7 +33,7 @@ using boost::format;
 void PotentialInformation::read_reppot(void){
 
 
-  cout << "Reading reppots ..." << endl;
+  std::cout << "Reading reppots ..." << std::endl;
 
   for (int i=0; i<elem.nelem(); ++i){
     for (int j=i; j<elem.nelem(); ++j){
@@ -50,13 +49,13 @@ void PotentialInformation::read_reppot(void){
 	i1 = k;
       }
 
-      string s1 = elem.idx2name(i1);
-      string s2 = elem.idx2name(i2);
-      cout << "Checking " << s1 << "-" << s2 << " ..." << endl;
+      std::string s1 = elem.idx2name(i1);
+      std::string s2 = elem.idx2name(i2);
+      std::cout << "Checking " << s1 << "-" << s2 << " ..." << std::endl;
       
 
       if (! use_reppot(s1,s2)){
-	cout << "No reppot can be read for combination " << s1 << " " << s2 << endl;
+	cout << "No reppot can be read for combination " << s1 << " " << s2 << std::endl;
 	continue;
       }
       
@@ -64,15 +63,15 @@ void PotentialInformation::read_reppot(void){
       int ivec = reppot_vecidx(s1, s2);
 
 
-      string filename = "reppot." + s1 + "." + s2 + ".in";
+      std::string filename = "reppot." + s1 + "." + s2 + ".in";
 
       double rmin, r, dr;
 
-      ifstream fp;
-      ofstream fpo;
-      string line;
-      vector<string> args;
-      istringstream strbuf;
+      std::ifstream fp;
+      std::ofstream fpo;
+      std::string line;
+      std::vector<std::string> args;
+      std::istringstream strbuf;
       int ns;
 
 
@@ -189,7 +188,7 @@ void PotentialInformation::read_reppot(void){
 			 pot_Reppot[ivec].V_rep, 
 			 pot_Reppot[ivec].d2_V_rep,
 			 r)
-	    << endl;
+	    << std::endl;
 	r += dr;
 
       }
@@ -198,10 +197,10 @@ void PotentialInformation::read_reppot(void){
 
 
 
-      cout << "Repulsive potential core for " << s1 << "-" << s2 << " interaction read in. "
+      std::cout << "Repulsive potential core for " << s1 << "-" << s2 << " interaction read in. "
 	   << "rmin = " << pot_Reppot[ivec].r_rep[ 0 ] << " "
 	   << "rmax = " << pot_Reppot[ivec].r_rep[ pot_Reppot[ivec].Nr_rep-1 ]
-	   << endl;
+	   << std::endl;
 
     }
   }

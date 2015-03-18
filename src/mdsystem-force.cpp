@@ -38,11 +38,19 @@
 #include "specs-fit-prop-pot.hpp"
 #include "errors.hpp"
 
-using namespace std;
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
+
 using namespace utils;
 using namespace constants;
 using boost::format;
-using std::ofstream;
 
 
 
@@ -70,7 +78,7 @@ double MDSystem::calc_potential_energy(){
 
 double MDSystem::get_forces_and_energies_common(){
   int i, j, k, t1, t2, t1_old;
-  string s1, s2;
+  std::string s1, s2;
   int n_ABOP=0, n_EAM=0;
   int n_iacs=0, nat = natoms();
 

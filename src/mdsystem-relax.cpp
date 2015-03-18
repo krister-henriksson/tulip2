@@ -38,12 +38,15 @@
 #include "specs-fit-prop-pot.hpp"
 #include "errors.hpp"
 
-using namespace std;
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
 using namespace utils;
 using namespace constants;
 using boost::format;
-using std::ofstream;
-
 
 
 
@@ -60,14 +63,14 @@ using std::ofstream;
 void MDSystem::relax(void){
 
   int i,j;
-  Vector<double> tv(3,0.0), tv1(3,0.0), tv2(3,0.0);
-  Vector<double> boxlen_orig(3,0);
+  Vector3<double> tv, tv1, tv2;
+  Vector3<double> boxlen_orig;
   double tmp1, tmp2, tmp3, tmp4, td;
   double eps = std::numeric_limits<double>::epsilon();
-  Vector<double> drs(3), drc(3);
-  Vector<double> u(3), v(3), w(3);
+  Vector3<double> drs, drc;
+  Vector3<double> u, v, w;
   double Ek_tot, lambda, Tnew;
-  Matrix<double> W(3,3,0);
+  MatrixSq3<double> W;
   double mu[3];
   double drsq, drsq_max, drsq_max2;
   double dmax = std::numeric_limits<double>::max();
@@ -75,6 +78,25 @@ void MDSystem::relax(void){
   Vector<double> dt_candidate(5, specs.max_dt);
   int nat;
   bad_mds err_bad_mds;
+
+  double xt[5], xt3[3];
+  Vector<double> rv(4,1);
+  Vector3<double> rv3(0,0,0);
+
+  memset(xt,  0, sizeof(xt[0])*5);
+  memset(xt3, 0, sizeof(xt[0])*3);
+
+  rv = Vector<double>(xt, 5);
+  rv = Vector<double>(xt3, 3);
+  rv = rv3;
+
+  rv3 = rv.to_Vector3();
+  rv.to_array(xt);
+  rv.to_array(xt3);
+
+
+
+
 
 
 
@@ -84,7 +106,7 @@ void MDSystem::relax(void){
 
 
   const double liml=1.0e-6, limu=1.0e+6;
-  string fmt, fmtf = "%12.6f", fmte = "%12.6e";
+  std::string fmt, fmtf = "%12.6f", fmte = "%12.6e";
 
 
 
@@ -99,8 +121,8 @@ void MDSystem::relax(void){
 
 
   {
-    ofstream fdump;
-    string dumpfn = "mds-frame0-" + name + ".xyz";
+    std::ofstream fdump;
+    std::string dumpfn = "mds-frame0-" + name + ".xyz";
     fdump.open(dumpfn.c_str());
     dumpframe(fdump);
     fdump.close();
@@ -109,8 +131,8 @@ void MDSystem::relax(void){
   handle_pbc_of_positions();
 
   {
-    ofstream fdump;
-    string dumpfn = "mds-frame1-" + name + ".xyz";
+    std::ofstream fdump;
+    std::string dumpfn = "mds-frame1-" + name + ".xyz";
     fdump.open(dumpfn.c_str());
     dumpframe(fdump);
     fdump.close();
@@ -118,7 +140,7 @@ void MDSystem::relax(void){
 
 
   calc_volume();
-  cout << "Atomic volume " << vol_atom << endl;
+  std::cout << "Atomic volume " << vol_atom << std::endl;
 
   int type1;
   double mass1;
@@ -141,7 +163,7 @@ void MDSystem::relax(void){
 
 
   Vector<int> nspecies( elem.nelem(), 0);
-  Vector<string> elems_present;
+  Vector<std::string> elems_present;
 
 
   if (pos.size()==0)
@@ -168,15 +190,15 @@ void MDSystem::relax(void){
 
   // Memory allocation:
   for (i=0; i<nat; ++i){
-    vel[i] = Vector<double>(3, 0.0);
-    acc[i] = Vector<double>(3, 0.0);
-    frc[i] = Vector<double>(3, 0.0);
-    virials[i] = Matrix<double>(3, 3, 0.0);
+    vel[i] = Vector3<double>(0.0);
+    acc[i] = Vector3<double>(0.0);
+    frc[i] = Vector3<double>(0.0);
+    virials[i] = MatrixSq3<double>(0.0);
     Ek[i] = 0.0;
     Ep[i] = 0.0;
-    dpos[i] = Vector<double>(3, 0.0);
-    pos_int_ini[i] = Vector<double>(3, 0.0);
-    pos_int_fin[i] = Vector<double>(3, 0.0);
+    dpos[i] = Vector3<double>(0.0);
+    pos_int_ini[i] = Vector3<double>(0.0);
+    pos_int_fin[i] = Vector3<double>(0.0);
     // --------------------------------------------------
     get_coords_cart2skew(pos[i], pos_int_ini[i], -1);
     pos_int_ini[i][0] /= boxlen[0];
@@ -184,7 +206,7 @@ void MDSystem::relax(void){
     pos_int_ini[i][2] /= boxlen[2];
     // --------------------------------------------------
     if (specs_common.debug_forces)
-      frc_num[i] = Vector<double>(3,0);
+      frc_num[i] = Vector3<double>(0);
 
     if (sys_single_elem) type[i] = type1;
     else                 type[i] = elem.atomtype(matter[i]);//name2idx(matter[i]);
@@ -199,7 +221,7 @@ void MDSystem::relax(void){
 
     nspecies[ n2i ]++;
   }
-  //cout << "MD system vectors resized to correct sizes." << endl;
+  //std::cout << "MD system vectors resized to correct sizes." << std::endl;
 
 
 
@@ -213,12 +235,12 @@ void MDSystem::relax(void){
 
 
  
-  //cout << "Getting internal positions of atoms at start ..." << endl;
+  //std::cout << "Getting internal positions of atoms at start ..." << std::endl;
   //  Matrix<double> int_pos_matrix(3,3,0), dummy_matrix(3,3,0);
 
 
 
-  //cout << "Getting initial velocities ..." << endl;
+  //std::cout << "Getting initial velocities ..." << std::endl;
 
 
 
@@ -226,7 +248,7 @@ void MDSystem::relax(void){
     if (nspecies[i]>0) elems_present.push_back( elem.idx2name(i) );
   }
   rcut = rcut_max = p_potinfo->get_rcut_max( elems_present );
-  //cout << "rcut_max and skint are " << rcut_max << " " << skint << endl;
+  //std::cout << "rcut_max and skint are " << rcut_max << " " << skint << std::endl;
  
 
   double quench_tstart_real = 0.0;
@@ -241,7 +263,7 @@ void MDSystem::relax(void){
   /* -------------------------------------------------------------
      Get neighbors.
      ------------------------------------------------------------- */
-  //cout << "Getting neighbors of all atoms ..." << endl;
+  //std::cout << "Getting neighbors of all atoms ..." << std::endl;
   get_all_neighborcollections( specs_common.report_step );
 
 
@@ -252,7 +274,7 @@ void MDSystem::relax(void){
   dt = specs.dt;
   time = specs.tstart;
 
-  //cout << "made it here 01*" << endl;
+  //std::cout << "made it here 01*" << std::endl;
   // calc_volume();
   if (!periodic)
     calc_closepacked_volume();
@@ -260,16 +282,16 @@ void MDSystem::relax(void){
     calc_volume();
   }
 
-  //cout << "made it here 02*" << endl;
+  //std::cout << "made it here 02*" << std::endl;
   // calc_P();
 
   /*
-  cout << "natoms: " << nat << endl;
-  cout << "boxlen[0]: " << boxlen[0] << endl;
-  cout << "boxlen[1]: " << boxlen[1] << endl;
-  cout << "boxlen[2]: " << boxlen[2] << endl;
-  cout << "type1: " << type1 << endl;
-  cout << "mass1: " << mass1 << endl;
+  std::cout << "natoms: " << nat << std::endl;
+  std::cout << "boxlen[0]: " << boxlen[0] << std::endl;
+  std::cout << "boxlen[1]: " << boxlen[1] << std::endl;
+  std::cout << "boxlen[2]: " << boxlen[2] << std::endl;
+  std::cout << "type1: " << type1 << std::endl;
+  std::cout << "mass1: " << mass1 << std::endl;
   */
 
 
@@ -286,7 +308,7 @@ void MDSystem::relax(void){
   Pz = stresstensor_xyz.elem(2,2) = W.elem(2,2);  /* Unit now: GPa. */
   P = 1.0/3.0 * (Px + Py + Pz);
 
-  //cout << "Stress tensor (Cartesian system): " << stresstensor_xyz << endl;
+  //std::cout << "Stress tensor (Cartesian system): " << stresstensor_xyz << std::endl;
   //printf("Px Py Pz:  %15.10e  %15.10e  %15.10e\n", Px, Py, Pz);
   //  fflush(stdout);
   
@@ -326,14 +348,14 @@ void MDSystem::relax(void){
   }
 
 
-  //cout << "Stress tensor (skew system): " << stresstensor_abc << endl;
+  //std::cout << "Stress tensor (skew system): " << stresstensor_abc << std::endl;
   //    printf("  Px Py Pz = %20.10f  %20.10f  %20.10f\n", Px, Py, Pz);
   //printf("  Pa Pb Pc = %20.10f  %20.10f  %20.10f\n", *Pa, *Pb, *Pc);
 
 
 
 
-  //cout << "made it here 03" << endl;
+  //std::cout << "made it here 03" << std::endl;
   //calc_T();
   Ek_tot = 0.0;
   if (sys_single_elem){
@@ -370,12 +392,12 @@ void MDSystem::relax(void){
 
 
   /*
-    cout << "boxlen([0]: " << boxlen[0] << endl;
-    cout << "boxlen([1]: " << boxlen[1] << endl;
-    cout << "boxlen([2]: " << boxlen[2] << endl;
-    cout << "boxdir([0]: " << boxdir.col(0) << endl;
-    cout << "boxdir([1]: " << boxdir.col(1) << endl;
-    cout << "boxdir([2]: " << boxdir.col(2) << endl;
+    std::cout << "boxlen([0]: " << boxlen[0] << std::endl;
+    std::cout << "boxlen([1]: " << boxlen[1] << std::endl;
+    std::cout << "boxlen([2]: " << boxlen[2] << std::endl;
+    std::cout << "boxdir([0]: " << boxdir.col(0) << std::endl;
+    std::cout << "boxdir([1]: " << boxdir.col(1) << std::endl;
+    std::cout << "boxdir([2]: " << boxdir.col(2) << std::endl;
   */
 
 
@@ -392,7 +414,7 @@ void MDSystem::relax(void){
      ############################################################# */
 
   int istep = 0;
-  //cout << "Looping over time steps ..." << endl;
+  //std::cout << "Looping over time steps ..." << std::endl;
 
   drsq_max = drsq_max2 = 0.0;
 
@@ -408,7 +430,7 @@ void MDSystem::relax(void){
        time step check,
        neighbor list update check
        ---------------------------------------------------------------------- */
-    //cout << "made it here 01" << endl;
+    //std::cout << "made it here 01" << std::endl;
     //predict();
 
 
@@ -425,7 +447,7 @@ void MDSystem::relax(void){
 	    dt_s_max = sqrt(td4);
 	}
       }
-      //cout << "dt_s_max  specs.max_dr  " << dt_s_max << "  " << specs.max_dr << endl;
+      //std::cout << "dt_s_max  specs.max_dr  " << dt_s_max << "  " << specs.max_dr << std::endl;
       if (dt_s_max > specs.max_dr)
 	dt = specs.max_dr/dt_s_max * dt;
       else break;
@@ -508,16 +530,16 @@ void MDSystem::relax(void){
 
 
     /*
-      cout << "After predict():" << endl;
-      cout << "boxlen([0]: " << boxlen[0] << endl;
-      cout << "boxlen([1]: " << boxlen[1] << endl;
-      cout << "boxlen([2]: " << boxlen[2] << endl;
-      cout << "boxdir([0]: " << boxdir.col(0) << endl;
-      cout << "boxdir([1]: " << boxdir.col(1) << endl;
-      cout << "boxdir([2]: " << boxdir.col(2) << endl;
+      std::cout << "After predict():" << std::endl;
+      std::cout << "boxlen([0]: " << boxlen[0] << std::endl;
+      std::cout << "boxlen([1]: " << boxlen[1] << std::endl;
+      std::cout << "boxlen([2]: " << boxlen[2] << std::endl;
+      std::cout << "boxdir([0]: " << boxdir.col(0) << std::endl;
+      std::cout << "boxdir([1]: " << boxdir.col(1) << std::endl;
+      std::cout << "boxdir([2]: " << boxdir.col(2) << std::endl;
     */
 
-    //cout << "made it here 02" << endl;
+    //std::cout << "made it here 02" << std::endl;
 
 
 
@@ -527,16 +549,16 @@ void MDSystem::relax(void){
 
 
     /*
-      cout << "After handle_pbc...():" << endl;
-      cout << "boxlen([0]: " << boxlen[0] << endl;
-      cout << "boxlen([1]: " << boxlen[1] << endl;
-      cout << "boxlen([2]: " << boxlen[2] << endl;
-      cout << "boxdir([0]: " << boxdir.col(0) << endl;
-      cout << "boxdir([1]: " << boxdir.col(1) << endl;
-      cout << "boxdir([2]: " << boxdir.col(2) << endl;
+      std::cout << "After handle_pbc...():" << std::endl;
+      std::cout << "boxlen([0]: " << boxlen[0] << std::endl;
+      std::cout << "boxlen([1]: " << boxlen[1] << std::endl;
+      std::cout << "boxlen([2]: " << boxlen[2] << std::endl;
+      std::cout << "boxdir([0]: " << boxdir.col(0) << std::endl;
+      std::cout << "boxdir([1]: " << boxdir.col(1) << std::endl;
+      std::cout << "boxdir([2]: " << boxdir.col(2) << std::endl;
     */
 
-    //cout << "made it here 03" << endl;
+    //std::cout << "made it here 03" << std::endl;
     //check_timestep();
     
 
@@ -556,10 +578,10 @@ void MDSystem::relax(void){
     for (int k=0; k<5; ++k){
       if (k==0 || (k>0 && dt_candidate[k]<dt)) dt=dt_candidate[k];
     }
-    //cout << "dt now: " << dt << endl;
+    //std::cout << "dt now: " << dt << std::endl;
 
 
-    //cout << "made it here 04" << endl;
+    //std::cout << "made it here 04" << std::endl;
 
     
     /* ----------------------------------------------------------------------
@@ -584,15 +606,15 @@ void MDSystem::relax(void){
 
 
     /*
-      cout << "After check_for_neighbors...():" << endl;
-      cout << "boxlen([0]: " << boxlen[0] << endl;
-      cout << "boxlen([1]: " << boxlen[1] << endl;
-      cout << "boxlen([2]: " << boxlen[2] << endl;
-      cout << "boxdir([0]: " << boxdir.col(0) << endl;
-      cout << "boxdir([1]: " << boxdir.col(1) << endl;
-      cout << "boxdir([2]: " << boxdir.col(2) << endl;
+      std::cout << "After check_for_neighbors...():" << std::endl;
+      std::cout << "boxlen([0]: " << boxlen[0] << std::endl;
+      std::cout << "boxlen([1]: " << boxlen[1] << std::endl;
+      std::cout << "boxlen([2]: " << boxlen[2] << std::endl;
+      std::cout << "boxdir([0]: " << boxdir.col(0) << std::endl;
+      std::cout << "boxdir([1]: " << boxdir.col(1) << std::endl;
+      std::cout << "boxdir([2]: " << boxdir.col(2) << std::endl;
     */
-    //cout << "made it here 05" << endl;
+    //std::cout << "made it here 05" << std::endl;
 
 
     /* ######################################################################
@@ -600,45 +622,45 @@ void MDSystem::relax(void){
        ###################################################################### */
     if (specs_common.debug_forces){
       // Analytical forces will be calculated after this step.
-      Vector<double> pos_bak(3,0);
+      Vector3<double> pos_bak(0);
       double t, d, Ep1, Ep2;
 
-      cout << "Debugging forces" << endl;
+      std::cout << "Debugging forces" << std::endl;
 
       t = pow(eps, 1.0/3.0);
 
       // Displace one atom at a time, and get total potential energy.
       // Numerical derivative of potential energy wrt displacement is the numerical force.
       for (i=0; i<nat; ++i){
-	cout << " " << i; cout.flush();
+	std::cout << " " << i; std::cout.flush();
 	pos_bak[0] = pos[i][0];
 	pos_bak[1] = pos[i][1];
 	pos_bak[2] = pos[i][2];
 
-	//cout << "debug_forces: Made it here 01, atom " << i << endl;
+	//std::cout << "debug_forces: Made it here 01, atom " << i << std::endl;
 	for (int k=0; k<3; ++k){
-	  //cout << " " << k;
+	  //std::cout << " " << k;
 	  d = abs(pos[i][k]);
 	  //d = (d < eps) ? t : t*d;
 	  d = (d < eps) ? t*eps : t*d;
 
-	  //cout << " backstep ";
+	  //std::cout << " backstep ";
 	  pos[i][k] = pos_bak[k] - d;
 	  Ep1 = calc_potential_energy();
-	  //cout << " done ";
-	  //cout << " forwardstep ";
+	  //std::cout << " done ";
+	  //std::cout << " forwardstep ";
 	  pos[i][k] = pos_bak[k] + d;
 	  Ep2 = calc_potential_energy();
-	  //cout << " done ";
+	  //std::cout << " done ";
 	  frc_num[i][k] = - (Ep2 - Ep1)/(2.0*d);
-	  //cout << " reset ";
+	  //std::cout << " reset ";
 	  pos[i][k] = pos_bak[k]; // reset
 	}
       }
-      cout << endl;
+      std::cout << std::endl;
     }
 
-    //cout << "made it here 05.5" << endl;
+    //std::cout << "made it here 05.5" << std::endl;
 
 
 
@@ -647,7 +669,7 @@ void MDSystem::relax(void){
        ###################################################################### */
     if (specs_common.debug_pressure){
       
-      Vector< Vector<double> > pos_bak = pos;
+      Vector< Vector3<double> > pos_bak = pos;
       
       double bx=boxlen[0], by=boxlen[1], bz=boxlen[2];
       double t = pow(eps, 1.0/3.0);
@@ -710,11 +732,11 @@ void MDSystem::relax(void){
 	pos[i][2] = pos_bak[i][2];
       }
       
-      cout << "Numerical pressure is " << - (Ep1 - Ep2)/(2.0*V0*3*s) * eVA3_to_GPa << endl;
+      std::cout << "Numerical pressure is " << - (Ep1 - Ep2)/(2.0*V0*3*s) * eVA3_to_GPa << std::endl;
     }
 
 
-    //cout << "made it here 05.5" << endl;
+    //std::cout << "made it here 05.5" << std::endl;
 
     /* ----------------------------------------------------------------------
        Get forces and energies:
@@ -725,16 +747,16 @@ void MDSystem::relax(void){
     get_forces_and_energies_common();
 
     /*
-      cout << "After calc_forces...():" << endl;
-      cout << "boxlen([0]: " << boxlen[0] << endl;
-      cout << "boxlen([1]: " << boxlen[1] << endl;
-      cout << "boxlen([2]: " << boxlen[2] << endl;
-      cout << "boxdir([0]: " << boxdir.col(0) << endl;
-      cout << "boxdir([1]: " << boxdir.col(1) << endl;
-      cout << "boxdir([2]: " << boxdir.col(2) << endl;
+      std::cout << "After calc_forces...():" << std::endl;
+      std::cout << "boxlen([0]: " << boxlen[0] << std::endl;
+      std::cout << "boxlen([1]: " << boxlen[1] << std::endl;
+      std::cout << "boxlen([2]: " << boxlen[2] << std::endl;
+      std::cout << "boxdir([0]: " << boxdir.col(0) << std::endl;
+      std::cout << "boxdir([1]: " << boxdir.col(1) << std::endl;
+      std::cout << "boxdir([2]: " << boxdir.col(2) << std::endl;
     */
 
-    //cout << "made it here 06" << endl;
+    //std::cout << "made it here 06" << std::endl;
     // printf("After energy calculation: Box now: box1 box2 box3  %10.5e %10.5e %10.5e\n", box[1], box[2], box[3]); fflush(stdout);
 
 
@@ -839,16 +861,16 @@ void MDSystem::relax(void){
 
 
     /*
-      cout << "After correct():" << endl;
-      cout << "boxlen([0]: " << boxlen[0] << endl;
-      cout << "boxlen([1]: " << boxlen[1] << endl;
-      cout << "boxlen([2]: " << boxlen[2] << endl;
-      cout << "boxdir([0]: " << boxdir.col(0) << endl;
-      cout << "boxdir([1]: " << boxdir.col(1) << endl;
-      cout << "boxdir([2]: " << boxdir.col(2) << endl;
+      std::cout << "After correct():" << std::endl;
+      std::cout << "boxlen([0]: " << boxlen[0] << std::endl;
+      std::cout << "boxlen([1]: " << boxlen[1] << std::endl;
+      std::cout << "boxlen([2]: " << boxlen[2] << std::endl;
+      std::cout << "boxdir([0]: " << boxdir.col(0) << std::endl;
+      std::cout << "boxdir([1]: " << boxdir.col(1) << std::endl;
+      std::cout << "boxdir([2]: " << boxdir.col(2) << std::endl;
     */
 
-    //cout << "made it here 07" << endl;
+    //std::cout << "made it here 07" << std::endl;
     //check_timestep();
 
 
@@ -867,9 +889,9 @@ void MDSystem::relax(void){
     for (int k=0; k<5; ++k){
       if (k==0 || (k>0 && dt_candidate[k]<dt)) dt=dt_candidate[k];
     }
-    //cout << "time step now: " << dt << endl;
+    //std::cout << "time step now: " << dt << std::endl;
 
-    //cout << "made it here 08" << endl;
+    //std::cout << "made it here 08" << std::endl;
 
 
 
@@ -883,15 +905,15 @@ void MDSystem::relax(void){
       calc_volume();
     }
     /*
-      cout << "After calc_volume():" << endl;
-      cout << "boxlen([0]: " << boxlen[0] << endl;
-      cout << "boxlen([1]: " << boxlen[1] << endl;
-      cout << "boxlen([2]: " << boxlen[2] << endl;
-      cout << "boxdir([0]: " << boxdir.col(0) << endl;
-      cout << "boxdir([1]: " << boxdir.col(1) << endl;
-      cout << "boxdir([2]: " << boxdir.col(2) << endl;
-      cout << "V = " << V << endl;
-      cout << "V prefactor = " << td << endl;
+      std::cout << "After calc_volume():" << std::endl;
+      std::cout << "boxlen([0]: " << boxlen[0] << std::endl;
+      std::cout << "boxlen([1]: " << boxlen[1] << std::endl;
+      std::cout << "boxlen([2]: " << boxlen[2] << std::endl;
+      std::cout << "boxdir([0]: " << boxdir.col(0) << std::endl;
+      std::cout << "boxdir([1]: " << boxdir.col(1) << std::endl;
+      std::cout << "boxdir([2]: " << boxdir.col(2) << std::endl;
+      std::cout << "V = " << V << std::endl;
+      std::cout << "V prefactor = " << td << std::endl;
     */
 
     P = 0.0;
@@ -910,7 +932,7 @@ void MDSystem::relax(void){
     P = 1.0/3.0 * (Px + Py + Pz);
 
     if (specs_common.debug_pressure){
-      cout << "Virial matrix: " << W << endl;
+      std::cout << "Virial matrix: " << W << std::endl;
     }
 
     /* Get pressure components in skewed system: */
@@ -947,26 +969,26 @@ void MDSystem::relax(void){
     stresstensor_abc.elem(1,1) = te1;
     stresstensor_abc.elem(2,2) = te2;
 
-    //cout << "Stress tensor (skew system): " << stresstensor_abc << endl;
+    //std::cout << "Stress tensor (skew system): " << stresstensor_abc << std::endl;
     //    printf("  Px Py Pz = %20.10f  %20.10f  %20.10f\n", Px, Py, Pz);
     //printf("  Pa Pb Pc = %20.10f  %20.10f  %20.10f\n", *Pa, *Pb, *Pc);
 
 
     
     /*
-      cout << "After calc_P():" << endl;
-      cout << "boxlen([0]: " << boxlen[0] << endl;
-      cout << "boxlen([1]: " << boxlen[1] << endl;
-      cout << "boxlen([2]: " << boxlen[2] << endl;
-      cout << "boxdir([0]: " << boxdir.col(0) << endl;
-      cout << "boxdir([1]: " << boxdir.col(1) << endl;
-      cout << "boxdir([2]: " << boxdir.col(2) << endl;
+      std::cout << "After calc_P():" << std::endl;
+      std::cout << "boxlen([0]: " << boxlen[0] << std::endl;
+      std::cout << "boxlen([1]: " << boxlen[1] << std::endl;
+      std::cout << "boxlen([2]: " << boxlen[2] << std::endl;
+      std::cout << "boxdir([0]: " << boxdir.col(0) << std::endl;
+      std::cout << "boxdir([1]: " << boxdir.col(1) << std::endl;
+      std::cout << "boxdir([2]: " << boxdir.col(2) << std::endl;
     */
 
     // calc_T();
 
 
-    //cout << "made it here 09" << endl;
+    //std::cout << "made it here 09" << std::endl;
 
 
     // printf("After first energy-pressure calculation for this cell: Px Py Pz  %10.5e %10.5e %10.5e\n", Px, Py, Pz);
@@ -990,30 +1012,30 @@ void MDSystem::relax(void){
 	// Requires that P has been calculated earlier!
 
 	/*
-	  cout << "bpc_P0  bpc_scale  bpc_tau: "
-	  << specs.bpc_P0 << " " << specs.bpc_scale << " " << specs.bpc_tau << endl;
-	  cout << "stresstensor_xyz.elem(0,0) " << stresstensor_xyz.elem(0,0) << endl;
-	  cout << "stresstensor_xyz.elem(1,1) " << stresstensor_xyz.elem(1,1) << endl;
-	  cout << "stresstensor_xyz.elem(2,2) " << stresstensor_xyz.elem(2,2) << endl;
+	  std::cout << "bpc_P0  bpc_scale  bpc_tau: "
+	  << specs.bpc_P0 << " " << specs.bpc_scale << " " << specs.bpc_tau << std::endl;
+	  std::cout << "stresstensor_xyz.elem(0,0) " << stresstensor_xyz.elem(0,0) << std::endl;
+	  std::cout << "stresstensor_xyz.elem(1,1) " << stresstensor_xyz.elem(1,1) << std::endl;
+	  std::cout << "stresstensor_xyz.elem(2,2) " << stresstensor_xyz.elem(2,2) << std::endl;
 	*/
 
 	double third = 1.0/3.0;
 
 	/*
 	td = specs.bpc_P0 - stresstensor_xyz.elem(0,0);
-	cout << "specs.bpc_P0 - stresstensor_xyz.elem(0,0)  " << td << endl;
+	std::cout << "specs.bpc_P0 - stresstensor_xyz.elem(0,0)  " << td << std::endl;
 	td = specs.bpc_P0 - stresstensor_xyz.elem(1,1);
-	cout << "specs.bpc_P0 - stresstensor_xyz.elem(1,1)  " << td << endl;
+	std::cout << "specs.bpc_P0 - stresstensor_xyz.elem(1,1)  " << td << std::endl;
 	td = specs.bpc_P0 - stresstensor_xyz.elem(2,2);
-	cout << "specs.bpc_P0 - stresstensor_xyz.elem(2,2)  " << td << endl;
+	std::cout << "specs.bpc_P0 - stresstensor_xyz.elem(2,2)  " << td << std::endl;
 	*/
 
 	td = third * (dt / (specs.bpc_scale * specs.bpc_tau ));
-	//cout << "dt / (specs.bpc_scale * specs.bpc_tau ) " << td << endl;
+	//std::cout << "dt / (specs.bpc_scale * specs.bpc_tau ) " << td << std::endl;
 	mu[0] = pow( 1.0 - td * (specs.bpc_P0 - stresstensor_xyz.elem(0,0)), 1.0/3.0);
 	mu[1] = pow( 1.0 - td * (specs.bpc_P0 - stresstensor_xyz.elem(1,1)), 1.0/3.0);
 	mu[2] = pow( 1.0 - td * (specs.bpc_P0 - stresstensor_xyz.elem(2,2)), 1.0/3.0);
-	//cout << "mu(0,1,2): " << mu[0] << " " << mu[1] << " " << mu[2] << endl;
+	//std::cout << "mu(0,1,2): " << mu[0] << " " << mu[1] << " " << mu[2] << std::endl;
 
 	//printf("Inside pressure control: Px Py Pz:  %15.10e  %15.10e  %15.10e\n", Px, Py, Pz);
 	if (specs_common.debug_pressure){
@@ -1066,9 +1088,9 @@ void MDSystem::relax(void){
 	
 	/* Guard against box becoming too large when relaxing: */
 	for (int k=0; k<3; ++k){
-	  if (isnan(boxlen[k])){
-	    cout << "ERROR: Pressure control: Box length in direction " << k
-		 << " for compound " + name + " is NaN." << endl;
+	  if (std::isnan(boxlen[k])){
+	    std::cout << "ERROR: Pressure control: Box length in direction " << k
+		 << " for compound " + name + " is NaN." << std::endl;
 	    throw err_bad_mds;
 	    //aborterror("ERROR: Box in direction " + tostring(i) + " is NaN. Exiting");
 	  }
@@ -1077,26 +1099,26 @@ void MDSystem::relax(void){
 
 
 	/*
-	  cout << "Inside control_P()" << endl;
-	  cout << "boxlen([0]: " << boxlen[0] << endl;
-	  cout << "boxlen([1]: " << boxlen[1] << endl;
-	  cout << "boxlen([2]: " << boxlen[2] << endl;
-	  cout << "boxdir([0]: " << boxdir.col(0) << endl;
-	  cout << "boxdir([1]: " << boxdir.col(1) << endl;
-	  cout << "boxdir([2]: " << boxdir.col(2) << endl;
+	  std::cout << "Inside control_P()" << std::endl;
+	  std::cout << "boxlen([0]: " << boxlen[0] << std::endl;
+	  std::cout << "boxlen([1]: " << boxlen[1] << std::endl;
+	  std::cout << "boxlen([2]: " << boxlen[2] << std::endl;
+	  std::cout << "boxdir([0]: " << boxdir.col(0) << std::endl;
+	  std::cout << "boxdir([1]: " << boxdir.col(1) << std::endl;
+	  std::cout << "boxdir([2]: " << boxdir.col(2) << std::endl;
 	*/    
-	//cout << "Updating box geometry" << endl;
+	//std::cout << "Updating box geometry" << std::endl;
 	update_box_geometry();
 
 	/*
-	  cout << "boxlen([0]: " << boxlen[0] << endl;
-	  cout << "boxlen([1]: " << boxlen[1] << endl;
-	  cout << "boxlen([2]: " << boxlen[2] << endl;
-	  cout << "boxdir([0]: " << boxdir.col(0) << endl;
-	  cout << "boxdir([1]: " << boxdir.col(1) << endl;
-	  cout << "boxdir([2]: " << boxdir.col(2) << endl;
+	  std::cout << "boxlen([0]: " << boxlen[0] << std::endl;
+	  std::cout << "boxlen([1]: " << boxlen[1] << std::endl;
+	  std::cout << "boxlen([2]: " << boxlen[2] << std::endl;
+	  std::cout << "boxdir([0]: " << boxdir.col(0) << std::endl;
+	  std::cout << "boxdir([1]: " << boxdir.col(1) << std::endl;
+	  std::cout << "boxdir([2]: " << boxdir.col(2) << std::endl;
 
-	  cout << "Doing calc_P()" << endl;
+	  std::cout << "Doing calc_P()" << std::endl;
 	*/
 
 
@@ -1117,10 +1139,10 @@ void MDSystem::relax(void){
 	P = 1.0/3.0 * (Px + Py + Pz);
 
 	if (specs_common.debug_pressure){
-	  cout << "After P control: Virial matrix: " << W << endl;
+	  std::cout << "After P control: Virial matrix: " << W << std::endl;
 	}
 
-	//cout << "Stress tensor (Cartesian system): " << stresstensor_xyz << endl;
+	//std::cout << "Stress tensor (Cartesian system): " << stresstensor_xyz << std::endl;
 	//printf("Px Py Pz:  %15.10e  %15.10e  %15.10e\n", Px, Py, Pz);
 	//  fflush(stdout);
   
@@ -1159,26 +1181,26 @@ void MDSystem::relax(void){
 	stresstensor_abc.elem(2,2) = te2;
 	
 	/*
-	  cout << "After control_P():" << endl;
-	  cout << "boxlen([0]: " << boxlen[0] << endl;
-	  cout << "boxlen([1]: " << boxlen[1] << endl;
-	  cout << "boxlen([2]: " << boxlen[2] << endl;
-	  cout << "boxdir([0]: " << boxdir.col(0) << endl;
-	  cout << "boxdir([1]: " << boxdir.col(1) << endl;
-	  cout << "boxdir([2]: " << boxdir.col(2) << endl;
+	  std::cout << "After control_P():" << std::endl;
+	  std::cout << "boxlen([0]: " << boxlen[0] << std::endl;
+	  std::cout << "boxlen([1]: " << boxlen[1] << std::endl;
+	  std::cout << "boxlen([2]: " << boxlen[2] << std::endl;
+	  std::cout << "boxdir([0]: " << boxdir.col(0) << std::endl;
+	  std::cout << "boxdir([1]: " << boxdir.col(1) << std::endl;
+	  std::cout << "boxdir([2]: " << boxdir.col(2) << std::endl;
 	*/
-	//cout << "made it here 10" << endl;
+	//std::cout << "made it here 10" << std::endl;
 
 
 
 	/*
-	cout << "After calc_volume():" << endl;
+	std::cout << "After calc_volume():" << std::endl;
 	printf("boxlen([0]: %15.10f\n", boxlen[0]);
 	printf("boxlen([1]: %15.10f\n", boxlen[1]);
 	printf("boxlen([2]: %15.10f\n", boxlen[2]);
-	cout << "boxdir([0]: " << boxdir.col(0) << endl;
-	cout << "boxdir([1]: " << boxdir.col(1) << endl;
-	cout << "boxdir([2]: " << boxdir.col(2) << endl;
+	std::cout << "boxdir([0]: " << boxdir.col(0) << std::endl;
+	std::cout << "boxdir([1]: " << boxdir.col(1) << std::endl;
+	std::cout << "boxdir([2]: " << boxdir.col(2) << std::endl;
 	*/
 
 
@@ -1188,11 +1210,11 @@ void MDSystem::relax(void){
 	if (boxlen[2] <= 2.0*(rcut+skint)) N[2] = - floor(boxlen_orig[2]/boxlen[2] * N[2]);
 	
 	if (N[0]<0 || N[1]<0 || N[2]<0){
-	  cout << "Warning: Some box length(s) is (are) less than 2 * (rcut + skint): N[0] N[1] N[2]: "
+	  std::cout << "Warning: Some box length(s) is (are) less than 2 * (rcut + skint): N[0] N[1] N[2]: "
 	       << N[0] << " "
 	       << N[1] << " "
-	       << N[2] << endl;
-	  cout << "Warning: Returning to box construction and redoing relaxation with bigger box ..." << endl;
+	       << N[2] << std::endl;
+	  std::cout << "Warning: Returning to box construction and redoing relaxation with bigger box ..." << std::endl;
 	  return;
 	}
       }
@@ -1224,7 +1246,7 @@ void MDSystem::relax(void){
       else if (tmp2 >= tmp1 && tmp2 >= tmp3) P_max = tmp2;
     }
       
-    //cout << "made it here 11" << endl;    
+    //std::cout << "made it here 11" << std::endl;    
       
     
     /* ----------------------------------------------------------------------
@@ -1320,15 +1342,15 @@ void MDSystem::relax(void){
     // Some error checking
     // ///////////////////////////////////////////////////////////////////////////////////
     if (specs.use_error_T_gt && T > specs.error_T_gt){
-      cout << "ERROR: Temperature T " << T << " K"
+      std::cout << "ERROR: Temperature T " << T << " K"
 	" for compound " << name << " has grown beyond upper allowed value "
-	   << specs.error_T_gt << endl;
+	   << specs.error_T_gt << std::endl;
       throw err_bad_mds;
     }
     if (specs.use_error_dt_lt && dt < specs.error_dt_lt){
-      cout << "ERROR: Time step dt " << dt << " fs"
+      std::cout << "ERROR: Time step dt " << dt << " fs"
 	" for compound " << name << " has shrunk below lower allowed value "
-	   << specs.error_dt_lt << endl;
+	   << specs.error_dt_lt << std::endl;
       throw err_bad_mds;
     }
     if (specs.use_error_boxlen_gt){
@@ -1337,21 +1359,21 @@ void MDSystem::relax(void){
       if (boxlen[1] > specs.error_boxlen_gt) ++k;
       if (boxlen[2] > specs.error_boxlen_gt) ++k;
       if (k){
-	cout << "Boxlen for direction 1: " << boxlen[0] << endl;
-	cout << "Boxlen for direction 2: " << boxlen[1] << endl;
-	cout << "Boxlen for direction 3: " << boxlen[2] << endl;
-	cout << "ERROR: Box length for one or more directions"
+	std::cout << "Boxlen for direction 1: " << boxlen[0] << std::endl;
+	std::cout << "Boxlen for direction 2: " << boxlen[1] << std::endl;
+	std::cout << "Boxlen for direction 3: " << boxlen[2] << std::endl;
+	std::cout << "ERROR: Box length for one or more directions"
 	  " for compound " << name << " has grown beyond upper allowed value "
-	     << specs.error_boxlen_gt << endl;
+	     << specs.error_boxlen_gt << std::endl;
 	throw err_bad_mds;
       }
     }
 
     if (! periodic){
       for (int i=0; i<3; ++i){
-	if (isnan(boxlen[i])){
-	  cout << "ERROR: Box length in direction " << i
-	       << " for compound is NaN" << endl;
+	if (std::isnan(boxlen[i])){
+	  std::cout << "ERROR: Box length in direction " << i
+	       << " for compound is NaN" << std::endl;
 	  throw err_bad_mds;
 	}
       }
@@ -1377,8 +1399,8 @@ void MDSystem::relax(void){
   //exit(1);
 
   {
-    ofstream fdump;
-    string dumpfn = "mds-lastframe-" + name + ".xyz";
+    std::ofstream fdump;
+    std::string dumpfn = "mds-lastframe-" + name + ".xyz";
     fdump.open(dumpfn.c_str());
     dumpframe(fdump);
     fdump.close();
@@ -1395,15 +1417,15 @@ void MDSystem::relax(void){
     rsumy += pos[i][1];
     rsumz += pos[i][2];
   }
-  cout << "Net position (A)   : " << rsumx << " " << rsumy << " " << rsumz << endl;
-  cout << "CM position (A)    : " << rsumx/nat << " " << rsumy/nat << " " << rsumz/nat << endl;
-  cout << "Net force    (eV/A): " << fsumx << " " << fsumy << " " << fsumz << endl;
+  std::cout << "Net position (A)   : " << rsumx << " " << rsumy << " " << rsumz << std::endl;
+  std::cout << "CM position (A)    : " << rsumx/nat << " " << rsumy/nat << " " << rsumz/nat << std::endl;
+  std::cout << "Net force    (eV/A): " << fsumx << " " << fsumy << " " << fsumz << std::endl;
   */
 
   if (specs_common.debug_forces){
     double td1;
-    string dumpfile = "debugforces-" + name + ".out";
-    ofstream fout;
+    std::string dumpfile = "debugforces-" + name + ".out";
+    std::ofstream fout;
 
     fout.open(dumpfile.c_str());
     for (i=0; i<nat; ++i){
@@ -1417,7 +1439,7 @@ void MDSystem::relax(void){
 	   << format(" x %15.10f y %15.10f z %15.10f  ") % pos[i][0]     % pos[i][1]     % pos[i][2]
 	   << format(" ana %15.10f  %15.10f  %15.10f  ") % frc[i][0]     % frc[i][1]     % frc[i][2]
 	   << format(" num %15.10f  %15.10f  %15.10f  ") % frc_num[i][0] % frc_num[i][1] % frc_num[i][2]
-	   << endl;
+	   << std::endl;
     }
     fout.close();
 
@@ -1470,7 +1492,7 @@ void MDSystem::relax(void){
     
 
 
-void MDSystem::get_virials(int nat, Matrix<double> & W,
+void MDSystem::get_virials(int nat, MatrixSq3<double> & W,
 			   double mux, double muy, double muz){
 
   int i,v1,v2;

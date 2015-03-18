@@ -27,7 +27,17 @@
 #include "physconst.hpp"
 #include "utils-errors.hpp"
 
-using namespace std;
+
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
+
 using namespace utils;
 using namespace constants;
 using boost::format;
@@ -212,15 +222,15 @@ CompoundStructure::CompoundStructure()
   :
   nelem(1),
   elemnames(1, "none"),   // Single-atom basis, i.e. Bravais lattice
-  pbc(3, false),
+  pbc(false),
   use_readin_structure(true),
   use_int(false),
   use_origin_spec(false),
-  origin(3,0),
-  u1_vec(3,0), u2_vec(3,0), u3_vec(3,0),
+  origin(0),
+  u1_vec(0), u2_vec(0), u3_vec(0),
   basis_types(1, 0),
   basis_elems(1, "none"),
-  basis_vecs(1, Vector<double>(3, 0.0))
+  basis_vecs(1, Vector3<double>(0.0))
 {
 
   filename     = "none";
@@ -288,7 +298,7 @@ void CompoundStructure::origin_from_model(int & N1,
 					  int & N2,
 					  int & N3
 					  ){
-  Vector<double> boxlen(3, 0);
+  Vector3<double> boxlen(0);
   
   boxlen[0] = N1 * u1_vec.magn();
   boxlen[1] = N2 * u2_vec.magn();
@@ -316,9 +326,9 @@ void CompoundStructure::origin_from_model(int & N1,
 
 
 void CompoundStructure::create_from_model(Elements & el,
-					  string name_in,
-					  string elem1,
-					  string elem2,
+					  std::string name_in,
+					  std::string elem1,
+					  std::string elem2,
 					  double ai,
 					  double bi,
 					  double ci
@@ -332,10 +342,10 @@ void CompoundStructure::create_from_model(Elements & el,
   use_readin_structure = false;
 
 
-  pbc = Vector<bool>(3, true);
+  pbc = Vector3<bool>(true);
 
   basis_elems[0] = elem1;
-  basis_vecs[0] = Vector<double>(3, 0.0);
+  basis_vecs[0] = Vector3<double>(0.0);
 
   //use_u=false;
   //use_w=false;
@@ -349,7 +359,7 @@ void CompoundStructure::create_from_model(Elements & el,
 
   if (crystalname=="DIM1"){
     csystem = "none";
-    pbc = Vector<bool>(3, false);
+    pbc = Vector3<bool>(false);
 
     nbasis = 2;
     basis_types.resize(nbasis);
@@ -357,8 +367,8 @@ void CompoundStructure::create_from_model(Elements & el,
     basis_vecs.resize(nbasis);
 
     for (i=0; i<nbasis; ++i) basis_elems[i] = elem1;
-    i=0; basis_vecs[i] = Vector<double>(3, 0.0);
-    i=1; basis_vecs[i] = Vector<double>(3, 0.0); basis_vecs[i][0] = 1.0; // bond axis in X direction
+    i=0; basis_vecs[i] = Vector3<double>(0.0);
+    i=1; basis_vecs[i] = Vector3<double>(0.0); basis_vecs[i][0] = 1.0; // bond axis in X direction
 
   }
   else if (crystalname=="DIM2"){
@@ -367,7 +377,7 @@ void CompoundStructure::create_from_model(Elements & el,
     elemnames[1] = elem2;
 
     csystem = "none";
-    pbc = Vector<bool>(3, false);
+    pbc = Vector3<bool>(false);
 
     nbasis = 2;
     basis_types.resize(nbasis);
@@ -377,8 +387,8 @@ void CompoundStructure::create_from_model(Elements & el,
     i=0; basis_elems[i] = elem1;
     i=1; basis_elems[i] = elem2;
 
-    i=0; basis_vecs[i] = Vector<double>(3, 0.0);
-    i=1; basis_vecs[i] = Vector<double>(3, 0.0); basis_vecs[i][0] = 1.0; // bond axis in X direction
+    i=0; basis_vecs[i] = Vector3<double>(0.0);
+    i=1; basis_vecs[i] = Vector3<double>(0.0); basis_vecs[i][0] = 1.0; // bond axis in X direction
 
 
   }
@@ -396,7 +406,7 @@ void CompoundStructure::create_from_model(Elements & el,
 
     i=0; basis_elems[i] = elem1;
 
-    i=0; basis_vecs[i] = Vector<double>(3, 0.0);
+    i=0; basis_vecs[i] = Vector3<double>(0.0);
 
   }
   else if (crystalname=="BCC" || crystalname=="BCC-C"){
@@ -413,8 +423,8 @@ void CompoundStructure::create_from_model(Elements & el,
     i=0; basis_elems[i] = elem1;
     i=1; basis_elems[i] = elem1;
 
-    i=0; basis_vecs[i] = Vector<double>(3, 0.0);
-    i=1; basis_vecs[i] = Vector<double>(3, 0.5);
+    i=0; basis_vecs[i] = Vector3<double>(0.0);
+    i=1; basis_vecs[i] = Vector3<double>(0.5);
 
   }
   // ---------------------------------------------------------------------------
@@ -431,7 +441,7 @@ void CompoundStructure::create_from_model(Elements & el,
 
     i=0; basis_elems[i] = elem1;
 
-    i=0; basis_vecs[i] = Vector<double>(3, 0.0);
+    i=0; basis_vecs[i] = Vector3<double>(0.0);
 
   }
   else if (crystalname=="FCC" || crystalname=="FCC-C"){
@@ -441,7 +451,7 @@ void CompoundStructure::create_from_model(Elements & el,
     basis_vecs.resize(nbasis);
 
     for (i=0; i<nbasis; ++i) basis_elems[i] = elem1;
-    for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector<double>(3, 0.0);
+    for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector3<double>(0.0);
 
     i=1; basis_vecs[i][0] = 0.5; basis_vecs[i][1] = 0.5; basis_vecs[i][2] = 0.0;
     i=2; basis_vecs[i][0] = 0.5; basis_vecs[i][1] = 0.0; basis_vecs[i][2] = 0.5;
@@ -456,8 +466,8 @@ void CompoundStructure::create_from_model(Elements & el,
     basis_vecs.resize(nbasis);
 
     for (i=0; i<nbasis; ++i) basis_elems[i] = elem1;
-    for (i=0; i<4; ++i)      basis_vecs[i] = Vector<double>(3, 0.0);
-    for (i=4; i<nbasis; ++i) basis_vecs[i] = Vector<double>(3, 0.25);
+    for (i=0; i<4; ++i)      basis_vecs[i] = Vector3<double>(0.0);
+    for (i=4; i<nbasis; ++i) basis_vecs[i] = Vector3<double>(0.25);
 
     i=1; basis_vecs[i][0] += 0.5; basis_vecs[i][1] += 0.5; basis_vecs[i][2] += 0.0;
     i=2; basis_vecs[i][0] += 0.5; basis_vecs[i][1] += 0.0; basis_vecs[i][2] += 0.5;
@@ -485,7 +495,7 @@ void CompoundStructure::create_from_model(Elements & el,
     basis_vecs.resize(nbasis);
 
     for (i=0; i<nbasis; ++i) basis_elems[i] = elem1;
-    for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector<double>(3, 0.0);
+    for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector3<double>(0.0);
 
     use_int = true;
 
@@ -520,7 +530,7 @@ void CompoundStructure::create_from_model(Elements & el,
     basis_vecs.resize(nbasis);
 
     for (i=0; i<nbasis; ++i) basis_elems[i] = elem1;
-    for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector<double>(3, 0.0);
+    for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector3<double>(0.0);
 
     use_int = true;
 
@@ -554,7 +564,7 @@ void CompoundStructure::create_from_model(Elements & el,
     basis_vecs.resize(nbasis);
 
     for (i=0; i<nbasis; ++i) basis_elems[i] = elem1;
-    for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector<double>(3, 0.0);
+    for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector3<double>(0.0);
 
     use_int = true;
 
@@ -581,7 +591,7 @@ void CompoundStructure::create_from_model(Elements & el,
 
     basis_elems[0] = elem1;
     basis_elems[1] = elem2;
-    for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector<double>(3, 0.0);
+    for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector3<double>(0.0);
 
     i=1; basis_vecs[i][0] = 0.5; basis_vecs[i][1] = 0.5; basis_vecs[i][2] = 0.5;
 
@@ -599,7 +609,7 @@ void CompoundStructure::create_from_model(Elements & el,
 
     for (i=0; i<4; ++i)      basis_elems[i] = elem1;
     for (i=5; i<nbasis; ++i) basis_elems[i] = elem2;
-    for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector<double>(3, 0.0);
+    for (i=0; i<nbasis; ++i) basis_vecs[i] = Vector3<double>(0.0);
 
     i=1; basis_vecs[i][0] = 0.5; basis_vecs[i][1] = 0.5; basis_vecs[i][2] = 0.0;
     i=2; basis_vecs[i][0] = 0.5; basis_vecs[i][1] = 0.0; basis_vecs[i][2] = 0.5;
@@ -625,8 +635,8 @@ void CompoundStructure::create_from_model(Elements & el,
     for (i=0; i<4; ++i)      basis_elems[i] = elem1;
     for (i=5; i<nbasis; ++i) basis_elems[i] = elem2;
 
-    for (i=0; i<4; ++i)      basis_vecs[i] = Vector<double>(3, 0.0);
-    for (i=4; i<nbasis; ++i) basis_vecs[i] = Vector<double>(3, 0.25);
+    for (i=0; i<4; ++i)      basis_vecs[i] = Vector3<double>(0.0);
+    for (i=4; i<nbasis; ++i) basis_vecs[i] = Vector3<double>(0.25);
 
     i=1; basis_vecs[i][0] += 0.5; basis_vecs[i][1] += 0.5; basis_vecs[i][2] += 0.0;
     i=2; basis_vecs[i][0] += 0.5; basis_vecs[i][1] += 0.0; basis_vecs[i][2] += 0.5;
@@ -674,10 +684,10 @@ void CompoundStructure::create_from_model(Elements & el,
 
 
 void CompoundStructure::read_structure(Elements & el){
-  ifstream fp;
-  string line;
-  vector<string> args;
-  istringstream strbuf;
+  std::ifstream fp;
+  std::string line;
+  std::vector<std::string> args;
+  std::istringstream strbuf;
   int ns, i, j, k, tl;
   double td;
 
@@ -767,7 +777,7 @@ void CompoundStructure::read_structure(Elements & el){
       basis_elems.resize(tl);
       basis_vecs.resize(tl);
       for (i=0; i<nbasis; ++i)
-	basis_vecs[i].resize(3);
+	basis_vecs[i] = Vector3<double>(0);
     }
 
     // iline=8
@@ -865,7 +875,7 @@ void CompoundStructure::finalize(double ma, double mb, double mc){
   // ****************************************************************
   if (use_int){
     // Basis vectors are in internal format
-    Vector< Vector<double> > bv;
+    Vector< Vector3<double> > bv;
     bv = basis_vecs;
     for (i=0; i<nbasis; ++i){
       for (k=0; k<3; ++k)
@@ -890,8 +900,8 @@ void CompoundStructure::finalize(double ma, double mb, double mc){
   /* -----------------------------------------------------------------------------
      Make all basis atoms be inside the cell, if possible
      ----------------------------------------------------------------------------- */
-  Matrix<double> boxdir(3,3,0), Bravaismatrix_inv(3,3,0);
-  Vector<double> tv(3,0), boxlen(3), drs(3,0), drc(3,0);
+  MatrixSq3<double> boxdir(0), Bravaismatrix_inv(0);
+  Vector3<double> tv(0), boxlen(0), drs(0), drc(0);
 
   tv=u1_vec; td=tv.normalize(); boxlen[0]=td; boxdir.col(0,tv);
   tv=u2_vec; td=tv.normalize(); boxlen[1]=td; boxdir.col(1,tv);

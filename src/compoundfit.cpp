@@ -29,9 +29,14 @@
 
 #include "compoundfit.hpp"
 
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
 
 
-using namespace std;
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
 using namespace utils;
 using namespace constants;
 using boost::format;
@@ -103,10 +108,10 @@ int CompoundStructureFit::NData(){
 
 
 void CompoundStructureFit::read_forces(void){
-  ifstream fp;
-  string line;
-  vector<string> args;
-  istringstream strbuf;
+  std::ifstream fp;
+  std::string line;
+  std::vector<std::string> args;
+  std::istringstream strbuf;
   int ns, i;
   double fx, fy, fz, td1, td2, td3;
   
@@ -117,24 +122,24 @@ void CompoundStructureFit::read_forces(void){
   int nb = basis_elems.size();
 
   prop_readin.frc.resize(nb);
-  for (i=0; i<nb; ++i) prop_readin.frc[i].resize(3);
+  for (i=0; i<nb; ++i) prop_readin.frc[i] = Vector3<double>(0);
 
   // ***************************************************************************
   // Allocate space for predicted forces. Do this now when forces are read,
   // so we won't have to wonder later if they are allocated or not.
   // ***************************************************************************
   prop_pred.frc.resize(nb);
-  for (i=0; i<nb; ++i) prop_pred.frc[i].resize(3);
+  for (i=0; i<nb; ++i) prop_pred.frc[i] = Vector3<double>(0);
 
   if (use_u.frc){
     prop_u.frc.resize(nb);
     for (i=0; i<nb; ++i)
-      prop_u.frc[i].resize(3);
+      prop_u.frc[i] = Vector3<double>(0);
   }
   else {
     prop_w.frc.resize(nb);
     for (i=0; i<nb; ++i)
-      prop_w.frc[i].resize(3);
+      prop_w.frc[i] = Vector3<double>(0);
   }
 
 
@@ -150,7 +155,7 @@ void CompoundStructureFit::read_forces(void){
   while (true){
 
     utils::get_line(fp, line);
-    ns = utils::get_substrings( line, args, "\t :,()[]=");
+    ns = utils::get_substrings( line, args, "\t :,()[]=" );
 
     if (ns>=6){
       strbuf.str(args[0]); strbuf >> fx; strbuf.clear();
@@ -262,15 +267,15 @@ void CompoundStructureFit::check_and_fix_Cij(){
     for (int p=1; p<=6; ++p){
 
       if (prop_use.C.elem(k-1,p-1)==true && Cuse.elem(k,p)==false){
-	string mess = "Warning: Crystal system " + csystem + " does not use elastic constant C"
+	std::string mess = "Warning: Crystal system " + csystem + " does not use elastic constant C"
 	  + tostring(k) + tostring(p) + ". Used Cij are:";
 	for (int ik=1; ik<=6; ++ik)
 	  for (int ip=1; ip<=6; ++ip)
 	    if (Cuse.elem(ik,ip)) mess += " C" + tostring(ik) + tostring(ip);
 
 	prop_use.C.elem(k-1,p-1) = false;
-	cout << mess
-	     << " Turned off wrong usage." << endl;
+	std::cout << mess
+		  << " Turned off wrong usage." << std::endl;
       }
 
     }

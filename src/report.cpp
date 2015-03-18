@@ -47,7 +47,7 @@
 #include "get-comp-prop.hpp"
 #include "report.hpp"
 
-using namespace std;
+
 using namespace utils;
 using namespace constants;
 using namespace physconst;
@@ -63,7 +63,7 @@ void report_pot_prop(ParamPot & param,
 		     Vector<double> & DY,
 		     Vector<double> & MDY
 		     ){
-  report_pot_prop_ext(param, DX, DY, MDY, cout, cout);
+  report_pot_prop_ext(param, DX, DY, MDY, std::cout, std::cout);
 }
 
 
@@ -71,11 +71,11 @@ void report_pot_prop_ext(ParamPot & param,
 			 Vector<CompoundStructureFit> & DX,
 			 Vector<double> & DY,
 			 Vector<double> & MDY,
-			 ostream & fout_pot,
-			 ostream & fout_prop
+			 std::ostream & fout_pot,
+			 std::ostream & fout_prop
 			 ){
 
-  cout << "-------------------------------------------------------------------------------" << endl;
+  std::cout << "-------------------------------------------------------------------------------" << std::endl;
 
 
   param.update_pot();
@@ -109,13 +109,13 @@ void report_pot_prop_ext(ParamPot & param,
 void report_pot(PotentialInformationFit * p_potinfo,
 		bool fittable_ones,
 		bool fixed_ones,
-		ostream & fout
+		std::ostream & fout
 		){
   int i1, i2, i3, j, k, nel = p_potinfo->elem.nelem();
-  string s1, s2, s3, partypestring;
+  std::string s1, s2, s3, partypestring;
   bool o1, o2, oprint;
-  string formatf = "%20.10f";
-  string formate = "%20.10e";
+  std::string formatf = "%20.10f";
+  std::string formate = "%20.10e";
   const double llim=1.0e-4;
   const double ulim=1.0e+4;
   double td;
@@ -144,7 +144,7 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	/*
 	  fout << "ABOP: " << p_potinfo->pot_ABOP[j].elemname1 << "-"
 	  << p_potinfo->pot_ABOP[j].elemname2 << ": is fittable?: "
-	  << p_potinfo->is_fittable(s1,s2) << endl;
+	  << p_potinfo->is_fittable(s1,s2) << std::endl;
 	*/
 
 	for (k=0; k<p_potinfo->pot_ABOP[j].parname.size(); ++k){
@@ -181,7 +181,7 @@ void report_pot(PotentialInformationFit * p_potinfo,
 		 << "   max: " << format("%20.10e") % p_potinfo->pot_ABOP[j].parmax[k]
 		 << "   " <<  partypestring;
 	  }
-	  if (o1 || o2) fout << endl;
+	  if (o1 || o2) fout << std::endl;
 	  
 	} // loop: k
       } // ABOP
@@ -189,7 +189,7 @@ void report_pot(PotentialInformationFit * p_potinfo,
   }
 
 
-  //if (counter==0) fout << "(no items detected)" << endl;
+  //if (counter==0) fout << "(no items detected)" << std::endl;
 
   for (i1=0; i1<nel; ++i1){
     s1 = p_potinfo->elem.idx2name(i1);
@@ -224,7 +224,7 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	       << "   max: " << format("%20.10e") % p_potinfo->abop_alpha_parmax.elem(i1,i2,i3)
 	       << "   " <<  partypestring;
 	}
-	if (o1 || o2) fout << endl;
+	if (o1 || o2) fout << std::endl;
 
       }
     }
@@ -263,7 +263,7 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	       << "   max: " << format("%20.10e") % p_potinfo->abop_omega_parmax.elem(i1,i2,i3)
 	       << "   " <<  partypestring;
 	}
-	if (o1 || o2) fout << endl;
+	if (o1 || o2) fout << std::endl;
 
       }
     }
@@ -300,7 +300,7 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	       << "   max: " << format("%20.10e") % p_potinfo->abop_2mu_parmax.elem(i1,i2)
 	       << "   " <<  partypestring;
 	}
-	if (o1 || o2) fout << endl;
+	if (o1 || o2) fout << std::endl;
 
     }
   }
@@ -308,7 +308,7 @@ void report_pot(PotentialInformationFit * p_potinfo,
 
 
 
-  fout << "-------------------------------------------------------------------------------" << endl;
+  fout << "-------------------------------------------------------------------------------" << std::endl;
 
 }
 
@@ -317,16 +317,16 @@ void report_pot(PotentialInformationFit * p_potinfo,
 
 
 void report_prop(Vector<CompoundStructureFit> & DX,
-		 ostream & fout,
+		 std::ostream & fout,
 		 bool firsttime
 		 ){
 
   int i;
-  string s1, s2, s3;
+  std::string s1, s2, s3;
   double td1, td2, td3, td4;
   int k,p;
   bool tb1, tb2;
-  string propstr="empty";
+  std::string propstr="empty";
 
 
   // ##########################################################################
@@ -337,7 +337,7 @@ void report_prop(Vector<CompoundStructureFit> & DX,
   for (i=0; i<DX.size(); ++i){
     CompoundStructureFit cmpfit = DX[i];
 
-    fout << "Compound: " << cmpfit.name << endl;
+    fout << "Compound: " << cmpfit.name << std::endl;
 
     if (cmpfit.prop_use.a){
       td1 = cmpfit.prop_pred.a;
@@ -602,29 +602,29 @@ void report_prop(Vector<CompoundStructureFit> & DX,
 
 
 
-    fout << "..............................................................................." << endl;
+    fout << "..............................................................................." << std::endl;
 
   }
 
   if (DX.size()>0)
-    fout << "-------------------------------------------------------------------------------" << endl;
+    fout << "-------------------------------------------------------------------------------" << std::endl;
 
 }
 
 
 
 
-void print_prop_readin_pred_comp(ostream & fout,
+void print_prop_readin_pred_comp(std::ostream & fout,
 				 bool firsttime,
 				 bool tb1, bool tb2,
-				 string propstr,
+				 std::string propstr,
 				 double td1, double td2,
 				 double td3, double td4){
 
   const double llim=1.0e-4;
   const double ulim=1.0e+4;
-  string formatf = "%20.10f";
-  string formate = "%20.10e";
+  std::string formatf = "%20.10f";
+  std::string formate = "%20.10e";
 
   fout << propstr;
   fout << "read-in  ";
@@ -651,7 +651,7 @@ void print_prop_readin_pred_comp(ostream & fout,
     if (abs(td4)<llim || abs(td4)>ulim) fout << format(formate) % td4;
     else                                fout << format(formatf) % td4;
   }
-  fout << endl;
+  fout << std::endl;
 }
 
 
@@ -660,57 +660,57 @@ void print_prop_readin_pred_comp(ostream & fout,
 
 
 	  /*
-	if (o1 || o2) cout << "ABOP " << s1 << "-" << s2 << ": r0:    " << format("%15.10f") % p_potinfo->pot_ABOP[j].r0;
+	if (o1 || o2) std::cout << "ABOP " << s1 << "-" << s2 << ": r0:    " << format("%15.10f") % p_potinfo->pot_ABOP[j].r0;
 	if (o2 && (p_potinfo->pot_ABOP[j].partype->r0 != PARAM_FIXED))
-	  cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->r0
+	  std::cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->r0
 	       << "   max: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmax->r0;
-	if (o1 || o2) cout << endl;
+	if (o1 || o2) std::cout << std::endl;
 
-	if (o1 || o2) cout << "ABOP " << s1 << "-" << s2 << ": beta:  " << format("%15.10f") % p_potinfo->pot_ABOP[j].beta;
+	if (o1 || o2) std::cout << "ABOP " << s1 << "-" << s2 << ": beta:  " << format("%15.10f") % p_potinfo->pot_ABOP[j].beta;
 	if (o2 && (p_potinfo->pot_ABOP[j].partype->beta != PARAM_FIXED))	
-	  cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->beta
+	  std::cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->beta
 	       << "   max: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmax->beta;
-	if (o1 || o2) cout << endl;
+	if (o1 || o2) std::cout << std::endl;
 
-	if (o1 || o2) cout << "ABOP " << s1 << "-" << s2 << ": S:     " << format("%15.10f") % p_potinfo->pot_ABOP[j].S;
+	if (o1 || o2) std::cout << "ABOP " << s1 << "-" << s2 << ": S:     " << format("%15.10f") % p_potinfo->pot_ABOP[j].S;
 	if (o2 && (p_potinfo->pot_ABOP[j].partype->S != PARAM_FIXED))       
-	  cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->S
+	  std::cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->S
 	       << "   max: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmax->S;
-	if (o1 || o2) cout << endl;
+	if (o1 || o2) std::cout << std::endl;
 
-	if (o1 || o2) cout << "ABOP " << s1 << "-" << s2 << ": gamma: " << format("%15.10f") % p_potinfo->pot_ABOP[j].gamma;
+	if (o1 || o2) std::cout << "ABOP " << s1 << "-" << s2 << ": gamma: " << format("%15.10f") % p_potinfo->pot_ABOP[j].gamma;
 	if (o2 && (p_potinfo->pot_ABOP[j].partype->gamma != PARAM_FIXED))	
-	  cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->gamma
+	  std::cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->gamma
 	       << "   max: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmax->gamma;
-	if (o1 || o2) cout << endl;
+	if (o1 || o2) std::cout << std::endl;
 
-	if (o1 || o2) cout << "ABOP " << s1 << "-" << s2 << ": c:     " << format("%15.10f") % p_potinfo->pot_ABOP[j].c;
+	if (o1 || o2) std::cout << "ABOP " << s1 << "-" << s2 << ": c:     " << format("%15.10f") % p_potinfo->pot_ABOP[j].c;
 	if (o2 && (p_potinfo->pot_ABOP[j].partype->c != PARAM_FIXED))	
-	  cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->c
+	  std::cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->c
 	       << "   max: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmax->c;
-	if (o1 || o2) cout << endl;
+	if (o1 || o2) std::cout << std::endl;
 
-	if (o1 || o2) cout << "ABOP " << s1 << "-" << s2 << ": d:     " << format("%15.10f") % p_potinfo->pot_ABOP[j].d;
+	if (o1 || o2) std::cout << "ABOP " << s1 << "-" << s2 << ": d:     " << format("%15.10f") % p_potinfo->pot_ABOP[j].d;
 	if (o2 && (p_potinfo->pot_ABOP[j].partype->d != PARAM_FIXED))	
-	  cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->d
+	  std::cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->d
 	       << "   max: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmax->d;
-	if (o1 || o2) cout << endl;
+	if (o1 || o2) std::cout << std::endl;
 
-	if (o1 || o2) cout << "ABOP " << s1 << "-" << s2 << ": h:     " << format("%15.10f") % p_potinfo->pot_ABOP[j].h;
+	if (o1 || o2) std::cout << "ABOP " << s1 << "-" << s2 << ": h:     " << format("%15.10f") % p_potinfo->pot_ABOP[j].h;
 	if (o2 && (p_potinfo->pot_ABOP[j].partype->h != PARAM_FIXED))	
-	  cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->h
+	  std::cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->h
 	       << "   max: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmax->h;
-	if (o1 || o2) cout << endl;
+	if (o1 || o2) std::cout << std::endl;
 
-	if (o1 || o2) cout << "ABOP " << s1 << "-" << s2 << ": R:     " << format("%15.10f") % p_potinfo->pot_ABOP[j].R;
+	if (o1 || o2) std::cout << "ABOP " << s1 << "-" << s2 << ": R:     " << format("%15.10f") % p_potinfo->pot_ABOP[j].R;
 	if (o2 && (p_potinfo->pot_ABOP[j].partype->R != PARAM_FIXED))	
-	  cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->R
+	  std::cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->R
 	       << "   max: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmax->R;
-	if (o1 || o2) cout << endl;
+	if (o1 || o2) std::cout << std::endl;
 	
-	if (o1 || o2) cout << "ABOP " << s1 << "-" << s2 << ": D:     " << format("%15.10f") % p_potinfo->pot_ABOP[j].D;
+	if (o1 || o2) std::cout << "ABOP " << s1 << "-" << s2 << ": D:     " << format("%15.10f") % p_potinfo->pot_ABOP[j].D;
 	if (o2 && (p_potinfo->pot_ABOP[j].partype->D != PARAM_FIXED))	
-	  cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->D
+	  std::cout << "   min: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmin->D
 	       << "   max: " << format("%12.10e") % p_potinfo->pot_ABOP[j].parmax->D;
-	if (o1 || o2) cout << endl;
+	if (o1 || o2) std::cout << std::endl;
 	  */	

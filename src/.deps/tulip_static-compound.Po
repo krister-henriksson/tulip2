@@ -341,6 +341,7 @@ tulip_static-compound.o: compound.cpp /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
  /home/koehenri/include/utils.hpp /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-errors.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
  /home/koehenri/include/utils-matrix.hpp \
  /home/koehenri/include/utils-math.hpp /usr/include/c++/4.8/cfloat \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/float.h \
@@ -348,7 +349,9 @@ tulip_static-compound.o: compound.cpp /usr/include/stdc-predef.h \
  /home/koehenri/include/utils-matrix3.hpp \
  /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-streamio.hpp elem-iacs.hpp \
- specs-fit-prop-pot.hpp mdsettings.hpp compound.hpp physconst.hpp \
+ /home/koehenri/include/utils-vector3.hpp \
+ /home/koehenri/include/utils-matrixsq3.hpp specs-fit-prop-pot.hpp \
+ mdsettings.hpp compound.hpp physconst.hpp \
  /home/koehenri/include/utils-errors.hpp
 
 /usr/include/stdc-predef.h:
@@ -1143,6 +1146,8 @@ tulip_static-compound.o: compound.cpp /usr/include/stdc-predef.h \
 
 /home/koehenri/include/utils-errors.hpp:
 
+/home/koehenri/include/utils-vector3.hpp:
+
 /home/koehenri/include/utils-matrix.hpp:
 
 /home/koehenri/include/utils-math.hpp:
@@ -1160,6 +1165,10 @@ tulip_static-compound.o: compound.cpp /usr/include/stdc-predef.h \
 /home/koehenri/include/utils-streamio.hpp:
 
 elem-iacs.hpp:
+
+/home/koehenri/include/utils-vector3.hpp:
+
+/home/koehenri/include/utils-matrixsq3.hpp:
 
 specs-fit-prop-pot.hpp:
 

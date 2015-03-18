@@ -10,17 +10,27 @@
 #include "utils-vector.hpp"
 #include "utils-matrix.hpp"
 
-using namespace std;
+
+
+#include "utils-vector3.hpp"
+#include "utils-matrixsq3.hpp"
+
+
+using utils::Vector3;
+using utils::MatrixSq3;
+
+
+
 using namespace utils;
 
 
 
 class Elements {
 private:
-  Vector<string> melemnames;
+  Vector<std::string> melemnames;
   Vector<int>   matomtype;
   Vector<double> mmass;
-  Vector<string> mreflat;
+  Vector<std::string> mreflat;
   Vector<double> mreflat_a;
   Vector<double> mreflat_b;
   Vector<double> mreflat_c;
@@ -29,23 +39,23 @@ private:
 
 public:
 
-  void add_elem(string name);
+  void add_elem(std::string name);
   int nelem(void);
-  int name2idx(string name);
-  string idx2name(int typei);
+  int name2idx(std::string name);
+  std::string idx2name(int typei);
 
-  int   & atomtype(string s);
-  double & mass(string s);
-  string & reflat(string s);
-  double & reflat_a(string s);
-  double & reflat_b(string s);
-  double & reflat_c(string s);
-  double & reflat_bpa(string s);
-  double & reflat_cpa(string s);
+  int   & atomtype(std::string s);
+  double & mass(std::string s);
+  std::string & reflat(std::string s);
+  double & reflat_a(std::string s);
+  double & reflat_b(std::string s);
+  double & reflat_c(std::string s);
+  double & reflat_bpa(std::string s);
+  double & reflat_cpa(std::string s);
 
   int   & atomtype(int typei);
   double & mass(int typei);
-  string & reflat(int typei);
+  std::string & reflat(int typei);
   double & reflat_a(int typei);
   double & reflat_b(int typei);
   double & reflat_c(int typei);
@@ -63,12 +73,12 @@ public:
 class Interactions {
 private:
   Elements       mel;
-  Matrix<string> miacnames;
+  Matrix<std::string> miacnames;
 
 public:
   void init(Elements el);
-  string & name(string n1, string n2);
-  string & name(int typei1, int typei2);
+  std::string & name(std::string n1, std::string n2);
+  std::string & name(int typei1, int typei2);
 
 } ;
 

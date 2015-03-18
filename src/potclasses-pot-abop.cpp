@@ -11,7 +11,7 @@
 #include "potclasses.hpp"
 #include "param.hpp"
 
-using namespace std;
+
 using namespace utils;
 
 
