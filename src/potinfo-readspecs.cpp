@@ -129,12 +129,31 @@ void PotentialInformationFit::read_specs(std::string filename){
 	else if (c==2) strbuf >> specs_pot.simplex_delta;
 	strbuf.clear();
       }
+      else if (args[1]=="simann_delta_rel"){
+	strbuf.str(args[2]);
+	if      (c==1) strbuf >> specs_prop.simann_delta_rel;
+	else if (c==2) strbuf >> specs_pot.simann_delta_rel;
+	strbuf.clear();
+      }
+      else if (args[1]=="moldyn_min_dx"){
+	strbuf.str(args[2]);
+	if      (c==1) strbuf >> specs_prop.moldyn_min_dx;
+	else if (c==2) strbuf >> specs_pot.moldyn_min_dx;
+	strbuf.clear();
+      }
+      else if (args[1]=="moldyn_max_dx"){
+	strbuf.str(args[2]);
+	if      (c==1) strbuf >> specs_prop.moldyn_max_dx;
+	else if (c==2) strbuf >> specs_pot.moldyn_max_dx;
+	strbuf.clear();
+      }
       else if (args[1]=="barrier_scale"){
 	strbuf.str(args[2]);
 	if      (c==1) strbuf >> specs_prop.barrier_scale;
 	else if (c==2) strbuf >> specs_pot.barrier_scale;
 	strbuf.clear();
       }
+
 
     }
 

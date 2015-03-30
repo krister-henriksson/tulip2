@@ -260,15 +260,19 @@ void get_ini_fit_data(ParamPot & param,
     std::ofstream fout2;
     fout2.open(dumpfile2.c_str());
     
+    double nba;
     for (k=0; k<bond_list[iDX].size(); ++k){
+      nba = bond_list[iDX][k].nbonds/(1.0*nat_with_bonds_list[iDX]);
+      
       std::cout << format("%20.10f") % bond_list[iDX][k].dist << "  "
-	   << format("%20d") % bond_list[iDX][k].nbonds << std::endl;
+		<< format("%20.10f") % nba
+		<< std::endl;
       fout << format("%20.10f") % bond_list[iDX][k].dist << "  "
-	   << format("%20d") % bond_list[iDX][k].nbonds
+	   << format("%20.10f") % nba
 	   << format("%20s") % DX[iDX].name
 	   << std::endl;
       fout2 << format("%20.10f") % bond_list[iDX][k].dist << "  "
-	    << format("%20d") % bond_list[iDX][k].nbonds
+	    << format("%20.10f") % nba
 	    << std::endl;
     }
     fout2.close();

@@ -26,6 +26,7 @@
 #include "funcfit-beecolony.hpp"
 #include "funcfit-gravsearch.hpp"
 #include "funcfit-simann.hpp"
+#include "funcfit-moldyn.hpp"
 #include "constants.hpp"
 #include "nr-f1dim.hpp"
 #include "nr-golden.hpp"
@@ -438,12 +439,17 @@ int main(int argc, char *argv[]){
   std::cout << "DOG-LEG: Initial trust region radius               : " << potinfo.specs_prop.dogleg_radius << std::endl;
   std::cout << "DOG-LEG: Smallest allowed trust region radius      : " << potinfo.specs_prop.dogleg_minradius << std::endl;
   std::cout << "SIMPLEX: Displacement when creating initial simplex: " << potinfo.specs_prop.simplex_delta << std::endl;
+  std::cout << "SIMANN: Relative displacement when creating trial  : " << potinfo.specs_prop.simann_delta_rel << std::endl;
+  std::cout << "MolDynFit: min_dx                                  : " << potinfo.specs_prop.moldyn_min_dx << std::endl;
+  std::cout << "MolDynFit: max_dx                                  : " << potinfo.specs_prop.moldyn_max_dx << std::endl;
+  std::cout << "Penalty function: barrier                          : " << potinfo.specs_prop.barrier_scale << std::endl;
   std::cout << "Debug: level0                                      : " << potinfo.specs_prop.debug_fit_level0 << std::endl;
   std::cout << "Debug: level1                                      : " << potinfo.specs_prop.debug_fit_level1 << std::endl;
   std::cout << "Debug: level2                                      : " << potinfo.specs_prop.debug_fit_level2 << std::endl;
   std::cout << "Debug: level3                                      : " << potinfo.specs_prop.debug_fit_level3 << std::endl;
   std::cout << "Debug: level4                                      : " << potinfo.specs_prop.debug_fit_level4<< std::endl;
   std::cout << "Lattice tolerance                                  : " << potinfo.specs_prop.lattol << std::endl;
+
   std::cout << std::endl;
   std::cout << "Bulk modulus: Relax strained systems?              : " << potinfo.specs_prop.BM_rel_sys << std::endl;
   std::cout << "Bulk modulus: Minimum strain (e.g. -0.01)          : " << potinfo.specs_prop.BM_fmin << std::endl;
@@ -586,12 +592,17 @@ int main(int argc, char *argv[]){
   std::cout << "DOG-LEG: Initial trust region radius               : " << potinfo.specs_pot.dogleg_radius << std::endl;
   std::cout << "DOG-LEG: Smallest allowed trust region radius      : " << potinfo.specs_pot.dogleg_minradius << std::endl;
   std::cout << "SIMPLEX: Displacement when creating initial simplex: " << potinfo.specs_pot.simplex_delta << std::endl;
+  std::cout << "SIMANN: Relative displacement when creating trial  : " << potinfo.specs_pot.simann_delta_rel << std::endl;
+  std::cout << "MolDynFit: min_dx                                  : " << potinfo.specs_pot.moldyn_min_dx << std::endl;
+  std::cout << "MolDynFit: max_dx                                  : " << potinfo.specs_pot.moldyn_max_dx << std::endl;
+  std::cout << "Penalty function: barrier                          : " << potinfo.specs_pot.barrier_scale << std::endl;
   std::cout << "Debug: level0                                      : " << potinfo.specs_pot.debug_fit_level0 << std::endl;
   std::cout << "Debug: level1                                      : " << potinfo.specs_pot.debug_fit_level1 << std::endl;
   std::cout << "Debug: level2                                      : " << potinfo.specs_pot.debug_fit_level2 << std::endl;
   std::cout << "Debug: level3                                      : " << potinfo.specs_pot.debug_fit_level3 << std::endl;
   std::cout << "Debug: level4                                      : " << potinfo.specs_pot.debug_fit_level4 << std::endl;
-  std::cout << "Penalty function: barrier                          : " << potinfo.specs_pot.barrier_scale << std::endl;
+
+
 
 
 
@@ -1330,6 +1341,7 @@ int main(int argc, char *argv[]){
 
 
 
+
     // Vector<double> latcalc(ParamPot & parpot, Vector<CompoundStructureFit> & cmpvec);
 
     std::cout << std::endl;
@@ -1364,14 +1376,6 @@ int main(int argc, char *argv[]){
 			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
 			 cond_conv, cond_debug, cond_print);
     }
-    else if (potinfo.specs_pot.fitmet=="PM"){
-      // Powell's method
-      std::cout << "Using Powell's method." << std::endl;
-      Powell< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 cond_conv, cond_debug, cond_print);
-    }
     else if (potinfo.specs_pot.fitmet=="GN"){
       // Gauss-Newton
       std::cout << "Using Gauss-Newton method." << std::endl;
@@ -1398,6 +1402,33 @@ int main(int argc, char *argv[]){
 			 potinfo.specs_pot.dogleg_minradius,
 			 cond_conv, cond_debug, cond_print);
     }
+    else if (potinfo.specs_pot.fitmet=="SA"){
+      // Simulated Annealing
+      SimAnn< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 potinfo.specs_pot.simann_delta_rel,
+			 seed,
+			 cond_conv, cond_debug, cond_print);
+    }
+    else if (potinfo.specs_pot.fitmet=="MD"){
+      // Molecular Dynamics
+      std::cout << "Using Molecular Dynamics method." << std::endl;
+      MolDynFit< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 potinfo.specs_pot.moldyn_min_dx,
+			 potinfo.specs_pot.moldyn_max_dx,
+			 cond_conv, cond_debug, cond_print);
+    }
+    else if (potinfo.specs_pot.fitmet=="PM"){
+      // Powell's method
+      std::cout << "Using Powell's method." << std::endl;
+      Powell< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
+      Xopt = fm.minimize(cs.Param().X(),
+			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			 cond_conv, cond_debug, cond_print);
+    }
     else if (potinfo.specs_pot.fitmet=="SM"){
       // Simplex method
       std::cout << "Using Simplex method." << std::endl;
@@ -1414,7 +1445,6 @@ int main(int argc, char *argv[]){
 
     else if (potinfo.specs_pot.fitmet=="DE"){
       // Differential evolution
-      cs.barrier_scale() = 0.0;
       DiffEvol< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
       Xopt = fm.minimize(cs.Param().X(),
 			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -1423,7 +1453,6 @@ int main(int argc, char *argv[]){
     }
     else if (potinfo.specs_pot.fitmet=="PS"){
       // Particle Swarm
-      cs.barrier_scale() = 0.0;
       PartSwarm< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
       Xopt = fm.minimize(cs.Param().X(),
 			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -1432,7 +1461,6 @@ int main(int argc, char *argv[]){
     }
     else if (potinfo.specs_pot.fitmet=="BC"){
       // Bee colony
-      cs.barrier_scale() = 0.0;
       BeeColony< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
       Xopt = fm.minimize(cs.Param().X(),
 			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -1441,29 +1469,9 @@ int main(int argc, char *argv[]){
     }
     else if (potinfo.specs_pot.fitmet=="GS"){
       // Gravitational Search
-      cs.barrier_scale() = 0.0;
       GravSearch< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
       Xopt = fm.minimize(cs.Param().X(),
 			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 seed,
-			 cond_conv, cond_debug, cond_print);
-    }
-    else if (potinfo.specs_pot.fitmet=="SA"){
-      // Simulated Annealing
-      cs.barrier_scale() = 0.0;
-      SimAnn< ChiSqFunc<ParamPot, CompoundStructureFit, double> > fm(cs);
-
-      int N = cs.Param().X().size();
-      Vector<double> Xd(N);
-      double td;
-      for (int i=0; i<N; ++i){
-	td = cs.Param().X(i); if (td<0) td *= -1.0;
-	Xd[i] = td;
-      }
-
-      Xopt = fm.minimize(cs.Param().X(),
-			 cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			 Xd,
 			 seed,
 			 cond_conv, cond_debug, cond_print);
     }

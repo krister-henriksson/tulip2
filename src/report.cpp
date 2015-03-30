@@ -327,6 +327,7 @@ void report_prop(Vector<CompoundStructureFit> & DX,
   int k,p;
   bool tb1, tb2;
   std::string propstr="empty";
+  std::string compstr;
 
 
   // ##########################################################################
@@ -334,10 +335,13 @@ void report_prop(Vector<CompoundStructureFit> & DX,
   // ##########################################################################
 
 
+  //  std::string compstr = stream.str();
+
+
   for (i=0; i<DX.size(); ++i){
     CompoundStructureFit cmpfit = DX[i];
 
-    fout << "Compound: " << cmpfit.name << std::endl;
+    //fout << "Compound: " << cmpfit.name << std::endl;
 
     if (cmpfit.prop_use.a){
       td1 = cmpfit.prop_pred.a;
@@ -353,7 +357,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       //printf ("  weight       %15.10f", td4);
       //printf("\n");
 
-      propstr = "Lattice parameter a                   : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Lattice parameter a                   : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -365,7 +373,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.b;
       td4 = cmpfit.prop_w.b;
 
-      propstr = "Lattice parameter b                   : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Lattice parameter b                   : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -377,7 +389,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.c;
       td4 = cmpfit.prop_w.c;
 
-      propstr = "Lattice parameter c                   : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Lattice parameter c                   : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -389,7 +405,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.bpa;
       td4 = cmpfit.prop_w.bpa;
 
-      propstr = "Lattice parameter ratio b/a           : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Lattice parameter ratio b/a           : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -401,7 +421,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.cpa;
       td4 = cmpfit.prop_w.cpa;
 
-      propstr = "Lattice parameter ratio c/a           : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Lattice parameter ratio c/a           : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -413,7 +437,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.r0;
       td4 = cmpfit.prop_w.r0;
 
-      propstr = "Dimer bond length r0                  : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Dimer bond length r0                  : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -425,7 +453,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.angle_ab;
       td4 = cmpfit.prop_w.angle_ab;
 
-      propstr = "Angle btw lat param a and b           : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Angle btw lat param a and b           : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -437,7 +469,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.angle_ac;
       td4 = cmpfit.prop_w.angle_ac;
 
-      propstr = "Angle btw lat param a and c           : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Angle btw lat param a and c           : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -449,7 +485,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.angle_bc;
       td4 = cmpfit.prop_w.angle_bc;
 
-      propstr = "Angle btw lat param b and c           : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Angle btw lat param b and c           : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -461,7 +501,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.Vatom;
       td4 = cmpfit.prop_w.Vatom;
 
-      propstr = "Atomic volume Vatom                   : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Atomic volume Vatom                   : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -473,7 +517,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.Ecoh;
       td4 = cmpfit.prop_w.Ecoh;
 
-      propstr = "Cohesive energy Ecoh                  : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Cohesive energy Ecoh                  : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -485,7 +533,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.Ecoh_delta;
       td4 = cmpfit.prop_w.Ecoh_delta;
 
-      propstr = "Change in cohesive energy Ecoh_delta  : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Change in cohesive energy Ecoh_delta  : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -497,7 +549,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.Emix;
       td4 = cmpfit.prop_w.Emix;
 
-      propstr = "Mixing energy Emix                    : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Mixing energy Emix                    : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -509,7 +565,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.B;
       td4 = cmpfit.prop_w.B;
 
-      propstr = "Bulk modulus B                        : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Bulk modulus B                        : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -521,7 +581,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.Bp;
       td4 = cmpfit.prop_w.Bp;
 
-      propstr = "Pressure derivative of bulk modulus B': ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Pressure derivative of bulk modulus B': ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -535,7 +599,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
 	  td3 = cmpfit.prop_u.C.elem(k,p);
 	  td4 = cmpfit.prop_w.C.elem(k,p);
 
-	  propstr = "Elastic constant C" + tostring(k+1) + tostring(p+1) + "                  : ";
+	  std::ostringstream sstream;
+	  sstream << format("%15s") % cmpfit.name;
+	  compstr = "Compound: " + sstream.str() + " : ";
+
+	  propstr = compstr + "Elastic constant C" + tostring(k+1) + tostring(p+1) + "                  : ";
 	  print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
 	}
 
@@ -547,7 +615,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.Fmax;
       td4 = cmpfit.prop_w.Fmax;
 
-      propstr = "Maximum force Fmax                    : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Maximum force Fmax                    : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -559,7 +631,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.Pmax;
       td4 = cmpfit.prop_w.Pmax;
 
-      propstr = "Maximum pressure Pmax                 : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Maximum pressure Pmax                 : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -571,7 +647,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       td3 = cmpfit.prop_u.displmax;
       td4 = cmpfit.prop_w.displmax;
 
-      propstr = "Maximum displacement displmax         : ";
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Maximum displacement displmax         : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
@@ -590,7 +670,11 @@ void report_prop(Vector<CompoundStructureFit> & DX,
 	  if (tb1) td3 = cmpfit.prop_u.frc[i][k];
 	  else     td4 = cmpfit.prop_w.frc[i][k];
 
-	  propstr = "Force component  iat " + tostring(nb) + " direction " + tostring(k+1) + ")       : ";
+	  std::ostringstream sstream;
+	  sstream << format("%15s") % cmpfit.name;
+	  compstr = "Compound: " + sstream.str() + " : ";
+
+	  propstr = compstr + "Force component  iat " + tostring(nb) + " direction " + tostring(k+1) + ")       : ";
 	  print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
 	}
       }

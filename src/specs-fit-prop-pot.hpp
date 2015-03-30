@@ -34,6 +34,11 @@ public:
   double   dogleg_minradius;
   /* Simplex method options: */
   double   simplex_delta;
+  /* Simulated Annealing initial change in parameters (relative fraction): */
+  double simann_delta_rel;
+  /* MD: */
+  double moldyn_min_dx;
+  double moldyn_max_dx;
   /* Restricted optimization options: */
   double   barrier_scale;
 
@@ -92,6 +97,11 @@ public:
   double   dogleg_minradius;
   /* Simplex method options: */
   double   simplex_delta;
+  /* Simulated Annealing initial change in parameters (relative fraction): */
+  double simann_delta_rel;
+  /* MD: */
+  double moldyn_min_dx;
+  double moldyn_max_dx;
   /* Restricted optimization options: */
   double   barrier_scale;
 

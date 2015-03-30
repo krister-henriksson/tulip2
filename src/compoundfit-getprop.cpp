@@ -22,6 +22,7 @@
 #include "funcfit-beecolony.hpp"
 #include "funcfit-gravsearch.hpp"
 #include "funcfit-simann.hpp"
+#include "funcfit-moldyn.hpp"
 #include "constants.hpp"
 #include "nr-f1dim.hpp"
 #include "nr-golden.hpp"
@@ -566,14 +567,6 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 		       cond_conv, cond_debug, cond_print);
     fit_OK = fm.status.fit_OK;
   }
-  else if (param.p_potinfo->specs_prop.fitmet=="PM"){
-    // Powell's method
-    Powell< ChiSqFunc<Param, double, double> > fm(cs);
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       cond_conv, cond_debug, cond_print);
-    fit_OK = fm.status.fit_OK;
-  }
   else if (param.p_potinfo->specs_prop.fitmet=="GN"){
     // Gauss-Newton
     GaussNewton< ChiSqFunc<Param, double, double> > fm(cs);
@@ -600,6 +593,38 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 		       cond_conv, cond_debug, cond_print);
     fit_OK = fm.status.fit_OK;
   }
+  else if (param.p_potinfo->specs_prop.fitmet=="SA"){
+    // Simulated Annealing
+    SimAnn< ChiSqFunc<Param, double, double> > fm(cs);
+    Xopt = fm.minimize(cs.Param().X(),
+		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+		       param.p_potinfo->specs_prop.simann_delta_rel,
+		       seed,
+		       cond_conv, cond_debug, cond_print);
+    fit_OK = fm.status.fit_OK;
+  }
+  else if (param.p_potinfo->specs_prop.fitmet=="MD"){
+    // Molecular Dynamics
+    //std::cout << "Using Molecular Dynamics method." << std::endl;
+    MolDynFit< ChiSqFunc<Param, double, double> > fm(cs);
+    Xopt = fm.minimize(cs.Param().X(),
+		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+		       param.p_potinfo->specs_prop.moldyn_min_dx,
+		       param.p_potinfo->specs_prop.moldyn_max_dx,
+		       cond_conv, cond_debug, cond_print);
+  }
+
+
+
+
+  else if (param.p_potinfo->specs_prop.fitmet=="PM"){
+    // Powell's method
+    Powell< ChiSqFunc<Param, double, double> > fm(cs);
+    Xopt = fm.minimize(cs.Param().X(),
+		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+		       cond_conv, cond_debug, cond_print);
+    fit_OK = fm.status.fit_OK;
+  }
   else if (param.p_potinfo->specs_prop.fitmet=="SM"){
     // Simplex method
     SimplexFit< ChiSqFunc<Param, double, double> > fm(cs);
@@ -615,7 +640,6 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
   }
   else if (param.p_potinfo->specs_prop.fitmet=="DE"){
     // Differential evolution
-    cs.barrier_scale() = 0.0;
     DiffEvol< ChiSqFunc<Param, double, double> > fm(cs);
     Xopt = fm.minimize(cs.Param().X(),
 		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -625,7 +649,6 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
   }
   else if (param.p_potinfo->specs_prop.fitmet=="PS"){
     // Particle Swarm
-    cs.barrier_scale() = 0.0;
     PartSwarm< ChiSqFunc<Param, double, double> > fm(cs);
     Xopt = fm.minimize(cs.Param().X(),
 		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -635,7 +658,6 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
   }
   else if (param.p_potinfo->specs_prop.fitmet=="BC"){
     // Bee colony
-    cs.barrier_scale() = 0.0;
     BeeColony< ChiSqFunc<Param, double, double> > fm(cs);
     Xopt = fm.minimize(cs.Param().X(),
 		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -645,30 +667,9 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
   }
   else if (param.p_potinfo->specs_prop.fitmet=="GS"){
     // Gravitational Search
-    cs.barrier_scale() = 0.0;
     GravSearch< ChiSqFunc<Param, double, double> > fm(cs);
     Xopt = fm.minimize(cs.Param().X(),
 		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       seed,
-		       cond_conv, cond_debug, cond_print);
-    fit_OK = fm.status.fit_OK;
-  }
-  else if (param.p_potinfo->specs_prop.fitmet=="SA"){
-    // Simulated Annealing
-    cs.barrier_scale() = 0.0;
-    SimAnn< ChiSqFunc<Param, double, double> > fm(cs);
-
-    int N = cs.Param().X().size();
-    Vector<double> Xd(N);
-    double td;
-    for (int i=0; i<N; ++i){
-      td = cs.Param().X(i); if (td<0) td *= -1.0;
-      Xd[i] = td;
-    }
-
-    Xopt = fm.minimize(cs.Param().X(),
-		       cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-		       Xd,
 		       seed,
 		       cond_conv, cond_debug, cond_print);
     fit_OK = fm.status.fit_OK;
@@ -1087,20 +1088,11 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       }
 
 
-
       int seed = param.p_potinfo->specs_prop.seed;
 
       if (param.p_potinfo->specs_prop.fitmet=="CG"){
 	// Conjugate Gradients
 	ConjGrad< ChiSqFunc<Param, double, double> > fm(cs);
-	Xopt = fm.minimize(cs.Param().X(),
-			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			   cond_conv, cond_debug, cond_print);
-	fit_OK = fm.status.fit_OK;
-      }
-      else if (param.p_potinfo->specs_prop.fitmet=="PM"){
-	// Powell's method
-	Powell< ChiSqFunc<Param, double, double> > fm(cs);
 	Xopt = fm.minimize(cs.Param().X(),
 			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
 			   cond_conv, cond_debug, cond_print);
@@ -1132,6 +1124,37 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 			   cond_conv, cond_debug, cond_print);
 	fit_OK = fm.status.fit_OK;
       }
+      else if (param.p_potinfo->specs_prop.fitmet=="SA"){
+	// Simulated Annealing
+	SimAnn< ChiSqFunc<Param, double, double> > fm(cs);
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   param.p_potinfo->specs_prop.simann_delta_rel,
+			   seed,
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
+      else if (param.p_potinfo->specs_prop.fitmet=="MD"){
+	// Molecular Dynamics
+	//std::cout << "Using Molecular Dynamics method." << std::endl;
+	MolDynFit< ChiSqFunc<Param, double, double> > fm(cs);
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   param.p_potinfo->specs_prop.moldyn_min_dx,
+			   param.p_potinfo->specs_prop.moldyn_max_dx,
+			   cond_conv, cond_debug, cond_print);
+      }
+
+
+
+      else if (param.p_potinfo->specs_prop.fitmet=="PM"){
+	// Powell's method
+	Powell< ChiSqFunc<Param, double, double> > fm(cs);
+	Xopt = fm.minimize(cs.Param().X(),
+			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
+			   cond_conv, cond_debug, cond_print);
+	fit_OK = fm.status.fit_OK;
+      }
       else if (param.p_potinfo->specs_prop.fitmet=="SM"){
 	// Simplex method
 	SimplexFit< ChiSqFunc<Param, double, double> > fm(cs);
@@ -1147,7 +1170,6 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       }
       else if (param.p_potinfo->specs_prop.fitmet=="DE"){
 	// Differential evolution
-	cs.barrier_scale() = 0.0;
 	DiffEvol< ChiSqFunc<Param, double, double> > fm(cs);
 	Xopt = fm.minimize(cs.Param().X(),
 			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -1157,7 +1179,6 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       }
       else if (param.p_potinfo->specs_prop.fitmet=="PS"){
 	// Particle Swarm
-	cs.barrier_scale() = 0.0;
 	PartSwarm< ChiSqFunc<Param, double, double> > fm(cs);
 	Xopt = fm.minimize(cs.Param().X(),
 			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -1167,7 +1188,6 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       }
       else if (param.p_potinfo->specs_prop.fitmet=="BC"){
 	// Bee colony
-	cs.barrier_scale() = 0.0;
 	BeeColony< ChiSqFunc<Param, double, double> > fm(cs);
 	Xopt = fm.minimize(cs.Param().X(),
 			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
@@ -1177,30 +1197,9 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       }
       else if (param.p_potinfo->specs_prop.fitmet=="GS"){
 	// Gravitational Search
-	cs.barrier_scale() = 0.0;
 	GravSearch< ChiSqFunc<Param, double, double> > fm(cs);
 	Xopt = fm.minimize(cs.Param().X(),
 			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			   seed,
-			   cond_conv, cond_debug, cond_print);
-	fit_OK = fm.status.fit_OK;
-      }
-      else if (param.p_potinfo->specs_prop.fitmet=="SA"){
-	// Simulated Annealing
-	cs.barrier_scale() = 0.0;
-	SimAnn< ChiSqFunc<Param, double, double> > fm(cs);
-
-	int N = cs.Param().X().size();
-	Vector<double> Xd(N);
-	double td;
-	for (int i=0; i<N; ++i){
-	  td = cs.Param().X(i); if (td<0) td *= -1.0;
-	  Xd[i] = td;
-	}
-
-	Xopt = fm.minimize(cs.Param().X(),
-			   cs.Param().Xmin(), cs.Param().Xmax(), cs.Param().Xtype(),
-			   Xd,
 			   seed,
 			   cond_conv, cond_debug, cond_print);
 	fit_OK = fm.status.fit_OK;

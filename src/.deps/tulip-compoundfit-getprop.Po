@@ -621,6 +621,7 @@ tulip-compoundfit-getprop.o: compoundfit-getprop.cpp \
  /usr/include/x86_64-linux-gnu/bits/string3.h \
  /usr/include/boost/detail/endian.hpp \
  /home/koehenri/include/funcfit-simann.hpp \
+ /home/koehenri/include/funcfit-moldyn.hpp \
  /home/koehenri/include/constants.hpp /home/koehenri/include/nr-f1dim.hpp \
  /home/koehenri/include/nr-golden.hpp \
  /home/koehenri/include/nr-linemethod.hpp \
@@ -2039,6 +2040,8 @@ tulip-compoundfit-getprop.o: compoundfit-getprop.cpp \
 /usr/include/boost/detail/endian.hpp:
 
 /home/koehenri/include/funcfit-simann.hpp:
+
+/home/koehenri/include/funcfit-moldyn.hpp:
 
 /home/koehenri/include/constants.hpp:
 

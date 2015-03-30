@@ -27,6 +27,9 @@ SpecsFitProp::SpecsFitProp(){
   dogleg_radius = 1.0;
   dogleg_minradius = 0.1;
   simplex_delta = 0.1;
+  simann_delta_rel = 0.1;
+  moldyn_min_dx = 1.0e-10;
+  moldyn_max_dx = 0.1;
   barrier_scale = 1.0;
 
   debug_fit_level0 = false;
@@ -83,6 +86,10 @@ SpecsFitPot::SpecsFitPot(){
   dogleg_radius = 1.0;
   dogleg_minradius = 0.1;
   simplex_delta = 0.1;
+  simann_delta_rel = 0.1;
+  moldyn_min_dx = 1.0e-10;
+  moldyn_max_dx = 0.1;
+  barrier_scale = 1.0;
 
   debug_fit_level0 = false;
   debug_fit_level1 = false;
@@ -93,7 +100,6 @@ SpecsFitPot::SpecsFitPot(){
   report_warn = true;
   report_error = true;
   report_conv = true;
-  barrier_scale = 1.0;
 }
 
 
