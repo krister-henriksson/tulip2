@@ -12,9 +12,9 @@
 #include "funcfit-basics.hpp"
 #include "funcfit-conjgrad.hpp"
 #include "funcfit-errors.hpp"
-#include "funcfit-ls-gauss-newton.hpp"
-#include "funcfit-ls-leve-marq.hpp"
-#include "funcfit-ls-powelldogleg.hpp"
+#include "funcfit-gauss-newton.hpp"
+#include "funcfit-leve-marq.hpp"
+#include "funcfit-powelldogleg.hpp"
 #include "funcfit-simplexfit.hpp"
 #include "constants.hpp"
 #include "nr-f1dim.hpp"
@@ -166,13 +166,14 @@ void get_ini_fit_data(ParamPot & param,
     mds.specs        = cmpfit.mds_specs;
 
     // Other MD settings from different places ...:
-    mds.omp_info     = param.p_potinfo->omp_info;
-    mds.rcut         = mds.rcut_max = mds.p_potinfo->get_rcut_max( cmpfit.elemnames );
-    mds.skint        = mds.specs.skint;
+    mds.omp_info = param.p_potinfo->omp_info;
+    mds.rcut_max = param.p_potinfo->get_rcut_max( cmpfit.elemnames );
+    mds.rcut     = mds.rcut_max;
+    mds.skint    = mds.specs.skint;
     
     // These settings are applied to inherited base class members:
-    mds.use_def_xyz_fmt = param.p_potinfo->specs_prop.mds_specs_common.use_def_dump_xyz_fmt;
-    mds.def_xyz_fmt     = param.p_potinfo->specs_prop.mds_specs_common.def_dump_xyz_fmt;
+    mds.use_def_xyz_fmt = mds.specs_common.use_def_dump_xyz_fmt;
+    mds.def_xyz_fmt     = mds.specs_common.def_dump_xyz_fmt;
     
     // Create mds:
     double rm = mds.rcut + mds.skint;

@@ -1,20 +1,56 @@
 #! /bin/bash
 
 
+# ----------------------------------------------------
+# VASP POSCAR before version 5:
+# ----------------------------------------------------
+# # Comment
+# 5.32500000
+# 0.0  1.0  1.0  pbc
+# 1.0  0.0  1.0  pbc
+# 1.0  1.0  0.0  pbc
+#   n1 n2  n3 ...
+#   Direct or Cartesian
+# -0.27650000  0.27650000  0.27650000
+# ...
+# ----------------------------------------------------
+# VASP POSCAR after version 5:
+# ----------------------------------------------------
+# # Comment
+# 5.32500000
+# 0.0  1.0  1.0  pbc
+# 1.0  0.0  1.0  pbc
+# 1.0  1.0  0.0  pbc
+#   s1 s2  s3 ...     # E.g. Fe  Cr C
+#   n1 n2  n3 ...     # E.g. 127 1  1
+#   Direct or Cartesian
+# -0.27650000  0.27650000  0.27650000
+# ...
+# ----------------------------------------------------
+
 
 file=$1
 
 nat=`head -n 1 $file | tail -n 1 | awk '{printf "%s", $1;}'`
-
-b1=`head -n 2 $file | tail -n 1 | awk '{printf "%s", $7;}'`
-b2=`head -n 2 $file | tail -n 1 | awk '{printf "%s", $8;}'`
-b3=`head -n 2 $file | tail -n 1 | awk '{printf "%s", $9;}'`
-
 nelem=`tail -n $nat $file | awk '{print $1}' | sort | uniq | countlines`
+
+NF=$( head -n 2 $file | tail -n 1 | awk '{printf "%d", NF;}')
+res=$( head -n 2 $file | tail -n 1 )
+if [ $NF -le 9 ] ; then
+    b1=`echo $res | awk '{printf "%.10f %.10f %.10f", $7, 0,  0;}'`
+    b2=`echo $res | awk '{printf "%.10f %.10f %.10f", 0,  $8, 0;}'`
+    b3=`echo $res | tail -n 1 | awk '{printf "%.10f %.10f %.10f", 0,  0,  $9;}'`
+else
+    b1=`echo $res | tail -n 1 | awk '{printf "%.10f %.10f %.10f", $7,  $8,  $9;}'`
+    b2=`echo $res | tail -n 1 | awk '{printf "%.10f %.10f %.10f", $10, $11, $12;}'`
+    b3=`echo $res | tail -n 1 | awk '{printf "%.10f %.10f %.10f", $13, $14, $15;}'`
+fi
+
+
+
 
 elemfile=tmpf.$$
 tail -n $nat $file | awk '{print $1}' | sort | uniq > $elemfile
-
 
 elemrow=""
 i=1
@@ -37,47 +73,37 @@ done
 
 
 
-echo "//Comment"
+box=$( echo $b1 | awk '{a=$1; b=$2; c=$3; } END{
+if      (a>=b && a>=c) L=a;
+else if (b>=a && b>=c) L=b;
+else    L=c;
+printf "%.10f", L;
+}')
 
-echo "  $b1"
-echo 1.0 0.0 | awk '{printf "%15.10f  %15.10f  %15.10f\n", 1.0, 0.0, 0.0; }'
-echo $b2 $b1 | awk '{printf "%15.10f  %15.10f  %15.10f\n", 0.0, $1/$2, 0.0; }'
-echo $b3 $b1 | awk '{printf "%15.10f  %15.10f  %15.10f\n", 0.0, 0.0,   $1/$2; }'
+
+
+echo "Source: $file"
+
+echo "  $box"
+echo $b1 $box | awk '{printf "%15.10f  %15.10f  %15.10f\n", $1/$4, $2/$4, $3/$4; }'
+echo $b2 $box | awk '{printf "%15.10f  %15.10f  %15.10f\n", $1/$4, $2/$4, $3/$4; }'
+echo $b3 $box | awk '{printf "%15.10f  %15.10f  %15.10f\n", $1/$4, $2/$4, $3/$4; }'
 
 echo $elemrow
 echo Cartesian
 
 
 
-i=1
-while [ $i -le $nelem ]; do
-    name=`head -n $i $elemfile | tail -n 1 | awk '{printf "%s", $1;}'`
-
-    echo $file $name $b1 | awk '{ file = $1 ""; name = $2 ""; a = $3;} END{
-while((getline < file)>0){
-  if ($1 "" == name) printf "%20.10f  %20.10f  %20.10f\n", $2/a, $3/a, $4/a;
-}
-}'
-
-    let "i = i + 1"
-done
-rm -f $elemfile
-
-
-exit
-
-
-
-
-tmpf=tmpf.$$
-tail -n $nat $file | sort > $tmpf
-echo $tmpf $b1 | awk '{
-file = $1 "";
-a = $2; } END{
-while ((getline < file)>0){
+elemfile=tmpf.$$
+tail -n $nat $file | awk '{print $0}' | sort > $elemfile
+echo $elemfile $box | awk '{
+file = $1"";
+a = $2;
+} END{
+while ((getline<file)>0){
   printf "%20.10f  %20.10f  %20.10f\n", $2/a, $3/a, $4/a;
 }
 }'
-rm $tmpf
+rm -f $elemfile
 
 

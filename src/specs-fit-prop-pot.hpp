@@ -22,6 +22,7 @@ public:
 
   int   nitermax;
   int   nitermin;
+  int niterrestart;
 
   double functolabs;
   double functolrel;
@@ -41,6 +42,8 @@ public:
   double moldyn_max_dx;
   /* Restricted optimization options: */
   double   barrier_scale;
+
+  bool use_data_scales;
 
   // ***********************************
   bool debug_fit_level0;
@@ -85,6 +88,7 @@ public:
   std::string fitmet;
   int   nitermax;
   int   nitermin;
+  int niterrestart;
 
   double functolabs;
   double functolrel;
@@ -104,6 +108,8 @@ public:
   double moldyn_max_dx;
   /* Restricted optimization options: */
   double   barrier_scale;
+
+  bool use_data_scales;
 
   bool debug_fit_level0;
   bool debug_fit_level1;

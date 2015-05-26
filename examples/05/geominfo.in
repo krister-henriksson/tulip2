@@ -1,173 +1,176 @@
 
-
 LAT
-name       = Y_HexagonalClosedPacked_Vasp_POSCAR
-file       = in/Y_HexagonalClosedPacked_Vasp_POSCAR.lat
-elements   = Y
-Neven_desired = 1 1 1
-Fmax       = 0.0
-Pmax       = 0.0
-displ_max  = 0.0
-csystem    = hexagonal
-a          = 3.65359988569
-w_a        = 0.0001
-cpa        = 1.55180226958
-w_cpa      = 0.128882399466
-Ec         = -4.18110919192
-w_Ec       = 0.001
-Ecoh_delta_refcomp = true        # Make this a reference Ecoh compound!
-B          = 40.8957229696
-w_B        = 0.0489048696238
-Bp         = 1.01653639772
-w_Bp       = 98.3732606371
-C11        = 80.1605326176
-w_C11      = 0.01
-C12        = 20.4233027208
-w_C12      = 1.0
-C13        = 21.7202681844
-w_C13      = 0.01
-C33        = 79.4532887154
-w_C33      = 0.01
-C44        = 25.072362326
-w_C44      = 0.01
+name               = sm_conv
+file               = in/sm-POSCAR_conv.lat
+elements           = Y
+a                  = 3.61381
+w_a                = 10
+cpa                = 0.714741505503
+w_cpa              = 10
+# Ecoh               = -4.36710298686
+# w_Ecoh             = 10.0
+Ecoh_delta         = 2.89701314e-3
+w_Ecoh_delta       = 50
+#B                  = 40.6251849388
+#w_B                = 10
+#Bp                 = -0.127052069823
+#w_Bp               = 1
 
-LAT
-name       = Y_BodyCenteredCubic_Vasp_POSCAR
-file       = in/Y_BodyCenteredCubic_Vasp_POSCAR.lat
-elements   = Y
-no_heating = True
-Neven_desired = 1 1 1
-Fmax       = 0.0
-Pmax       = 0.0
-displ_max  = 0.0
-csystem    = cubic
-a          = 4.0383143327
-w_a        = 0.0039471444701
-# Ec         = -4.05496409806
-# w_Ec       = 0.0022614509386
-Ec_delta   = 0.12614509386      # Desired Ecoh delta (offset) wrt reference Ecoh compound
-w_Ec_delta = 0.01
-B          = 39.0136995665
-w_B        = 0.0512640437134
+Ndesired      = 4 4 1
 
-LAT
-name       = Y_FaceCenteredCubic_Vasp_POSCAR
-file       = in/Y_FaceCenteredCubic_Vasp_POSCAR.lat
-elements   = Y
-no_heating = True
-Neven_desired = 1 1 1
-Fmax       = 0.0
-Pmax       = 0.0
-displ_max  = 0.0
-csystem    = cubic
-a          = 5.05568245999
-w_a        = 0.014120825743
-# Ec         = -4.1550348228
-# w_Ec       = 0.0012607436912
-Ec_delta   = 0.02607436912      # Desired Ecoh delta (offset) wrt reference Ecoh compound
-w_Ec_delta = 0.01
-B          = 39.4962666134
-w_B        = 0.0506376974709
-
-LAT
-name       = Y_Dimer_Vasp_POSCAR
-file       = in/Y_Dimer_Vasp_POSCAR.lat
-elements   = Y
-no_heating = True
-Fmax       = 0.0
-# Ec         = -0.820724
-# w_Ec       = 0.0346038519192
-Ec_delta   = 3.36038519192      # Desired Ecoh delta (offset) wrt reference Ecoh compound
-w_Ec_delta = 0.01
-r0         = 2.935
-w_r0       = 0.0170357751278
-
-mds_dt      = 1.0
-mds_max_dt  = 1.0
+#mds_tend    = 10000.0
+#mds_dt      = 2.0    # initial time step (fs)
+#mds_max_dt  = 2.0    # max. time step
+#mds_btc_tau =   10.0   # Berendsen time constant for T control (fs)
+#mds_quench_tstart = 2000
+#mds_quench_rate   = 1.0   # quenching rate (K/fs), negative value => heating
 
 
 
 LAT
-name       = Y_SM_Vasp_POSCAR
-file       = in/Y_SM_Vasp_POSCAR.lat
-elements   = Y
-no_heating = True
-Neven_desired = 1 1 1
-Fmax       = 0.0
-Pmax       = 0.0
-displ_max  = 0.0
-csystem    = hexagonal
-a          = 3.61381
-w_a        = 0.0004978988569
-cpa        = 25.8294
-w_cpa      = 0.00774311443549
-# Ec         = -4.17821554686
-# w_Ec       = 0.0010289364506
-Ec_delta   = 2.89364506e-3      # Desired Ecoh delta (offset) wrt reference Ecoh compound
-w_Ec_delta = 0.1
-B          = 40.6251849388
-w_B        = 0.0492305451166
+name               = dhcp_prim
+file               = in/dhcp-POSCAR_prim.lat
+elements           = Y
+a                  = 3.59397
+w_a                = 10
+cpa                = 3.21527447363
+w_cpa              = 10
+# Ecoh               = -4.36167571879
+# w_Ecoh             = 5.0
+Ecoh_delta         = 8.32428121e-3
+w_Ecoh_delta       = 25
+#B                  = 39.5944480344
+#w_B                = 10
+#Bp                 = 0.137293185819
+#w_Bp               = 1
+
+
+
+
 
 LAT
-name       = Y_DHCP_Vasp_POSCAR
-file       = in/Y_DHCP_Vasp_POSCAR.lat
-elements   = Y
-no_heating = True
-Neven_desired = 1 1 1
-Fmax       = 0.0
-Pmax       = 0.0
-displ_max  = 0.0
-csystem    = hexagonal
-a          = 3.59397
-w_a        = 0.0006962988569
-cpa        = 11.5556
-w_cpa      = 0.0173076257399
-# Ec         = -4.17278827879
-# w_Ec       = 0.0010832091313
-Ec_delta   = 8.32091313e-3      # Desired Ecoh delta (offset) wrt reference Ecoh compound
-w_Ec_delta = 0.1
-B          = 39.5944480344
-w_B        = 0.0505121323642
+name               = fcc_prim
+file               = in/fcc-POSCAR_prim.lat
+elements           = Y
+a                  = 3.57490735098
+w_a                = 10
+# Ecoh               = -4.34392
+# w_Ecoh             = 5.0
+Ecoh_delta         = 0.02608
+w_Ecoh_delta       = 25
+#B                  = 39.4962666134
+#w_B                = 10
+#Bp                 = 0.670251205522
+#w_Bp               = 1
+
 
 LAT
-name       = Y_Hexagonal_Vasp_POSCAR
-file       = in/Y_Hexagonal_Vasp_POSCAR.lat
-elements   = Y
-no_heating = True
-Neven_desired = 1 1 1
-Fmax       = 0.0
-Pmax       = 0.0
-displ_max  = 0.0
-csystem    = hexagonal
-a          = 3.42313948359
-w_a        = 0.002404604021
-cpa        = 0.972753304894
-w_cpa      = 0.205601974307
-# Ec         = -3.73927819823
-# w_Ec       = 0.0054183099369
-Ec_delta   = 0.44183099369      # Desired Ecoh delta (offset) wrt reference Ecoh compound
-w_Ec_delta = 0.01
-B          = 32.4050470975
-w_B        = 0.0617187808425
-mds_tend    = 10.0e3
+name               = bcc_prim
+file               = in/bcc-POSCAR_prim.lat
+elements           = Y
+a                  = 3.49728280059
+w_a                = 10
+# Ecoh               = -4.24385
+# w_Ecoh             = 5.0
+Ecoh_delta         = 0.12615
+w_Ecoh_delta       = 50
+#B                  = 39.0136995665
+#w_B                = 10
+#Bp                 = 1.23316955108
+#w_Bp               = 1
+
 
 LAT
-name       = Y_SimpleCubic_Vasp_POSCAR
-file       = in/Y_SimpleCubic_Vasp_POSCAR.lat
-elements   = Y
-no_heating = True
-Neven_desired = 1 1 1
-Fmax       = 0.0
-Pmax       = 0.0
-displ_max  = 0.0
-csystem    = cubic
-a          = 3.27201272378
-w_a        = 0.0039158716191
-# Ec         = -3.40107449461
-# w_Ec       = 0.0088003469731
-Ec_delta   = 0.78003469731      # Desired Ecoh delta (offset) wrt reference Ecoh compound
-w_Ec_delta = 0.01
-B          = 27.0608197079
-w_B        = 0.0739075911812
-mds_tend    = 10.0e3
+name               = sh_prim
+file               = in/sh-POSCAR_prim.lat
+elements           = Y
+a                  = 3.42313948359
+w_a                = 10
+cpa                = 0.972753304895
+w_cpa              = 10
+# Ecoh               = -3.92817
+# w_Ecoh             = 5.0
+Ecoh_delta         = 0.44183
+w_Ecoh_delta       = 50
+#B                  = 32.4050470975
+#w_B                = 10
+#Bp                 = 1.20652225473
+#w_Bp               = 1
+
+
+LAT
+name               = sc_prim
+file               = in/sc-POSCAR_prim.lat
+elements           = Y
+a                  = 3.27201272378
+w_a                = 10
+# Ecoh               = -3.58996
+# w_Ecoh             = 5.0
+Ecoh_delta         = 0.78004
+w_Ecoh_delta       = 50
+#B                  = 27.0608197079
+#w_B                = 10
+#Bp                 = 1.14677166315
+#w_Bp               = 1
+
+
+
+
+LAT
+name               = dia_prim
+file               = in/dia-POSCAR_prim.lat
+elements           = Y
+a                  = 4.96692676893
+w_a                = 10
+# Ecoh               = -2.38884
+# w_Ecoh             = 5.0
+Ecoh_delta         = 1.98116
+w_Ecoh_delta       = 50
+#B                  = 10.7767331298
+#w_B                = 10
+#Bp                 = -10.5833521618
+#w_Bp               = 1
+
+
+
+LAT
+name               = Y_Dimer
+file               = in/Y_Dimer.lat
+elements           = Y
+r0                 = 2.935
+w_r0               = 15
+Ecoh               = -1.024334
+w_Ecoh             = 15
+
+
+
+
+
+LAT
+name               = hcp_prim
+file               = in/hcp-POSCAR_prim.lat
+elements           = Y
+a                  = 3.6536
+w_a                = 20.0
+cpa                = 1.55178454127
+w_cpa              = 20.0
+Ecoh               = -4.37
+w_Ecoh             = 100.0
+Ecoh_delta_refcomp = true
+#B                  = 40.8957229696
+#w_B                = 20
+#Bp                 = 1.01653639772
+#w_Bp               = 15
+#C11                = 80.1605326176
+#w_C11              = 20
+#C12                = 20.4233027208
+#w_C12              = 20
+#C13                = 21.7202681844
+#w_C13              = 20
+#C33                = 79.4532887154
+#w_C33              = 20
+#C44                = 25.072362326
+#w_C44              = 20
+#C66                = 29.8686149484
+#w_C66              = 20
 

@@ -354,9 +354,9 @@ tulip-get-ini-fit-data.o: get-ini-fit-data.cpp /usr/include/stdc-predef.h \
  /home/koehenri/include/nr-golden.hpp /home/koehenri/include/nr-f1dim.hpp \
  /home/koehenri/include/funcfit-basics.hpp \
  /home/koehenri/include/funcfit-errors.hpp \
- /home/koehenri/include/funcfit-ls-gauss-newton.hpp \
- /home/koehenri/include/funcfit-ls-leve-marq.hpp \
- /home/koehenri/include/funcfit-ls-powelldogleg.hpp \
+ /home/koehenri/include/funcfit-gauss-newton.hpp \
+ /home/koehenri/include/funcfit-leve-marq.hpp \
+ /home/koehenri/include/funcfit-powelldogleg.hpp \
  /home/koehenri/include/funcfit-simplexfit.hpp \
  /home/koehenri/include/mtwister.hpp \
  /usr/include/boost/random/mersenne_twister.hpp \
@@ -1240,11 +1240,11 @@ tulip-get-ini-fit-data.o: get-ini-fit-data.cpp /usr/include/stdc-predef.h \
 
 /home/koehenri/include/funcfit-errors.hpp:
 
-/home/koehenri/include/funcfit-ls-gauss-newton.hpp:
+/home/koehenri/include/funcfit-gauss-newton.hpp:
 
-/home/koehenri/include/funcfit-ls-leve-marq.hpp:
+/home/koehenri/include/funcfit-leve-marq.hpp:
 
-/home/koehenri/include/funcfit-ls-powelldogleg.hpp:
+/home/koehenri/include/funcfit-powelldogleg.hpp:
 
 /home/koehenri/include/funcfit-simplexfit.hpp:
 

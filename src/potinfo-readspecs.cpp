@@ -81,6 +81,12 @@ void PotentialInformationFit::read_specs(std::string filename){
 	else if (c==2) strbuf >> specs_pot.nitermin;
 	strbuf.clear();
       }
+      else if (args[1]=="niterrestart"){
+	strbuf.str(args[2]);
+	if      (c==1) strbuf >> specs_prop.niterrestart;
+	else if (c==2) strbuf >> specs_pot.niterrestart;
+	strbuf.clear();
+      }
       else if (args[1]=="functolabs"){
 	strbuf.str(args[2]);
 	if      (c==1) strbuf >> specs_prop.functolabs;
@@ -152,6 +158,18 @@ void PotentialInformationFit::read_specs(std::string filename){
 	if      (c==1) strbuf >> specs_prop.barrier_scale;
 	else if (c==2) strbuf >> specs_pot.barrier_scale;
 	strbuf.clear();
+      }
+      else if (args[1]=="use_data_scales"){
+	std::string ri;
+	strbuf.str(args[2]); strbuf >> ri; strbuf.clear();
+	if (ri[0]=='y' || ri[0]=='Y' || ri[0]=='t' || ri[0]=='T'){
+	  if      (c==1) specs_prop.use_data_scales = true;
+	  else if (c==2) specs_pot.use_data_scales = true;
+	}
+	else {
+	  if      (c==1) specs_prop.use_data_scales = true;
+	  else if (c==2) specs_pot.use_data_scales = true;
+	}
       }
 
 

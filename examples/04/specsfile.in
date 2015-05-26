@@ -3,13 +3,13 @@
 # ------------------------------------
 # Calculating properties of compounds
 # ------------------------------------
-prop:BM_rel_sys = yes
-prop:BM_fmin  = -0.01
-prop:BM_fmax  =  0.01
-prop:BM_Nf    =  10
-prop:BM_ef    =  1e-10
+prop:BM_rel_sys = yes    # Relax system when calc. bulk modulus (BM). DEFAULT VALUE.
+prop:BM_fmin  = -0.01    # Vmin is (1 + ...)*V_rel for BM calc..
+prop:BM_fmax  =  0.01    # Vmax is (1 + ...)*V_rel for BM calc..
+prop:BM_Nf    =  10      # Use ... points between Vmin and Vmax.
+prop:BM_ef    =  1e-10   # Use ... times the energy as the uncertainty in fitting.
 
-prop:C_rel_sys = yes
+prop:C_rel_sys = yes     # DEFAULT VALUE.
 prop:C_fmin   = -0.01
 prop:C_fmax   =  0.01
 prop:C_Nf     =  10
@@ -19,8 +19,8 @@ prop:C_ef     =  1e-10
 # ------------------------------------
 # Fitting properties of compounds
 # ------------------------------------
-prop:fitmet       = LM    options: CG, PM, GN, LM, DL, SM, DE, PS, BC, GS, or SA
-prop:nitermin     = 5
+prop:fitmet       = DL   options: CG, PM, GN, LM, DL, SM, DE, PS, BC, GS, or SA (see below)
+prop:nitermin     = 3
 prop:nitermax     = 100
 
 #### Negative values means that it will not be used when testing for convergence:
@@ -38,56 +38,51 @@ prop:dogleg_minradius = 1e-10
 # ------------------------------------
 # General MDS settings
 # ------------------------------------
-prop:mds_skint = 1.0       # Angstrom
+prop:mds_skint = 1.0
 prop:mds_seed  = 12345
-prop:mds_ndump = 10        # dump info every ndump steps (if -dmdsprop option)
+prop:mds_ndump = 1  20
 
 prop:mds_tstart  = 0.0
-prop:mds_tend    = 2000.0
-prop:mds_dt      = 0.5
-prop:mds_max_dt  = 1.0
+prop:mds_tend    = 100.0
+prop:mds_dt      = 5.0
+prop:mds_max_dt  = 5.0
 
-prop:mds_Tstart  = 300.0   # starting temperature T (K)
+prop:mds_Tstart  = 100.0
 
-prop:mds_btc_tau =  20     # Berendsen time constant for T control (fs)
-prop:mds_btc_T0  =  0     # desired T (K)
+prop:mds_btc_tau =  20
+prop:mds_btc_T0  =   0
 
-prop:mds_bpc_tau   = 100   # Berendsen time constant for P control (fs)
-prop:mds_bpc_P0    = 0     # desired P (GPa)
-prop:mds_bpc_scale = 100   # scaling constant, usually on the order of bulk modulus (GPa)
+prop:mds_bpc_tau   = 100
+prop:mds_bpc_P0    = 0
+prop:mds_bpc_scale = 100
 
-prop:mds_quench_tstart = 100
-prop:mds_quench_rate   = 1.0   # quenching rate (K/fs), negative value => heating
+# prop:mds_quench_tstart = 100
+# prop:mds_quench_rate   = 1.0
+
+prop:mds_error_T_gt = 10000.0         # Fatal error if T gets over this limit (K).
+prop:mds_error_dt_lt = 0.01           # Fatal error if dt gets under this limit (fs).
+prop:mds_error_boxlen_gt = 10000.0    # Fatal error if any boxlen gets over this limit (Angstrom).
+
 
 
 # ------------------------------------
 # MDS settings for reference compounds
 # ------------------------------------
-prop:ref:mds_skint = 1.0       # Angstrom
-prop:ref:mds_seed  = 12345
-prop:ref:mds_ndump = 10        # dump info every ndump steps (if -dmdsprop option)
 
-prop:ref:mds_tstart  = 0.0
-prop:ref:mds_tend    = 3000.0
-prop:ref:mds_dt      = 5.0
-prop:ref:mds_max_dt  = 5.0
+# Copy MDS settings for reference compounds from the general settings:
+prop:ref:mds = prop:mds
 
-prop:ref:mds_Tstart  = 1.0   # starting temperature T (K)
+# prop:ref:mds_tend    =  1000.0
+# prop:ref:mds_ndump = 1  20
 
-prop:ref:mds_btc_tau =  20     # Berendsen time constant for T control (fs)
-prop:ref:mds_btc_T0  =  0     # desired T (K)
+prop:ref:mds_Tstart  = 10.0
 
-prop:ref:mds_bpc_tau   = 80   # Berendsen time constant for P control (fs)
-prop:ref:mds_bpc_P0    = 0     # desired P (GPa)
-prop:ref:mds_bpc_scale = 80   # scaling constant, usually on the order of bulk modulus (GPa)
+# prop:ref:mds_btc_tau =  20
+# prop:ref:mds_btc_T0  =   0
 
-prop:ref:mds_quench_tstart = 100
-prop:ref:mds_quench_rate   = 1.0   # quenching rate (K/fs), negative value => heating
-
-
-
-
-
+# prop:ref:mds_bpc_tau   = 100
+# prop:ref:mds_bpc_P0    = 0
+# prop:ref:mds_bpc_scale = 100
 
 
 
@@ -95,8 +90,10 @@ prop:ref:mds_quench_rate   = 1.0   # quenching rate (K/fs), negative value => he
 # Fitting potential(s)
 # ##############################################################
 
-pot:fitmet       = DL    options: CG, PM, GN, LM, DL, SM, DE, PS, BC, GS, or SA
-pot:nitermax     = 1  10 # 200
+pot:fitmet       = DL    options: CG, PM, GN, LM, DL, SM, DE, PS, BC, GS, or SA (see below)
+pot:nitermin     = 3
+pot:nitermax     = 5  10 # 200
+pot:niterrestart = 10    Restart each 10th iterations (keep point but reset other settings).
 
 #### Negative values means that it will not be used when testing for convergence:
 pot:functolabs =  1e-5
@@ -105,12 +102,19 @@ pot:gradtolabs =  1e-5
 pot:steptolabs =  1e-5
 pot:steptolrel = -1e-5
 
-pot:dogleg_radius    = 0.1
+pot:dogleg_radius    = 0.2
 pot:dogleg_minradius = 1e-5
-pot:barrier_scale    = 1.0  # scaling constant for barrier function, to keep parameter
+pot:barrier_scale    = 0.0  # scaling constant for barrier function, to keep parameter
                             # values inside min/max interval
+pot:simann_delta_rel = 0.2
+pot:use_data_scales  = true   Use    (Y_i_readin - Y_i_predicted)/Y_i_readin instead of the
+                              normal (Y_i_readin - Y_i_predicted)            in the Chi^2
+                              (merit/cost) function. Here Y_i is any property, e.g. bulk
+                              modulus.
 
+  INFO:
 
+# -------------------------------
 # Gradient-based fitting methods:
 # -------------------------------
 # CG = conjugate gradients (ls)
@@ -118,7 +122,9 @@ pot:barrier_scale    = 1.0  # scaling constant for barrier function, to keep par
 # GN = Gauss-Newton (mi)
 # LM = Levenberg-Marquardt (mi)
 # DL = Powell's dog-leg method (mi) (usually most robust)
-#
+# SA = simulated annealing
+
+# -------------------------------
 # Population-based fitting methods:
 # ---------------------------------
 # SM = simplex method
@@ -126,7 +132,6 @@ pot:barrier_scale    = 1.0  # scaling constant for barrier function, to keep par
 # PS = particle swarm method
 # BC = bee colony method
 # GS = gravitational search method
-# SA = simulated annealing
 
 # mi: uses matrix inversion
 # ls: uses line-search, usually implies slow fitting

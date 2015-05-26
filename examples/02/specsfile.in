@@ -11,7 +11,7 @@ prop:BM_ef    =  1e-10
 prop:C_fmin   = -0.01
 prop:C_fmax   =  0.01
 prop:C_Nf     =  10
-prop:C_ef    =  1e-10
+prop:C_ef     =  1e-10
 
 
 # ------------------------------------
@@ -41,9 +41,9 @@ prop:mds_seed  = 12345
 prop:mds_ndump = 1        # dump info every ndump steps (if -dmdsprop option)
 
 prop:mds_tstart  = 0.0
-prop:mds_tend    = 1000.0
-prop:mds_dt      = 5.0
-prop:mds_max_dt  = 5.0
+prop:mds_tend    = 2000.0
+prop:mds_dt      = 0.5
+prop:mds_max_dt  = 1.0
 
 prop:mds_Tstart  = 300.0   # starting temperature T (K)
 
@@ -54,7 +54,7 @@ prop:mds_bpc_tau   = 100   # Berendsen time constant for P control (fs)
 prop:mds_bpc_P0    = 0     # desired P (GPa)
 prop:mds_bpc_scale = 100   # scaling constant, usually on the order of bulk modulus (GPa)
 
-prop:mds_quench_tstart = 500
+prop:mds_quench_tstart = 100
 prop:mds_quench_rate   = 1.0   # quenching rate (K/fs), negative value => heating
 
 
@@ -66,21 +66,26 @@ prop:ref:mds_seed  = 12345
 prop:ref:mds_ndump = 1        # dump info every ndump steps (if -dmdsprop option)
 
 prop:ref:mds_tstart  = 0.0
-prop:ref:mds_tend    = 100.0
+prop:ref:mds_tend    = 200.0
 prop:ref:mds_dt      = 5.0
 prop:ref:mds_max_dt  = 5.0
 
-prop:ref:mds_Tstart  = 10.0   # starting temperature T (K)
+prop:ref:mds_Tstart  = 1.0   # starting temperature T (K)
 
 prop:ref:mds_btc_tau =  20     # Berendsen time constant for T control (fs)
-prop:ref:mds_btc_T0  =   0     # desired T (K)
+prop:ref:mds_btc_T0  =  0     # desired T (K)
 
 prop:ref:mds_bpc_tau   = 100   # Berendsen time constant for P control (fs)
 prop:ref:mds_bpc_P0    = 0     # desired P (GPa)
 prop:ref:mds_bpc_scale = 100   # scaling constant, usually on the order of bulk modulus (GPa)
 
-prop:ref:mds_quench_tstart = 500
+prop:ref:mds_quench_tstart = 100
 prop:ref:mds_quench_rate   = 1.0   # quenching rate (K/fs), negative value => heating
+
+
+
+
+
 
 
 
@@ -89,7 +94,9 @@ prop:ref:mds_quench_rate   = 1.0   # quenching rate (K/fs), negative value => he
 # ##############################################################
 
 pot:fitmet       = DL    options: CG, PM, GN, LM, DL, SM, DE, PS, BC, GS, or SA
-pot:nitermax     = 5  10 # 200
+pot:nitermin     = 1  10 # 200
+pot:nitermax     = 1  10 # 200
+pot:niterrestart = 20
 
 #### Negative values means that it will not be used when testing for convergence:
 pot:functolabs =  1e-5
@@ -98,11 +105,17 @@ pot:gradtolabs =  1e-5
 pot:steptolabs =  1e-5
 pot:steptolrel = -1e-5
 
-pot:dogleg_radius    = 0.1
+pot:dogleg_radius    = 0.2
 pot:dogleg_minradius = 1e-5
-pot:barrier_scale    = 1.0  # scaling constant for barrier function, to keep parameter
+pot:barrier_scale    = 0.0  # scaling constant for barrier function, to keep parameter
                             # values inside min/max interval
+pot:simann_delta_rel = 0.2
+pot:use_data_scales  = true   Use    (Y_i_readin - Y_i_predicted)/Y_i_readin instead of the
+                              normal (Y_i_readin - Y_i_predicted)            in the Chi^2
+                              (merit/cost) function. Here Y_i is any property, e.g. bulk
+                              modulus.
 
+  INFO:
 
 # Gradient-based fitting methods:
 # -------------------------------
@@ -111,6 +124,7 @@ pot:barrier_scale    = 1.0  # scaling constant for barrier function, to keep par
 # GN = Gauss-Newton (mi)
 # LM = Levenberg-Marquardt (mi)
 # DL = Powell's dog-leg method (mi) (usually most robust)
+# SA = simulated annealing
 #
 # Population-based fitting methods:
 # ---------------------------------
@@ -119,7 +133,6 @@ pot:barrier_scale    = 1.0  # scaling constant for barrier function, to keep par
 # PS = particle swarm method
 # BC = bee colony method
 # GS = gravitational search method
-# SA = simulated annealing
 
 # mi: uses matrix inversion
 # ls: uses line-search, usually implies slow fitting

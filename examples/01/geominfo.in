@@ -1,160 +1,24 @@
 
 
-
-#############################################################################
-#############################################################################
-# Compound number 1:
-#############################################################################
-#############################################################################
-
-LAT  # <= Important for separating compounds!
-     ########################################
-
-name     = Fe-Fe-dimer
-file     = in/Fe-Fe-dimer.lat
-elements = Fe
-
---------------------------------------------------------
-# forces
-frc_file = in/dimer.frc  # Format: Fx Fy Fz sx sy sz
-                         # where all s for all atoms is either weight or uncertainty
-frc_use_w = yes          # If yes, then all sx,sy,sz for all atoms are interpreted as being weights
-# frc_use_u = yes
---------------------------------------------------------
-
-# Dimer bond distance:
-r0       = 2.29
-w_r0     = 10.0   # weight (all weights are 1 by default, but become normalized later)
-
-# Cohesive energy:
-Ecoh     = -2.0
-u_Ecoh   = 0.001  # uncertainty
-Ecoh_delta_ref = yes   # reference compound for delta Ecoh (=ground state structure)
-
-
---------------------------------------------------------
-# Using MD settings from specsfile for this compound,
-# or default ones if no settings in that file. Provide MDS
-# settings below, before next 'LAT', to have specific settings
-# for this compound.
---------------------------------------------------------
-
-
-#############################################################################
-#############################################################################
-# Compound number 2:
-#############################################################################
-#############################################################################
-
-LAT
-
-name     = Fe-BCC
-file     = in/Fe-BCC.lat
-elements = Fe
-csystem  = cubic  # or 'hexagonal' or 'orthorombic' (relevant for elast.const.)
-
-Ndesired      = 2 2 2
-Neven_desired = 1 1 1
-Nodd_desired  = 0 0 0
-
-# Lattice parameter:
-a        = 2.9
-u_a      = 0.025
-# Similarly for lattice parameters b and c.
-
-# Lattice parameter relationships:
-# bpa = ...
-# cpa = ...
-
-# Angles (radians):
-# angle_ab = ...
-# angle_ac = ...
-# angle_bc = ...
-
-# Atomic volume (cubic Angstroms):
-# Vatom = ...
-
-# Change in cohesive energy relative to reference:
-Ecoh_delta     = 0.01  (>0.0, i.e. more unstable than reference)
-w_Ecoh_delta   = 0.004
-
-# Formation energy Ef in 'mixing energy' Emix = Ef/natoms form:
-# Emix = ...
-
-# Bulk modulus B (GPa):
-B        = 169
-u_B      = 2.1
-
-# Pressure derivative of B:
-Bp       = 4.6
-u_Bp     = 0.57
-
-# Elastic constants (GPa):
-C11 = 225
-u_C11 = 0.02
-C12 = 142
-u_C12 = 0.01
-C44 = 126
-u_C44 = 0.01
-
-# Desired absolute maximum force component (X,Y,Z) after relaxation:
-Fmax   = 1e-10  # eV/Angstrom
-w_Fmax = 1e5
-
-# Desired absolute maximum pressure component (X,Y,Z) after relaxation:
-Pmax   = 1e-10  # GPa
-w_Pmax = 1e5
-
-# Desired absolute maximum length displacement of any atom after relaxation:
-displ_max   = 1e-10   # Angstrom
-w_displ_max = 1e5
-
-# ..........................................................................
-
-# Uncomment any of the following to impose restrictions on the relaxation.
-# option: no_heating
-# option: fixed_geometry
-# option: quench_always
-
-# ..........................................................................
-
-# Compound-specific molecular dynamics (MD) settings. These override
-# those in specsfile, or the default ones, if no settings in that file:
-
-mds_skint   = 1      # skin thickness of neighbor list
-mds_seed    = 123
-mds_ndump   = 1      # how often to dump steps to screen
-
-mds_tstart  = 0.0
-mds_tend    = 1000.0
-mds_dt      = 5.0    # initial time step (fs)
-mds_max_dt  = 5.0    # max. time step
-mds_max_dE  = 1.0    # max. energy change
-mds_max_dr  = 0.1    # max. atomic displacement
-
-
-mds_Tstart  = 300.1  # temperature at start (K)
-
-mds_btc_tau =  20    # Berendsen T control time constant (fs)
-mds_btc_T0  =   0    # Berendsen T control desired T (K)
-
-mds_bpc_tau   =  80  # Berendsen P control time constant (fs)
-mds_bpc_P0    =  0   # Berendsen P control desired P (GPa)
-mds_bpc_scale =  100 # Berendsen P control P scale (usually similar to bulk mod.) (GPa)
-
-# mds_quench_tstart = 30   # Time to start quench (fs)
-# mds_quench_rate   = 1.0  # Quench rate (K/fs)
+# Simple example with a single compound
+# no MDS options mentioned here
 
 
 
---------------------------------------------------------------------------
+LAT                         <= triggers readin of new compound data
 
-# Note 1: Elastic constants:
-#
-# Cubic csystem:      C11, C12, C44
-# Hexagonal csystem:  C11, C12, C13, C33, C44
-# Orthogonal csystem: C11, C12, C13, C22, C23, C33, C44, C55, C66
+name     = dimer
+file     = in/dimer.lat
+elements = Fe Y
 
-# Note 2: Mixing energy = formation energy divided by number of atoms in compound
+r0 = 1.5                    Desired bond distance in dimer
+w_r0 = 0.0001               weight
 
+Ec       = -0.123
+u_Ec     = 0.0068           uncertainty (w and u can be freely mixed for different properties)
+
+# All possible options:
+option: no_heating          Do not use temperatures > 0 K.
+option: fixed_geometry      Do not allow atom positions in compounds to change.
+option: quench_always       Always scale velocities to 0.
 

@@ -16,9 +16,9 @@
 #include "funcfit-basics.hpp"
 #include "funcfit-conjgrad.hpp"
 #include "funcfit-errors.hpp"
-#include "funcfit-ls-gauss-newton.hpp"
-#include "funcfit-ls-leve-marq.hpp"
-#include "funcfit-ls-powelldogleg.hpp"
+#include "funcfit-gauss-newton.hpp"
+#include "funcfit-leve-marq.hpp"
+#include "funcfit-powelldogleg.hpp"
 #include "funcfit-powell.hpp"
 #include "funcfit-simplexfit.hpp"
 #include "funcfit-diffevol.hpp"
@@ -431,11 +431,12 @@ int main(int argc, char *argv[]){
   std::cout << "Fitting method                                     : " << potinfo.specs_prop.fitmet << std::endl;
   std::cout << "Min. iterations                                    : " << potinfo.specs_prop.nitermin << std::endl;
   std::cout << "Max. iterations                                    : " << potinfo.specs_prop.nitermax << std::endl;
-  std::cout << "Tolerance for convergence of ChiSq                 : " << potinfo.specs_prop.functolabs << std::endl;
-  std::cout << "Tolerance for convergence of ChiSq changes         : " << potinfo.specs_prop.functolrel << std::endl;
-  std::cout << "Tolerance for convergence of ChiSq gradient        : " << potinfo.specs_prop.gradtolabs << std::endl;
-  std::cout << "Tolerance for convergence of step length           : " << potinfo.specs_prop.steptolabs << std::endl;
-  std::cout << "Tolerance for convergence of step length changes   : " << potinfo.specs_prop.steptolrel << std::endl;
+  std::cout << "Restart at iteration (if positive)                 : " << potinfo.specs_prop.niterrestart << std::endl;
+  std::cout << "Tolerance (abs.) for convergence of ChiSq                 : " << potinfo.specs_prop.functolabs << std::endl;
+  std::cout << "Tolerance (rel.) for convergence of ChiSq changes         : " << potinfo.specs_prop.functolrel << std::endl;
+  std::cout << "Tolerance (abs.) for convergence of ChiSq gradient        : " << potinfo.specs_prop.gradtolabs << std::endl;
+  std::cout << "Tolerance (abs.) for convergence of step length           : " << potinfo.specs_prop.steptolabs << std::endl;
+  std::cout << "Tolerance (rel.) for convergence of step length changes   : " << potinfo.specs_prop.steptolrel << std::endl;
   std::cout << "DOG-LEG: Initial trust region radius               : " << potinfo.specs_prop.dogleg_radius << std::endl;
   std::cout << "DOG-LEG: Smallest allowed trust region radius      : " << potinfo.specs_prop.dogleg_minradius << std::endl;
   std::cout << "SIMPLEX: Displacement when creating initial simplex: " << potinfo.specs_prop.simplex_delta << std::endl;
@@ -443,6 +444,7 @@ int main(int argc, char *argv[]){
   std::cout << "MolDynFit: min_dx                                  : " << potinfo.specs_prop.moldyn_min_dx << std::endl;
   std::cout << "MolDynFit: max_dx                                  : " << potinfo.specs_prop.moldyn_max_dx << std::endl;
   std::cout << "Penalty function: barrier                          : " << potinfo.specs_prop.barrier_scale << std::endl;
+  std::cout << "Normalize data using initial values?               : " << potinfo.specs_prop.use_data_scales << std::endl;
   std::cout << "Debug: level0                                      : " << potinfo.specs_prop.debug_fit_level0 << std::endl;
   std::cout << "Debug: level1                                      : " << potinfo.specs_prop.debug_fit_level1 << std::endl;
   std::cout << "Debug: level2                                      : " << potinfo.specs_prop.debug_fit_level2 << std::endl;
@@ -584,11 +586,12 @@ int main(int argc, char *argv[]){
   std::cout << "Fitting method                                     : " << potinfo.specs_pot.fitmet << std::endl;
   std::cout << "Min. iterations                                    : " << potinfo.specs_pot.nitermin << std::endl;
   std::cout << "Max. iterations                                    : " << potinfo.specs_pot.nitermax << std::endl;
-  std::cout << "Tolerance for convergence of ChiSq                 : " << potinfo.specs_pot.functolabs << std::endl;
-  std::cout << "Tolerance for convergence of ChiSq changes         : " << potinfo.specs_pot.functolrel << std::endl;
-  std::cout << "Tolerance for convergence of ChiSq gradient        : " << potinfo.specs_pot.gradtolabs << std::endl;
-  std::cout << "Tolerance for convergence of step length           : " << potinfo.specs_pot.steptolabs << std::endl;
-  std::cout << "Tolerance for convergence of step length changes   : " << potinfo.specs_pot.steptolrel << std::endl;
+  std::cout << "Restart at iteration (if positive)                 : " << potinfo.specs_pot.niterrestart << std::endl;
+  std::cout << "Tolerance (abs.) for convergence of ChiSq                 : " << potinfo.specs_pot.functolabs << std::endl;
+  std::cout << "Tolerance (rel.) for convergence of ChiSq changes         : " << potinfo.specs_pot.functolrel << std::endl;
+  std::cout << "Tolerance (abs.) for convergence of ChiSq gradient        : " << potinfo.specs_pot.gradtolabs << std::endl;
+  std::cout << "Tolerance (abs.) for convergence of step length           : " << potinfo.specs_pot.steptolabs << std::endl;
+  std::cout << "Tolerance (rel.) for convergence of step length changes   : " << potinfo.specs_pot.steptolrel << std::endl;
   std::cout << "DOG-LEG: Initial trust region radius               : " << potinfo.specs_pot.dogleg_radius << std::endl;
   std::cout << "DOG-LEG: Smallest allowed trust region radius      : " << potinfo.specs_pot.dogleg_minradius << std::endl;
   std::cout << "SIMPLEX: Displacement when creating initial simplex: " << potinfo.specs_pot.simplex_delta << std::endl;
@@ -596,6 +599,7 @@ int main(int argc, char *argv[]){
   std::cout << "MolDynFit: min_dx                                  : " << potinfo.specs_pot.moldyn_min_dx << std::endl;
   std::cout << "MolDynFit: max_dx                                  : " << potinfo.specs_pot.moldyn_max_dx << std::endl;
   std::cout << "Penalty function: barrier                          : " << potinfo.specs_pot.barrier_scale << std::endl;
+  std::cout << "Normalize data using initial values?               : " << potinfo.specs_pot.use_data_scales << std::endl;
   std::cout << "Debug: level0                                      : " << potinfo.specs_pot.debug_fit_level0 << std::endl;
   std::cout << "Debug: level1                                      : " << potinfo.specs_pot.debug_fit_level1 << std::endl;
   std::cout << "Debug: level2                                      : " << potinfo.specs_pot.debug_fit_level2 << std::endl;
@@ -1286,6 +1290,7 @@ int main(int argc, char *argv[]){
     cs.ReportFuncPointer() = report_pot_prop;
 
     cs.barrier_scale() = potinfo.specs_pot.barrier_scale;
+    cs.use_scales() = potinfo.specs_pot.use_data_scales;
 
     cs.finalize_setup();
 
@@ -1302,6 +1307,7 @@ int main(int argc, char *argv[]){
     cond_conv.steptolrel = potinfo.specs_pot.steptolrel;
     cond_conv.nitermin   = potinfo.specs_pot.nitermin;
     cond_conv.nitermax   = potinfo.specs_pot.nitermax;
+    cond_conv.niterrestart = potinfo.specs_pot.niterrestart;
 
     cond_conv.report_conv = potinfo.specs_pot.report_conv;
     cond_conv.prefix_report_conv = "POTFIT conv: ";

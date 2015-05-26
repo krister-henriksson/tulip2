@@ -7,66 +7,62 @@ elem(1) = Y
 
 mass( Y ) = 88.90585
 
+lat( Y , Y ) = HCP
+  a( Y , Y ) = 3.6461970493
+cpa( Y , Y ) = 1.5661531464
+
 iac( Y , Y ) = ABOP
 
-fit( Y , Y ) = true
+fit( Y , Y ) = yes
+use_rep_core( Y , Y ) = no
+      bfermi( Y , Y ) = 10.0
+      rfermi( Y , Y ) = 1.0
 
 
-use_rep_core( Y, Y ) = yes
-bfermi( Y, Y ) = 10.0
-rfermi( Y, Y ) = 1.0
+    potpar( Y , Y ):D0      = 1.6
+min:potpar( Y , Y ):D0      =  1.0
+max:potpar( Y , Y ):D0      =  3.0
 
+    potpar( Y , Y ):r0      = 2.9
+min:potpar( Y , Y ):r0      = 3.5 2.0
+max:potpar( Y , Y ):r0      = 3.5
 
-    potpar( Y , Y ):D0    = 2.64686
-min:potpar( Y , Y ):D0    = 0.0
-max:potpar( Y , Y ):D0    = 15.0
+    potpar( Y , Y ):beta    = 1.1
+min:potpar( Y , Y ):beta    =  4.0 0.1
+max:potpar( Y , Y ):beta    =  4.0
 
-    potpar( Y , Y ):r0    = 2.99839
-min:potpar( Y , Y ):r0    = 0.0
-max:potpar( Y , Y ):r0    = 10.0
+    potpar( Y , Y ):S       = 1.1
+min:potpar( Y , Y ):S       =  4.0 0.1
+max:potpar( Y , Y ):S       =  4.0
 
-    potpar( Y , Y ):beta  = 0.79884
-min:potpar( Y , Y ):beta  = 0.0
-max:potpar( Y , Y ):beta  = 10.0
+    potpar( Y , Y ):gamma   = 0.001
+min:potpar( Y , Y ):gamma   =  1.0 1e-5
+max:potpar( Y , Y ):gamma   =  1.0
 
-    potpar( Y , Y ):S     = 3.34600
-min:potpar( Y , Y ):S     = 0.0
-max:potpar( Y , Y ):S     = 5.0
+    potpar( Y , Y ):c       = 0.0
+min:potpar( Y , Y ):c       =  1e4 -5
+max:potpar( Y , Y ):c       =  1e4
 
-    potpar( Y , Y ):gamma = 0.05577
-min:potpar( Y , Y ):gamma = -10000.0
-max:potpar( Y , Y ):gamma = 10000.0
+    potpar( Y , Y ):d       = 1.0
+min:potpar( Y , Y ):d       =  1e4 -5
+max:potpar( Y , Y ):d       =  1e4
 
-    potpar( Y , Y ):c     = 1.34719
-min:potpar( Y , Y ):c     = -100000.0
-max:potpar( Y , Y ):c     = 100000.0
+    potpar( Y , Y ):h       = 0.0
+min:potpar( Y , Y ):h       =  1.0
+max:potpar( Y , Y ):h       =  1.0
 
-    potpar( Y , Y ):d     = 0.34880
-min:potpar( Y , Y ):d     = -100000.0
-max:potpar( Y , Y ):d     = 100000.0
+    potpar( Y , Y ):R       = 3.85
+min:potpar( Y , Y ):R       = 3.50
+max:potpar( Y , Y ):R       = 3.50
 
-    potpar( Y , Y ):h     = -0.49445
-min:potpar( Y , Y ):h     = -1.0
-max:potpar( Y , Y ):h     = 1.0
+    potpar( Y , Y ):D       = 0.1
 
-    potpar( Y , Y ):R     = 5.74046
-min:potpar( Y , Y ):R     = 4.4
-max:potpar( Y , Y ):R     = 4.4
+    abop_alpha( Y , Y , Y ) =  0.0 0.1
+min:abop_alpha( Y , Y , Y ) =   10.0 -0.1
+max:abop_alpha( Y , Y , Y ) =   10.0
 
-    potpar( Y , Y ):D     = 0.22582
-min:potpar( Y , Y ):D     = 0.3
-max:potpar( Y , Y ):D     = 0.3
-
-
-
-    abop_alpha( Y , Y , Y )    = 1.37930
-min:abop_alpha( Y , Y , Y )    = 100.0
-max:abop_alpha( Y , Y , Y )    = 100.0
-
-
-    abop_omega( Y , Y , Y )    = 1.0
-min:abop_omega( Y , Y , Y )    = 100.0
-max:abop_omega( Y , Y , Y )    = 100.0
-
+    abop_omega( Y , Y , Y ) =   1.0
+min:abop_omega( Y , Y , Y ) =  10.0
+max:abop_omega( Y , Y , Y ) =  10.0
 
 

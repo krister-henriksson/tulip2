@@ -12,9 +12,9 @@
 #include "funcfit-basics.hpp"
 #include "funcfit-conjgrad.hpp"
 #include "funcfit-errors.hpp"
-#include "funcfit-ls-gauss-newton.hpp"
-#include "funcfit-ls-leve-marq.hpp"
-#include "funcfit-ls-powelldogleg.hpp"
+#include "funcfit-gauss-newton.hpp"
+#include "funcfit-leve-marq.hpp"
+#include "funcfit-powelldogleg.hpp"
 #include "funcfit-simplexfit.hpp"
 #include "constants.hpp"
 #include "nr-f1dim.hpp"
@@ -622,6 +622,15 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       propstr = compstr + "Maximum force Fmax                    : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
+    else if (! cmpfit.prop_use.Fmax){
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "INFO: Maximum force Fmax              : ";
+      print_prop_pred(fout, propstr, cmpfit.prop_pred.Fmax);
+    }
+
 
     if (cmpfit.prop_use.Pmax){
       td1 = cmpfit.prop_pred.Pmax;
@@ -638,6 +647,15 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       propstr = compstr + "Maximum pressure Pmax                 : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
+    else if (! cmpfit.prop_use.Pmax){
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "INFO: Maximum pressure Pmax           : ";
+      print_prop_pred(fout, propstr, cmpfit.prop_pred.Pmax);
+    }
+
 
     if (cmpfit.prop_use.displmax){
       td1 = cmpfit.prop_pred.displmax;
@@ -654,6 +672,17 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       propstr = compstr + "Maximum displacement displmax         : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
+    else if (! cmpfit.prop_use.displmax){
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "INFO: Maximum displacement displmax   : ";
+      print_prop_pred(fout, propstr, cmpfit.prop_pred.displmax);
+    }
+
+
+
 
     // Forces !!!
     if (cmpfit.prop_use.frc){
@@ -737,6 +766,24 @@ void print_prop_readin_pred_comp(std::ostream & fout,
   }
   fout << std::endl;
 }
+
+
+void print_prop_pred(std::ostream & fout,
+		     std::string propstr,
+		     double td1){
+
+  const double llim=1.0e-4;
+  const double ulim=1.0e+4;
+  std::string formatf = "%20.10f";
+  std::string formate = "%20.10e";
+
+  fout << propstr;
+  if (abs(td1)<llim || abs(td1)>ulim) fout << format(formate) % td1;
+  else                                fout << format(formatf) % td1;
+  fout << std::endl;
+}
+
+
 
 
 

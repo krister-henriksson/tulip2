@@ -12,9 +12,9 @@
 #include "funcfit-basics.hpp"
 #include "funcfit-conjgrad.hpp"
 #include "funcfit-errors.hpp"
-#include "funcfit-ls-gauss-newton.hpp"
-#include "funcfit-ls-leve-marq.hpp"
-#include "funcfit-ls-powelldogleg.hpp"
+#include "funcfit-gauss-newton.hpp"
+#include "funcfit-leve-marq.hpp"
+#include "funcfit-powelldogleg.hpp"
 #include "funcfit-powell.hpp"
 #include "funcfit-simplexfit.hpp"
 #include "funcfit-diffevol.hpp"
@@ -291,9 +291,9 @@ void CompoundStructureFit::getprop(ParamPot & param){
     prop_pred.Emix /= mds.natoms();
   }
 
-  if (prop_use.Fmax)     prop_pred.Fmax = mds.F_max;
-  if (prop_use.Pmax)     prop_pred.Pmax = mds.P_max;
-  if (prop_use.displmax) prop_pred.displmax = mds.displ_max;
+  prop_pred.Fmax = mds.F_max;
+  prop_pred.Pmax = mds.P_max;
+  prop_pred.displmax = mds.displ_max;
 
 
 
@@ -517,6 +517,7 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 
 
   cs.barrier_scale() = param.p_potinfo->specs_prop.barrier_scale;
+  cs.barrier_scale() = param.p_potinfo->specs_prop.use_data_scales;
 
   cond_conv.functolabs = param.p_potinfo->specs_prop.functolabs;
   cond_conv.functolrel = param.p_potinfo->specs_prop.functolrel;
@@ -524,7 +525,8 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
   cond_conv.steptolabs = param.p_potinfo->specs_prop.steptolabs;
   cond_conv.steptolrel = param.p_potinfo->specs_prop.steptolrel;
   cond_conv.nitermin   = param.p_potinfo->specs_prop.nitermin;
-  cond_conv.nitermax   = param.p_potinfo->specs_prop.nitermax;
+  cond_conv.niterrestart = param.p_potinfo->specs_prop.niterrestart;
+
   cond_conv.report_conv = param.p_potinfo->specs_prop.report_conv;
   cond_conv.prefix_report_conv = "propfit B,B' conv: ";
 
@@ -1049,6 +1051,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       fit_OK = false;
 
       cs.barrier_scale() = param.p_potinfo->specs_prop.barrier_scale;
+      cs.barrier_scale() = param.p_potinfo->specs_prop.use_data_scales;
 
       cond_conv.functolabs = param.p_potinfo->specs_prop.functolabs;
       cond_conv.functolrel = param.p_potinfo->specs_prop.functolrel;
@@ -1057,6 +1060,8 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       cond_conv.steptolrel = param.p_potinfo->specs_prop.steptolrel;
       cond_conv.nitermin   = param.p_potinfo->specs_prop.nitermin;
       cond_conv.nitermax   = param.p_potinfo->specs_prop.nitermax;
+      cond_conv.niterrestart = param.p_potinfo->specs_prop.niterrestart;
+
       cond_conv.report_conv = param.p_potinfo->specs_prop.report_conv;
       cond_conv.prefix_report_conv = "propfit Cij conv: ";
 

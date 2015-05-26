@@ -1,6 +1,33 @@
 #! /bin/bash
 
 
+# ----------------------------------------------------
+# VASP POSCAR before version 5:
+# ----------------------------------------------------
+# # Comment
+# 5.32500000
+# 0.0  1.0  1.0  pbc
+# 1.0  0.0  1.0  pbc
+# 1.0  1.0  0.0  pbc
+#   n1 n2  n3 ...
+#   Direct or Cartesian
+# -0.27650000  0.27650000  0.27650000
+# ...
+# ----------------------------------------------------
+# VASP POSCAR after version 5:
+# ----------------------------------------------------
+# # Comment
+# 5.32500000
+# 0.0  1.0  1.0  pbc
+# 1.0  0.0  1.0  pbc
+# 1.0  1.0  0.0  pbc
+#   s1 s2  s3 ...     # E.g. Fe  Cr C
+#   n1 n2  n3 ...     # E.g. 127 1  1
+#   Direct or Cartesian
+# -0.27650000  0.27650000  0.27650000
+# ...
+# ----------------------------------------------------
+
 
 NF=$#
 file=$1
@@ -13,27 +40,28 @@ elems=$*
 
 
 
-tmpf=tmpf.$$
 
 if [ $NF -lt 2 ]; then
     echo ""
+    echo "Command: `basename $0`  file  elem1  [elem2  elem3 ...]"
+    echo "Purpose: Convert a POSCAR file to a XYZ file."
+    echo "         POSCAR files are read by VASP."
     echo "Arguments:"
-    echo "   file                File to convert."
-    echo "   elem1 elem2 ...     Element names."
+    echo "      file         POSCAR file to convert."
+    echo "      elem1        Name of the first element."
+    echo "      ..."
     echo ""
-
     echo " ############################# Firstly called script: #############################"
-    convert-poscar-to-lat
+    echo "convert-poscar-to-lat  file  elem1  [elem2  elem3  ...] > latfile"
     echo " ############################# Secondly called script: #############################"
-    convert-lat-to-xyz
+    echo "convert-lat-to-xyz  latfile"
+
     exit
-else
-    convert-poscar-to-lat $file $elems  > $tmpf
 fi
 
-
-
+tmpf=tmpf.$$
+convert-poscar-to-lat $file $elems > $tmpf
 convert-lat-to-xyz $tmpf
-
 rm -f $tmpf
+
 

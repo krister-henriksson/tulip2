@@ -15,6 +15,7 @@ SpecsFitProp::SpecsFitProp(){
 
   nitermax = 200;
   nitermin = 2;
+  niterrestart = -50;
 
   functolabs =  small;
   functolrel = -small;
@@ -31,6 +32,7 @@ SpecsFitProp::SpecsFitProp(){
   moldyn_min_dx = 1.0e-10;
   moldyn_max_dx = 0.1;
   barrier_scale = 1.0;
+  use_data_scales = false;
 
   debug_fit_level0 = false;
   debug_fit_level1 = false;
@@ -75,6 +77,7 @@ SpecsFitPot::SpecsFitPot(){
   seed = 12345;
   nitermax = 200;
   nitermin = 2;
+  niterrestart = -50;
 
   functolabs =  small;
   functolrel = -small;
@@ -90,6 +93,7 @@ SpecsFitPot::SpecsFitPot(){
   moldyn_min_dx = 1.0e-10;
   moldyn_max_dx = 0.1;
   barrier_scale = 1.0;
+  use_data_scales = false;
 
   debug_fit_level0 = false;
   debug_fit_level1 = false;

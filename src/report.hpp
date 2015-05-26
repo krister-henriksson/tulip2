@@ -8,9 +8,9 @@
 #include "funcfit-basics.hpp"
 #include "funcfit-conjgrad.hpp"
 #include "funcfit-errors.hpp"
-#include "funcfit-ls-gauss-newton.hpp"
-#include "funcfit-ls-leve-marq.hpp"
-#include "funcfit-ls-powelldogleg.hpp"
+#include "funcfit-gauss-newton.hpp"
+#include "funcfit-leve-marq.hpp"
+#include "funcfit-powelldogleg.hpp"
 #include "funcfit-simplexfit.hpp"
 #include "constants.hpp"
 #include "nr-f1dim.hpp"
@@ -78,6 +78,9 @@ void print_prop_readin_pred_comp(std::ostream & fout,
 				 double td1, double td2,
 				 double td3, double td4);
 
+void print_prop_pred(std::ostream & fout,
+		     std::string propstr,
+		     double td1);
 
 
 #endif
