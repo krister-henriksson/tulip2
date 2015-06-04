@@ -5,11 +5,11 @@ obj/
 bin/
 config/
 config.*
-src/.deps/
-src/discarded/
 Makefile
 configure
-
+src/.deps/
+src/discarded/
+src/Makefile
 
 
 # Ignore stuff in current directory and recursively down:
