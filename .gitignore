@@ -1,8 +1,15 @@
 
+
 # Ignore contents of some directories:
 obj/
 bin/
+config/
+config.*
+src/.deps/
 src/discarded/
+Makefile
+configure
+
 
 
 # Ignore stuff in current directory and recursively down:
