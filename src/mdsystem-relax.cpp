@@ -1256,19 +1256,20 @@ void MDSystem::relax(void){
       // control_T();
       // Requires that T has been calculated earlier!
       lambda = 1.0;
-      if (! fp_is_small(T))
+      if (! fp_is_small(T)){
 	lambda = sqrt( 1.0 + (dt / specs.btc_tau) * (specs.btc_T0/T - 1.0) );
-
-      /* Change velocities: */
+	
+	/* Change velocities: */
 #pragma omp parallel for schedule(static)
-      for (i=0; i<nat; ++i){
-	vel[i][0] *= lambda;
-	vel[i][1] *= lambda;
-	vel[i][2] *= lambda;
+	for (i=0; i<nat; ++i){
+	  vel[i][0] *= lambda;
+	  vel[i][1] *= lambda;
+	  vel[i][2] *= lambda;
+	}
+	/* Change temperature: */
+	Tnew = T * lambda * lambda;
+	T = Tnew;
       }
-      /* Change temperature: */
-      Tnew = T * lambda * lambda;
-      T = Tnew;
     }
 
 

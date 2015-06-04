@@ -2,7 +2,7 @@
 
 FILE = tulip-doc
 
-all: pdf
+all: pdf clean2
 
 
 pdf: $(FILE).tex
@@ -10,7 +10,9 @@ pdf: $(FILE).tex
 	pdflatex $(FILE)
 	pdflatex $(FILE)
 
-clean:
-	-rm *.out *.aux *.log *.dvi *.ps *.pdf *.bbl *.blg
+clean2:
+	-rm *.out *.aux *.log *.dvi *.toc *.ps *.bbl *.blg
 
+clean: clean2
+	-rm $(FILE).pdf
 

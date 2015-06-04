@@ -35,6 +35,9 @@ void PotentialInformationFit::read_specs(std::string filename){
   double eps = std::numeric_limits<double>::epsilon();
 
 
+  if (filename=="") return;
+
+
   std::cout << "Reading specifications ... " << std::endl;
 
 

@@ -1,23 +1,20 @@
 
 
-\documentclass[a4paper,12pt,onecolumn]{article}
+\documentclass[a4paper,12pt,pdftex,onecolumn]{article}
 
-\usepackage{times}
 
-\addtolength{\textwidth}{2cm}
-\addtolength{\evensidemargin}{-1.0cm}
-\addtolength{\oddsidemargin}{-1.0cm}
+\addtolength{\textwidth}{3cm}
+\addtolength{\evensidemargin}{-1.5cm}
+\addtolength{\oddsidemargin}{-1.5cm}
 
 \addtolength{\textheight}{3cm}
-\addtolength{\voffset}{-2cm}
+\addtolength{\voffset}{-1cm}
 
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{1.5ex plus 0.2ex minus 0.2ex}
 
-%\usepackage{palatino}
+%\usepackage{times}
+\usepackage{palatino}
 %\usepackage{mathpple}
 
-\usepackage{bm}
 
 \usepackage{multicol}
 
@@ -25,52 +22,61 @@
 \usepackage{amssymb}
 
 \usepackage{dcolumn}
+
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{graphicx}
+
 \usepackage{xspace}
+\newcommand{\etal}{\emph{et al.}\xspace}
+\newcommand{\ie}{\emph{i.e.}\xspace}
+\newcommand{\eg}{\emph{e.g.}\xspace}
+\newcommand{\etc}{\emph{etc.}\xspace}
 
-\usepackage[latin1]{inputenc}
-\usepackage[dvips]{graphicx}
-\newcommand{\etal}{\emph{et al.}}
-\newcommand{\ie}{\emph{i.e.\@\xspace}}
-\newcommand{\eg}{\emph{e.g.\@\xspace}}
-\newcommand{\etc}{\emph{etc.\@\xspace}}
-
-
-\def\a{\mathbf{a}}
-\def\b{\mathbf{b}}
-\def\cc{\mathbf{c}}
-
-\def\g{\mathbf{g}}
-\def\G{\mathbf{G}}
-\def\h{\mathbf{h}}
-\def\H{\mathbf{H}}
+\usepackage{fancyvrb}
+\usepackage{relsize}
 
 
-\def\X{\mathbf{X}}
+\usepackage{fancyhdr} 
+\pagestyle{fancy}
+% Clear:
+\fancyhf{}
+% Settings:
+\fancyheadoffset{0cm}
+\renewcommand{\headrulewidth}{0.5pt} 
+\renewcommand{\footrulewidth}{0pt}
+% New header style:
+\fancyhead[L]{K. O. E. Henriksson}
+\fancyhead[C]{Documentation for \textsc{TULIP} 2}
+\fancyhead[R]{\thepage}
+% New footer style:
+% -
+% Special case for plain-style pages:
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyhead[R]{\thepage}%
+}
 
-\def\R{\mathbf{R}}
-\def\F{\mathbf{F}}
-\def\dr{\mathbf{d}r}
-\def\du{\mathbf{d}u}
 
-\def\eps{\varepsilon}
+\usepackage{color}
+\definecolor{lightblue}{rgb}{0.7,0.7,1.0}%\def\lightblue{\color{lightblue}}
+\definecolor{lightred}{rgb}{1.0,0.85,0.85}
+\definecolor{blue}{rgb}{0.0,0.0,1.0}
+\definecolor{black}{rgb}{0.0,0.0,0.0}
+\definecolor{red}{rgb}{1.0,0.0,0.0}
+\definecolor{white}{rgb}{1.0,1.0,1.0}
 
-\def\PP{\mathbf{P}}
 
-\def\rr{\mathbf{r}}
-\def\s{\mathbf{s}}
-\def\u{\mathbf{u}}
-\def\v{\mathbf{v}}
-\def\p{\mathbf{p}}
+\usepackage{bm}
 
-\def\omegavec{\bm{\omega}}
-\def\tauvec{\bm{\tau}}
+\newcommand{\vhat}[1]{{\ifmmode{\widehat{{\bm{\mathrm{#1}}}}} \else $\widehat{\bm{\mathrm{#1}}}$ \fi}}
+\newcommand{\vect}[1]{{\ifmmode{{\bm{\mathrm{#1}}}} \else $\bm{\mathrm{#1}}$ \fi}}
 
-\def\dA{\mathbf{dA}}
-
-\def\nhat{\mathbf{\widehat{n}}}
-\def\xhat{\mathbf{\widehat{x}}}
-\def\yhat{\mathbf{\widehat{y}}}
-\def\zhat{\mathbf{\widehat{z}}}
+\newcommand{\vr}{{\ifmmode{{\bm{\mathrm{r}}}} \else $\bm{\mathrm{r}}$ \fi}}
+\newcommand{\vF}{{\ifmmode{{\bm{\mathrm{F}}}} \else $\bm{\mathrm{F}}$ \fi}}
 
 
 
@@ -109,10 +115,11 @@
 
 
 
-
-
-
-\newcommand{\stars}{\begin{center} \vspace{0.5cm}$\star \qquad \star \qquad \star$\vspace{0.5cm}\end{center}}
+\newcommand{\stars}{\begin{center}%
+\vspace{1em plus 0.5em minus 0.5em}%
+$\star \qquad \star \qquad \star$%
+\vspace{1em plus 0.5em minus 0.5em}%
+\end{center}}
 
 
 
@@ -125,6 +132,12 @@
 
 
 
+%\setlength{\parindent}{0em}
+%\setlength{\parskip}{0.75em plus 0.2em minus 0.2em}
+
+\usepackage{parskip}
+
+
 
 
 % End of preamble
@@ -133,24 +146,21 @@
 
 
 \title{
-Documentation for \textsc{TULIP}
-version 2
+Documentation for \textsc{TULIP} 2
 }
 \author{K. Henriksson}
 \date{\today}
 
 \maketitle
 
-\abstract
-
-This booklet gives an introduction to the \textsc{TULIP}, which is
+\begin{abstract}
+This \textcolor{black}{booklet} gives an introduction to the \textsc{TULIP}, which is
 a program for fitting interatomic potentials to physical data
 of different phases and lattices.
-
-\stars
-
+\end{abstract}
 
 \tableofcontents
+
 
 
 
@@ -159,9 +169,144 @@ of different phases and lattices.
 \section{Introduction}
 
 The program \textsc{TULIP} tries to fit a interatomic potential
-to given physical properties of compounds. Physical properties are
+to \eg given physical properties of compounds \etc. Physical properties are
 for instance lattice parameters, cohesive energy, bulk modulus and
 elastic constants.
+
+Input is essentially an initial guess for potential parameters,
+a list of compounds and their desired properties
+(lattice parameters, cohesive energy, mixing energy, bulk modulus,
+elastic constants, ...), and technical specifications to guide the fitting.
+Using the parametrization, compounds are relaxed in a molecular
+dynamics (MD) simulation (MDS), and then the specified physical properties
+are calculated.
+The fitting routine tries to minimize the merit function. The fitting method
+can be selected.
+
+
+
+
+\section{Source code}
+
+0. Prerequisites: Install the \verb+spglib+ package from
+\verb+http://spglib.sourceforge.net/+ in a standard location and
+remember the location of installed files.
+
+1. Local users only: Download the \verb+libutils+ source code into a folder:
+
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+git clone /home/phys-data/people/koehenri/repos/libutils.git
+\end{Verbatim}
+
+The \verb+libutils+ directory will be created. Descend into it and
+follow the instructions in the Readme file to make and install the
+library.
+
+2. Local users only: Download the \verb+tulip2+ source code into a folder:
+
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+git clone /home/phys-data/people/koehenri/repos/tulip2.git
+\end{Verbatim}
+
+The \verb+tulip2+ directory will be created. Descend into it and
+follow the instructions in the Readme file to make and install the
+fitting code.
+
+3. The static version \verb+tulip_static+ can be copied to other
+computer systems having the same architecture and be run there
+without any additional effort. The shared library version requires
+adding the \verb+libutils+ library to the library path.
+
+\stars
+
+To download updated versions of these codes descend into the root
+directories (e.g. \verb+tulip2+) and execute
+
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+git pull
+\end{Verbatim}
+
+This will fetch and merge updated code with your local copy.
+
+\stars
+
+The \verb+tulip2/examples+ directory contains some ready-made examples,
+which can be run without additional editing to get a better feel
+for how the code works.
+
+
+
+
+\section{Program arguments}
+
+\begin{Verbatim}[fontsize=\relsize{-3},frame=single]
+TULIP version 2 (c) Krister Henriksson 2013-
+Purpose: Fit data to an interatomic potential.
+Usage:
+     tulip arguments [options]
+Arguments:
+     -pf file           Path to file containing potential information.
+     -gf file           Path to file containing geometry information.
+
+Options:
+     -sf file           Path to file containing technical specifications about the calculations.
+     -ro                Only calculate properties of reference compounds, then exit. Default: not used.
+     -nof               Only calculate properties of reference and read-in compounds, then exit. Default: not used.
+     -xyz               Use traditional XYZ format when writing XYZ files. Default: not used.
+                        The extended XYZ format (http://jrkermode.co.uk/quippy/io.html#extendedxyz)
+                        is used by default.
+
+     -dfitpropn         Show information about fitting of properties. Here 'n' must be
+                        an integer. Supported: 0-4. 0: debug fitting method. 1-4: debug deeper.
+                        lying methods used by the fitting method. Default: not used
+                        NOTE: 0 also shows some info about the initial Chi^2 object.
+     -dfitpotn          Show information about fitting of potentials. Here 'n' have a similar
+                        role as for fitting of the properties.
+                        NOTE 1: 0 also shows some info about the initial Chi^2 object.
+                        NOTE 2: 'fitpot0' is always set to true, others are false by default.
+
+     -dforces           Debug the forces. Default: not used
+     -dpressure         Debug the pressure. Default: not used
+     -dmdsprop          Debug MDS runs of the structures. Default: not used
+     -dall              Activate all debugging options (top level only). Default: not used
+
+     -mif               Suggest an initial fit and exit. Default: not used
+
+     -omp               Request maximal number of threads (8) for any OpenMP parts.
+     -omp_nt num        Request 'num' number of threads for any OpenMP parts. Default: 1
+\end{Verbatim}
+
+
+Main arguments:
+
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+-pf potinfofile     This file contains info about the elements and interactions.
+-gf geominfofile    This file contains the info about the compounds which are
+                    to be fitted.
+\end{Verbatim}
+
+Recommended options to always use:
+
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+-sf specsinfofile   This file contains settings steering the calculation of
+                    properties of read-in compounds and the fitting process.
+\end{Verbatim}
+
+Useful options:
+
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+-ro            Calculate properties of reference (single-species) compounds
+               and quit.
+-nof           Calculate properties of reference and read-in compounds and quit.
+               This is useful when parametrization is finalized and high-accuracy
+               values of properties are desired (use long MD relaxation times!).
+-mif           Obtain an initial partial fit to start from.
+-dmdsprop      Show progress of all MD relaxations of all compounds.
+\end{Verbatim}
+
+Note: The OpenMP options can be used, but the OpenMP parallellization has not been
+extensively debugged. Some cache trashing is likely to occur, degrading performance.
+
 
 
 
@@ -181,26 +326,24 @@ program, but this type of interactions cannot be fitted.
 
 \subsection{ABOP potential}
 
-
-
-The Brennr-Tersoff or ABOP potential gives the total energy of a system of atoms as
+The Brenner-Tersoff or ABOP potential gives the total energy of a system of atoms as
 
 \begin{equation}
-V = {1 \over 2} \sum_i \sum_{j} f_{C,ij} \left( V_{R,ij} - b_{ij} V_{A,ij} \right)
-= \sum_i \sum_{j>i} f_{C,ij} \left( V_{R,ij} - \overline{b}_{ij} V_{A,ij} \right),
+V = {1 \over 2} \sum_i \sum_{j} f_{c,ij} \left( V_{R,ij} - B_{ij} V_{A,ij} \right)
+= \sum_i \sum_{j>i} f_{c,ij} \left( V_{R,ij} - \overline{B}_{ij} V_{A,ij} \right),
 \label{eq:abop}
 \end{equation}
 
 Here
 
 \begin{equation}
-\overline{b}_{ij} = {b_{ij} + b_{ji} \over 2}
+\overline{B}_{ij} = {B_{ij} + B_{ji} \over 2}
 \end{equation}
 
 Note:
 
 \begin{equation}
-V_{ij} \equiv  f_{C,ij} \left( V_{R,ij} - b_{ij} V_{A,ij} \right)
+V_{ij} \equiv  f_{c,ij} \left( V_{R,ij} - B_{ij} V_{A,ij} \right)
 \end{equation}
 
 may not be equal to $V_{ji}$.
@@ -214,35 +357,59 @@ The repulsive ($R$) and attractive ($A$) parts are
   \right]
 \end{eqnarray}
 
+with
+
+\begin{equation}
+r_{ij} = |\mathbf{r}_{ij}| = | \mathbf{r}_i - \mathbf{r}_j |
+\end{equation}
+
 The cutoff-function is
 
 \begin{equation}
-f_{C,ij} =
+f_c(r) =
 \left\{
 \begin{array}{ll}
 1,                   & r \leq R - D, \\
-{1 \over 2} \left( 1 - \sin \left( {\pi \over 2} {r_{ij} - R \over D}
-    \right) \right), & |R - r_{ij}| < D  \\
+{1 \over 2} \left( 1 - \sin \left( {\pi \over 2} {r - R \over D}
+    \right) \right), & |R - r| < D  \\
 0,                   & r \geq R + D
 \end{array}
 \right.
 \end{equation}
 
+Hence, full interaction is felt when $r<R-D$, and no interaction when $r>R+D$,
+making the cutoff distance $r_c = R+D$. The derivative is
+
+\begin{equation}
+f'_{c}(r) =
+\left\{
+\begin{array}{ll}
+0,                   & r \leq R - D, \\
+{1 \over 2} \left( 1 - {\pi \over 2D} \cos \left( {\pi \over 2} {r - R \over D}
+    \right) \right), & |R - r| < D  \\
+0,                   & r \geq R + D
+\end{array}
+\right.
+\end{equation}
+
+
+
+
 The bond-order parameter is defined as
 
 \begin{equation}
-b_{ij} = 1 / \sqrt{1 + \chi_{ij}}
+B_{ij} = \left( 1 + \chi_{ij} \right)^{-{1 \over 2}}
 \end{equation}
 
 where
 
 \begin{equation}
 \chi_{ij} =
-\sum_{k, k \neq i, k \neq j} f_{C,ik} g_{ijk} \omega_{ijk} \exp\left[
+\sum_{k, k \neq i, k \neq j} f_{c,ik} g_{ijk} \omega_{ijk} \exp\left[
   \alpha_{ijk}(r_{ij} - r_{ik}) \right]
 \end{equation}
 
-Here
+If the Brenner form is used then
 
 \begin{equation}
 \omega_{ijk} = \exp\left[
@@ -250,7 +417,7 @@ Here
 \right]
 \end{equation}
 
-and
+and $\omega_{ijk}$ is \textbf{not} a separate parameter. Also,
 
 \begin{equation}
 g_{ijk} = \gamma \left(
@@ -258,7 +425,7 @@ g_{ijk} = \gamma \left(
 \right)
 \end{equation}
 
-where $\theta_{ijk}$ is the angle between the bonds $i-j$ and $i - k$.
+where $\theta_{ijk}$ is the angle between the bonds $ij$ and $ik$.
 
 
 
@@ -424,23 +591,21 @@ and calculations in general are given in read-in files:
 (iii) file containing technical specifications about the
 calculations. The last file is optional.
 
-In all the files white space, commas, colons, parentheses, and equal signs
-are all interpreted as delimiters.
+The delimiters separating tokens in the read-in files are:
+tabulator, space, and the following characters: \verb+:,()[]=+. The
+point is not a delimiter. Character strings which are not part of the
+input value for an option are simply ignored.
 
 
 
 
-\subsection{File 1: Interactions information}
+
+\subsection{File: Elements and interactions information}
 
 
 An overview of which potentials that can be read in from tabulated data
 in $(x, y)$ format and those which can be specified via parameters only
 is shown in Table~\ref{tab:pot-da}.
-
-Keywords in the file containing information about the
-interactions are listed in table~\ref{tab:kw-if}.
-
-Sub-keywords for the ABOP are listed in table~\ref{tab:kw-ABOP}.
 
 
 \begin{table}[!h]
@@ -456,9 +621,6 @@ A = Can be specified by parameters.
 Potential   & R    & A  \\
 \hline
 EAM-*       & Yes  & No \\
-PP          & Yes  & No \\
-LJ          & No   & Yes \\
-Morse       & No   & Yes \\
 ABOP        & No   & Yes \\
 \hline
 \hline
@@ -466,462 +628,658 @@ ABOP        & No   & Yes \\
 \end{center}
 \end{table}
 
-
-
-\begin{table}[!h]
-\caption{
-Keywords used in the file specifying the interactions.
-\textbf{NOTE: $n_1$ and $n_2$ are strings, \eg Fe or Cr.}
-The first two parameters MUST be read in before the other ones,
-else the program will crash.
-NOTE: Only the first letter is significant in the answer to the yes/no questions.
-'yes' can be abbreviated 'Y' or 'y'.
-\label{tab:kw-if}
-}
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-\hline
-\verb+nelem+       & number $N$ of elements \\
-\verb+elem+($i$)   & name of element $i \in [1,N]$, e.g. Cr, Ar, Pt \\
-\hline
-\verb+fit+($n_1$, $n_2$) & fit interaction between elements $n_1$ and $n_2$ \\
-                          & or not: yes, no \\
-\verb+iac+($n_1$, $n_2$) & interaction type: EAM-d, EAM-s, EAM-p,\\
-                          & EAM-sp, EAM-pd, EAM-sd, EAM-spd, ABOP, \\
-                          & Morse, LJ, PP \\
-\verb+symm+($n_1$, $n_2$) & is the interaction symmetric ? yes or no \\
-\hline
-\verb+lat+($n_1$, $n_1$) & referene lattice for interaction: SC, BCC, FCC, \\
-                          & DIA, HCP, GRA, HCP, GRP, NaCl, CsCl, \\
-                          & DIM1 \\
-\verb+a+($n_1$, $n_1$) & lattice parameter $a$ for reference lattice \\
-\verb+b+($n_1$, $n_1$) & lattice parameter $b$ for reference lattice \\
-\verb+c+($n_1$, $n_1$) & lattice parameter $c$ for reference lattice \\
-\verb+bpa+($n_1$, $n_1$) & ratio $b/a$ for reference lattice \\
-\verb+cpa+($n_1$, $n_1$) & ratio $c/a$ for reference lattice \\
-\hline
-\verb+potpar+($n_1$, $n_2$)\verb+:par+ & sub-keyword 'par' for interaction $n_1$-$n_2$ \\
-\verb+potparlim+($n_1$, $n_2$)\verb+:par:min+ & lower limit for sub-keyword 'par' \\
-\verb+potparlim+($n_1$, $n_2$)\verb+:par:max+ & upper limit for sub-keyword 'par' \\
-\hline
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-
-
-\begin{table}[!h]
-\caption{
-Sub-keywords for LJ potential.
-\label{tab:kw-LJ}
-}
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-\hline
-\verb+epsilon+ & $\eps$ \\
-\verb+sigma+   & $\sigma$ \\
-\verb+rc+      & Cutoff distance. \\
-\verb+drc+     & Thickness of cutoff region. \\
-\verb+cutfun+  & Cutoff function index. Only \verb+1+ supported. \\
-\hline
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-%
-\begin{table}[!h]
-\caption{
-Sub-keywords for Morse potential.
-\label{tab:kw-M}
-}
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-\hline
-\verb+D+       & $D$ \\
-\verb+beta+    & $\beta$ \\
-\verb+r0+      & $r_0$ \\
-\verb+rc+      & Cutoff distance. \\
-\verb+drc+     & Thickness of cutoff region. \\
-\verb+cutfun+  & Cutoff function index. Only \verb+1+ supported. \\
-\hline
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-%
-\begin{table}[!h]
-\caption{
-Sub-keywords for ABOP potential.
-\label{tab:kw-ABOP}
-}
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-\hline
-\verb+D0+      & $D_0$ \\
-\verb+r0+      & $r_0$ \\
-\verb+beta+    & $\beta$ \\
-\verb+S+       & $S$ \\
-\verb+gamma+   & $\gamma$ \\
-\verb+c+       & $c$ \\
-\verb+d+       & $d$ \\
-\verb+h+       & $h$ \\
-\verb+R+       & $R$ \\
-\verb+D+       & $D$ \\
-\verb+alpha+($n_i$, $n_j$, $n_k$) & $\alpha_{ijk}$ \\
-\hline
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-
 \stars
 
 
-Example:
+Complete example:
 
-\begin{verbatim}
 
-nelem = 2
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
 
+# MUST BE FIRST:
+# Number of elements:
+nelem = 3
+
+# MUST BE SECOND:
 # Element names:
-elem(1) = Cr
-elem(2) = C
+elem(1) = Fe
+elem(2) = Cr
+elem(3) = C
 
-# Fit this interaction?
-fit(1,1) = no
-fit(2,2) = no
-fit(1,2) = yes
 
-# Interaction types:
-iac(1,1) = EAM-d
-iac(2,2) = ABOP
-iac(1,2) = ABOP
+# Optional:
+atomtype(Fe) = 1
+atomtype(Cr) = 2
+atomtype(C)  = 3
 
-# Symmetry:
-symm(1,2) = yes
+
+# Masses
+mass(Fe) = 55.8470
+mass(Cr) = 51.9961
+mass(C ) = 12.0110
+
 
 # Reference lattices:
-lat(1,1) = BCC
-lat(2,2) = GRA
+lat(Cr, Cr) = BCC
+lat(Fe, Fe) = BCC
+lat(C,  C ) = GRA
+
+# Supported ref. lattices:
+# DIM1 (homomer), DIM2 (heteromer), SC, BCC, BCC-P, FCC, FCC-P,
+# DIA, HCP, GRA, GRP (graphene)
+# The ...-P versions refer to alternate structures with
+# non-Cartesian primitive vectors.
+
+a(Cr, Cr)  = 2.87
+a(Fe, Fe)  = 2.87
+#########################################################################
+# Use accurate values for C, otherwise the graphite might explode due
+# to massive pressure!!! Also, use small enough time step!!!
+#########################################################################
+a(C,  C )   = 1.46   rNN for graphite (GRA)      DIA: 3.55647765821
+c(C,  C )   = 6.689
+# Also possible:
+# bpa(C, C) = ...
+# cpa(C, C) = ...
+
+
+# Interaction types:
+iac(Fe, Fe) = ABOP
+iac(Cr, Cr) = ABOP
+iac(C,  C ) = ABOP
+iac(Fe, Cr) = ABOP   symmetric
+iac(Fe, C ) = ABOP   symmetric
+iac(Cr, C ) = ABOP   symmetric
+
+
+# Fit this interaction? The interaction must be analytical.
+fit(Fe, Cr) = yes    symmetric
+
+
+# Repulsive potentials (ZBL):
+
+use_rep_core( Fe, Fe ) = yes
+bfermi( Fe, Fe ) = 10
+rfermi( Fe, Fe ) = 1.0
+
+use_rep_core( Cr, Cr ) = yes
+bfermi( Cr, Cr ) = 12
+rfermi( Cr, Cr ) = 1.7
+
+use_rep_core( C, C ) = yes
+bfermi( C, C ) = 8
+rfermi( C, C ) = 0.6
+
+use_rep_core( Fe, Cr ) = no
+bfermi( Fe, Cr ) = 10
+rfermi( Fe, Cr ) = 1 
+
+use_rep_core( Fe, C ) = yes
+bfermi( Fe, C ) = 10
+rfermi( Fe, C ) = 1
+
+use_rep_core( Cr, C ) = yes
+bfermi( Cr, C ) = 8
+rfermi( Cr, C ) = 1.2
 
 
 
-# Lattice parameters:
-a(1,1)   = 2.8553
-a(2,2)   = 2.878
+
+# Parameters for fixed interactions
+
+potpar( Fe, Fe ):D0 = 1.5
+potpar( Fe, Fe ):r0 = 2.29
+potpar( Fe, Fe ):beta = 1.4
+potpar( Fe, Fe ):S = 2.0693109
+potpar( Fe, Fe ):gamma = 0.0115751
+potpar( Fe, Fe ):c = 1.2898716
+potpar( Fe, Fe ):d = 0.3413219
+potpar( Fe, Fe ):h = -0.26
+potpar( Fe, Fe ):R = 3.15
+potpar( Fe, Fe ):D = 0.2
+
+potpar(Cr, Cr ):D0 = 4.04222081
+potpar(Cr, Cr ):r0 = 2.13018547
+potpar(Cr, Cr ):beta = 1.62158721
+potpar(Cr, Cr ):S = 3.36793914
+potpar(Cr, Cr ):gamma = 0.02388562
+potpar(Cr, Cr ):c = 1.03288255
+potpar(Cr, Cr ):d = 0.13813230
+potpar(Cr, Cr ):h = -0.28569237
+potpar(Cr, Cr ):R = 3.2
+potpar(Cr, Cr ):D = 0.20
+
+potpar(C, C ):D0 = 6.0
+potpar(C, C ):r0 = 1.39
+potpar(C, C ):beta = 2.1
+potpar(C, C ):S = 1.22
+potpar(C, C ):gamma = 2.0813e-4
+potpar(C, C ):c = 330.0
+potpar(C, C ):d = 3.5
+potpar(C, C ):h = 1.0
+potpar(C, C ):R = 1.85
+potpar(C, C ):D = 0.15
+
+potpar(Fe, C ):D0 = 3.95000634
+potpar(Fe, C ):r0 = 1.53426579
+potpar(Fe, C ):beta = 1.82109816
+potpar(Fe, C ):S = 1.43035110
+potpar(Fe, C ):gamma = 0.07485571
+potpar(Fe, C ):c = 1.11674155
+potpar(Fe, C ):d = 0.94663188
+potpar(Fe, C ):h = -0.18665305
+potpar(Fe, C ):R = 2.6
+potpar(Fe, C ):D = 0.20
+
+potpar( Cr, C ):D0        =  2.77620074
+potpar( Cr, C ):r0        =  1.81289285
+potpar( Cr, C ):beta      =  2.00816371
+potpar( Cr, C ):S         =  2.04637644
+potpar( Cr, C ):gamma     =  0.00068830
+potpar( Cr, C ):c         =  3.93353757
+potpar( Cr, C ):d         =  0.17497204
+potpar( Cr, C ):h         =  -0.17850001
+potpar( Cr, C ):R         =  2.95
+potpar( Cr, C ):D         =  0.1
+
+
+# Parameters for fittable interactions
+
+     potpar( Fe, Cr ):D0 = 3.48049488
+min: potpar( Fe, Cr ):D0 = 0.1
+max: potpar( Fe, Cr ):D0 = 10.0
+
+     potpar( Fe, Cr ):r0 = 2.16998952
+min: potpar( Fe, Cr ):r0 = 1.0
+max: potpar( Fe, Cr ):r0 = 5.0
+
+     potpar( Fe, Cr ):beta = 1.75467567
+min: potpar( Fe, Cr ):beta = 1.0
+max: potpar( Fe, Cr ):beta = 5.0
+
+     potpar( Fe, Cr ):S  = 2.28661503
+min: potpar( Fe, Cr ):S  = 1.1
+max: potpar( Fe, Cr ):S  = 5.0
+
+     potpar( Fe, Cr ):gamma = 0.15766130
+min: potpar( Fe, Cr ):gamma = 1e-5
+max: potpar( Fe, Cr ):gamma = 1e5
+
+     potpar( Fe, Cr ):c = 0.48531613
+min: potpar( Fe, Cr ):c = -1e5
+max: potpar( Fe, Cr ):c =  1e5
+
+     potpar( Fe, Cr ):d  = 0.31427413
+min: potpar( Fe, Cr ):d  =  -1e5
+max: potpar( Fe, Cr ):d  =   1e5
+
+     potpar( Fe, Cr ):h  = -0.69
+min: potpar( Fe, Cr ):h  =  1.0
+max: potpar( Fe, Cr ):h  =  1.0
+
+     potpar( Fe, Cr ):R  = 3.10
+min: potpar( Fe, Cr ):R  = 2.0
+max: potpar( Fe, Cr ):R  = 2.0
+
+     potpar( Fe, Cr ):D         = 0.15
+min: potpar( Fe, Cr ):D  = 1.0
+max: potpar( Fe, Cr ):D  = 1.0
 
 
 
-# Parameters:
-potpar(2,2):D0 = 6.0
-potpar(2,2):r0 = 1.39
-potpar(2,2):beta = 2.1
-potpar(2,2):S = 1.22
-potpar(2,2):gamma = 2.0813e-4
-potpar(2,2):c = 330.0
-potpar(2,2):d = 3.5
-potpar(2,2):h = 1.0
-potpar(2,2):R = 1.85
-potpar(2,2):D = 0.15
-potpar(2,2):alpha(2,2,2) = 0.0
+
+# ABOP alpha and omega parameters
+
+################################################################
+##
+##  NOTE: There are NO ABOP alpha, omega, 2mu parameters used by default.
+##        Only the specified ones are used.
+##        Defaults: alpha=2mu=0.0 and omega=1.0 as constants.
+##
+##        If an omega parameter is specified it is taken as an
+##        independent parameter (non-Brenner form), otherwise
+##        it is constructed from alpha parameters --- if they are
+##        specified --- as
+##
+##          "omega_ijk" = exp( alpha_ijk*(r0_ij - r0_ik) )
+##
+################################################################
 
 
-# Initial parameter values for potential to fit:
-potpar(1,2):D0 = 3.2
-potpar(1,2):r0 = 1.1
-potpar(1,2):beta = 1.7
-potpar(1,2):S = 0.97
-potpar(1,2):gamma = 0.0
-potpar(1,2):c = 1.5
-potpar(1,2):d = 0.2
-potpar(1,2):h = 1.0
-potpar(1,2):R = 2.2
-potpar(1,2):D = 0.2
-potpar(1,2):alpha(1,1,2) = 0.0
-potpar(1,2):alpha(1,2,1) = 0.0
-potpar(1,2):alpha(1,2,2) = 0.0
-potpar(1,2):alpha(2,2,1) = 0.0
-potpar(1,2):alpha(2,1,2) = 0.0
-potpar(1,2):alpha(2,1,1) = 0.0
+# Fixed:
 
+abop_alpha( Fe, Fe, Fe ) = 0.0
+abop_omega( Fe, Fe, Fe ) = 1.0
 
-# Limits:
-potparlim(1,2):D0:min =  0.0
-potparlim(1,2):D0:max = 10.0
+abop_alpha( Cr, Cr, Cr ) = 1.39662066
+abop_omega( Cr, Cr, Cr ) = 1.0
 
-\end{verbatim}
+abop_alpha( C, C, C ) = 0.0
+abop_omega( C, C, C ) = 1.0
 
+abop_alpha( Cr, Cr, C  )        = 0.8640643600
+abop_alpha( Cr, C , Cr )        = -1.7520448300
+abop_alpha( C, Cr, Cr )        = 0.6122158900
+abop_alpha( C, C , Cr )        = 0
+abop_alpha( C, Cr, C )        = 0
+abop_alpha( Cr, C, C  )        = 0
 
-
+abop_omega( Cr, Cr, C  )        = 1.6402877600
+abop_omega( Cr, C , Cr )        = 0.2939996300
+abop_omega( C, Cr, Cr )        = 0.4190507900
+abop_omega( C, C , Cr )        = 1
+abop_omega( C, Cr, C )        = 1
+abop_omega( Cr, C, C  )        = 1
 
 
 
+# Fittable:
+
+     abop_alpha( Fe, Fe, Cr ) = 1.0
+min: abop_alpha( Fe, Fe, Cr ) =  100.0
+max: abop_alpha( Fe, Fe, Cr ) =  100.0
+
+     abop_alpha( Fe, Cr, Fe ) = 1.0
+min: abop_alpha( Fe, Cr, Fe ) =  100.0
+max: abop_alpha( Fe, Cr, Fe ) =  100.0
+
+     abop_alpha( Cr, Fe, Fe ) = 1.0
+min: abop_alpha( Cr, Fe, Fe ) =  100.0
+max: abop_alpha( Cr, Fe, Fe ) =  100.0
+
+     abop_alpha( Cr, Fe, Cr ) = 1.0
+min: abop_alpha( Cr, Fe, Cr ) =  100.0
+max: abop_alpha( Cr, Fe, Cr ) =  100.0
+
+     abop_alpha( Fe, Cr, Cr ) = 1.0
+min: abop_alpha( Fe, Cr, Cr ) =  100.0
+max: abop_alpha( Fe, Cr, Cr ) =  100.0
+
+     abop_alpha( Cr, Cr, Fe ) = 1.0
+min: abop_alpha( Cr, Cr, Fe ) =  100.0
+max: abop_alpha( Cr, Cr, Fe ) =  100.0
 
 
-\subsection{File 2: Physical properties}
+
+
+     abop_omega( Fe, Fe, Cr ) = 1.0
+min: abop_omega( Fe, Fe, Cr ) =  100.0
+max: abop_omega( Fe, Fe, Cr ) =  100.0
+
+     abop_omega( Fe, Cr, Fe ) = 1.0
+min: abop_omega( Fe, Cr, Fe ) =  100.0
+max: abop_omega( Fe, Cr, Fe ) =  100.0
+
+     abop_omega( Cr, Fe, Fe ) = 1.0
+min: abop_omega( Cr, Fe, Fe ) =  100.0
+max: abop_omega( Cr, Fe, Fe ) =  100.0
+
+     abop_omega( Cr, Fe, Cr ) = 1.0
+min: abop_omega( Cr, Fe, Cr ) =  100.0
+max: abop_omega( Cr, Fe, Cr ) =  100.0
+
+     abop_omega( Fe, Cr, Cr ) = 1.0
+min: abop_omega( Fe, Cr, Cr ) =  100.0
+max: abop_omega( Fe, Cr, Cr ) =  100.0
+
+     abop_omega( Cr, Cr, Fe ) = 1.0
+min: abop_omega( Cr, Cr, Fe ) =  100.0
+max: abop_omega( Cr, Cr, Fe ) =  100.0
+
+
+\end{Verbatim}
+
+
+
+
+
+
+
+
+\subsection{File: Compounds information}
 
 In order to specify a physical property to be fitted,
-the keywords in table~\ref{tab:kw-gf} must be used.
+the keywords in example below must be used.
 
 Keywords are grouped into sets than begin with the string
 LAT on a separate line. Properties in each set refer to
 the same structure/lattice/geometry.
 
-All properties that are specified (=set) are ''activated'' as fitting
-parameters.
+\textbf{All properties that are specified (=set) are activated as fitting
+targets.}
 
 
-\begin{table}[!h]
-\caption{
-Keywords used in the file specifying the structures to be fitted.
-\label{tab:kw-gf}
-}
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-\hline
-\verb+name+      & arbitrary name of structure \\
-\verb+lattice+   & optional: specify a lattice \\
-\verb+file+      & optional: specify a file to read the structure from \\
-\verb+elements+  & list of elements in the structure \\
-\verb+use_Fvec+ & Calculate the total force as $F = (1/N) \sqrt{ \sum_{i=1}^{3N} |\F_i| }$. Takes no argument. \\
-\verb+a+         & lattice parameter $a$, or bond length for dimers \\
-\verb+b+         & lattice parameter $b$ \\
-\verb+c+         & lattice parameter $c$ \\
-\verb+bpa+       & ratio $b/a$ \\
-\verb+cpa+       & ratio $b/a$ \\
-\verb+fixed_bpa+ & fix the ratio $b/a$ at this value, \ie assume \\
-                 & it never changes (potential pitfall) \\
-\verb+fixed_cpa+ & fix the ratio $c/a$ at this value, \ie assume \\
-                 & it never changes (potential pitfall) \\
-\verb+Ec+        & cohesive energy $E_c$ \\
-\verb+EF+        & formation energy $E_F$ \textbf{per atom in cell} \\
-\verb+B+         & bulk modulus (GPa) $B$ \\
-\verb+Bp+        & pressure derivative of bulk modulus $\partial B / \partial P$ \\
-\verb+C+$ij$     & elastic constant C$_{ij}$ \\
-\verb+w_Fvec+    & weight/uncertainty for $F$ \\
-\verb+w_a+         & weight/uncertainty for $a$ \\
-\verb+w_b+         & weight/uncertainty for $b$ \\
-\verb+w_c+         & weight/uncertainty for $c$ \\
-\verb+w_Ec+        & weight/uncertainty for $E_c$ \\
-\verb+w_EF+        & weight/uncertainty for $E_F$ \\
-\verb+w_B+         & weight/uncertainty for $B$ \\
-\verb+w_Bp+        & weight/uncertainty for $\partial B / \partial P$ \\
-\verb+w_C+$ij$     & weight/uncertainty for $C_{ij}$ \\
-\hline
-\hline
-\end{tabular}
-\end{center}
-\end{table}
+Complete listing of options for a lattice: Note that \verb+...+ means that
+numerical values (single or severeal ones) are expected, and \verb+***+ means
+that a string is needed.
 
 
-Of the physcial properties 'a', 'b', 'c', \ldots
-at least the lattice parameter 'a' must be given.
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
 
-The following rules apply to the setting and activation of lattice parameters:
+LAT                   <= starts readin of new lattice info
 
-\begin{itemize}
-\item[(1)] \verb+a+ has to be set, else the program quits.
-%
-\item[(2)] If \verb+a+ is set but not \verb+b+ and \verb+c+, then
-$b = a$, $c = a$, $b/a$ and $c/a$ are set and activated.
-%
-\item[(3)] If \verb+a+ and \verb+c+ are set but not \verb+b+, then
-$b = a$ is set and activated.
-\end{itemize}
+name          = ...   string
+file          = ...   LAT file, string
+elements      = ...   element names (e.g. W H), strings
+Ndesired      = ...   number of cells in direction a, three integers
+Neven_desired = ...   0 for false, 1 for true, three integers
+Nodd_desired  = ...   0 for false, 1 for true, three integers
 
-From these rules follow that in the case of dimers you must explicitly
-specify $b = c = 0$, else they are set equal to $a$, which is the same
-as the bond length.
+# Lattice parameters
+a             = ...
+w_a           = ...      weight
+b             = ...      
+u_b           = ...      uncertainty
+c             = ...      default: weight: 1.0
+
+# weight for any property: w_***
+# uncertainty for any property: u_***
+
+# Lattice parameter relationships:
+bpa           = ...
+cpa           = ...
+
+# Dimer bond distance (only for dimers):
+# r0          = ...
+
+# Angles (radians):
+angle_ab      = ...
+angle_ac      = ...
+angle_bc      = ...
+
+# Atomic volume (cubic Angstroms):
+Vatom         = ...
+
+# This compound should be considered ground/reference state when calculating
+# cohesive energies:
+Ecoh_delta_refcomp = true
+# If no cohesive energies used, then skip this setting.
+
+# Change in cohesive energy relative to reference:
+Ecoh_delta    = ...  (>0.0, i.e. more unstable than reference)
+
+# Formation energy Ef in 'mixing energy' Emix = Ef/natoms form:
+Emix          = ...
+
+# Bulk modulus B (GPa):
+B             = ...
+
+# Pressure derivative of B:
+Bp            = ...
+
+# Elastic constants (all):
+C11           = ...
+C12           = ...
+C13           = ...
+C14           = ...
+C15           = ...
+C16           = ...
+C22           = ...
+C23           = ...
+C24           = ...
+C25           = ...
+C26           = ...
+C33           = ...
+C34           = ...
+C35           = ...
+C36           = ...
+C44           = ...
+C45           = ...
+C46           = ...
+C55           = ...
+C56           = ...
+C66           = ...
+# A SPGLIB call will determine space group and which Cij are correct.
+# Wrong ones will be turned off.
+
+# Options:
+option: no_heating          Do not use temperatures > 0 K.
+option: fixed_geometry      Do not allow atom positions in compounds to change.
+option: quench_always       Always scale velocities to 0.
+
+
+# Force handling:
+frc_file      = ...  string
+# => use atomic forces, get them from specified file
+frc_use       = ...  boolean 
+# => use atomic forces
+frc_use_w     = ...  use weights for force components (default)
+# frc_use_u   = ...  use weights for force components
+#
+# Format of forces file: Lines of
+#   fx  fy  fz  dfx  dfy  dfz
+# in eV/fs, where dfx, dfy, dfz is interpreted as weights/uncertainties,
+# depending on which of frc_use_w/frc_use_u is set.
+#
+
+# Options that still exist but are deprecated:
+# Fmax          = ...    try to achieve this largest atomic force
+#                        in relaxed compound
+# Pmax          = ...    try to achieve this largest Cartesian pressure
+#                        in relaxed compound
+# displmax      = ...    try to achieve this largest atomic displacement
+#                        in relaxed compound
+# Rationale: Prefer parametrizations that minimize forces, pressures, and
+# displacements.
+# Note: Usually the MD relaxation achieves these goals already, and specifying
+# these options may interfere with the fitting (see the merit function discussion).
+
+
+# Compound-specific MD options, overrides any others specifed elsewhere:
+# Complete list (example values):
+
+mds_skint     = 1.0       # Angstrom
+mds_seed      = 12345
+mds_ndump     = 10        # dump info every ndump steps (if -dmdsprop option)
+
+mds_tstart    = 0.0
+mds_tend      = 2000.0
+mds_dt        = 3.0
+mds_max_dt    = 3.0
+
+mds_Tstart    =    0.5  starting temperature T (K)
+mds_btc_tau   =   10.0  Berendsen time constant for T control (fs)
+mds_btc_T0    =    0.0  desired T (K)
+
+mds_bpc_tau   = 80.0   Berendsen time constant for P control (fs)
+mds_bpc_P0    =  0.0   desired P (GPa)
+mds_bpc_scale = 50.0   scaling constant, usually on the order of bulk modulus (GPa)
+
+# mds_quench_tstart = 2000
+# mds_quench_rate   = 1.0   # quenching rate (K/fs), negative value => heating
+
+mds_error_T_gt      = 1e6   Fatal error if T gets over this limit (K).
+mds_error_dt_lt     = 0.01  Fatal error if dt gets under this limit (fs).
+mds_error_boxlen_gt = 1e4   Fatal error if any boxlen gets over this limit (Angstrom).
+
+\end{Verbatim}
+
+
+
+If neither weight nor uncertainty is specified for any property a default weight of 1
+is used. The weights $w_i$ are normalized: $\sum_i w_i = 1$, where the sum goes over
+properties with weights only, properties with uncertainties are not taken into account.
 
 
 \stars
 
+Example:
 
-All weights are given in absolute units, \ie a property with the value
-12.0 and the weight 3.0, means a relative weight of 3/12 = 25\%.
-Relatively small weights (say less than 10\% of the parameter value)
-are likely to give small uncertainties in fitted
-parameters, but the convergence might be very slow.
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
 
-Default weights of 1.0 tend to give large uncertainties in fitted
-parameters, but the convergence is usually faster.
+LAT                         <= triggers readin of new compound data
 
+name     = dimer
+file     = in/dimer.lat
+elements = W H
 
-\stars
+r0 = 1.5                    Desired bond distance in dimer
+w_r0 = 0.0001               weight
 
+Ecoh     = -0.123
+u_Ecoh   = 0.0068           uncertainty (w and u can be freely mixed
+                            for different properties)
 
-Some predefined geometries are included in the program. These are listed in
-Table~\ref{tab:kw-gf-kl}. For these geometries the primitive vectors are
-
-\begin{eqnarray}
-\a  &=& a \left( (\verb+a1+) \xhat + (\verb+a2+) \yhat + (\verb+a3+) \zhat \right), \\
-\b  &=& b \left( (\verb+b1+) \xhat + (\verb+b2+) \yhat + (\verb+b3+) \zhat \right), \\
-\cc &=& c \left( (\verb+c1+) \xhat + (\verb+c2+) \yhat + (\verb+c3+) \zhat \right).
-\end{eqnarray}
-
-\textit{Note:} Any predefined geoemetry may not be primitive. In other words,
-it may contain ''too many'' atoms. For instance, the primitive cell of BCC contains
-only one atom, whereas the conventional one contains two.
-
-
-\begin{table}
-\caption{
-Known reference lattices.
-\label{tab:kw-gf-kl}
-}
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-\hline
-DIM1 & Homoatomic dimer. \\
-DIM2 & Heteroatomic dimer. \\
-SC  & \\
-BCC & \\
-FCC & \\
-DIA & \\
-HCP & \\
-GRA & Graphite. \\
-GRP & Graphene (two-dimensional single sheet). \\
-NaCl & \\
-CsCl & \\
-Znbl & \\
-\hline
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-
-\stars
-
-
-If the used structure is not a standard one, or the user want exact control
-over the definition of the geometry, then it can be supplied in a file, via
-the \verb+file+ keyword. The contents of this file is listed in
-table~\ref{tab:kw-gf-ff}.
+option: no_heating          Do not use temperatures > 0 K.
 
 
 
-\begin{table}
-\caption{
-Format of \textrm{file} in table~\ref{tab:kw-gf}.
-\label{tab:kw-gf-ff}
-}
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-\hline
-Comment  & Arbitrary comment. \\
-S        & Overall scaling constant, similar to the one in POSCAR used by VASP. \\
-a1 a2 a3  optional-string  & Components of the first primitive vector. \\
-b1 b2 b3  optional-string  & Components of the second primitive vector. \\
-c1 c2 c3  optional-string  & Components of the third primitive vector. \\
-\textit{keyword}  & \verb+internal+ or \verb+direct+ \\
-Nbasis   & Number of basis vectors. \\
-S1  B11  B12  B13 & Species and vector components of first basis atoms. \\
-S2  B21  B22  B23 & Species and vector components of second basis atoms. \\
-...           & ... \\
-\hline
-\hline
-\end{tabular}
-\end{center}
-\end{table}
+LAT                         <= triggers readin of new compound data
 
+name     = bcc
+file     = in/bcc.lat
+elements = W
+a        = 2.9
+w_a      = 1.0
+Ecoh_delta_refcomp = true
+C11                = 80.1605326176
+w_C11              = 20
+C12                = 20.4233027208
+w_C12              = 20
+C44                = 25.072362326
+w_C44              = 20
+
+
+
+LAT                         <= triggers readin of new compound data
+
+name     = octa
+file     = in/octa.lat
+elements = W H
+Ndesired      = 2 2 2
+Neven_desired = 1 1 1
+Nodd_desired  = 0 0 0
+a        = 2.9
+Emix = 0.001
+
+mds_seed  = 123
+mds_tend    = 5000.0
+mds_dt      = 3.0
+mds_max_dt  = 3.0
+
+mds_Tstart  =    0.5  starting temperature T (K)
+mds_btc_tau =   10.0  Berendsen time constant for T control (fs)
+mds_btc_T0  =    0.0  desired T (K)
+
+mds_bpc_tau   = 80.0  Berendsen time constant for P control (fs)
+mds_bpc_P0    =  0.0  desired P (GPa)
+mds_bpc_scale = 50.0  scaling constant, usually on the order of bulk modulus (GPa)
+
+\end{Verbatim}
+
+
+
+
+\subsection{LAT files}
+
+
+Format of LAT file:
+
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+Comment                      Arbitrary comment.
+  L                          Overall scaling constant.
+a1 a2 a3  optional-string    Components of the first primitive vector U1.
+b1 b2 b3  optional-string    Components of the second primitive vector U2.
+c1 c2 c3  optional-string    Components of the third primitive vector U3.
+  format                     internal or direct
+  Nbasis                     number of basis vectors
+S1  B11  B12  B13            Species and vector components of first basis atom.
+S2  B21  B22  B23            Species and vector components of second basis atom.
+...
+\end{Verbatim}
 
 The strings \verb+S+$i$ --- e.g. Cr, H, W --- specify the species
 of the basis atom.
-
-Here $S$ equals $a$, and the program warns if these are not equal.
 
 If \verb+optional-string+ --- a single character or several
 of them --- is present, then the corresponding direction is
 considered periodic, i.e. it is a true primitive vector
 in an infinite lattice.
 
-If the keyword \verb+direct+ or \verb+Direct+ or letter \verb+d+ or \verb+D+
-(equivalent to \textbf{Cartesian} in VASP)
-is used, then \eg the first basis vector is
-$\b_1 = a$ \verb+B11+ $\xhat + a$ \verb+B12+ $\yhat + a$ \verb+B13+ $\zhat$.
-If instead the kyeword \verb+internal+
-(equivalent to \textbf{Direct} in VASP) is used,
-then the same basis vector is
-$\b_1 = $ \verb+B11+ $\a_1 + $ \verb+B12+ $\a_2 + $ \verb+B13+ $\a_3$.
+If the \verb+format+ keyword is \verb+scaled+ or \verb+Scaled+ or letter \verb+s+ or \verb+S+
+then \eg the first basis vector is
+
+$\qquad$ $\mathbf{b}_1 =$
+\verb+(L * B11)+ $\mathbf{e}_x +$ \verb+(L * B12)+ $\mathbf{e}_y$ \verb+(L * B13)+ $\mathbf{e}_z$
+
+This is equivalent to \textbf{Cartesian} in VASP. If instead \verb+internal+
+is used, then the same basis vector is
+
+$\qquad$ $\mathbf{b}_1 = $
+\verb+(L * B11)+ $\mathbf{u}_1 + $ \verb+(L * B12)+ $\mathbf{u}_2 + $ \verb+(L * B13)+ $\mathbf{u}_3$.
+
+This is equivalent to \textbf{Direct} in VASP.
+
+The real primitive vectors are $\mathbf{v}_i = L \mathbf{u}_i$.
+
+\stars
+
+Example 1: Fe-Y dimer in vacuum, non-periodic boundaries:
+
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+Fe-Y dimer
+  10.0   <= scaling constant
+1.0  0.0  0.0    primitive vector U1
+0.0  1.0  0.0    primitive vector U2
+0.0  0.0  1.0    primitive vector U3
+  Scaled
+  2
+Y   0.0000000000   0.0000000000   0.0000000000
+Fe  0.2000000000   0.0000000000   0.0000000000
+\end{Verbatim}
 
 
+Example 2: CrC in the NaCl crystal form:
+
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+#
+  4.0741512214
+0.0  0.5  0.5   pbc    primitive vector U1
+0.5  0.0  0.5   pbc    primitive vector U2
+0.5  0.5  0.0   pbc    primitive vector U3
+  Internal
+  2
+C   0.0  0.0  0.0
+Cr  0.5  0.5  0.5
+\end{Verbatim}
+
+
+Scripts are provided to convert between POSCAR, XYZ and LAT formats.
 
 
 \stars
 
+A simulation box with box lenghts $L_1, L_2, L_3$ is constructed from
+a compound with primitive vectors $\mathbf{v}_1$, $\mathbf{v}_2$, $\mathbf{v}_3$,
+so that all box lenghts are more than twice the largest cutoff radius
+for the elements occuring in the compound:
 
-Example:
+\begin{equation}
+L_i = N_i v_i \ge 2 r_c
+\end{equation}
 
-\begin{verbatim}
-LAT
-name     = CrC-dimer
-lattice  = DIM2
-elements = Cr C
-a        = 1.63
-w_a      = 0.02
-b        = 0.0
-c        = 0.0
-Ec       = -1.95
-w_Ec     = 0.02
-
-
-LAT
-name     = CsCl-Cr-C
-lattice  = CsCl
-elements = Cr C
-csystem  = cubic
-a        = 2.5252852114
-w_a      = 0.03
-EF       = 2.1722234000
-w_EF     = 0.02
-
-
-LAT
-name     = 1CO-Cr-C
-file     = bccFe_oC.lat
-elements = Cr C
-a        = 2.7681565739
-w_a      = 0.03
-c        = 3.91328302368
-w_c      = 0.04
-EF       = 0.3670748501
-w_EF     = 0.004
-
-\end{verbatim}
-
-Now the structure of the geometry \verb+1CO-Cr-C+ is taken from the file
-\verb+bccFe_oC.lat+. The contents of this file is:
-
-\begin{verbatim}
-Comment: BCC Fe with one C at an octahedral site.
-1.0  0.0  0.0  pbc
-0.0  1.0  0.0  pbc
-0.0  0.0  1.0  pbc
-internal
- 3
-Fe  0.0  0.0   0.0
-Fe  0.5  0.5   0.5
-C   0.5  0.5   0.0
-\end{verbatim}
-
-
+Here $N_i$ is initially the corresponding value in the \verb+Ndesired+ setting,
+if specified.
 
 \stars
+
+Predicted lattice parameter $\widetilde{a}$ is calculated as
+
+\begin{equation}
+\widetilde{a} = (\widetilde{L}_1 / L_1) a,
+\end{equation}
+
+where $a$ is the read-in lattice parameter in the file listing the compounds,
+$L_1$ is the initial length of the simulation box in the $\mathbf{v}_1$ direction, and
+$\widetilde{L}_1$ is the relaxed length of the simulation box in the same direction.
+
+\stars
+
 
 \textbf{Note: There must always be at least one basis vector.}
 The following example for bcc Fe should be helpful:
 
-\begin{verbatim}
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
 Comment: BCC Fe with primitive vectors.
 -0.25   0.25    0.25    pbc
  0.25  -0.25    0.25    pbc
@@ -929,11 +1287,11 @@ Comment: BCC Fe with primitive vectors.
   Internal
   1
 Fe   0.0   0.0   0.0
-\end{verbatim}
+\end{Verbatim}
 
 Using a conventional cubic cell, the lattice is
 
-\begin{verbatim}
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
 Comment: BCC Fe.
  1.0  0.0  0.0   pbc
  0.0  1.0  0.0   pbc
@@ -942,7 +1300,7 @@ Comment: BCC Fe.
   2
 Fe   0.0   0.0   0.0
 Fe   0.25  0.25  0.25
-\end{verbatim}
+\end{Verbatim}
 
 
 
@@ -950,31 +1308,160 @@ Fe   0.25  0.25  0.25
 
 
 
-
-\subsection{File 3: Technical specifications}
-
-
-Keywords in the file containing technical specifications about the
-calculations are listed in tables~\ref{tab:kw-sf} and
-\ref{tab:kw-sf-par}.
+\subsection{Optional file: Technical specifications}
 
 
-\begin{table}[!h]
-\caption{
-Keywords used in the file specifying technical details.
-\label{tab:kw-sf}
-}
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-\hline
-\verb+prop:+\textit{par}  & sub-keyword \textit{par} for calculations of physical properties \\
-\verb+pot:+\textit{par}   & sub-keyword \textit{par} for the fitting of the potential(s) \\
-\hline
-\hline
-\end{tabular}
-\end{center}
-\end{table}
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+
+# ------------------------------------
+# Calculating properties of compounds
+# ------------------------------------
+
+# Bulk modulus
+prop:BM_rel_sys = yes      relax a strained frame
+prop:BM_fmin    = -0.01
+prop:BM_fmax    =  0.01
+prop:BM_Nf      =  10      number of points to use for (V,E) curve
+prop:BM_ef      =  1e-10   error ratio for each energy valye
+
+# Elastic constants
+prop:C_rel_sys  = yes
+prop:C_fmin     = -0.01
+prop:C_fmax     =  0.01
+prop:C_Nf       =  10
+prop:C_ef       =  1e-10
+
+
+# ------------------------------------
+# Fitting properties of compounds
+# ------------------------------------
+prop:fitmet       = LM    options: CG, PM, GN, LM, DL, SM, DE, PS, BC, GS, or SA
+prop:nitermin     = 5     do at least this many iterations
+prop:nitermax     = 100   do a maximum of this many iterations
+prop:niterrestart = 20    restart every 20th iteration
+
+#### Negative values means that it will not be used when testing for convergence:
+prop:functolabs =  1e-5   convergence when absolute merit function value is less
+                          than this
+prop:functolrel = -1e-5   ... change in merit function value ...
+prop:gradtolabs =  1e-5   ... absolute gradient value ...
+prop:steptolabs =  1e-5   ... absolute step size ...
+prop:steptolrel = -1e-5   ... change in step size ...
+
+prop:dogleg_radius    = 0.2    initial trust region radius
+prop:dogleg_minradius = 1e-5   exit when radius gets this low
+prop:barrier_scale    = 0.0    scaling constant for barrier penalty function,
+                               to keep parameter values inside min/max interval
+prop:simann_delta_rel = 0.2    initial displacements in coordinate directions
+prop:use_data_scales  = true   use/do not use scaled values in the merit function
+
+
+# ------------------------------------
+# General MDS settings
+# ------------------------------------
+prop:mds_skint = 1.0       Angstrom
+prop:mds_seed  = 12345
+prop:mds_ndump = 10        dump info every ndump steps (if -dmdsprop option)
+
+prop:mds_tstart  = 0.0
+prop:mds_tend    = 2000.0
+prop:mds_dt      = 0.5
+prop:mds_max_dt  = 1.0
+
+prop:mds_Tstart  = 300.0   starting temperature T (K)
+
+prop:mds_btc_tau =  20     Berendsen time constant for T control (fs)
+prop:mds_btc_T0  =  0      desired T (K)
+
+prop:mds_bpc_tau   = 100   Berendsen time constant for P control (fs)
+prop:mds_bpc_P0    = 0     desired P (GPa)
+prop:mds_bpc_scale = 100   scaling constant, usually on the order of bulk modulus
+                           (GPa)
+
+prop:mds_quench_tstart = 100
+prop:mds_quench_rate   = 1.0   quenching rate (K/fs), negative value => heating
+
+
+# ------------------------------------
+# MDS settings for reference compounds
+# ------------------------------------
+
+# Use this to copy MDS settings for reference compounds from the general settings
+# specified above:
+# prop:ref:mds = prop:mds
+
+prop:ref:mds_skint = 1.0       Angstrom
+prop:ref:mds_seed  = 12345
+prop:ref:mds_ndump = 10        dump info every ndump steps (if -dmdsprop option)
+
+prop:ref:mds_tstart  = 0.0
+prop:ref:mds_tend    = 3000.0
+prop:ref:mds_dt      = 5.0
+prop:ref:mds_max_dt  = 5.0
+
+prop:ref:mds_Tstart  = 1.0   starting temperature T (K)
+
+prop:ref:mds_btc_tau =  20   Berendsen time constant for T control (fs)
+prop:ref:mds_btc_T0  =  0    desired T (K)
+
+prop:ref:mds_bpc_tau   = 80  Berendsen time constant for P control (fs)
+prop:ref:mds_bpc_P0    = 0   desired P (GPa)
+prop:ref:mds_bpc_scale = 80  scaling constant, usually on the order of bulk modulus
+                             (GPa)
+
+prop:ref:mds_quench_tstart = 100
+prop:ref:mds_quench_rate   = 1.0   # quenching rate (K/fs), negative value => heating
+
+
+
+# ##############################################################
+# Fitting potential(s)
+# ##############################################################
+
+pot:fitmet       = DL    options: CG, PM, GN, LM, DL, SM, DE, PS, BC, GS, or SA
+pot:nitermin     = 5
+pot:nitermax     = 100
+pot:niterrestart = 20    restart every 10th iteration
+
+#### Negative values means that it will not be used when testing for convergence:
+pot:functolabs =  1e-5
+pot:functolrel = -1e-5
+pot:gradtolabs =  1e-5
+pot:steptolabs =  1e-5
+pot:steptolrel = -1e-5
+
+pot:dogleg_radius    = 0.2
+pot:dogleg_minradius = 1e-5
+pot:barrier_scale    = 0.0     barrier value
+pot:simann_delta_rel = 0.2
+pot:use_data_scales  = true    scaling option
+
+
+  INFO:
+
+# Gradient-based fitting methods:
+# -------------------------------
+# CG = conjugate gradients (ls)
+# PM = Powell's method (ls)
+# GN = Gauss-Newton (mi)
+# LM = Levenberg-Marquardt (mi)
+# DL = Powell's dog-leg method (mi) (usually most robust)
+# SA = simulated annealing
+
+#
+# Population-based fitting methods:
+# ---------------------------------
+# SM = simplex method
+# DE = differential evolution
+# PS = particle swarm method
+# BC = bee colony method
+# GS = gravitational search method
+
+# mi: uses matrix inversion
+# ls: uses line-search, usually implies slow fitting
+
+\end{Verbatim}
+
 
 
 The keyword \verb+prop+ is relevant to the calculations in which
@@ -989,209 +1476,6 @@ parameters.
 
 
 
-\begin{table}[!h]
-\caption{
-Sub-keywords for \textrm{prop} and \textrm{pot} in table~\ref{tab:kw-sf}.
-\label{tab:kw-sf-par}
-}
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-\hline
-\verb+niter_max+  & maximum number of iterations \\
-\verb+parlim+      & Use parameter limits: yes or no. \\
-\verb+gamma+       & $\chi^2$ must be below this value before the fit is considered converged. \\
-                   & This criterion is used if \verb+gamma+ $> 0$. \\
-\verb+eps+          & All $||H_i|| = ||-\partial \chi^2 / \partial a_i||$ must be \\
-                     & below this value before the fit is considered converged. \\
-                   & This criterion is used if \verb+eps+ $> 0$. \\
-\hline
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-
-
-
-Sub-keywords specific to \verb+prop+ are listed in table~\ref{tab:kw-sf-par-prop}.
-
-\begin{table}[!h]
-\caption{
-Sub-keywords specific to \textrm{prop} in table~\ref{tab:kw-sf}.
-\label{tab:kw-sf-par-prop}
-}
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-\hline
-\verb+fitmet+      & Fitting method. Possible options: \verb+LM+ (Levenberg-Marquardt), and \\
-                   & \verb+CG+ (conjugate gradients). The first one is more reliable. \\
-\verb+lattol+      & Fractional tolerance for $x$ when locating the minimum in the $(x^3 V, E_{coh})$ curve. \\
-                   & Iterations stop when either $|a-x|/z <$ \verb+lattol+ or $|c-x|/z <$ \verb+lattol+, \\
-                   & \textbf{and} $|y(x)-y(b)|/z <$ \verb+lattol+, where $\b \in [a, c]$, $[a, c]$ is the \\
-                   & bracketing interval, and $y$ is the smaller one of $a$ or $x$, $c$ or $x$, or $y(x)$ or $y(b)$. \\
-                   & A value of \verb+lattol+ of $\leq 10^{-4}$ is recommended. Else iterations may stop \\
-                   & before the minimum has been located (consider $y(x) = -10.1$ and $y(b) = -10.2$), \\
-                   & which messes up the subsequent calculations to find the bulk modulus, its derivative, \\
-                   & and the elastic constants. \\
-\verb+BM_fmin+     & lower limit (e.g. -0.1) of compression when calculating \\
-                     & bulk modulus $B$ and its pressure derivative $\partial B/\partial P$ \\
-                     & using the Birch-Murnaghan EOS \\
-\verb+BM_fmax+     & upper limit (e.g.  0.1) of compression when calculating \\
-                     & bulk modulus $B$ and its pressure derivative $\partial B/\partial P$ \\
-                     & using the Birch-Murnaghan EOS \\
-\verb+BM_efac+     & The uncertainty in the energy is \verb+BM_efac+ times the energy when \\
-                     & calculating bulk modulus $B$ and its pressure derivative $\partial B/\partial P$ \\
-\verb+C_fmin+      & lower limit (e.g. -0.01) of compression when \\
-                     & calculating elastic constants \\
-\verb+C_fmax+      & upper limit (e.g.  0.01) of compression when \\
-                     & calculating elastic constants \\
-\verb+C_efac+      & The uncertainty in the energy is \verb+C_efac+ times the energy \\
-                     & when calculating elastic constants \\
-\hline
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-
-Notes: If fits fail, try using larger \verb+efac+ values, smaller \verb+lattol+,
-smaller \verb+eps, gamma+, or smaller intervals \verb+fmin, fmax+.
-
-\stars
-
-Sub-keywords specific to \verb+pot+ are listed in table~\ref{tab:kw-sf-par-pot}.
-
-
-
-\begin{table}[!h]
-\caption{
-General sub-keywords specific to \textrm{pot} in table~\ref{tab:kw-sf}.
-\label{tab:kw-sf-par-pot}
-}
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-\hline
-\verb+ismode+       & Setting for handling of illegal steps. \\
-\verb+fitmet+      & Choice of fitting method: \\
-                     & SD=Steepest-Descent, \\
-                     & CG=Conjugate-Gradients, \\
-                     & LM=Levenberg-Marquardt, \\
-                     & DL=Dog-Leg, or \\
-                     & SM=Simplex Method. \\
-\verb+mcmode+      & Use Monte Carlo Simulated Annealing (MC): yes or no. \\
-\verb+Tinit+       & Initial 'temperature' for MC mode, a negative value of $-N$ means that \\
-                   & the temperature is set equal to $T_{init} = N \chi^2_{init}$. Same as $T_1$. \\
-\verb+nsteps+      & Same as $N_s$. See main text. \\
-\verb+t+            & Set $t$ for constrained minimization. A negative value \\
-                    & means that \verb+ismode+ should be used instead. \\
-\hline
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-
-
-
-The Monte Carlo Simulated Annealing (MC) method is implemented as follows.
-
-At start, \verb+niter+$\equiv N = 1$ and $T = T_1$. Also, the counter
-$N_{mcs}$ of MC steps is put to 0.
-At each step $T$ is put to
-
-\begin{equation}
-T = T_1 - (N_{mcs}/N_s) (2/3) T_1.
-\label{eq:MC}
-\end{equation}
-
-If $T \leq 0$ then $T = 0$.
-When $T \leq (1/3) T_1$ then $T_1$ is set to $(2/3)T_1$,
-$N_{mcs} = 0$, $T = T_1$, and Eq.~(\ref{eq:MC}) is applied again.
-
-
-\stars
-
-
-
-Example:
-
-
-\begin{verbatim}
-
-prop:niter_max       = 200
-prop:parlim          = yes
-prop:eps             =  1.0e2
-prop:gamma           = -0.1
-prop:mcmode = no
-prop:Tinit  = -1.0
-prop:Tfinal =  0.0
-prop:nsteps = 1000
-
-prop:lattol   = 1.0e-4
-prop:BM_fmin  = -0.01
-prop:BM_fmax  =  0.01
-prop:BM_efac  =  1.0e-4
-
-prop:C_fmin   = -0.001
-prop:C_fmax   =  0.001
-prop:C_efac   =  1.0e-4
-
-# --------------------------------------------------------------------
-# --------------------------------------------------------------------
-
-potfit:niter_max       = 2000
-potfit:parlim          = yes
-potfit:eps             =  0.1
-potfit:gamma           = -0.1
-
-potfit:ismode = 2
-
-potfit:fitmet = DL
-
-#
-# Monte-Carlo options:
-# ------------------------------------------
-potfit:mcmode = yes
-potfit:Tinit  = -1.0
-potfit:nsteps = 10000
-
-
-
-#
-# Line minimization options:
-# ------------------------------------------
-potfit:ds      = 1.1
-potfit:ds_kill = 1.0e-6
-potfit:NLM     = 100
-potfit:tol     = 1.0e-3
-
-#
-# Levenberg-Marquardt method options:
-# ------------------------------------------
-potfit:cmode = 1
-
-#
-# Dog-Leg method options:
-# ------------------------------------------
-potfit:radius_a      = 0.03
-potfit:radius_a_kill = 1.0e-5
-
-#
-# Simplex method options:
-# ------------------------------------------
-potfit:alpha     = 0.03
-
-#
-# Constrained optimization options:
-# ------------------------------------------
-potfit:t = 1000.0
-
-\end{verbatim}
-
-
 
 
 
@@ -1201,275 +1485,123 @@ potfit:t = 1000.0
 \section{Calculation of physical properties}
 
 
-The following properties can be calculated for any structure:
+Predicted lattice parameter $\widetilde{a}$ is calculated as
 
-\begin{enumerate}
-\item equilibrium volume, $V_0$
-\item cohesive energy, $E_0$
-\item formation energy, $E_F$
-\item bulk modulus, $B_0$
-\item pressure derivative of bulk modulus, $B'(P) = \partial B/\partial P$, $P=0$
-\item elastic constants, $C_{ij}$
-\end{enumerate}
+\begin{equation}
+\widetilde{a} = (\widetilde{L}_1 / L_1) a,
+\end{equation}
 
-The equilibrium lattice parameters $a, b, c$ are obtained by
-seeking for a minimum in the potential energy as a function
-of compression and dilation along the primitive directions.
+where $a$ is the read-in lattice parameter in the compounds file
+(the file listing all the compounds to be used),
+$L_1$ is the initial length of the simulation box in the $\mathbf{v}_1$ direction, and
+$\widetilde{L}_1$ is the relaxed length of the simulation box in the same direction.
 
+$L_i$ are determined from $\mathbf{v}_i$ as $L_i = $\verb+Ndesired+$(i) \times v_i$,
+is the \verb+Ndesired+ option is used. Otherwise $N_i$ is determined from the requirement
+$L_i = N_i v_i \ge 2 max(r_c)$, where $max(r_c)$ is the largest cutoff radius between
+species present in the compound. In this calculations the options \verb+Neven_desired+ and
+\verb+Nodd_desired+ are considered, if given in the compounds file.
 
-For a standard lattice, e.g. FCC, the meaning of lattice parameter $a$ is
-always the same: length of any edge in the cubic conventional unit cell.
-The freedom of specifying overall scaling constant, ''primitive'' vectors, etc,
-presents a challenge of how to relate any $a$ specified by the user to
-the information in the LAT file. Is $a$ the same as the overall scaling
-constant $S$? Is it the length of the first primitive vector, when taking
-$S$ into account? A logical convention/rule is needed.
-
-
-
-
-
-
-
-
-Using the symbols in table~\ref{tab:kw-gf-ff}, the primitive vectors are
+Predicted lattice parameters $\widetilde{b}, \widetilde{c}$ are calculated
+in a similar way.
 
 \begin{eqnarray}
-\a  &=& a \left( (\verb+a1+) \xhat + (\verb+a2+) \yhat + (\verb+a3+) \zhat \right) \equiv a \p_1, \\
-\b  &=& a \left( (\verb+b1+) \xhat + (\verb+b2+) \yhat + (\verb+b3+) \zhat \right) \equiv a \p_2, \\
-\cc &=& a \left( (\verb+c1+) \xhat + (\verb+c2+) \yhat + (\verb+c3+) \zhat \right) \equiv a \p_3.
+\widetilde{b/a} &=& (\widetilde{L}_2/L_2) / (\widetilde{L}_1/L_1 ) \times b/a \\
+\widetilde{c/a} &=& (\widetilde{L}_3/L_3) / (\widetilde{L}_1/L_1 ) \times c/a
 \end{eqnarray}
 
-At start-up, the parameters $b$ and $c$ as well as the ratios $b/a$ and $c/a$ are
-calculated as (with $a = S$):
+Cohesive energy:
 
 \begin{eqnarray}
-b/a &=& |\p_2|  / |\p_1| \\
-c/a &=& |\p_3| / |\p_1| \\
-b   &=& b/a \times a \\
-c   &=& c/a \times a
+\widetilde{E}_{\mathrm{coh}} &=& \widetilde{E}_P/N \\
+\widetilde{\Delta E}_{\mathrm{coh}} 
+&=& \widetilde{E}_{\mathrm{coh}} - \widetilde{E}_{\mathrm{coh}}^{\mathrm{ref}}
 \end{eqnarray}
 
-and compared to the specified values in the geometry file. If there are
-differences the program quits.
+Here $N$ is the number of atoms in the compound, and
+$\widetilde{E}_{\mathrm{coh}}^{\mathrm{ref}}$ is the cohesive energy of the reference
+compound, if used.
 
 
-\stars
-
-
-The predicted equilibrium volume $V'_0$ is calculated with the method of Golden Search,
-by looking for a minimum in the energy when the positions are varied in all directions
-simultaneously. This procedure starts with a deformation in the interval $f \in [0.90, 1.10]$
-of all primitive and basis vectors.
-The interval for $f$ is expanded upwards and downwards as necessary.
-The largest upper limit is $f = 10$. If no minimum is found,
-or the minimum coincides with $f = 10$, then ghe new values for
-$V_0, E_0, a, b, c$ are put to $10^{10}$, and
-$B = B'(P) = C_{ij} = 0.0$, and the program returns from the function
-that calculates the physical properties of the current geometry.
-
-If the calculation is successful, then we obtain $f \neq 1$ in general, and
+Mixing energy:
 
 \begin{eqnarray}
-V'_0 &=& f^3 V_0 \\
-a'  &=& f a \\
-b'   &=& b/a \times a' \\
-c'   &=& c/a \times a'
+\widetilde{E}_{\mathrm{mix}} &=& \widetilde{E}_f/N \\
+\widetilde{E}_f &=& \widetilde{E}_p - \sum_s N(s) E_{\mathrm{coh}}(s)
 \end{eqnarray}
 
-In the subsequent calculations, these values are copied into the
-unprimed local variables $V_0, a, b, c$.
+Here $N(s)$ is the number of atoms of species $s$ in the compound, and
+$E_{\mathrm{coh}}(s)$ is the cohesive energy of the ground state of species $s$.
+Parametrization for species $s$ must be given.
+For instance, if $s$ is C, then ground state might be GRA (graphite).
 
 
-\stars
 
-Next, the individual lattice parameters $a',b',c'$ are determined, again
-by the method of Golden Search.
-In the case of $a'$ the positions are varied in the $\p_1$ direction.
-This procedure starts with a deformation in the interval $f_1 \in [0.90, 1.10]$.
-When done, we have $f_1 \neq 1$ in general, and
-
-\begin{eqnarray}
-a' &=& f_1 \times a
-\end{eqnarray}
-
-The predicted lattice parameter $b'$ is given by varying the positions in the
-$\p_2$ direction. The minimum is $f_2$.
-
-\begin{eqnarray}
-{ b' \over a'} &=& |\b'| / |\a'| = {f_2 a p_2 \over f_1 a p_1} = {f_2 \over f_1} {p_2 \over p_1} \\
-  &=& {f_2 \over f_1} {b \over a} \\
-  &=& {f_2 b \over a'}
-\end{eqnarray}
-
-so that
-
-\begin{eqnarray}
-b' &=& f_2 b
-\end{eqnarray}
-
-Similarly for $c$.
-
-
-\stars
-
-
-The initial volume of the lattice is
-
-\begin{eqnarray}
-V_0 &=& a^3 * \mathrm{DET}(\p_1 \cdot (\p_2 \times \p_3))
-\end{eqnarray}
-
-The predicted volume is
-
-\begin{eqnarray}
-V'_0 &=& (a')^3 * \mathrm{DET}(\p_1 \cdot (\p_2 \times \p_3))
-\end{eqnarray}
-
-indicating that the primitive and basis vectors are to be scaled with
-$f_1 = a' / a$, and not $f_1$, $f_2$, and $f_3$ !
-
-
-\stars
-
-The deformation of a position $\R$ by the amount $1+f$, now $|f| \ll 1$,
-in the direction $\p$ can be determined as follows.
-
-The projection of $\R = (x,y,z)$ on $\p=(p_1, p_2, p_3)$ is
-
-\begin{eqnarray}
-\R_p &=& {\R \cdot \p \over p^2} \p \\
-  &=& {xp_1 + yp_2 + zp_3 \over p^2} (p_1, p_2, p_3)
-\end{eqnarray}
-
-Multiply by $f$ and add the subsequent terms to $\R$:
-
-\begin{eqnarray}
-\R'_p & \equiv & \R + \R_p = \R +  f {xp_1 + yp_2 + zp_3 \over p^2} (p_1, p_2, p_3)
-\end{eqnarray}
-
-
-Example 1: Let $\p = (1,0,0)$, \ie the deformation is in the $x$ direction:
-
-\begin{eqnarray}
-\R'_p =  (x,y,z) + f x  (1, 0, 0) = ((1+f)x, y, z)
-\end{eqnarray}
-
-Example 2: Let $\p = (1,0,1)$:
-
-\begin{eqnarray}
-\R'_p &=&  (x,y,z) + f {x + z \over 4} (1, 0, 1) \\
-  &=& (x + f(x+z)/4, y, z + f(x+z)/4) \\
-  &=& ((1+f/4)x + fz/4, y, (1+f/4)z + fx/4)
-\end{eqnarray}
-
-
-\stars
-
-
-After the lattice parameters have been determined, the bulk modulus $B$ is sought.
-The lattice is deformed around the equilibrium volume, and a second degree
-polynomial is fitted to the energies. The bulk modulus is obtained by
-scaling the prefactor of the second degree term. In this fitting the
-equilibrium energy and volume are also free parameters, and are updated
-after the fitting. The lattice parameters $a', b', c'$ are also updated,
-as are the primitive and basis vectors:
-
-\begin{eqnarray}
-f &=& \left( {V'_0 \over V_0} \right)^{1/3} \\
-a'' &=& q a' \\
-b'' &=& q b' \\
-c'' &=& q c'
-\end{eqnarray}
-
-To simplify notation, $a'' \Rightarrow a'$, \etc.
-
-\stars
-
-In the next step $B'(P)$, $P=0$ is obtained in a similar fashion, but now the
-energies are fitted to the Birch-Murnaghan equation of state,
+Bulk modulus $B$ and its pressure derivative $B'(P)$ is calculated from
+$(V(\varepsilon), E_p(\varepsilon))$ data using the Birch-Murnaghan equation of state
 
 \begin{eqnarray}
 E &=& E_0 + {9 \over 16} V_0 B_0 \left( \left({V_0 \over V}\right)^{2/3} - 1 \right)^2 \nonumber \\
   & & \times 
 \left[
-\left( \left({V_0 \over V}\right)^{2/3} - 1 \right)) B'(0)
+\left( \left({V_0 \over V}\right)^{2/3} - 1 \right)) B'_0
 + 6 - 4 \left({V_0 \over V}\right)^{2/3}
 \right]
 \end{eqnarray}
 
-The new values $E_0, V_0, B_0$ are used instead of the old ones.
-The lattice parameters $a', b', c'$ are also updated, as are the
-primitive and basis vectors.
+The volume is $V(\varepsilon) = (1 + \varepsilon) V_0
+= (1+f)^3 L_1(0) L_2(0) L_3(0)$, with $f \in [-f_{\mathrm{max}}, f_{\mathrm{max}}]$, usually
+$f_{\mathrm{max}} \sim 0.01$.
+
+Each box --- for a given value of $f$ --- may be allowed to
+relax (\verb+prop:BM_rel_sys = yes+),
+or not (\verb+prop:BM_rel_sys = no+).
 
 
-\stars
+Elastic constants $C_{ij}$ are calculated using volume-non-conserving strains
+$\varepsilon_{ij}$. Given a strain matrix
 
+\begin{equation}
+[\varepsilon_{ij}] =
+\left[
+\begin{array}{ccc}
+\varepsilon_{11} & \varepsilon_{12} & \varepsilon_{13} \\
+\varepsilon_{21} & \varepsilon_{22} & \varepsilon_{23} \\
+\varepsilon_{31} & \varepsilon_{32} & \varepsilon_{33}
+\end{array}
+\right]
+\end{equation}
 
-In the next step the elastic constants are fitted to second degree
-polynomials. The equilibrium volume is used as a fitting parameter,
-but its new value is \textbf{not} used as above.
+the transformation matrix is
 
+\begin{equation}
+F = 1_3 + [\varepsilon_{ij}] =
+\left[
+\begin{array}{ccc}
+1+\varepsilon_{11} & \varepsilon_{12} & \varepsilon_{13} \\
+\varepsilon_{21} & 1+\varepsilon_{22} & \varepsilon_{23} \\
+\varepsilon_{31} & \varepsilon_{32} & 1+\varepsilon_{33}
+\end{array}
+\right]
+\end{equation}
 
-\stars
+Any $\varepsilon_{ij}$ can take only three values: $-\varepsilon, 0, \varepsilon$.
+The exact structure of $F$ depends on which elastic constants are being
+calculated.
 
+The atomic positions are in essence transformed as
 
-In the last step the force $\F_v$ on every atom $v$ in the basis consisting of
-$N$ atoms is calculated, and the quantity $F$ is determined as
+\begin{equation}
+r' = F r,
+\end{equation}
 
-\begin{eqnarray}
-F &=& {1 \over N} \sqrt{ \sum_{i=1}^N \left( F^2_{v,x} + F^2_{v,y} + F^2_{v,z} \right) }
-\end{eqnarray}
+where $r$ is a column vector containing the Cartesian coordinates $x,y,z$.
+From the calculations the data points $(\varepsilon, E_p(\varepsilon))$ are obtained.
+A second degree polynomial in strains is fitted to this data to obtain the elastic
+constants.
 
-
-
-
-
-\stars
-
-
-
-
-
-
-
-
-
-$B$ and $\partial B / \partial P$ are found by fitting
-the total energy per atom to the atomic volume in an interval
-$[\verb+prop:BM_fmin+, \verb+prop:BM_fmax+]$
-centered on the new equilibrium point.
-
-$C_{ij}$ are found by fitting
-the total energy per atom to the atomic volume in an interval
-$[\verb+prop:C_fmin+, \verb+prop:C_fmax+]$
-centered on the new equilibrium point.
-
-
-
-\stars
-
-
-
-The formation energy \textbf{per atom in cell} of a compound $A_m B_n$
-is calculated as
-
-\begin{eqnarray}
-E_F'  &=&  { E_{tot}(A_M B_N) - \left( M E_{coh}(A) + N E_{coh}(B) \right) \over M + N }.
-\end{eqnarray}
-
-here $M = m N_m$ and $N = n N_m$ are the total number of atoms of type $A$ and $B$,
-respectively. $N_m$ is the number of $A_m B_n$ molecules in the cell.
-
-Usually the formation energy is just
-
-\begin{eqnarray}
-E_F  &=&  E_{tot}(A_m B_n) - \left( m E_{coh}(A) + n E_{coh}(B) \right),
-\nonumber
-\end{eqnarray}
-
-but the former method is simpler to use, since one does not need to keep track of
-how many molecules are in a the cell.
+Each box --- for a given value of $\varepsilon$ --- may be allowed to
+relax (\verb+prop:C_rel_sys = yes+), or not (\verb+prop:C_rel_sys = no+).
 
 
 
@@ -1479,67 +1611,186 @@ how many molecules are in a the cell.
 
 \section{Data fitting}
 
-We have given a function $f$ which depends on the
-quantities $x$ and $a_i, i=1, \ldots, M$. In addition,
-a set of $N$ different values of $x$ are given, each with
-a measured function value $y_k$, with uncertainty $\sigma_k$.
-The corresponding ''true'' function values are
-$f(\{a_i\}, x_k) \equiv f_k$.
-
-The dimensionless \textbf{cost function} is defined as
-
-\begin{equation}
-\chi^2(a)
-= {1 \over 2} \sum_{k=1}^N {1 \over \sigma_k^2} (y_k - f_k)^2
-\equiv 
-{1 \over 2} \sum_{k=1}^N g_k^2
-=
-{1 \over 2} g^T g,
-\end{equation}
-
-where
-
-\begin{equation}
-g_k \equiv {1 \over \sigma_k} (y_k - f_k), \qquad k = 1, \ldots, N,
-\end{equation}
-
-can be called the scaled \textbf{deviation} of measured value from
-predicted value. In any data fitting we want to minimize the cost
-function $\chi^2$ (or any intelligent version of it).
-
-The \textbf{gradient of the cost function} is
+Given compounds and their desired properties, as well as technical specifications
+on how to compute them, the program tries to obtain a best fit of potential
+parameters. The best fit is achieved by minimizing the merit/cost function
 
 \begin{eqnarray}
-{\partial \chi^2 \over \partial a_i}
-&=& - \sum_{k=1}^N {1 \over \sigma_k^2} (y_k - f_k) {\partial f_k \over \partial a_i} \\
-&=& - \sum_{k=1}^N {1 \over \sigma_k} g_k {\partial f_k \over \partial a_i} 
-= \sum_{k=1}^N g_k {\partial g_k \over \partial a_i} \\
-&\equiv & \sum_{k=1}^N g_k J_{ki}
-= \sum_{k=1}^N (J^T)_{ik} g_k \\
-&=& (J^T g)_i \\
-&\equiv & G_i = - H_i \\
+\chi^2 &=& {1 \over 2} \sum_i f_i^2 \\
+f_i &=& t_i {\widetilde{Y}_i - Y_i \over s_i}
 \end{eqnarray}
 
-where
+Here $\widetilde{Y}_i$ is the predicted value of property $Y_i$, e.g.
+the bulk modulus of the second compound (if two or more compounds are used
+and this compound has a bulk modulus specified as a fitting target).
+The $t_i$ is either a weight, $t_i = w_i$, if a weight is used for property $Y_i$,
+and $t_i = 1/u_i$ if an uncertainty is used.
 
-\begin{eqnarray}
-J_{ki} & \equiv & {\partial g_k \over \partial a_i},
-\qquad k = 1, \ldots, N, i = 1, \ldots, M,
-\end{eqnarray}
+Note: The weights $w_i$ are normalized: $\sum_i w_i = 1$,
+so that properties using uncertainties have zero weight in this normalization sum.
 
-is the Jacobian, whose elements $J_{ki}$ have the units of 1/$[a_i]$.
-The antigradient is $H_i$.
-The components of the (anti)gradient have the same units
-as the Jacobian.
+The $s_i = 1$ if scales are not used (\verb+use_data_scales = false+ in the
+specifications file), and $s_i = Y_i$ if scales are used.
+By using scaled properties all are on an equal footing.
+
+Assume the predicted value is $\widetilde{Y}_i = Y_i + \delta Y_i$, then
+$(\widetilde{Y}_i - Y_i)/s_i = \delta Y_i / Y_i$ if scales are used, and
+$(\widetilde{Y}_i - Y_i)/s_i = \delta Y_i$ otherwise.
+Suppose the relative change $\delta Y_i/Y_i = 50\%$ for two properties,
+but the properties themselves have values of $1$ and $10^{-7}$.
+The former choice (using scales) gives balanced contributions to the
+merit function, but the latter does not. In worst case scenario
+properties with small values will have a small impact on the fitting
+process.
+
+\stars
+
+Consider now the use of any of the deprecated options, e.g. \verb+Fmax+.
+This option may be used to try to guide the fitting process to accept
+parametrizations giving small forces of relaxed compounds.
+Consider now e.g. \verb+Fmax+$ = 10^{-10}$.
+Let the predicted value be e.g. $10^{-7}$. The term $f_i$ (with $t_i=1$
+and using scaling, $s_i=Y_i$) is
+
+$${10^{-7} - 10^{-10} \over 10^{-10}} \sim 10^3,$$
+
+i.e. probably much larger than for any of the conventional properties.
+In a gradient-based search the moves in parameter space will tend to focus
+on minimizing the forces, paying less attention to other properties,
+e.g. differences in cohesive energies.
+
+Lesson: Do not use \verb+Fmax+, \verb+Pmax+ or \verb+displmax+. Rely on the
+MD relaxation instead, to provide zero forces and zero pressure.
+In fact, the MD run can be made to scale the pressure to any desired
+value (\verb+mds_bpc_P0+), so it's better to use that one.
 
 
 \stars
 
 
-All parameters are given default lower and upper limits of $-10^{10}$
-and $10^{10}$, respectively. However, by default there is no actual
-restriction on the parameter values to be inside these limits.
-Limits are enforced only when limits are explicitly set.
+
+The \textbf{gradient} of the merit function is
+
+\begin{eqnarray}
+g_j &=& {\partial \chi^2 \over \partial x_j}
+= \sum_i f_i {\partial f_i \over x_j}
+\equiv \sum_i f_i J_{ij} = \sum_i J^T_{ji} f_i = -h_j
+\end{eqnarray}
+
+where $h_j$ are components of the \textbf{antigradient}, and
+
+\begin{eqnarray}
+J_{ij} &=& {\partial f_i \over \partial x_j}
+= {t_i \over s_i} {\partial \widetilde{Y}_i \over \partial x_j}
+\end{eqnarray}
+
+
+
+
+
+\section{Convergence conditions}
+
+
+Convergence criteria in the technical specifications file are of the form
+(\verb+prop+, for fitting compound properties)
+
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+prop:functolabs =  1e-5   convergence when absolute merit function value is less
+                          than this
+prop:functolrel = -1e-5   ... change in merit function value ...
+prop:gradtolabs =  1e-5   ... absolute gradient value ...
+prop:steptolabs =  1e-5   ... absolute step size ...
+prop:steptolrel = -1e-5   ... change in step size ...
+\end{Verbatim}
+
+\begin{itemize}
+\item
+\verb+functolabs+ refers to $\mathrm{min}(|\chi^2|)$
+
+\item
+\verb+functolrel+ refers to $\mathrm{min}(|\Delta \chi^2|/|\chi^2|)$, where
+$\Delta$ signifies the change (in the merit function in this case) during the
+last step.
+
+\item
+\verb+gradtolabs+ refers to $\mathrm{min}(|\nabla_x \chi^2|)$, where $\nabla_x \chi^2$
+is the gradient of the merit function with respect to the parameters.
+
+\item
+\verb+steptolabs+ refers to $\mathrm{min}(|\mathbf{h}|)$, where $\mathbf{h}$ is
+the last step taken in parameter space.
+
+\item
+\verb+steptolrel+ refers to $\mathrm{min}(|\Delta \mathbf{h}|/|\mathbf{h}|)$
+\end{itemize}
+
+
+
+
+
+
+
+
+\section{Parameters}
+
+The parameters are $x_1, x_2, \ldots, x_M$.
+
+Parameter limits $x_i^{\mathrm{min}} = x_i^{\mathrm{max}} = 0$
+means that the parameter is
+\textbf{unconstrained} and can vary freely in the interval $(-\infty, \infty)$.
+
+The limits $x_i^{\mathrm{min}} = x_i^{\mathrm{max}} \neq 0$
+means that the parameter is \textbf{fixed}.
+The default for any parameter is $x_i^{\mathrm{min}} = x_i^{\mathrm{max}} = 1$.
+
+The limits $x_i^{\mathrm{min}} < x_i^{\mathrm{max}}$
+means that the parameter is \textbf{constrained} in the given interval.
+
+
+
+\section{Constraint method}
+
+In order to forcibly constrain parameter values a barrier penalty function can be used.
+The option \verb+barrier_scale+$=\mu$ with a value $>0$ switches on the penalty
+function $U$:
+
+\begin{eqnarray}
+U &=& - \sum_i \mu \ln \left\{
+{1 \over s_i} \left(
+\left[ {1 \over 2}(x_i^{\mathrm{min}}-x_i^{\mathrm{max}}) \right]^2
+- \left[ x_i - {1\over 2}(x_i^{\mathrm{min}} + x_i^{\mathrm{max}}) \right]^2
+\right)
+\right\}
+< 0
+\end{eqnarray}
+
+The total cost function is then
+
+\begin{eqnarray}
+\chi^2_{\mathrm{tot}} &=& \chi^2 + U
+\end{eqnarray}
+
+A complication with this scheme is that with small weights $w_i$ one may
+get $\chi^2_{\mathrm{tot}} = \chi^2 + U < 0$. This may interfere with the convergence
+criteria $\mathrm{min}(|\chi^2|)$, since $\chi^2_{\mathrm{tot}} < 0 < \mathrm{min}(|\chi^2|)$
+as soon as $|U|$ starts to dominate over $|\chi^2|$.
+
+With $\mu=0$ the program still tries to stop parameter values from going outside their
+limits, but a penalty function is not used.
+
+
+
+
+
+
+
+\bibliography{local}
+
+
+\end{document}
+
+
+
 
 
 

@@ -250,10 +250,12 @@ CompoundListFit::CompoundListFit(Elements & el,
 	compounds[ilat].prop_use.frc = false;
     }
     else if (args[0]=="frc_use_u"){
+      compounds[ilat].prop_use.frc = true;
       compounds[ilat].use_u.frc = true;
       compounds[ilat].use_w.frc = false;
     }
     else if (args[0]=="frc_use_w"){
+      compounds[ilat].prop_use.frc = true;
       compounds[ilat].use_u.frc = false;
       compounds[ilat].use_w.frc = true;
     }

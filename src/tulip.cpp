@@ -90,7 +90,7 @@ int main(int argc, char *argv[]){
   int i,j,k,p,iref, ivec;
   bool run_refonly, use_relonly, ini_fit_data_mode, debug_forces, debug_pressure, report_mds_steps;
   Vector<bool> debug_fit_prop(5, false),debug_fit_pot(5,false);
-  std::string arg, potfile, geomfile, specsfile;
+  std::string arg, potfile(""), geomfile(""), specsfile("");
   bool potfileOK, geomfileOK, specsfileOK;
   std::istringstream sstream;
   std::string tulip_info, dformat("%15.10f");
@@ -109,57 +109,7 @@ int main(int argc, char *argv[]){
 
 
 
-  tulip_info = "TULIP version " + tostring(VERSION) + " (c) Krister Henriksson 2006-2014";
-
-  if (argc < 6){
-    std::cout << tulip_info << std::endl;
-    std::cout << "Purpose: Fit data to an interatomic potential." << std::endl;
-    std::cout << "Usage:" << std::endl;
-    std::cout << "     " << std::string(argv[0]) << " arguments [options]" << std::endl;
-    std::cout << "Arguments:" << std::endl;
-    std::cout << "     -pf file           Path to file containing potential information." << std::endl;
-    std::cout << "     -gf file           Path to file containing geometry information." << std::endl;
-    std::cout << "     -sf file           Path to file containing technical specifications about the calculations." << std::endl;
-    std::cout << "" << std::endl;
-
-    std::cout << "Options:" << std::endl;
-
-    std::cout << "     -ro                Only calculate properties of reference compounds, then exit. Default: not used." << std::endl;
-    std::cout << "     -nof               Only calculate properties of reference and read-in compounds, then exit. Default: not used." << std::endl;
-    std::cout << "     -xyz               Use traditional XYZ format when writing XYZ files. Default: not used." << std::endl;
-    std::cout << "                        The extended XYZ format (http://jrkermode.co.uk/quippy/io.html#extendedxyz)" << std::endl;
-    std::cout << "                        is used by default." << std::endl;
-    std::cout << "" << std::endl;
-
-    std::cout << "     -dfitpropn         Show information about fitting of properties. Here 'n' must be" << std::endl;
-    std::cout << "                        an integer. Supported: 0-4. 0: debug fitting method. 1-4: debug deeper." << std::endl;
-    std::cout << "                        lying methods used by the fitting method. Default: not used" << std::endl;
-    std::cout << "                        NOTE: 0 also shows some info about the initial Chi^2 object." << std::endl;
-    std::cout << "     -dfitpotn          Show information about fitting of potentials. Here 'n' have a similar" << std::endl;
-    std::cout << "                        role as for fitting of the properties." << std::endl;
-    std::cout << "                        NOTE 1: 0 also shows some info about the initial Chi^2 object." << std::endl;
-    std::cout << "                        NOTE 2: 'fitpot0' is always set to true, others are false by default." << std::endl;
-    std::cout << "" << std::endl;
-
-    std::cout << "     -dforces           Debug the forces. Default: not used" << std::endl;
-    std::cout << "     -dpressure         Debug the pressure. Default: not used" << std::endl;
-    std::cout << "     -dmdsprop          Debug MDS runs of the structures. Default: not used" << std::endl;
-
-    std::cout << "     -dall              Activate all debugging options (top level only). Default: not used" << std::endl;
-
-    std::cout << "" << std::endl;
-    std::cout << "     -mif               Suggest an initial fit and exit. Default: not used" << std::endl;
-    std::cout << "" << std::endl;
-    
-    std::cout << "" << std::endl;
-    std::cout << "     -omp               Request maximal number of threads ("
-	 << omp_info.nt_max() << ") for any OpenMP parts." << std::endl;
-    std::cout << "     -omp_nt num        Request 'num' number of threads for any OpenMP parts. Default: "
-	 << omp_info.nt_use() << std::endl;
-    std::cout << "" << std::endl;
-
-    return 0;
-  }
+  tulip_info = "TULIP version " + tostring(VERSION) + " (c) Krister Henriksson 2013-";
 
 
   potfileOK = geomfileOK = specsfileOK = false;
@@ -259,10 +209,65 @@ int main(int argc, char *argv[]){
 
 
 
+  if (potfileOK == false && geomfileOK == false){
+
+    std::cout << tulip_info << std::endl;
+    std::cout << "Purpose: Fit data to an interatomic potential." << std::endl;
+    std::cout << "Usage:" << std::endl;
+    std::cout << "     " << std::string(argv[0]) << " arguments [options]" << std::endl;
+    std::cout << "Arguments:" << std::endl;
+    std::cout << "     -pf file           Path to file containing potential information." << std::endl;
+    std::cout << "     -gf file           Path to file containing geometry information." << std::endl;
+    std::cout << "" << std::endl;
+
+    std::cout << "Options:" << std::endl;
+    std::cout << "     -sf file           Path to file containing technical specifications about the calculations." << std::endl;
+
+    std::cout << "     -ro                Only calculate properties of reference compounds, then exit. Default: not used." << std::endl;
+    std::cout << "     -nof               Only calculate properties of reference and read-in compounds, then exit. Default: not used." << std::endl;
+    std::cout << "     -xyz               Use traditional XYZ format when writing XYZ files. Default: not used." << std::endl;
+    std::cout << "                        The extended XYZ format (http://jrkermode.co.uk/quippy/io.html#extendedxyz)" << std::endl;
+    std::cout << "                        is used by default." << std::endl;
+    std::cout << "" << std::endl;
+
+    std::cout << "     -dfitpropn         Show information about fitting of properties. Here 'n' must be" << std::endl;
+    std::cout << "                        an integer. Supported: 0-4. 0: debug fitting method. 1-4: debug deeper." << std::endl;
+    std::cout << "                        lying methods used by the fitting method. Default: not used" << std::endl;
+    std::cout << "                        NOTE: 0 also shows some info about the initial Chi^2 object." << std::endl;
+    std::cout << "     -dfitpotn          Show information about fitting of potentials. Here 'n' have a similar" << std::endl;
+    std::cout << "                        role as for fitting of the properties." << std::endl;
+    std::cout << "                        NOTE 1: 0 also shows some info about the initial Chi^2 object." << std::endl;
+    std::cout << "                        NOTE 2: 'fitpot0' is always set to true, others are false by default." << std::endl;
+    std::cout << "" << std::endl;
+
+    std::cout << "     -dforces           Debug the forces. Default: not used" << std::endl;
+    std::cout << "     -dpressure         Debug the pressure. Default: not used" << std::endl;
+    std::cout << "     -dmdsprop          Debug MDS runs of the structures. Default: not used" << std::endl;
+
+    std::cout << "     -dall              Activate all debugging options (top level only). Default: not used" << std::endl;
+
+    std::cout << "" << std::endl;
+    std::cout << "     -mif               Suggest an initial fit and exit. Default: not used" << std::endl;
+    std::cout << "" << std::endl;
+    
+    std::cout << "" << std::endl;
+    std::cout << "     -omp               Request maximal number of threads ("
+	 << omp_info.nt_max() << ") for any OpenMP parts." << std::endl;
+    std::cout << "     -omp_nt num        Request 'num' number of threads for any OpenMP parts. Default: "
+	 << omp_info.nt_use() << std::endl;
+    std::cout << "" << std::endl;
+
+    return 0;
+  }
+
+
+
+
+
   
   if (! potfileOK) aborterror("Error: Potential information file not specified. Exiting.");
   if (! geomfileOK) aborterror("Error: Geometry information file not specified. Exiting.");
-  if (! specsfileOK) aborterror("Error: Specifications file not specified. Exiting.");
+  //  if (! specsfileOK) aborterror("Error: Specifications file not specified. Exiting.");
 
   std::cout << "Potential info file     : " << potfile << std::endl;
   std::cout << "Geometry info file      : " << geomfile << std::endl;
@@ -1117,9 +1122,9 @@ int main(int argc, char *argv[]){
       }
     }
 
-    cmpref[0].prop_use.Fmax = true;
-    cmpref[0].prop_use.Pmax = true;
-    cmpref[0].prop_use.displmax = true;
+    cmpref[0].prop_use.Fmax = false;
+    cmpref[0].prop_use.Pmax = false;
+    cmpref[0].prop_use.displmax = false;
     cmpref[0].prop_use.frc = false;
 
     if (!cmpref[0].pbc[0] || !cmpref[0].pbc[1] || !cmpref[0].pbc[2]){
