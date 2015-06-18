@@ -45,175 +45,14 @@ using boost::format;
 
 
 
-
-
-CompoundPropertiesUse::CompoundPropertiesUse()
-  : C(6,6,false)
-{
-  a = false;
-  b = false;
-  c = false;
-  bpa = false;
-  cpa = false;
-  r0 = false;
-  angle_ab = false;
-  angle_ac = false;
-  angle_bc = false;
-  Vatom = false;
-  Ecoh = false;
-  Ecoh_delta = false;
-  Emix = false;
-  B = false;
-  Bp = false;
-  Fmax = false;
-  Pmax = false;
-  displmax = false;
-  frc = false;
+/*
+CompoundConstraints::CompoundConstraints() {
+  iat=-1;
+  is_fixed = false;
+  free_dir.resize(0);
+  free_plane.resize(0);
 }
-
-
-void CompoundPropertiesUse::check_and_fix(){
-  if (bpa){
-    if (a && b) b=false;
-  }
-  if (cpa){
-    if (a && c) c=false;
-  }
-  if (Vatom){
-    if (a && (b || bpa) && (c || cpa)) Vatom=false;
-  }
-  if (r0)
-    a=b=c=bpa=cpa=Vatom=angle_ab=angle_ac=angle_bc=0;
-}
-
-
-
-
-
-
-
-
-
-CompoundProperties::CompoundProperties()
-  : C(6,6,0)
-{
-  a = -1;
-  b = -1;
-  c = -1;
-  bpa = -1;
-  cpa = -1;
-  r0 = -1;
-  angle_ab = 0.5*PI;
-  angle_ac = 0.5*PI;
-  angle_bc = 0.5*PI;
-  Vatom = 0;
-  Ecoh = 0;
-  Ecoh_delta = 0;
-  Emix = 0;
-  B = 0;
-  Bp = 0;
-  Fmax = 0;
-  Pmax = 0;
-  displmax = 0;
-}
-
-CompoundPropertiesUseUncertainties::CompoundPropertiesUseUncertainties()
-  : C(6,6,false)
-{
-  a = false;
-  b = false;
-  c = false;
-  bpa = false;
-  cpa = false;
-  r0 = false;
-  angle_ab = false;
-  angle_ac = false;
-  angle_bc = false;
-  Vatom = false;
-  Ecoh = false;
-  Ecoh_delta = false;
-  Emix = false;
-  B = false;
-  Bp = false;
-  Fmax = false;
-  Pmax = false;
-  displmax = false;
-  frc = false;
-}
-
-CompoundPropertiesUseWeights::CompoundPropertiesUseWeights()
-  : C(6,6,true)
-{
-  a = true;
-  b = true;
-  c = true;
-  bpa = true;
-  cpa = true;
-  r0 = true;
-  angle_ab = true;
-  angle_ac = true;
-  angle_bc = true;
-  Vatom = true;
-  Ecoh = true;
-  Ecoh_delta = false;
-  Emix = true;
-  B = true;
-  Bp = true;
-  Fmax = true;
-  Pmax = true;
-  displmax = true;
-  frc = true;
-}
-
-CompoundPropertiesUncertainties::CompoundPropertiesUncertainties()
-  : C(6,6,0.1)
-{
-  a = 0.1;
-  b = 0.1;
-  c = 0.1;
-  bpa = 0.1;
-  cpa = 0.1;
-  r0 = 0.1;
-  angle_ab = 0.1;
-  angle_ac = 0.1;
-  angle_bc = 0.1;
-  Vatom = 0.1;
-  Ecoh = 0.1;
-  Ecoh_delta = 0.1;
-  Emix = 0.1;
-  B = 0.1;
-  Bp = 0.1;
-  Fmax = 0.1;
-  Pmax = 0.1;
-  displmax = 0.1;
-}
-
-CompoundPropertiesWeights::CompoundPropertiesWeights()
-  : C(6,6,1)
-{
-  a = 1;
-  b = 1;
-  c = 1;
-  bpa = 1;
-  cpa = 1;
-  r0 = 1;
-  angle_ab = 1;
-  angle_ac = 1;
-  angle_bc = 1;
-  Vatom = 1;
-  Ecoh = 1;
-  Ecoh_delta = 1;
-  Emix = 1;
-  B = 1;
-  Bp = 1;
-  Fmax = 1;
-  Pmax = 1;
-  displmax = 1;
-}
-
-
-
-
+*/
 
 
 
@@ -230,7 +69,10 @@ CompoundStructure::CompoundStructure()
   u1_vec(0), u2_vec(0), u3_vec(0),
   basis_types(1, 0),
   basis_elems(1, "none"),
-  basis_vecs(1, Vector3<double>(0.0))
+  basis_vecs(1, Vector3<double>(0.0)),
+  basis_is_fixed(0),
+  basis_freedir(0),
+  basis_freeplane(0)
 {
 
   filename     = "none";
@@ -259,7 +101,6 @@ CompoundStructure::CompoundStructure()
 
   nbasis = basis_elems.size();
 
-
   Ndesired[0]=-1;
   Ndesired[1]=-1;
   Ndesired[2]=-1;
@@ -271,8 +112,6 @@ CompoundStructure::CompoundStructure()
   Nodd_desired[2]=false;
 
   Ecoh_delta_refcomp = false;
-
-
 
   // Crystal is:
   //
@@ -653,11 +492,15 @@ void CompoundStructure::create_from_model(Elements & el,
   }
 
 
-
   for (i=0; i<nbasis; ++i){
     basis_types[ el.name2idx( basis_elems[i] ) ];
   }
 
+
+  basis_is_fixed.resize(nbasis);
+  basis_freedir.resize(nbasis);
+  basis_freeplane.resize(nbasis);
+  for (int ic=0; ic<nbasis; ++ic) basis_is_fixed[ic]=false;
 
 
   finalize(lpa, lpb, lpc);
@@ -774,10 +617,19 @@ void CompoundStructure::read_structure(Elements & el){
       nbasis = tl;
 
       /* Allocate space for quantities depending on the number of basis vectors: */
-      basis_elems.resize(tl);
-      basis_vecs.resize(tl);
-      for (i=0; i<nbasis; ++i)
-	basis_vecs[i] = Vector3<double>(0);
+      basis_elems.resize(nbasis);
+      basis_vecs.resize(nbasis);
+      basis_is_fixed.resize(nbasis);
+      basis_freedir.resize(nbasis);
+      basis_freeplane.resize(nbasis);
+
+      for (int il=0; il<nbasis; ++il){
+	basis_vecs[il]     = Vector3<double>(0);
+	basis_is_fixed[il] = false;
+	basis_freedir[il].resize(0);
+	basis_freeplane[il].resize(0);
+      }
+
     }
 
     // iline=8
@@ -801,6 +653,95 @@ void CompoundStructure::read_structure(Elements & el){
 
       //cout << i << " " << basis_elems[i] << " " << basis_vecs[i] << endl;
 
+
+      // *********************************************************************************************
+      // CONSTRAINTS !!!
+      std::string opt;
+      int ioa=4;
+      bool has_constr = false, is_fixed = false;
+      Vector<double> freedir(0), freeplane(0);
+
+      while (true){
+	if (ioa>=ns) break;
+
+	strbuf.str(args[ioa]); strbuf >> opt; strbuf.clear();
+	if (opt=="fix"){
+	  has_constr = true; ioa++;
+
+	  is_fixed = true;
+	}
+	else if (opt=="free_dir" || opt=="freedir"){
+	  has_constr = true; ioa++;
+
+	  double dx,dy,dz;
+	  if (ioa>=ns) aborterror("Compound " + name + ": Error: 'free_dir' option for atom " + tostring(i) + " lacks first argument value!" );
+	  strbuf.str(args[ioa++]); strbuf >> dx; strbuf.clear();
+	  if (ioa>=ns) aborterror("Compound " + name + ": Error: 'free_dir' option for atom " + tostring(i) + " lacks second argument value!" );
+	  strbuf.str(args[ioa++]); strbuf >> dy; strbuf.clear();
+	  if (ioa>=ns) aborterror("Compound " + name + ": Error: 'free_dir' option for atom " + tostring(i) + " lacks third argument value!" );
+	  strbuf.str(args[ioa++]); strbuf >> dz; strbuf.clear();
+	  double norm = 1.0/sqrt(dx*dx + dy*dy + dz*dz);
+	  freedir.resize(3);
+	  freedir[0]=dx*norm;
+	  freedir[1]=dy*norm;
+	  freedir[2]=dz*norm;
+	}
+	else if (opt=="free_plane_norm" || opt=="free_plane" || opt=="freeplane"){
+	  has_constr = true; ioa++;
+
+	  double dx,dy,dz;
+	  if (ioa>=ns) aborterror("Compound " + name + ": Error: 'free_plane_norm' option for atom " + tostring(i) + " lacks first argument value!" );
+	  strbuf.str(args[ioa++]); strbuf >> dx; strbuf.clear();
+	  if (ioa>=ns) aborterror("Compound " + name + ": Error: 'free_plane_norm' option for atom " + tostring(i) + " lacks second argument value!" );
+	  strbuf.str(args[ioa++]); strbuf >> dy; strbuf.clear();
+	  if (ioa>=ns) aborterror("Compound " + name + ": Error: 'free_plane_norm' option for atom " + tostring(i) + " lacks third argument value!" );
+	  strbuf.str(args[ioa++]); strbuf >> dz; strbuf.clear();
+	  double norm = 1.0/sqrt(dx*dx + dy*dy + dz*dz);
+	  freeplane.resize(3);
+	  freeplane[0]=dx*norm;
+	  freeplane[1]=dy*norm;
+	  freeplane[2]=dz*norm;
+	}
+	else if (opt=="free_plane_vecs" || opt=="freeplane_vecs" || opt=="freeplanevecs"){
+	  has_constr = true; ioa++;
+
+	  double dx,dy,dz, fx,fy,fz, gx,gy,gz;
+	  if (ioa>=ns) aborterror("Compound " + name + ": Error: 'free_plane_vecs' option for atom " + tostring(i) + " lacks first argument value!" );
+	  strbuf.str(args[ioa++]); strbuf >> dx; strbuf.clear();
+	  if (ioa>=ns) aborterror("Compound " + name + ": Error: 'free_plane_vecs' option for atom " + tostring(i) + " lacks second argument value!" );
+	  strbuf.str(args[ioa++]); strbuf >> dy; strbuf.clear();
+	  if (ioa>=ns) aborterror("Compound " + name + ": Error: 'free_plane_vecs' option for atom " + tostring(i) + " lacks third argument value!" );
+	  strbuf.str(args[ioa++]); strbuf >> dz; strbuf.clear();
+	  if (ioa>=ns) aborterror("Compound " + name + ": Error: 'free_plane_vecs' option for atom " + tostring(i) + " lacks fourth argument value!" );
+	  strbuf.str(args[ioa++]); strbuf >> fx; strbuf.clear();
+	  if (ioa>=ns) aborterror("Compound " + name + ": Error: 'free_plane_vecs' option for atom " + tostring(i) + " lacks fifth argument value!" );
+	  strbuf.str(args[ioa++]); strbuf >> fy; strbuf.clear();
+	  if (ioa>=ns) aborterror("Compound " + name + ": Error: 'free_plane_vecs' option for atom " + tostring(i) + " lacks sixth argument value!" );
+	  strbuf.str(args[ioa++]); strbuf >> fz; strbuf.clear();
+	  gx = dy*fz - dz*fy;
+	  gy = dz*fx - dx*fz;
+	  gz = dx*fy - dy*fx;
+	  double norm = 1.0/sqrt(gx*gx + gy*gy + gz*gz);
+	  freeplane.resize(3);
+	  freeplane[0]=gx*norm;
+	  freeplane[1]=gy*norm;
+	  freeplane[2]=gz*norm;
+	}
+      }
+
+      if (is_fixed==true) basis_is_fixed[i] = true;
+      if (freedir.size()==3) basis_freedir[i] = freedir;
+      if (freeplane.size()==3) basis_freeplane[i] = freeplane;
+
+      if (freedir.size()>0 && freeplane.size()>0)
+	aborterror("Compound " + name + ": Error: Both a free direction and a free plane has been specified for atom " + tostring(i));
+      if (is_fixed && freedir.size()>0)
+	aborterror("Compound " + name + ": Error: Both a fixed position and a free direction has been specified for atom " + tostring(i));
+      if (is_fixed && freeplane.size()>0)
+	aborterror("Compound " + name + ": Error: Both a fixed position and a free plane has been specified for atom " + tostring(i));
+
+
+      // *********************************************************************************************
 
 
       if (! fp)

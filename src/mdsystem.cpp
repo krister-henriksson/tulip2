@@ -79,6 +79,14 @@ MDSystem::MDSystem()
   pos_int_ini.cap(100);
   pos_int_fin.cap(100);
 
+  atom_is_fixed.cap(100);
+  atom_freedir.cap(100);
+  atom_freeplane.cap(100);
+
+  atom_is_fixed.resize(0);
+  atom_freedir.resize(0);
+  atom_freeplane.resize(0);
+
   vel.resize(0);
   acc.resize(0);
   frc.resize(0);
@@ -244,6 +252,13 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 	  type[iat] = 0;
 	  idx[iat] = atom_counter++;
 	  matter[iat] = cmp.basis_elems[p];
+
+	  atom_is_fixed[iat]  = cmp.basis_is_fixed[p];
+	  //if (cmp.basis_freedir[p].size()==3)   atom_freedir[iat]   = cmp.basis_freedir[p];
+	  //if (cmp.basis_freeplane[p].size()==3) atom_freeplane[iat] = cmp.basis_freeplane[p];
+	  atom_freedir[iat]   = cmp.basis_freedir[p];
+	  atom_freeplane[iat] = cmp.basis_freeplane[p];
+
 	}
       }
     }

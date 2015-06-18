@@ -248,6 +248,8 @@ int main(int argc, char *argv[]){
 
     std::cout << "" << std::endl;
     std::cout << "     -mif               Suggest an initial fit and exit. Default: not used" << std::endl;
+    std::cout << "                        ABOP: Put D0=0.0 for the binary interaction you want to fit. Keep all other" << std::endl;
+    std::cout << "                        parametrizations at their normal values." << std::endl;
     std::cout << "" << std::endl;
     
     std::cout << "" << std::endl;
@@ -681,6 +683,30 @@ int main(int argc, char *argv[]){
     std::cout << "Compound is a reference for changes in Ecoh (Ecoh_delta) ? : "
 	 << complistfit.compounds[i].Ecoh_delta_refcomp << std::endl;
 
+    // constraints
+    int nic=0;
+    for (int ic=0; ic<complistfit.compounds[i].nbasis; ++ic){
+      if (complistfit.compounds[i].basis_is_fixed[ic]) nic++;
+      if (complistfit.compounds[i].basis_freedir[ic].size()==3) nic++;
+      if (complistfit.compounds[i].basis_freeplane[ic].size()==3) nic++;
+    }
+    std::cout << "" << std::endl;
+    std::cout << "Number of constrained atoms: " << nic << std::endl;
+    for (int ic=0; ic<complistfit.compounds[i].nbasis; ++ic){
+      if (complistfit.compounds[i].basis_is_fixed[ic])
+	std::cout << "  Atom " << ic
+		  << " is fixed (0=false, 1=true)   " << complistfit.compounds[i].basis_is_fixed[ic] << std::endl;
+      if (complistfit.compounds[i].basis_freedir[ic].size()==3){
+	std::cout << "  Atom " << ic
+		  << " has a free direction         " << complistfit.compounds[i].basis_freedir[ic] << std::endl;
+      }
+      if (complistfit.compounds[i].basis_freeplane[ic].size()==3){
+	std::cout << "  Atom " << ic
+		  << " has a free plane with normal " << complistfit.compounds[i].basis_freeplane[ic] << std::endl;
+      }
+    }
+
+
     std::cout << "" << std::endl;
     std::string dumpfile(complistfit.compounds[i].filename + ".xyz");
     std::cout << "  Atom system will be written to file of format Extended XYZ for debugging purposes: " << dumpfile << std::endl;
@@ -745,7 +771,6 @@ int main(int argc, char *argv[]){
 
     std::cout << "--------------------------------------------------------------------------" << std::endl;
   }
-
 
 
 

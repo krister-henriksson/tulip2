@@ -117,10 +117,17 @@ void get_ini_fit_data(ParamPot & param,
   int typei = param.p_potinfo->elem.name2idx( name1 );
   int typej = param.p_potinfo->elem.name2idx( name2 );
 
+  std::cout << "********************************************************************" << std::endl;
+
+  std::cout << "Using elements " << name1 << "-" << name2
+	    << " to make some initial fitting calculations ..." << std::endl;
+
   int ivecij = param.p_potinfo->basepot_vecidx(typei, typej);
   double Rij = param.p_potinfo->pot_ABOP[ivecij].parval[8];
   double Dij = param.p_potinfo->pot_ABOP[ivecij].parval[9];
   double rcutij = Rij + Dij;
+  std::cout << "rcutij: " << rcutij << std::endl;
+
 
   int ivecii = param.p_potinfo->basepot_vecidx(typei, typei);
   double Rii = param.p_potinfo->pot_ABOP[ivecii].parval[8];
@@ -136,10 +143,13 @@ void get_ini_fit_data(ParamPot & param,
 
 
 
-  Vector<double>             Ep_list(sizeDX);
-  Vector<int>                nat_with_bonds_list(sizeDX);
-  Vector< Vector<BondData> > bond_list(sizeDX);
-  Vector< Vector<BondAngleData> > bondangle_list(sizeDX);
+  Vector<double>        Ep_list(sizeDX);
+  Vector<int>           nat1(sizeDX);
+  Vector<int>           nat2(sizeDX);
+  Vector<int>           nbonds_list(sizeDX);
+  Vector<BondData>      bond_list(sizeDX);
+  Vector<BondAngleData> bondangle_list(sizeDX);
+
 
 
 
@@ -183,10 +193,13 @@ void get_ini_fit_data(ParamPot & param,
     mds.specs.tend = mds.specs.tstart = 0.0;
     mds.relax();
 
+    // std::cout << "1 mds.rcut " << mds.rcut << " and mds.rcut_max " << mds.rcut_max << std::endl;
+
     // Remove potential energy contributions from known interactions:
     int nat = mds.natoms();
-    std::cout << "Energy from system: " << mds.calc_potential_energy()/nat << std::endl;
-    Ep_list[iDX] = nat * cmpfit.prop_readin.Ecoh - mds.calc_potential_energy()/nat;
+    double Ep = mds.calc_potential_energy();
+    std::cout << "Energy from system: " << Ep << std::endl;
+    Ep_list[iDX] = nat * cmpfit.prop_readin.Ecoh - Ep;
 
 
     // *******************************************************
@@ -194,16 +207,18 @@ void get_ini_fit_data(ParamPot & param,
     // *******************************************************
     // Bond distances d_i and their number n_i
     // Vbond will be calculated from Ec and number of bonds
-    int nat_w_b=0;
-    mds.get_bond_list( bond_list[iDX], name1, name2, nat_w_b, rcutij );
+
+    // std::cout << "2 mds.rcut " << mds.rcut << " and mds.rcut_max " << mds.rcut_max << std::endl;
+
+    mds.get_bond_list( bond_list[iDX],
+		       name1, name2,
+		       nat1[iDX], nat2[iDX],
+		       nbonds_list[iDX],
+		       rcutij );
     //mds.get_bond_list( bond_dist_list[iDX], bond_num_list[iDX], name1[i], name2[j], n12 );
 
-    nat_with_bonds_list[iDX] = nat_w_b;
-
-
-
+    // std::cout << "3 mds.rcut " << mds.rcut << " and mds.rcut_max " << mds.rcut_max << std::endl;
     mds.get_bond_angle_list( bondangle_list[iDX], name1, name2, rcutii, rcutjj, rcutij );
-
   }
 
 
@@ -222,6 +237,11 @@ void get_ini_fit_data(ParamPot & param,
   tr[6] = name2 + "-" + name2 + "-" + name1;
   tr[7] = name2 + "-" + name2 + "-" + name2;
 
+
+  std::cout << "-------------------------" << std::endl;
+  std::cout << "BOND ANGLES (cos(theta)):" << std::endl;
+  std::cout << "-------------------------" << std::endl;
+
   for (int it=0; it<8; ++it){
     if (name1 == name2 && it>=1) break;
 
@@ -232,11 +252,11 @@ void get_ini_fit_data(ParamPot & param,
       fout.open(dumpfile.c_str());
 
       std::cout << "Compound: " << format("%20s") % DX[iDX].name << std::endl;
-      for (k=0; k<bondangle_list[iDX].size(); ++k){
-	std::cout << format("%20.10f") % bondangle_list[iDX][k].costheta_ijk[it] << "  "
-	     << format("%20d") % bondangle_list[iDX][k].ntheta_ijk[it] << std::endl;
-	fout << format("%20.10f") % bondangle_list[iDX][k].costheta_ijk[it] << "  "
-	     << format("%20d") % bondangle_list[iDX][k].ntheta_ijk[it] << std::endl;
+      for (k=0; k<bondangle_list[iDX].costheta_ijk[it].size(); ++k){
+	std::cout << format("%20.10f") % bondangle_list[iDX].costheta_ijk[it][k]  << "  "
+	     << format("%20d")         % bondangle_list[iDX].ncostheta_ijk[it][k] << std::endl;
+	fout << format("%20.10f")      % bondangle_list[iDX].costheta_ijk[it][k]  << "  "
+	     << format("%20d")         % bondangle_list[iDX].ncostheta_ijk[it][k] << std::endl;
       }
       fout.close();
       fout.clear();
@@ -244,6 +264,10 @@ void get_ini_fit_data(ParamPot & param,
   }
 
   std::cout << "----------------------------------------------------------" << std::endl;
+
+  std::cout << "---------------" << std::endl;
+  std::cout << "BOND DISTANCES:" << std::endl;
+  std::cout << "---------------" << std::endl;
 
   std::string dumpfile("bonds-num.dat");
   std::ofstream fout;
@@ -254,27 +278,37 @@ void get_ini_fit_data(ParamPot & param,
   std::cout << "Species pair " << name1 << "-" << name2 << ":" << std::endl;
   for (iDX=0; iDX<sizeDX; ++iDX){
     std::cout << "Compound: " << format("%20s") % DX[iDX].name
-	 << "  Potential energy to assign: " << format("%10.5e") % Ep_list[iDX] << std::endl;
+	      << "  Potential energy to assign: " << format("%10.5e") % Ep_list[iDX] << std::endl;
     std::cout << format("%20s") % ts1 << "  " << format("%20s") % ts2 << std::endl;
 
     std::string dumpfile2("bonds-num-" + DX[iDX].name + ".dat");
     std::ofstream fout2;
     fout2.open(dumpfile2.c_str());
+
+    if (bond_list[iDX].dist.size()==0){
+      std::cout << "No bond distances at all! Trying next compound ..." << std::endl;
+      continue;
+    }
     
     double nba;
-    for (k=0; k<bond_list[iDX].size(); ++k){
-      nba = bond_list[iDX][k].nbonds/(1.0*nat_with_bonds_list[iDX]);
+    for (k=0; k<bond_list[iDX].dist.size(); ++k){
+      if (bond_list[iDX].ndist[k]==0){
+	std::cout << "No bond distances of length " << bond_list[iDX].dist[k]
+		  << " ! Trying next bond distance ..." << std::endl;
+	continue;
+      }
+
+      // nba = bond_list[iDX].ndist[k]/(0.5*(nat1[iDX]+nat2[iDX]));
+      // nba = bond_list[iDX].ndist[k]/(nbonds_list[iDX]);
       
-      std::cout << format("%20.10f") % bond_list[iDX][k].dist << "  "
-		<< format("%20.10f") % nba
-		<< std::endl;
-      fout << format("%20.10f") % bond_list[iDX][k].dist << "  "
-	   << format("%20.10f") % nba
-	   << format("%20s") % DX[iDX].name
+      std::cout << format("%20.10f") % bond_list[iDX].dist[k]  << "  "
+		<< format("%20.10f") % bond_list[iDX].ndist[k] << std::endl;
+      fout << format("%20.10f") % bond_list[iDX].dist[k] << "  "
+	   << format("%20.10f") % bond_list[iDX].ndist[k]
+	   << format("%20s")    % DX[iDX].name
 	   << std::endl;
-      fout2 << format("%20.10f") % bond_list[iDX][k].dist << "  "
-	    << format("%20.10f") % nba
-	    << std::endl;
+      fout2 << format("%20.10f") % bond_list[iDX].dist[k]  << "  "
+	    << format("%20.10f") % bond_list[iDX].ndist[k] << std::endl;
     }
     fout2.close();
     fout2.clear();
@@ -282,22 +316,36 @@ void get_ini_fit_data(ParamPot & param,
   fout.close();
   fout.clear();
 
+
+
+
   std::cout << "----------------------------------------------------------" << std::endl;
 
+
+  std::cout << "---------------------------------" << std::endl;
+  std::cout << "BOND DISTANCES AND BOND ENERGIES:" << std::endl;
+  std::cout << "---------------------------------" << std::endl;
+
   for (iDX=0; iDX<sizeDX; ++iDX){
+    if (bond_list[iDX].dist.size()==0) continue;
 
     int nbonds = 0, nbonds_k=0;
     double rb = 0.0;
-    for (k=0; k<bond_list[iDX].size(); ++k){
-      nbonds_k  = bond_list[iDX][k].nbonds;
+    for (k=0; k<bond_list[iDX].dist.size(); ++k){
+      nbonds_k  = bond_list[iDX].ndist[k];
       nbonds   += nbonds_k;
-      rb       += nbonds_k * bond_list[iDX][k].dist;
+      rb       += nbonds_k * bond_list[iDX].dist[k];
     }
+    if (nbonds==0) continue;
     rb /= nbonds;
     double Vb = Ep_list[iDX] / nbonds;
 
+    double nb = nbonds_list[iDX] * 1.0/ (nat1[iDX] + nat2[iDX]);
+
+    std::cout << "sum_k bond_list[iDX].ndist[k] = " << nbonds << " nbonds_list[iDX] = " << nbonds_list[iDX] << std::endl;
+
     printf( "%20.10f  %20.10f  # Compound %20s : ave(rbond) Vbond   nbonds %d  ave(nbonds/nat_with_bonds) %20.10f\n",
-	   rb, Vb, DX[iDX].name.c_str(), nbonds, nbonds/(1.0*nat_with_bonds_list[iDX]) );
+	   rb, Vb, DX[iDX].name.c_str(), nbonds, nb );
   }
 
 

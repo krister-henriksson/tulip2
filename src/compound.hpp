@@ -37,171 +37,17 @@ using namespace utils;
 //class ParamPot;
 
 
-
-
-
-class CompoundPropertiesUse {
+/*
+class CompoundConstraints {
 public:
-  bool a;
-  bool b;
-  bool c;
-  bool bpa;
-  bool cpa;
-  bool r0;
-  bool angle_ab;
-  bool angle_ac;
-  bool angle_bc;
-  bool Vatom;
-  bool Ecoh;
-  bool Ecoh_delta;
-  bool Emix;
-  bool B;
-  bool Bp;
-  Matrix<bool> C;
-  bool Fmax;
-  bool Pmax;
-  bool displmax;
-  bool frc;
+  int iat;
+  bool is_fixed;
+  Vector<double> free_dir;
+  Vector<double> free_plane;
 
-  CompoundPropertiesUse();
-
-  void check_and_fix();
+  CompoundConstraints();
 } ;
-
-
-class CompoundProperties {
-public:
-  double a;
-  double b;
-  double c;
-  double bpa;
-  double cpa;
-  double r0;
-  double angle_ab;
-  double angle_ac;
-  double angle_bc;
-  double Vatom;
-  double Ecoh;
-  double Ecoh_delta;
-  double Emix;
-  double B;
-  double Bp;
-  Matrix<double> C;
-  double Fmax;
-  double Pmax;
-  double displmax;
-  Vector< Vector3<double> > frc;
-
-  CompoundProperties();
-} ;
-
-
-class CompoundPropertiesUseUncertainties {
-public:
-  bool a;
-  bool b;
-  bool c;
-  bool bpa;
-  bool cpa;
-  bool r0;
-  bool angle_ab;
-  bool angle_ac;
-  bool angle_bc;
-  bool Vatom;
-  bool Ecoh;
-  bool Ecoh_delta;
-  bool Emix;
-  bool B;
-  bool Bp;
-  Matrix<bool> C;
-  bool Fmax;
-  bool Pmax;
-  bool displmax;
-  bool frc;
-
-  CompoundPropertiesUseUncertainties();
-} ;
-
-class CompoundPropertiesUseWeights {
-public:
-  bool a;
-  bool b;
-  bool c;
-  bool bpa;
-  bool cpa;
-  bool r0;
-  bool angle_ab;
-  bool angle_ac;
-  bool angle_bc;
-  bool Vatom;
-  bool Ecoh;
-  bool Ecoh_delta;
-  bool Emix;
-  bool B;
-  bool Bp;
-  Matrix<bool> C;
-  bool Fmax;
-  bool Pmax;
-  bool displmax;
-  bool frc;
-
-  CompoundPropertiesUseWeights();
-} ;
-
-
-
-class CompoundPropertiesUncertainties {
-public:
-  double a;
-  double b;
-  double c;
-  double bpa;
-  double cpa;
-  double r0;
-  double angle_ab;
-  double angle_ac;
-  double angle_bc;
-  double Vatom;
-  double Ecoh;
-  double Ecoh_delta;
-  double Emix;
-  double B;
-  double Bp;
-  Matrix<double> C;
-  double Fmax;
-  double Pmax;
-  double displmax;
-  Vector< Vector3<double> > frc;
-
-  CompoundPropertiesUncertainties();
-} ;
-
-
-class CompoundPropertiesWeights {
-public:
-  double a;
-  double b;
-  double c;
-  double bpa;
-  double cpa;
-  double r0;
-  double angle_ab;
-  double angle_ac;
-  double angle_bc;
-  double Vatom;
-  double Ecoh;
-  double Ecoh_delta;
-  double Emix;
-  double B;
-  double Bp;
-  Matrix<double> C;
-  double Fmax;
-  double Pmax;
-  double displmax;
-  Vector< Vector3<double> > frc;
-
-  CompoundPropertiesWeights();
-} ;
+*/
 
 
 
@@ -235,9 +81,13 @@ public:
   Vector3<double> u3_vec;
 
   int nbasis;
-  Vector<int>              basis_types;
-  Vector<string>           basis_elems;
+  Vector<int>               basis_types;
+  Vector<string>            basis_elems;
   Vector< Vector3<double> > basis_vecs;
+  Vector<bool>              basis_is_fixed;
+  Vector< Vector<double> >  basis_freedir;
+  Vector< Vector<double> >  basis_freeplane;
+
 
   // For construction of compound:
   int Ndesired[3];

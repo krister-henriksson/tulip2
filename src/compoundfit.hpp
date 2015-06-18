@@ -43,6 +43,174 @@ using namespace utils;
 
 
 
+
+class CompoundPropertiesUse {
+public:
+  bool a;
+  bool b;
+  bool c;
+  bool bpa;
+  bool cpa;
+  bool r0;
+  bool angle_ab;
+  bool angle_ac;
+  bool angle_bc;
+  bool Vatom;
+  bool Ecoh;
+  bool Ecoh_delta;
+  bool Emix;
+  bool B;
+  bool Bp;
+  Matrix<bool> C;
+  bool Fmax;
+  bool Pmax;
+  bool displmax;
+  bool frc;
+
+  CompoundPropertiesUse();
+
+  void check_and_fix();
+} ;
+
+
+class CompoundProperties {
+public:
+  double a;
+  double b;
+  double c;
+  double bpa;
+  double cpa;
+  double r0;
+  double angle_ab;
+  double angle_ac;
+  double angle_bc;
+  double Vatom;
+  double Ecoh;
+  double Ecoh_delta;
+  double Emix;
+  double B;
+  double Bp;
+  Matrix<double> C;
+  double Fmax;
+  double Pmax;
+  double displmax;
+  Vector< Vector3<double> > frc;
+
+  CompoundProperties();
+} ;
+
+
+class CompoundPropertiesUseUncertainties {
+public:
+  bool a;
+  bool b;
+  bool c;
+  bool bpa;
+  bool cpa;
+  bool r0;
+  bool angle_ab;
+  bool angle_ac;
+  bool angle_bc;
+  bool Vatom;
+  bool Ecoh;
+  bool Ecoh_delta;
+  bool Emix;
+  bool B;
+  bool Bp;
+  Matrix<bool> C;
+  bool Fmax;
+  bool Pmax;
+  bool displmax;
+  bool frc;
+
+  CompoundPropertiesUseUncertainties();
+} ;
+
+class CompoundPropertiesUseWeights {
+public:
+  bool a;
+  bool b;
+  bool c;
+  bool bpa;
+  bool cpa;
+  bool r0;
+  bool angle_ab;
+  bool angle_ac;
+  bool angle_bc;
+  bool Vatom;
+  bool Ecoh;
+  bool Ecoh_delta;
+  bool Emix;
+  bool B;
+  bool Bp;
+  Matrix<bool> C;
+  bool Fmax;
+  bool Pmax;
+  bool displmax;
+  bool frc;
+
+  CompoundPropertiesUseWeights();
+} ;
+
+
+
+class CompoundPropertiesUncertainties {
+public:
+  double a;
+  double b;
+  double c;
+  double bpa;
+  double cpa;
+  double r0;
+  double angle_ab;
+  double angle_ac;
+  double angle_bc;
+  double Vatom;
+  double Ecoh;
+  double Ecoh_delta;
+  double Emix;
+  double B;
+  double Bp;
+  Matrix<double> C;
+  double Fmax;
+  double Pmax;
+  double displmax;
+  Vector< Vector3<double> > frc;
+
+  CompoundPropertiesUncertainties();
+} ;
+
+
+class CompoundPropertiesWeights {
+public:
+  double a;
+  double b;
+  double c;
+  double bpa;
+  double cpa;
+  double r0;
+  double angle_ab;
+  double angle_ac;
+  double angle_bc;
+  double Vatom;
+  double Ecoh;
+  double Ecoh_delta;
+  double Emix;
+  double B;
+  double Bp;
+  Matrix<double> C;
+  double Fmax;
+  double Pmax;
+  double displmax;
+  Vector< Vector3<double> > frc;
+
+  CompoundPropertiesWeights();
+} ;
+
+
+
+
+
 class CompoundStructureFit
   :
   public CompoundStructure

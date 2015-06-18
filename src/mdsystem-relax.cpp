@@ -185,6 +185,7 @@ void MDSystem::relax(void){
     frc_num.resize(nat);
   }
 
+  Vector< Vector3<double> > atomic_displ(nat, Vector3<double>(0.0) );
 
 
 
@@ -433,6 +434,10 @@ void MDSystem::relax(void){
     //std::cout << "made it here 01" << std::endl;
     //predict();
 
+    // ***********************************************************
+    // PREDICTOR
+    // ***********************************************************
+
 
     dt_s_max = 0.0;
     while (true){
@@ -456,16 +461,33 @@ void MDSystem::relax(void){
 
 
 
-
-
     for (i=0; i<nat; ++i){
 
       double td1 = dt * vel[i][0] + 0.5 * dt*dt * acc[i][0];
       double td2 = dt * vel[i][1] + 0.5 * dt*dt * acc[i][1];
       double td3 = dt * vel[i][2] + 0.5 * dt*dt * acc[i][2];
 
-      if (specs.fixed_geometry)
-	td1 = td2 = td3 = 0.0;
+      if (specs.fixed_geometry) td1 = td2 = td3 = 0.0;
+
+      if (atom_is_fixed[i]) td1 = td2 = td3 = 0.0;
+
+      if (atom_freedir.size()==3){
+	// constrain atom to single normalized direction
+	double f = td1 * atom_freedir[i][0] + td2 * atom_freedir[i][1] + td3 * atom_freedir[i][2];
+	td1 = f * atom_freedir[i][0];
+	td2 = f * atom_freedir[i][1];
+	td3 = f * atom_freedir[i][2];
+      }
+
+      if (atom_freeplane.size()==3){
+	// constrain atom to a plane, with the given normalized normal vector
+	double f = td1 * atom_freeplane[i][0] + td2 * atom_freeplane[i][1] + td3 * atom_freeplane[i][2];
+	td1 = td1 - f * atom_freeplane[i][0];
+	td2 = td2 - f * atom_freeplane[i][1];
+	td3 = td3 - f * atom_freeplane[i][2];
+      }
+
+
 
       // cache trashing???
       pos[i][0] += td1;
@@ -802,6 +824,11 @@ void MDSystem::relax(void){
     /* ----------------------------------------------------------------------
        Velocity-Verlet corrector, and conversion of force to acceleration.
        ---------------------------------------------------------------------- */
+
+    // ***********************************************************
+    // CORRECTOR
+    // ***********************************************************
+
     //correct();
 
     Ek_tot = 0.0;

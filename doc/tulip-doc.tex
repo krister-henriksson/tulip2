@@ -1173,6 +1173,8 @@ mds_bpc_scale = 50.0  scaling constant, usually on the order of bulk modulus (GP
 \subsection{LAT files}
 
 
+\subsubsection{Basic structure}
+
 Format of LAT file:
 
 \begin{Verbatim}[fontsize=\relsize{-1},frame=single]
@@ -1183,8 +1185,8 @@ b1 b2 b3  optional-string    Components of the second primitive vector U2.
 c1 c2 c3  optional-string    Components of the third primitive vector U3.
   format                     internal or direct
   Nbasis                     number of basis vectors
-S1  B11  B12  B13            Species and vector components of first basis atom.
-S2  B21  B22  B23            Species and vector components of second basis atom.
+S1  B11  B12  B13 constr1    Species and vector components of first basis atom.
+S2  B21  B22  B23 constr2    Species and vector components of second basis atom.
 ...
 \end{Verbatim}
 
@@ -1212,7 +1214,47 @@ This is equivalent to \textbf{Direct} in VASP.
 
 The real primitive vectors are $\mathbf{v}_i = L \mathbf{u}_i$.
 
-\stars
+
+
+
+\subsubsection{Constraints}
+
+The \verb+constr1+, \verb+constr2+, \etc are atomic constraint strings
+(each atom can be given constraints).
+There are three possible constraint types:
+
+\begin{enumerate}
+\item Fix atom: \verb+fix+
+
+\item Constrain atom to move in one direction only: \verb+freedir u1 u2 u3+,
+where the \verb+u+$i$ are coordinates.
+Example: \verb+freedir 0 0 1+ allows motion in $z$ direction only.
+
+\item Constrain atom to move in a plane only: \verb+freeplane u1 u2 u3+, or
+\newline
+\verb+freeplanevecs v1 v2 v3 w1 w2 w3+,
+where the \verb+u+$i$ are coordinates of the plane's normal vector, and
+the \verb+v+$i$, \verb+w+$i$ are coordinates of two vectors lying in the plane.
+\end{enumerate}
+
+All direction vectors are normalized automatically. Only one option is valid for any
+atom.
+
+
+
+
+
+
+\subsubsection{Specifying the origin}
+
+An explicit origin can be specified on the line after the last basis atom.
+The first string has to start with lower- or upper-case O, then three coordinates
+must be given. This origin will be used when the simulation cell is created.
+
+
+
+\subsubsection{Examples}
+
 
 Example 1: Fe-Y dimer in vacuum, non-periodic boundaries:
 
@@ -1225,7 +1267,8 @@ Fe-Y dimer
   Scaled
   2
 Y   0.0000000000   0.0000000000   0.0000000000
-Fe  0.2000000000   0.0000000000   0.0000000000
+Fe  0.2000000000   0.0000000000   0.0000000000 freedir 1 0 0
+origin: 0.0 0.0 0.0
 \end{Verbatim}
 
 
