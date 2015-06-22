@@ -60,5 +60,6 @@ MDSettings::MDSettings(){
   heating_allowed = true;
   fixed_geometry = false;
   quench_always = false;
+
 }
 

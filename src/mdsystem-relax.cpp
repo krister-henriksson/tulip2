@@ -190,6 +190,10 @@ void MDSystem::relax(void){
 
 
   // Memory allocation:
+  double vel_cm[3], mass_cm;
+  mass_cm = vel_cm[0] = vel_cm[1] = vel_cm[2] = 0.0;
+
+
   for (i=0; i<nat; ++i){
     vel[i] = Vector3<double>(0.0);
     acc[i] = Vector3<double>(0.0);
@@ -220,9 +224,37 @@ void MDSystem::relax(void){
     vel[i][1] = vrms[ n2i ] * tmp2;
     vel[i][2] = vrms[ n2i ] * tmp3;
 
+    if (sys_single_elem){
+      mass_cm += mass1;
+      vel_cm[0] += mass1 * vel[i][0];
+      vel_cm[1] += mass1 * vel[i][1];
+      vel_cm[2] += mass1 * vel[i][2];
+    }
+    else {
+      double massi = elem.mass( n2i );
+      mass_cm += massi;
+      vel_cm[0] += massi * vel[i][0];
+      vel_cm[1] += massi * vel[i][1];
+      vel_cm[2] += massi * vel[i][2];
+    }
+
     nspecies[ n2i ]++;
   }
   //std::cout << "MD system vectors resized to correct sizes." << std::endl;
+
+  vel_cm[0] /= mass_cm;
+  vel_cm[1] /= mass_cm;
+  vel_cm[2] /= mass_cm;
+
+  for (i=0; i<nat; ++i){
+    vel[i][0] -= vel_cm[0];
+    vel[i][1] -= vel_cm[1];
+    vel[i][2] -= vel_cm[2];
+  }
+
+
+
+
 
 
 
@@ -404,6 +436,13 @@ void MDSystem::relax(void){
 
 
 
+  std::ofstream fcon;
+  std::string fconn = "mds-constr-" + name + ".out";
+  fcon.open(fconn.c_str());
+
+
+
+
   /* #############################################################
      #############################################################
      #############################################################
@@ -460,7 +499,7 @@ void MDSystem::relax(void){
 
 
 
-
+    mass_cm = vel_cm[0] = vel_cm[1] = vel_cm[2] = 0.0;
     for (i=0; i<nat; ++i){
 
       double td1 = dt * vel[i][0] + 0.5 * dt*dt * acc[i][0];
@@ -469,22 +508,42 @@ void MDSystem::relax(void){
 
       if (specs.fixed_geometry) td1 = td2 = td3 = 0.0;
 
-      if (atom_is_fixed[i]) td1 = td2 = td3 = 0.0;
+      if (atom_is_fixed[i]){
+	if (istep % specs.ndump == 0)
+	  fcon << "Time " << format("%20.10e") % time << " fs: Atom " << i << " is fixed." << std::endl;
+	td1 = td2 = td3 = 0.0;
+      }
 
-      if (atom_freedir.size()==3){
+      if (atom_freedir[i].size()==3){
 	// constrain atom to single normalized direction
 	double f = td1 * atom_freedir[i][0] + td2 * atom_freedir[i][1] + td3 * atom_freedir[i][2];
 	td1 = f * atom_freedir[i][0];
 	td2 = f * atom_freedir[i][1];
 	td3 = f * atom_freedir[i][2];
+	if (istep % specs.ndump == 0)
+	  fcon << "Time " << format("%20.10e") % time << " fs: Atom " << i << " is constr to dir"
+	       << format(" %15.6e") % atom_freedir[i][0]
+	       << format(" %15.6e") % atom_freedir[i][1]
+	       << format(" %15.6e") % atom_freedir[i][2]
+	       << " Displacement is"
+	       << format(" %15.6e") % td1 << format(" %15.6e") % td2 << format(" %15.6e") % td3
+	       << std::endl;
       }
 
-      if (atom_freeplane.size()==3){
+      if (atom_freeplane[i].size()==3){
 	// constrain atom to a plane, with the given normalized normal vector
 	double f = td1 * atom_freeplane[i][0] + td2 * atom_freeplane[i][1] + td3 * atom_freeplane[i][2];
 	td1 = td1 - f * atom_freeplane[i][0];
 	td2 = td2 - f * atom_freeplane[i][1];
 	td3 = td3 - f * atom_freeplane[i][2];
+	if (istep % specs.ndump == 0)
+	  fcon << "Time " << format("%20.10e") % time << " fs: Atom " << i << " is constr to plane with normal "
+	       << format(" %15.6e") % atom_freeplane[i][0]
+	       << format(" %15.6e") % atom_freeplane[i][1]
+	       << format(" %15.6e") % atom_freeplane[i][2]
+	       << " Displacement is"
+	       << format(" %15.6e") % td1 << format(" %15.6e") % td2 << format(" %15.6e") % td3
+	       << std::endl;
       }
 
 
@@ -502,30 +561,52 @@ void MDSystem::relax(void){
       if (i==0 || (i>0 && td4 > dt_s_max*dt_s_max))
 	dt_s_max = sqrt(td4);
 
-
       
       if (specs.heating_allowed){
 	vel[i][0] += 0.5 * dt * acc[i][0];
 	vel[i][1] += 0.5 * dt * acc[i][1];
 	vel[i][2] += 0.5 * dt * acc[i][2];
       }
-      if (specs.quench_always){
-	vel[i][0] = 0.0;
-	vel[i][1] = 0.0;
-	vel[i][2] = 0.0;
+      if (specs.quench_always || atom_is_fixed[i])
+	vel[i][0] = vel[i][1] = vel[i][2] = 0.0;
+
+
+
+
+      if (sys_single_elem){
+	mass_cm += mass1;
+	vel_cm[0] += mass1 * vel[i][0];
+	vel_cm[1] += mass1 * vel[i][1];
+	vel_cm[2] += mass1 * vel[i][2];
       }
+      else {
+	double massi = elem.mass( elem.name2idx( matter[i] ) );
+	mass_cm += massi;
+	vel_cm[0] += massi * vel[i][0];
+	vel_cm[1] += massi * vel[i][1];
+	vel_cm[2] += massi * vel[i][2];
+      }
+
 	
-      frc[i][0] = 0.0;
-      frc[i][1] = 0.0;
-      frc[i][2] = 0.0;
+      frc[i][0] = frc[i][1] = frc[i][2] = 0.0;
 
-      acc[i][0] = 0.0;
-      acc[i][1] = 0.0;
-      acc[i][2] = 0.0;
-
-
+      acc[i][0] = acc[i][1] = acc[i][2] = 0.0;
 
     }
+
+    vel_cm[0] /= mass_cm;
+    vel_cm[1] /= mass_cm;
+    vel_cm[2] /= mass_cm;
+
+    for (i=0; i<nat; ++i){
+      vel[i][0] -= vel_cm[0];
+      vel[i][1] -= vel_cm[1];
+      vel[i][2] -= vel_cm[2];
+    }
+
+
+
+
 
 
     for (i=0; i<nat; ++i){
@@ -831,12 +912,14 @@ void MDSystem::relax(void){
 
     //correct();
 
-    Ek_tot = 0.0;
-#pragma omp parallel for reduction(+:Ek_tot) schedule(static)
+    mass_cm = vel_cm[0] = vel_cm[1] = vel_cm[2] = 0.0;
     for (i=0; i<nat; ++i){
       int n2i = elem.name2idx( matter[i] );
       double td = 1.0 / elem.mass( n2i ) * 1.60217653 / 1.660538782 * 0.01;
       //td = 1.0 / elem.mass(elem.idx2name(type[i])) * 1.60217653 / 1.660538782 * 0.01;
+
+      if (atom_is_fixed[i])
+	frc[i][0] = frc[i][1] = frc[i][2] = 0.0;
 
       /* Convert force to acceleration. */
       acc[i][0] = frc[i][0] * td;
@@ -849,14 +932,41 @@ void MDSystem::relax(void){
 	vel[i][1] += 0.5 * dt * acc[i][1];
 	vel[i][2] += 0.5 * dt * acc[i][2];
       }
-      if (specs.quench_always){
-	vel[i][0] = 0.0;
-	vel[i][1] = 0.0;
-	vel[i][2] = 0.0;
+      if (specs.quench_always || atom_is_fixed[i])
+	vel[i][0] = vel[i][1] = vel[i][2] = 0.0;
+
+
+      if (sys_single_elem){
+	mass_cm += mass1;
+	vel_cm[0] += mass1 * vel[i][0];
+	vel_cm[1] += mass1 * vel[i][1];
+	vel_cm[2] += mass1 * vel[i][2];
       }
-      // temperature
-      Ek_tot += elem.mass( n2i ) * ( vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2] );
-      //Ek_tot += elem.mass(matter[i]) * td;
+      else {
+	double massi = elem.mass( n2i );
+	mass_cm += massi;
+	vel_cm[0] += massi * vel[i][0];
+	vel_cm[1] += massi * vel[i][1];
+	vel_cm[2] += massi * vel[i][2];
+      }
+
+    }
+
+    Ek_tot = 0.0;
+
+    vel_cm[0] /= mass_cm;
+    vel_cm[1] /= mass_cm;
+    vel_cm[2] /= mass_cm;
+
+    for (i=0; i<nat; ++i){
+      vel[i][0] -= vel_cm[0];
+      vel[i][1] -= vel_cm[1];
+      vel[i][2] -= vel_cm[2];
+
+      if (sys_single_elem)
+	Ek_tot += mass1 * ( vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2] );	
+      else
+	Ek_tot += elem.mass( elem.name2idx( matter[i] ) ) * ( vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2] );	
     }
     Ek_tot *= 0.5;
     T = 2.0 * Ek_tot / (3.0 * nat * 8.817343e-5) * 1.660538782/1.60217653 * 100;
@@ -1317,6 +1427,7 @@ void MDSystem::relax(void){
 	/* Change velocities: */
 	td = 1.0; if (! fp_is_small(T)) td = Tnew / T;
 	td = sqrt(td);
+
 #pragma omp parallel for schedule(static)
 	for (i=0; i<nat; ++i){
 	  vel[i][0] *= td;
@@ -1348,12 +1459,36 @@ void MDSystem::relax(void){
     */
 
     if (specs_common.report_step && (istep % specs.ndump == 0)){
+      /*
+      mass_cm = vel_cm[0] = vel_cm[1] = vel_cm[2] = 0.0;
+      for (i=0; i<nat; ++i){
+	int n2i = elem.name2idx( matter[i] );
+	if (sys_single_elem){
+	  mass_cm += mass1;
+	  vel_cm[0] += mass1 * vel[i][0];
+	  vel_cm[1] += mass1 * vel[i][1];
+	  vel_cm[2] += mass1 * vel[i][2];
+	}
+	else {
+	  double massi = elem.mass( n2i );
+	  mass_cm += massi;
+	  vel_cm[0] += massi * vel[i][0];
+	  vel_cm[1] += massi * vel[i][1];
+	  vel_cm[2] += massi * vel[i][2];
+	}
+      }
+      vel_cm[0] /= mass_cm;
+      vel_cm[1] /= mass_cm;
+      vel_cm[2] /= mass_cm;
+      */
       printf("time %15.5e  nat %d  Ecoh %10.5f  T %10.5f  Fmax %12.5e  P %12.5e  "
 	     "Px Py Pz  %12.5e %12.5e %12.5e    box1 box2 box3  %12.5e %12.5e %12.5e  Vol_at %12.5e\n",
+	     //	     "vxcm vyxm vzcm  %12.5e %12.5e %12.5e\n",
 	     time, nat, Ep_tot/nat, T, F_max, P,
 	     stresstensor_xyz.elem(0,0), stresstensor_xyz.elem(1,1),stresstensor_xyz.elem(2,2),
 	     boxlen[0], boxlen[1], boxlen[2],
-	     vol_atom);
+	     vol_atom );
+      //vel_cm[0], vel_cm[1], vel_cm[2] );
       // fflush(stdout);
     }
 
@@ -1422,6 +1557,9 @@ void MDSystem::relax(void){
      #############################################################
      #############################################################
      ############################################################# */
+
+
+  fcon.close();
 
 
   //exit(1);
