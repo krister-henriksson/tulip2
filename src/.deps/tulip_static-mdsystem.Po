@@ -359,7 +359,7 @@ tulip_static-mdsystem.o: mdsystem.cpp /usr/include/stdc-predef.h \
  /home/koehenri/include/utils-errors.hpp compound.hpp elem-iacs.hpp \
  /home/koehenri/include/utils-vector3.hpp \
  /home/koehenri/include/utils-matrixsq3.hpp specs-fit-prop-pot.hpp \
- mdsettings.hpp helpfuns.hpp mdsystem.hpp potinfo.hpp potclasses.hpp \
+ mdsettings.hpp mdsystem.hpp potinfo.hpp potclasses.hpp \
  /home/koehenri/include/param.hpp /home/koehenri/include/omp-basics.hpp \
  physconst.hpp /home/koehenri/include/mtwister.hpp \
  /usr/include/boost/random/mersenne_twister.hpp \
@@ -1243,8 +1243,6 @@ elem-iacs.hpp:
 specs-fit-prop-pot.hpp:
 
 mdsettings.hpp:
-
-helpfuns.hpp:
 
 mdsystem.hpp:
 

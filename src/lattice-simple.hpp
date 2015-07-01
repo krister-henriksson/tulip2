@@ -9,7 +9,7 @@
 #include "utils-vector.hpp"
 #include "utils-matrix.hpp"
 
-#include "compound.hpp"
+//#include "compound.hpp"
 #include "compoundfit.hpp"
 
 
@@ -47,14 +47,6 @@ public:
   int spacegroup_number;
 
   LatticeSimple();
-
-  void get_ipos(void);
-  void rotate(const MatrixSq3<double> & R);
-  void shift(const Vector3<double> & svec);
-
-  void dump_xyz(const std::string & filename);
-
-  bool matrix_is_a_symm_op(const MatrixSq3<double> & R);
 
 } ;
 

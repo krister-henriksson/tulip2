@@ -65,12 +65,19 @@ ma_dbg  = -g
 ma_omp  = -fopenmp
 
 
-tulip_CPPFLAGS = $(ma_inc) $(ma_warn) $(ma_std) $(ma_opt) $(ma_dbg) $(ma_omp)
-tulip_static_CPPFLAGS = $(ma_inc) $(ma_warn) $(ma_std) $(ma_opt) $(ma_dbg) $(ma_omp)
+AM_CFLAGS   =
+AM_CPPFLAGS =
+AM_CXXFLAGS = $(ma_inc) $(ma_warn) $(ma_std) $(ma_opt) $(ma_dbg) $(ma_omp)
+AM_LDADD    = -lutils -lsymspg -lm -lrt
+AM_LDFLAGS  = $(ma_omp)
 
-tulip_LDADD = -lutils -lsymspg -lm -lrt
+
+tulip_CXXFLAGS        = $(AM_CXXFLAGS)
+tulip_static_CXXFLAGS = $(AM_CXXFLAGS)
+
+tulip_LDADD   = -lutils -lsymspg -lm -lrt
 tulip_LDFLAGS = $(ma_omp)
 
-tulip_static_LDADD = -lutils -lsymspg -lm -lrt
-tulip_static_LDFLAGS = $(ma_omp) -static
+tulip_static_LDADD   = $(AM_LDADD)
+tulip_static_LDFLAGS = $(AM_LDFLAGS) -static
 

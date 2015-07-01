@@ -357,12 +357,12 @@ tulip-mdsystem-pot-abop.o: mdsystem-pot-abop.cpp \
  /home/koehenri/include/utils-matrix.hpp \
  /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-vector.hpp \
- /home/koehenri/include/utils-errors.hpp compound.hpp elem-iacs.hpp \
+ /home/koehenri/include/utils-errors.hpp elem-iacs.hpp \
  /home/koehenri/include/utils-vector3.hpp \
- /home/koehenri/include/utils-matrixsq3.hpp specs-fit-prop-pot.hpp \
- mdsettings.hpp helpfuns.hpp mdsystem.hpp potinfo.hpp potclasses.hpp \
+ /home/koehenri/include/utils-matrixsq3.hpp helpfuns.hpp mdsystem.hpp \
+ mdsettings.hpp potinfo.hpp specs-fit-prop-pot.hpp potclasses.hpp \
  /home/koehenri/include/param.hpp /home/koehenri/include/omp-basics.hpp \
- physconst.hpp /home/koehenri/include/mtwister.hpp \
+ compound.hpp physconst.hpp /home/koehenri/include/mtwister.hpp \
  /usr/include/boost/random/mersenne_twister.hpp \
  /usr/include/boost/cstdint.hpp \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
@@ -1233,29 +1233,29 @@ tulip-mdsystem-pot-abop.o: mdsystem-pot-abop.cpp \
 
 /home/koehenri/include/utils-errors.hpp:
 
-compound.hpp:
-
 elem-iacs.hpp:
 
 /home/koehenri/include/utils-vector3.hpp:
 
 /home/koehenri/include/utils-matrixsq3.hpp:
 
-specs-fit-prop-pot.hpp:
-
-mdsettings.hpp:
-
 helpfuns.hpp:
 
 mdsystem.hpp:
 
+mdsettings.hpp:
+
 potinfo.hpp:
+
+specs-fit-prop-pot.hpp:
 
 potclasses.hpp:
 
 /home/koehenri/include/param.hpp:
 
 /home/koehenri/include/omp-basics.hpp:
+
+compound.hpp:
 
 physconst.hpp:
 

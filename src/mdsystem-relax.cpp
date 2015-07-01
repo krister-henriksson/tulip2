@@ -26,17 +26,18 @@
 #include "utils-vector.hpp"
 #include "utils-errors.hpp"
 
-#include "compound.hpp"
+//#include "compound.hpp"
 #include "elem-iacs.hpp"
-#include "helpfuns.hpp"
+//#include "helpfuns.hpp"
 #include "mdsystem.hpp"
 #include "mdsettings.hpp"
 #include "mtwister.hpp"
 #include "physconst.hpp"
-#include "potclasses.hpp"
+//#include "potclasses.hpp"
 #include "potinfo.hpp"
-#include "specs-fit-prop-pot.hpp"
+//#include "specs-fit-prop-pot.hpp"
 #include "errors.hpp"
+
 
 #include "utils-vector3.hpp"
 #include "utils-matrixsq3.hpp"
@@ -145,8 +146,9 @@ void MDSystem::relax(void){
   int type1;
   double mass1;
 
-  
+
   type1 = elem.atomtype(matter[0]);
+  //type1 = elem.name2idx(matter[0]);
   mass1 = elem.mass(matter[0]); //type1
 
 
@@ -185,15 +187,13 @@ void MDSystem::relax(void){
     frc_num.resize(nat);
   }
 
-  Vector< Vector3<double> > atomic_displ(nat, Vector3<double>(0.0) );
 
 
+
+  double vel_cm[3], mass_cm;
+  vel_cm[0] = vel_cm[1] = vel_cm[2] = mass_cm = 0.0;
 
   // Memory allocation:
-  double vel_cm[3], mass_cm;
-  mass_cm = vel_cm[0] = vel_cm[1] = vel_cm[2] = 0.0;
-
-
   for (i=0; i<nat; ++i){
     vel[i] = Vector3<double>(0.0);
     acc[i] = Vector3<double>(0.0);
@@ -246,12 +246,13 @@ void MDSystem::relax(void){
   vel_cm[1] /= mass_cm;
   vel_cm[2] /= mass_cm;
 
+#pragma omp parallel for schedule(static)
   for (i=0; i<nat; ++i){
     vel[i][0] -= vel_cm[0];
     vel[i][1] -= vel_cm[1];
     vel[i][2] -= vel_cm[2];
   }
-
+  // Center of mass velocity has now been removed.
 
 
 
@@ -393,7 +394,8 @@ void MDSystem::relax(void){
   Ek_tot = 0.0;
   if (sys_single_elem){
     double td1 = 0.5 * mass1 * 1.660538782/1.60217653 * 100;
-#pragma omp parallel for schedule(static)
+    int nc = myomp_get_chunksize(sizeof(double));
+#pragma omp parallel for schedule(static, nc)
     for (i=0; i<nat; ++i){
       double td2 = vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2];
       Ek[i] = td1 * td2;
@@ -401,7 +403,8 @@ void MDSystem::relax(void){
   }
   else {
     double td1 = 0.5 * 1.660538782/1.60217653 * 100;
-#pragma omp parallel for schedule(static)
+    int nc = myomp_get_chunksize(sizeof(double));
+#pragma omp parallel for schedule(static, nc)
     for (i=0; i<nat; ++i){
       int n2i = elem.name2idx( matter[i] );
       double td2 = vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2];
@@ -598,6 +601,7 @@ void MDSystem::relax(void){
     vel_cm[1] /= mass_cm;
     vel_cm[2] /= mass_cm;
 
+#pragma omp parallel for schedule(static)
     for (i=0; i<nat; ++i){
       vel[i][0] -= vel_cm[0];
       vel[i][1] -= vel_cm[1];
@@ -699,6 +703,7 @@ void MDSystem::relax(void){
       /* Update neighbor list. */
       get_all_neighborcollections( specs_common.report_step );
 
+#pragma omp parallel for schedule(static)
       for (i=0; i<nat; ++i){
 	dpos[i][0] = 0.0;
 	dpos[i][1] = 0.0;
@@ -793,6 +798,7 @@ void MDSystem::relax(void){
       rx = boxlen[0] / bx;
       ry = boxlen[1] / by;
       rz = boxlen[2] / bz;
+#pragma omp parallel for schedule(static)
       for (i=0; i<nat; ++i){
 	pos[i][0] *= rz;
 	pos[i][1] *= ry;
@@ -804,6 +810,7 @@ void MDSystem::relax(void){
       boxlen[0] = bx;
       boxlen[1] = by;
       boxlen[2] = bz;
+#pragma omp parallel for schedule(static)
       for (i=0; i<nat; ++i){
 	pos[i][0] = pos_bak[i][0];
 	pos[i][1] = pos_bak[i][1];
@@ -818,6 +825,7 @@ void MDSystem::relax(void){
       rx = boxlen[0] / bx;
       ry = boxlen[1] / by;
       rz = boxlen[2] / bz;
+#pragma omp parallel for schedule(static)
       for (i=0; i<nat; ++i){
 	pos[i][0] *= rx;
 	pos[i][1] *= ry;
@@ -829,6 +837,7 @@ void MDSystem::relax(void){
       boxlen[0] = bx;
       boxlen[1] = by;
       boxlen[2] = bz;
+#pragma omp parallel for schedule(static)
       for (i=0; i<nat; ++i){
 	pos[i][0] = pos_bak[i][0];
 	pos[i][1] = pos_bak[i][1];
@@ -1181,6 +1190,7 @@ void MDSystem::relax(void){
 	}
 
 	//#pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static)
 	for (i=0; i<nat; ++i){
 	  pos[i][0] *= mu[0];
 	  pos[i][1] *= mu[1];
@@ -1403,6 +1413,7 @@ void MDSystem::relax(void){
 	  vel[i][1] *= lambda;
 	  vel[i][2] *= lambda;
 	}
+
 	/* Change temperature: */
 	Tnew = T * lambda * lambda;
 	T = Tnew;
@@ -1434,6 +1445,7 @@ void MDSystem::relax(void){
 	  vel[i][1] *= td;
 	  vel[i][2] *= td;
 	}
+
 	T = Tnew;
       }
     }
@@ -1459,28 +1471,6 @@ void MDSystem::relax(void){
     */
 
     if (specs_common.report_step && (istep % specs.ndump == 0)){
-      /*
-      mass_cm = vel_cm[0] = vel_cm[1] = vel_cm[2] = 0.0;
-      for (i=0; i<nat; ++i){
-	int n2i = elem.name2idx( matter[i] );
-	if (sys_single_elem){
-	  mass_cm += mass1;
-	  vel_cm[0] += mass1 * vel[i][0];
-	  vel_cm[1] += mass1 * vel[i][1];
-	  vel_cm[2] += mass1 * vel[i][2];
-	}
-	else {
-	  double massi = elem.mass( n2i );
-	  mass_cm += massi;
-	  vel_cm[0] += massi * vel[i][0];
-	  vel_cm[1] += massi * vel[i][1];
-	  vel_cm[2] += massi * vel[i][2];
-	}
-      }
-      vel_cm[0] /= mass_cm;
-      vel_cm[1] /= mass_cm;
-      vel_cm[2] /= mass_cm;
-      */
       printf("time %15.5e  nat %d  Ecoh %10.5f  T %10.5f  Fmax %12.5e  P %12.5e  "
 	     "Px Py Pz  %12.5e %12.5e %12.5e    box1 box2 box3  %12.5e %12.5e %12.5e  Vol_at %12.5e\n",
 	     //	     "vxcm vyxm vzcm  %12.5e %12.5e %12.5e\n",

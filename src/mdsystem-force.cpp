@@ -26,16 +26,16 @@
 #include "utils-vector.hpp"
 #include "utils-errors.hpp"
 
-#include "compound.hpp"
+//#include "compound.hpp"
 #include "elem-iacs.hpp"
-#include "helpfuns.hpp"
+//#include "helpfuns.hpp"
 #include "mdsystem.hpp"
 #include "mdsettings.hpp"
-#include "mtwister.hpp"
+//#include "mtwister.hpp"
 #include "physconst.hpp"
 #include "potclasses.hpp"
 #include "potinfo.hpp"
-#include "specs-fit-prop-pot.hpp"
+//#include "specs-fit-prop-pot.hpp"
 #include "errors.hpp"
 
 

@@ -1039,12 +1039,12 @@ option: quench_always       Always scale velocities to 0.
 
 
 # Force handling:
-frc_file      = ...  string
+frc_file      = ***  string
 # => use atomic forces, get them from specified file
-frc_use       = ...  boolean 
+frc_use       = ***  boolean
 # => use atomic forces
-frc_use_w     = ...  use weights for force components (default)
-# frc_use_u   = ...  use weights for force components
+frc_use_w     = ***  boolean, use weights for force components (default)
+# frc_use_u   = ***  boolean, use weights for force components
 #
 # Format of forces file: Lines of
 #   fx  fy  fz  dfx  dfy  dfz
@@ -1095,8 +1095,11 @@ mds_error_boxlen_gt = 1e4   Fatal error if any boxlen gets over this limit (Angs
 \end{Verbatim}
 
 
+Note: If a boolean value of logical true is to be input, use
+\verb+yes+, \verb+Yes+, \verb+true+, \verb+True+ or the first letter in these strings.
+Any other string evaluates to logical false.
 
-If neither weight nor uncertainty is specified for any property a default weight of 1
+Note: If neither weight nor uncertainty is specified for any property a default weight of 1
 is used. The weights $w_i$ are normalized: $\sum_i w_i = 1$, where the sum goes over
 properties with weights only, properties with uncertainties are not taken into account.
 
@@ -1190,29 +1193,34 @@ S2  B21  B22  B23 constr2    Species and vector components of second basis atom.
 ...
 \end{Verbatim}
 
+The real primitive vectors are $\mathbf{v}_i = L \mathbf{u}_i$.
+
 The strings \verb+S+$i$ --- e.g. Cr, H, W --- specify the species
 of the basis atom.
 
-If \verb+optional-string+ --- a single character or several
-of them --- is present, then the corresponding direction is
+If \verb+optional-string+ is present and is \verb+pbc+, then
+the corresponding direction is
 considered periodic, i.e. it is a true primitive vector
-in an infinite lattice.
+in an infinite lattice. Other strings are ignored.
 
-If the \verb+format+ keyword is \verb+scaled+ or \verb+Scaled+ or letter \verb+s+ or \verb+S+
-then \eg the first basis vector is
 
-$\qquad$ $\mathbf{b}_1 =$
-\verb+(L * B11)+ $\mathbf{e}_x +$ \verb+(L * B12)+ $\mathbf{e}_y$ \verb+(L * B13)+ $\mathbf{e}_z$
+If the \verb+format+ keyword is \verb+scaled+ or \verb+Scaled+ or
+letter \verb+s+ or \verb+S+ then \eg the $j:$th basis vector is
 
-This is equivalent to \textbf{Cartesian} in VASP. If instead \verb+internal+
-is used, then the same basis vector is
+$\qquad$ $\mathbf{b}_j =$
+\verb+(L * Bj1)+ $\mathbf{e}_x +$ \verb+(L * Bj2)+ $\mathbf{e}_y$ \verb+(L * Bj3)+ $\mathbf{e}_z$
 
-$\qquad$ $\mathbf{b}_1 = $
-\verb+(L * B11)+ $\mathbf{u}_1 + $ \verb+(L * B12)+ $\mathbf{u}_2 + $ \verb+(L * B13)+ $\mathbf{u}_3$.
+This is equivalent to \textbf{Cartesian} in VASP.
+
+If instead the \verb+format+ keyword is \verb+internal+ or \verb+Internal+
+or letter \verb+i+ or \verb+I+ then the basis vector is
+
+$\qquad$ $\mathbf{b}_j = $
+\verb+(L * Bj1)+ $\mathbf{u}_1 + $ \verb+(L * Bj2)+ $\mathbf{u}_2 + $ \verb+(L * Bj3)+ $\mathbf{u}_3$.
 
 This is equivalent to \textbf{Direct} in VASP.
 
-The real primitive vectors are $\mathbf{v}_i = L \mathbf{u}_i$.
+
 
 
 
@@ -1735,7 +1743,7 @@ J_{ij} &=& {\partial f_i \over \partial x_j}
 
 
 Convergence criteria in the technical specifications file are of the form
-(\verb+prop+, for fitting compound properties)
+(\verb+prop+, for fitting compound properties):
 
 \begin{Verbatim}[fontsize=\relsize{-1},frame=single]
 prop:functolabs =  1e-5   convergence when absolute merit function value is less
@@ -1745,6 +1753,8 @@ prop:gradtolabs =  1e-5   ... absolute gradient value ...
 prop:steptolabs =  1e-5   ... absolute step size ...
 prop:steptolrel = -1e-5   ... change in step size ...
 \end{Verbatim}
+
+Note: A \textbf{negative} value means that criterion is \textbf{not used}.
 
 \begin{itemize}
 \item

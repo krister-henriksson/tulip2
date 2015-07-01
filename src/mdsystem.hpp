@@ -16,10 +16,12 @@
 #include "utils-errors.hpp"
 
 #include "atomsystem.hpp"
+
+
 #include "mdsettings.hpp"
 #include "potinfo.hpp"
 #include "compound.hpp"
-#include "specs-fit-prop-pot.hpp"
+//#include "specs-fit-prop-pot.hpp"
 #include "physconst.hpp"
 #include "constants.hpp"
 

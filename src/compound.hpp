@@ -33,22 +33,6 @@ using namespace std;
 using namespace utils;
 
 
-//class MDSystem;
-//class ParamPot;
-
-
-/*
-class CompoundConstraints {
-public:
-  int iat;
-  bool is_fixed;
-  Vector<double> free_dir;
-  Vector<double> free_plane;
-
-  CompoundConstraints();
-} ;
-*/
-
 
 
 class CompoundStructure {
@@ -114,9 +98,6 @@ public:
   void finalize(const double ai, const double bi, const double ci);
 
   void origin_from_model(int & N1, int & N2, int & N3);
-
-  //bool matrix_is_a_symm_op(const Matrix<double> & R);
-  //void check_crystal_symm(void);
 
 } ;
 

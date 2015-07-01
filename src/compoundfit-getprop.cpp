@@ -84,6 +84,9 @@ void CompoundStructureFit::getprop(ParamPot & param){
   Vector<double> X_opt;
   double E0, V0;
 
+
+
+
   MDSystem mds;
 
   // Set potential:
@@ -204,6 +207,9 @@ void CompoundStructureFit::getprop(ParamPot & param){
   if (prop_use.frc){
     int nb = basis_elems.size();
 
+    // Need to average over forces when compound is enlargened for mds !!!
+    // Use: prop_pred.frc[ sitetype[i] ][k] += mds.frc[i][k] ...
+
     for (int i=0; i<nb; ++i){
       prop_pred.frc[i][0] = mds.frc[i][0];
       prop_pred.frc[i][1] = mds.frc[i][1];
@@ -278,15 +284,20 @@ void CompoundStructureFit::getprop(ParamPot & param){
     prop_pred.Emix = mds.Ep_tot;
     //cout << "Total potential energy of compound is " << mds.Ep_tot << endl;
 
-    Vector<int> ntype(mds.elem.nelem(), 0);
-    for (j=0; j<mds.natoms(); ++j)
-      ++(ntype[ (mds.type[j]<0) ? -mds.type[j] : mds.type[j] ]);
+    // Number of different elements present:
+    Vector<int> npres(mds.elem.nelem(), 0);
+    for (j=0; j<mds.natoms(); ++j){
+      int k = param.p_potinfo->elem.name2idx( mds.matter[j] );
+      ++(npres[k]);
+    }
     for (j=0; j<mds.elem.nelem(); ++j){
-      /*
-	cout << "Found " << ntype[j] << " atoms of type " << j
-	<< " each with cohesive energy " << param.p_potinfo->Ecoh_ref[ j ] << endl;
-      */
-      prop_pred.Emix -= ntype[j] * param.p_potinfo->Ecoh_ref[ j ];
+      std::string nname = param.p_potinfo->elem.idx2name(j);
+      cout << "Found " << npres[j] << " atoms with element index " << j
+	   << " with name " << nname
+	   << " and MD type " << param.p_potinfo->elem.atomtype( nname )
+	   << " each with cohesive energy " << param.p_potinfo->Ecoh_ref[ j ] << endl;
+      
+      prop_pred.Emix -= npres[j] * param.p_potinfo->Ecoh_ref[ j ];
     }
     prop_pred.Emix /= mds.natoms();
   }

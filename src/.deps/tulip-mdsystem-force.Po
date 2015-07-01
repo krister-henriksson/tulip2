@@ -356,51 +356,12 @@ tulip-mdsystem-force.o: mdsystem-force.cpp /usr/include/stdc-predef.h \
  /home/koehenri/include/utils-matrix.hpp \
  /home/koehenri/include/utils-string.hpp \
  /home/koehenri/include/utils-vector.hpp \
- /home/koehenri/include/utils-errors.hpp compound.hpp elem-iacs.hpp \
+ /home/koehenri/include/utils-errors.hpp elem-iacs.hpp \
  /home/koehenri/include/utils-vector3.hpp \
- /home/koehenri/include/utils-matrixsq3.hpp specs-fit-prop-pot.hpp \
- mdsettings.hpp helpfuns.hpp mdsystem.hpp potinfo.hpp potclasses.hpp \
+ /home/koehenri/include/utils-matrixsq3.hpp mdsystem.hpp mdsettings.hpp \
+ potinfo.hpp specs-fit-prop-pot.hpp potclasses.hpp \
  /home/koehenri/include/param.hpp /home/koehenri/include/omp-basics.hpp \
- physconst.hpp /home/koehenri/include/mtwister.hpp \
- /usr/include/boost/random/mersenne_twister.hpp \
- /usr/include/boost/cstdint.hpp \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
- /usr/include/boost/integer/integer_mask.hpp \
- /usr/include/boost/integer_fwd.hpp /usr/include/c++/4.8/climits \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/limits.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/syslimits.h \
- /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
- /usr/include/x86_64-linux-gnu/bits/local_lim.h \
- /usr/include/linux/limits.h \
- /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
- /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
- /usr/include/boost/integer.hpp /usr/include/boost/integer_traits.hpp \
- /usr/include/boost/random/detail/config.hpp \
- /usr/include/boost/random/detail/ptr_helper.hpp \
- /usr/include/boost/random/detail/seed.hpp \
- /usr/include/boost/utility/enable_if.hpp \
- /usr/include/boost/random/detail/seed_impl.hpp \
- /usr/include/boost/config/no_tr1/cmath.hpp \
- /usr/include/boost/integer/static_log2.hpp \
- /usr/include/boost/type_traits/is_signed.hpp \
- /usr/include/boost/type_traits/make_unsigned.hpp \
- /usr/include/boost/type_traits/is_unsigned.hpp \
- /usr/include/boost/type_traits/is_const.hpp \
- /usr/include/boost/type_traits/add_const.hpp \
- /usr/include/boost/type_traits/add_volatile.hpp \
- /usr/include/boost/random/detail/const_mod.hpp \
- /usr/include/boost/random/detail/large_arithmetic.hpp \
- /usr/include/boost/random/detail/integer_log2.hpp \
- /usr/include/boost/pending/integer_log2.hpp \
- /usr/include/boost/random/detail/disable_warnings.hpp \
- /usr/include/boost/random/detail/enable_warnings.hpp \
- /usr/include/boost/random/detail/signed_unsigned_tools.hpp \
- /usr/include/boost/random/detail/generator_bits.hpp \
- /usr/include/boost/random/detail/generator_seed_seq.hpp \
- /usr/include/boost/random/uniform_real.hpp \
- /usr/include/boost/random/uniform_real_distribution.hpp \
- /usr/include/boost/random/detail/operators.hpp \
- /usr/include/boost/random/variate_generator.hpp errors.hpp
+ compound.hpp physconst.hpp errors.hpp
 
 /usr/include/stdc-predef.h:
 
@@ -1232,23 +1193,19 @@ tulip-mdsystem-force.o: mdsystem-force.cpp /usr/include/stdc-predef.h \
 
 /home/koehenri/include/utils-errors.hpp:
 
-compound.hpp:
-
 elem-iacs.hpp:
 
 /home/koehenri/include/utils-vector3.hpp:
 
 /home/koehenri/include/utils-matrixsq3.hpp:
 
-specs-fit-prop-pot.hpp:
+mdsystem.hpp:
 
 mdsettings.hpp:
 
-helpfuns.hpp:
-
-mdsystem.hpp:
-
 potinfo.hpp:
+
+specs-fit-prop-pot.hpp:
 
 potclasses.hpp:
 
@@ -1256,94 +1213,8 @@ potclasses.hpp:
 
 /home/koehenri/include/omp-basics.hpp:
 
+compound.hpp:
+
 physconst.hpp:
-
-/home/koehenri/include/mtwister.hpp:
-
-/usr/include/boost/random/mersenne_twister.hpp:
-
-/usr/include/boost/cstdint.hpp:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h:
-
-/usr/include/stdint.h:
-
-/usr/include/boost/integer/integer_mask.hpp:
-
-/usr/include/boost/integer_fwd.hpp:
-
-/usr/include/c++/4.8/climits:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/limits.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/syslimits.h:
-
-/usr/include/limits.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/local_lim.h:
-
-/usr/include/linux/limits.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/xopen_lim.h:
-
-/usr/include/boost/integer.hpp:
-
-/usr/include/boost/integer_traits.hpp:
-
-/usr/include/boost/random/detail/config.hpp:
-
-/usr/include/boost/random/detail/ptr_helper.hpp:
-
-/usr/include/boost/random/detail/seed.hpp:
-
-/usr/include/boost/utility/enable_if.hpp:
-
-/usr/include/boost/random/detail/seed_impl.hpp:
-
-/usr/include/boost/config/no_tr1/cmath.hpp:
-
-/usr/include/boost/integer/static_log2.hpp:
-
-/usr/include/boost/type_traits/is_signed.hpp:
-
-/usr/include/boost/type_traits/make_unsigned.hpp:
-
-/usr/include/boost/type_traits/is_unsigned.hpp:
-
-/usr/include/boost/type_traits/is_const.hpp:
-
-/usr/include/boost/type_traits/add_const.hpp:
-
-/usr/include/boost/type_traits/add_volatile.hpp:
-
-/usr/include/boost/random/detail/const_mod.hpp:
-
-/usr/include/boost/random/detail/large_arithmetic.hpp:
-
-/usr/include/boost/random/detail/integer_log2.hpp:
-
-/usr/include/boost/pending/integer_log2.hpp:
-
-/usr/include/boost/random/detail/disable_warnings.hpp:
-
-/usr/include/boost/random/detail/enable_warnings.hpp:
-
-/usr/include/boost/random/detail/signed_unsigned_tools.hpp:
-
-/usr/include/boost/random/detail/generator_bits.hpp:
-
-/usr/include/boost/random/detail/generator_seed_seq.hpp:
-
-/usr/include/boost/random/uniform_real.hpp:
-
-/usr/include/boost/random/uniform_real_distribution.hpp:
-
-/usr/include/boost/random/detail/operators.hpp:
-
-/usr/include/boost/random/variate_generator.hpp:
 
 errors.hpp:

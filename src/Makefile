@@ -115,7 +115,7 @@ am_tulip_OBJECTS = tulip-compound.$(OBJEXT) \
 	tulip-tulip.$(OBJEXT)
 tulip_OBJECTS = $(am_tulip_OBJECTS)
 tulip_DEPENDENCIES =
-tulip_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(tulip_LDFLAGS) \
+tulip_LINK = $(CXXLD) $(tulip_CXXFLAGS) $(CXXFLAGS) $(tulip_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am__objects_1 = tulip_static-compound.$(OBJEXT) \
 	tulip_static-compoundfit.$(OBJEXT) \
@@ -146,8 +146,9 @@ am__objects_1 = tulip_static-compound.$(OBJEXT) \
 	tulip_static-tulip.$(OBJEXT)
 am_tulip_static_OBJECTS = $(am__objects_1)
 tulip_static_OBJECTS = $(am_tulip_static_OBJECTS)
-tulip_static_DEPENDENCIES =
-tulip_static_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+am__DEPENDENCIES_1 =
+tulip_static_DEPENDENCIES = $(am__DEPENDENCIES_1)
+tulip_static_LINK = $(CXXLD) $(tulip_static_CXXFLAGS) $(CXXFLAGS) \
 	$(tulip_static_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
@@ -235,7 +236,7 @@ CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2
+CXXFLAGS = -I/home/koehenri/include
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -250,7 +251,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LDFLAGS = 
+LDFLAGS = -L/home/koehenri/lib
 LIBOBJS = 
 LIBS = -lsymspg -lrt -lm 
 LTLIBOBJS = 
@@ -366,12 +367,17 @@ ma_std = -ansi -pedantic -std=c++98
 ma_opt = -O2
 ma_dbg = -g
 ma_omp = -fopenmp
-tulip_CPPFLAGS = $(ma_inc) $(ma_warn) $(ma_std) $(ma_opt) $(ma_dbg) $(ma_omp)
-tulip_static_CPPFLAGS = $(ma_inc) $(ma_warn) $(ma_std) $(ma_opt) $(ma_dbg) $(ma_omp)
+AM_CFLAGS = 
+AM_CPPFLAGS = 
+AM_CXXFLAGS = $(ma_inc) $(ma_warn) $(ma_std) $(ma_opt) $(ma_dbg) $(ma_omp)
+AM_LDADD = -lutils -lsymspg -lm -lrt
+AM_LDFLAGS = $(ma_omp)
+tulip_CXXFLAGS = $(AM_CXXFLAGS)
+tulip_static_CXXFLAGS = $(AM_CXXFLAGS)
 tulip_LDADD = -lutils -lsymspg -lm -lrt
 tulip_LDFLAGS = $(ma_omp)
-tulip_static_LDADD = -lutils -lsymspg -lm -lrt
-tulip_static_LDFLAGS = $(ma_omp) -static
+tulip_static_LDADD = $(AM_LDADD)
+tulip_static_LDFLAGS = $(AM_LDFLAGS) -static
 all: all-am
 
 .SUFFIXES:
@@ -535,788 +541,788 @@ include ./$(DEPDIR)/tulip_static-tulip.Po
 #	$(AM_V_CXX_no)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 tulip-compound.o: compound.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-compound.o -MD -MP -MF $(DEPDIR)/tulip-compound.Tpo -c -o tulip-compound.o `test -f 'compound.cpp' || echo '$(srcdir)/'`compound.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-compound.o -MD -MP -MF $(DEPDIR)/tulip-compound.Tpo -c -o tulip-compound.o `test -f 'compound.cpp' || echo '$(srcdir)/'`compound.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-compound.Tpo $(DEPDIR)/tulip-compound.Po
 #	$(AM_V_CXX)source='compound.cpp' object='tulip-compound.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compound.o `test -f 'compound.cpp' || echo '$(srcdir)/'`compound.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compound.o `test -f 'compound.cpp' || echo '$(srcdir)/'`compound.cpp
 
 tulip-compound.obj: compound.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-compound.obj -MD -MP -MF $(DEPDIR)/tulip-compound.Tpo -c -o tulip-compound.obj `if test -f 'compound.cpp'; then $(CYGPATH_W) 'compound.cpp'; else $(CYGPATH_W) '$(srcdir)/compound.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-compound.obj -MD -MP -MF $(DEPDIR)/tulip-compound.Tpo -c -o tulip-compound.obj `if test -f 'compound.cpp'; then $(CYGPATH_W) 'compound.cpp'; else $(CYGPATH_W) '$(srcdir)/compound.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-compound.Tpo $(DEPDIR)/tulip-compound.Po
 #	$(AM_V_CXX)source='compound.cpp' object='tulip-compound.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compound.obj `if test -f 'compound.cpp'; then $(CYGPATH_W) 'compound.cpp'; else $(CYGPATH_W) '$(srcdir)/compound.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compound.obj `if test -f 'compound.cpp'; then $(CYGPATH_W) 'compound.cpp'; else $(CYGPATH_W) '$(srcdir)/compound.cpp'; fi`
 
 tulip-compoundfit.o: compoundfit.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-compoundfit.o -MD -MP -MF $(DEPDIR)/tulip-compoundfit.Tpo -c -o tulip-compoundfit.o `test -f 'compoundfit.cpp' || echo '$(srcdir)/'`compoundfit.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-compoundfit.o -MD -MP -MF $(DEPDIR)/tulip-compoundfit.Tpo -c -o tulip-compoundfit.o `test -f 'compoundfit.cpp' || echo '$(srcdir)/'`compoundfit.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-compoundfit.Tpo $(DEPDIR)/tulip-compoundfit.Po
 #	$(AM_V_CXX)source='compoundfit.cpp' object='tulip-compoundfit.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compoundfit.o `test -f 'compoundfit.cpp' || echo '$(srcdir)/'`compoundfit.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compoundfit.o `test -f 'compoundfit.cpp' || echo '$(srcdir)/'`compoundfit.cpp
 
 tulip-compoundfit.obj: compoundfit.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-compoundfit.obj -MD -MP -MF $(DEPDIR)/tulip-compoundfit.Tpo -c -o tulip-compoundfit.obj `if test -f 'compoundfit.cpp'; then $(CYGPATH_W) 'compoundfit.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-compoundfit.obj -MD -MP -MF $(DEPDIR)/tulip-compoundfit.Tpo -c -o tulip-compoundfit.obj `if test -f 'compoundfit.cpp'; then $(CYGPATH_W) 'compoundfit.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-compoundfit.Tpo $(DEPDIR)/tulip-compoundfit.Po
 #	$(AM_V_CXX)source='compoundfit.cpp' object='tulip-compoundfit.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compoundfit.obj `if test -f 'compoundfit.cpp'; then $(CYGPATH_W) 'compoundfit.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compoundfit.obj `if test -f 'compoundfit.cpp'; then $(CYGPATH_W) 'compoundfit.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit.cpp'; fi`
 
 tulip-compoundfit-getprop.o: compoundfit-getprop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-compoundfit-getprop.o -MD -MP -MF $(DEPDIR)/tulip-compoundfit-getprop.Tpo -c -o tulip-compoundfit-getprop.o `test -f 'compoundfit-getprop.cpp' || echo '$(srcdir)/'`compoundfit-getprop.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-compoundfit-getprop.o -MD -MP -MF $(DEPDIR)/tulip-compoundfit-getprop.Tpo -c -o tulip-compoundfit-getprop.o `test -f 'compoundfit-getprop.cpp' || echo '$(srcdir)/'`compoundfit-getprop.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-compoundfit-getprop.Tpo $(DEPDIR)/tulip-compoundfit-getprop.Po
 #	$(AM_V_CXX)source='compoundfit-getprop.cpp' object='tulip-compoundfit-getprop.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compoundfit-getprop.o `test -f 'compoundfit-getprop.cpp' || echo '$(srcdir)/'`compoundfit-getprop.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compoundfit-getprop.o `test -f 'compoundfit-getprop.cpp' || echo '$(srcdir)/'`compoundfit-getprop.cpp
 
 tulip-compoundfit-getprop.obj: compoundfit-getprop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-compoundfit-getprop.obj -MD -MP -MF $(DEPDIR)/tulip-compoundfit-getprop.Tpo -c -o tulip-compoundfit-getprop.obj `if test -f 'compoundfit-getprop.cpp'; then $(CYGPATH_W) 'compoundfit-getprop.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-getprop.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-compoundfit-getprop.obj -MD -MP -MF $(DEPDIR)/tulip-compoundfit-getprop.Tpo -c -o tulip-compoundfit-getprop.obj `if test -f 'compoundfit-getprop.cpp'; then $(CYGPATH_W) 'compoundfit-getprop.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-getprop.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-compoundfit-getprop.Tpo $(DEPDIR)/tulip-compoundfit-getprop.Po
 #	$(AM_V_CXX)source='compoundfit-getprop.cpp' object='tulip-compoundfit-getprop.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compoundfit-getprop.obj `if test -f 'compoundfit-getprop.cpp'; then $(CYGPATH_W) 'compoundfit-getprop.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-getprop.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compoundfit-getprop.obj `if test -f 'compoundfit-getprop.cpp'; then $(CYGPATH_W) 'compoundfit-getprop.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-getprop.cpp'; fi`
 
 tulip-compoundfit-list.o: compoundfit-list.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-compoundfit-list.o -MD -MP -MF $(DEPDIR)/tulip-compoundfit-list.Tpo -c -o tulip-compoundfit-list.o `test -f 'compoundfit-list.cpp' || echo '$(srcdir)/'`compoundfit-list.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-compoundfit-list.o -MD -MP -MF $(DEPDIR)/tulip-compoundfit-list.Tpo -c -o tulip-compoundfit-list.o `test -f 'compoundfit-list.cpp' || echo '$(srcdir)/'`compoundfit-list.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-compoundfit-list.Tpo $(DEPDIR)/tulip-compoundfit-list.Po
 #	$(AM_V_CXX)source='compoundfit-list.cpp' object='tulip-compoundfit-list.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compoundfit-list.o `test -f 'compoundfit-list.cpp' || echo '$(srcdir)/'`compoundfit-list.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compoundfit-list.o `test -f 'compoundfit-list.cpp' || echo '$(srcdir)/'`compoundfit-list.cpp
 
 tulip-compoundfit-list.obj: compoundfit-list.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-compoundfit-list.obj -MD -MP -MF $(DEPDIR)/tulip-compoundfit-list.Tpo -c -o tulip-compoundfit-list.obj `if test -f 'compoundfit-list.cpp'; then $(CYGPATH_W) 'compoundfit-list.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-list.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-compoundfit-list.obj -MD -MP -MF $(DEPDIR)/tulip-compoundfit-list.Tpo -c -o tulip-compoundfit-list.obj `if test -f 'compoundfit-list.cpp'; then $(CYGPATH_W) 'compoundfit-list.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-list.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-compoundfit-list.Tpo $(DEPDIR)/tulip-compoundfit-list.Po
 #	$(AM_V_CXX)source='compoundfit-list.cpp' object='tulip-compoundfit-list.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compoundfit-list.obj `if test -f 'compoundfit-list.cpp'; then $(CYGPATH_W) 'compoundfit-list.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-list.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-compoundfit-list.obj `if test -f 'compoundfit-list.cpp'; then $(CYGPATH_W) 'compoundfit-list.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-list.cpp'; fi`
 
 tulip-elem-iacs.o: elem-iacs.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-elem-iacs.o -MD -MP -MF $(DEPDIR)/tulip-elem-iacs.Tpo -c -o tulip-elem-iacs.o `test -f 'elem-iacs.cpp' || echo '$(srcdir)/'`elem-iacs.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-elem-iacs.o -MD -MP -MF $(DEPDIR)/tulip-elem-iacs.Tpo -c -o tulip-elem-iacs.o `test -f 'elem-iacs.cpp' || echo '$(srcdir)/'`elem-iacs.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-elem-iacs.Tpo $(DEPDIR)/tulip-elem-iacs.Po
 #	$(AM_V_CXX)source='elem-iacs.cpp' object='tulip-elem-iacs.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-elem-iacs.o `test -f 'elem-iacs.cpp' || echo '$(srcdir)/'`elem-iacs.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-elem-iacs.o `test -f 'elem-iacs.cpp' || echo '$(srcdir)/'`elem-iacs.cpp
 
 tulip-elem-iacs.obj: elem-iacs.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-elem-iacs.obj -MD -MP -MF $(DEPDIR)/tulip-elem-iacs.Tpo -c -o tulip-elem-iacs.obj `if test -f 'elem-iacs.cpp'; then $(CYGPATH_W) 'elem-iacs.cpp'; else $(CYGPATH_W) '$(srcdir)/elem-iacs.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-elem-iacs.obj -MD -MP -MF $(DEPDIR)/tulip-elem-iacs.Tpo -c -o tulip-elem-iacs.obj `if test -f 'elem-iacs.cpp'; then $(CYGPATH_W) 'elem-iacs.cpp'; else $(CYGPATH_W) '$(srcdir)/elem-iacs.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-elem-iacs.Tpo $(DEPDIR)/tulip-elem-iacs.Po
 #	$(AM_V_CXX)source='elem-iacs.cpp' object='tulip-elem-iacs.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-elem-iacs.obj `if test -f 'elem-iacs.cpp'; then $(CYGPATH_W) 'elem-iacs.cpp'; else $(CYGPATH_W) '$(srcdir)/elem-iacs.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-elem-iacs.obj `if test -f 'elem-iacs.cpp'; then $(CYGPATH_W) 'elem-iacs.cpp'; else $(CYGPATH_W) '$(srcdir)/elem-iacs.cpp'; fi`
 
 tulip-get-comp-prop.o: get-comp-prop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-get-comp-prop.o -MD -MP -MF $(DEPDIR)/tulip-get-comp-prop.Tpo -c -o tulip-get-comp-prop.o `test -f 'get-comp-prop.cpp' || echo '$(srcdir)/'`get-comp-prop.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-get-comp-prop.o -MD -MP -MF $(DEPDIR)/tulip-get-comp-prop.Tpo -c -o tulip-get-comp-prop.o `test -f 'get-comp-prop.cpp' || echo '$(srcdir)/'`get-comp-prop.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-get-comp-prop.Tpo $(DEPDIR)/tulip-get-comp-prop.Po
 #	$(AM_V_CXX)source='get-comp-prop.cpp' object='tulip-get-comp-prop.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-get-comp-prop.o `test -f 'get-comp-prop.cpp' || echo '$(srcdir)/'`get-comp-prop.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-get-comp-prop.o `test -f 'get-comp-prop.cpp' || echo '$(srcdir)/'`get-comp-prop.cpp
 
 tulip-get-comp-prop.obj: get-comp-prop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-get-comp-prop.obj -MD -MP -MF $(DEPDIR)/tulip-get-comp-prop.Tpo -c -o tulip-get-comp-prop.obj `if test -f 'get-comp-prop.cpp'; then $(CYGPATH_W) 'get-comp-prop.cpp'; else $(CYGPATH_W) '$(srcdir)/get-comp-prop.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-get-comp-prop.obj -MD -MP -MF $(DEPDIR)/tulip-get-comp-prop.Tpo -c -o tulip-get-comp-prop.obj `if test -f 'get-comp-prop.cpp'; then $(CYGPATH_W) 'get-comp-prop.cpp'; else $(CYGPATH_W) '$(srcdir)/get-comp-prop.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-get-comp-prop.Tpo $(DEPDIR)/tulip-get-comp-prop.Po
 #	$(AM_V_CXX)source='get-comp-prop.cpp' object='tulip-get-comp-prop.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-get-comp-prop.obj `if test -f 'get-comp-prop.cpp'; then $(CYGPATH_W) 'get-comp-prop.cpp'; else $(CYGPATH_W) '$(srcdir)/get-comp-prop.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-get-comp-prop.obj `if test -f 'get-comp-prop.cpp'; then $(CYGPATH_W) 'get-comp-prop.cpp'; else $(CYGPATH_W) '$(srcdir)/get-comp-prop.cpp'; fi`
 
 tulip-get-ini-fit-data.o: get-ini-fit-data.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-get-ini-fit-data.o -MD -MP -MF $(DEPDIR)/tulip-get-ini-fit-data.Tpo -c -o tulip-get-ini-fit-data.o `test -f 'get-ini-fit-data.cpp' || echo '$(srcdir)/'`get-ini-fit-data.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-get-ini-fit-data.o -MD -MP -MF $(DEPDIR)/tulip-get-ini-fit-data.Tpo -c -o tulip-get-ini-fit-data.o `test -f 'get-ini-fit-data.cpp' || echo '$(srcdir)/'`get-ini-fit-data.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-get-ini-fit-data.Tpo $(DEPDIR)/tulip-get-ini-fit-data.Po
 #	$(AM_V_CXX)source='get-ini-fit-data.cpp' object='tulip-get-ini-fit-data.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-get-ini-fit-data.o `test -f 'get-ini-fit-data.cpp' || echo '$(srcdir)/'`get-ini-fit-data.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-get-ini-fit-data.o `test -f 'get-ini-fit-data.cpp' || echo '$(srcdir)/'`get-ini-fit-data.cpp
 
 tulip-get-ini-fit-data.obj: get-ini-fit-data.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-get-ini-fit-data.obj -MD -MP -MF $(DEPDIR)/tulip-get-ini-fit-data.Tpo -c -o tulip-get-ini-fit-data.obj `if test -f 'get-ini-fit-data.cpp'; then $(CYGPATH_W) 'get-ini-fit-data.cpp'; else $(CYGPATH_W) '$(srcdir)/get-ini-fit-data.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-get-ini-fit-data.obj -MD -MP -MF $(DEPDIR)/tulip-get-ini-fit-data.Tpo -c -o tulip-get-ini-fit-data.obj `if test -f 'get-ini-fit-data.cpp'; then $(CYGPATH_W) 'get-ini-fit-data.cpp'; else $(CYGPATH_W) '$(srcdir)/get-ini-fit-data.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-get-ini-fit-data.Tpo $(DEPDIR)/tulip-get-ini-fit-data.Po
 #	$(AM_V_CXX)source='get-ini-fit-data.cpp' object='tulip-get-ini-fit-data.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-get-ini-fit-data.obj `if test -f 'get-ini-fit-data.cpp'; then $(CYGPATH_W) 'get-ini-fit-data.cpp'; else $(CYGPATH_W) '$(srcdir)/get-ini-fit-data.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-get-ini-fit-data.obj `if test -f 'get-ini-fit-data.cpp'; then $(CYGPATH_W) 'get-ini-fit-data.cpp'; else $(CYGPATH_W) '$(srcdir)/get-ini-fit-data.cpp'; fi`
 
 tulip-helpfuns.o: helpfuns.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-helpfuns.o -MD -MP -MF $(DEPDIR)/tulip-helpfuns.Tpo -c -o tulip-helpfuns.o `test -f 'helpfuns.cpp' || echo '$(srcdir)/'`helpfuns.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-helpfuns.o -MD -MP -MF $(DEPDIR)/tulip-helpfuns.Tpo -c -o tulip-helpfuns.o `test -f 'helpfuns.cpp' || echo '$(srcdir)/'`helpfuns.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-helpfuns.Tpo $(DEPDIR)/tulip-helpfuns.Po
 #	$(AM_V_CXX)source='helpfuns.cpp' object='tulip-helpfuns.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-helpfuns.o `test -f 'helpfuns.cpp' || echo '$(srcdir)/'`helpfuns.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-helpfuns.o `test -f 'helpfuns.cpp' || echo '$(srcdir)/'`helpfuns.cpp
 
 tulip-helpfuns.obj: helpfuns.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-helpfuns.obj -MD -MP -MF $(DEPDIR)/tulip-helpfuns.Tpo -c -o tulip-helpfuns.obj `if test -f 'helpfuns.cpp'; then $(CYGPATH_W) 'helpfuns.cpp'; else $(CYGPATH_W) '$(srcdir)/helpfuns.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-helpfuns.obj -MD -MP -MF $(DEPDIR)/tulip-helpfuns.Tpo -c -o tulip-helpfuns.obj `if test -f 'helpfuns.cpp'; then $(CYGPATH_W) 'helpfuns.cpp'; else $(CYGPATH_W) '$(srcdir)/helpfuns.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-helpfuns.Tpo $(DEPDIR)/tulip-helpfuns.Po
 #	$(AM_V_CXX)source='helpfuns.cpp' object='tulip-helpfuns.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-helpfuns.obj `if test -f 'helpfuns.cpp'; then $(CYGPATH_W) 'helpfuns.cpp'; else $(CYGPATH_W) '$(srcdir)/helpfuns.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-helpfuns.obj `if test -f 'helpfuns.cpp'; then $(CYGPATH_W) 'helpfuns.cpp'; else $(CYGPATH_W) '$(srcdir)/helpfuns.cpp'; fi`
 
 tulip-lattice-simple.o: lattice-simple.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-lattice-simple.o -MD -MP -MF $(DEPDIR)/tulip-lattice-simple.Tpo -c -o tulip-lattice-simple.o `test -f 'lattice-simple.cpp' || echo '$(srcdir)/'`lattice-simple.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-lattice-simple.o -MD -MP -MF $(DEPDIR)/tulip-lattice-simple.Tpo -c -o tulip-lattice-simple.o `test -f 'lattice-simple.cpp' || echo '$(srcdir)/'`lattice-simple.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-lattice-simple.Tpo $(DEPDIR)/tulip-lattice-simple.Po
 #	$(AM_V_CXX)source='lattice-simple.cpp' object='tulip-lattice-simple.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-lattice-simple.o `test -f 'lattice-simple.cpp' || echo '$(srcdir)/'`lattice-simple.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-lattice-simple.o `test -f 'lattice-simple.cpp' || echo '$(srcdir)/'`lattice-simple.cpp
 
 tulip-lattice-simple.obj: lattice-simple.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-lattice-simple.obj -MD -MP -MF $(DEPDIR)/tulip-lattice-simple.Tpo -c -o tulip-lattice-simple.obj `if test -f 'lattice-simple.cpp'; then $(CYGPATH_W) 'lattice-simple.cpp'; else $(CYGPATH_W) '$(srcdir)/lattice-simple.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-lattice-simple.obj -MD -MP -MF $(DEPDIR)/tulip-lattice-simple.Tpo -c -o tulip-lattice-simple.obj `if test -f 'lattice-simple.cpp'; then $(CYGPATH_W) 'lattice-simple.cpp'; else $(CYGPATH_W) '$(srcdir)/lattice-simple.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-lattice-simple.Tpo $(DEPDIR)/tulip-lattice-simple.Po
 #	$(AM_V_CXX)source='lattice-simple.cpp' object='tulip-lattice-simple.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-lattice-simple.obj `if test -f 'lattice-simple.cpp'; then $(CYGPATH_W) 'lattice-simple.cpp'; else $(CYGPATH_W) '$(srcdir)/lattice-simple.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-lattice-simple.obj `if test -f 'lattice-simple.cpp'; then $(CYGPATH_W) 'lattice-simple.cpp'; else $(CYGPATH_W) '$(srcdir)/lattice-simple.cpp'; fi`
 
 tulip-mdsettings.o: mdsettings.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsettings.o -MD -MP -MF $(DEPDIR)/tulip-mdsettings.Tpo -c -o tulip-mdsettings.o `test -f 'mdsettings.cpp' || echo '$(srcdir)/'`mdsettings.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsettings.o -MD -MP -MF $(DEPDIR)/tulip-mdsettings.Tpo -c -o tulip-mdsettings.o `test -f 'mdsettings.cpp' || echo '$(srcdir)/'`mdsettings.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-mdsettings.Tpo $(DEPDIR)/tulip-mdsettings.Po
 #	$(AM_V_CXX)source='mdsettings.cpp' object='tulip-mdsettings.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsettings.o `test -f 'mdsettings.cpp' || echo '$(srcdir)/'`mdsettings.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsettings.o `test -f 'mdsettings.cpp' || echo '$(srcdir)/'`mdsettings.cpp
 
 tulip-mdsettings.obj: mdsettings.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsettings.obj -MD -MP -MF $(DEPDIR)/tulip-mdsettings.Tpo -c -o tulip-mdsettings.obj `if test -f 'mdsettings.cpp'; then $(CYGPATH_W) 'mdsettings.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsettings.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsettings.obj -MD -MP -MF $(DEPDIR)/tulip-mdsettings.Tpo -c -o tulip-mdsettings.obj `if test -f 'mdsettings.cpp'; then $(CYGPATH_W) 'mdsettings.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsettings.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-mdsettings.Tpo $(DEPDIR)/tulip-mdsettings.Po
 #	$(AM_V_CXX)source='mdsettings.cpp' object='tulip-mdsettings.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsettings.obj `if test -f 'mdsettings.cpp'; then $(CYGPATH_W) 'mdsettings.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsettings.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsettings.obj `if test -f 'mdsettings.cpp'; then $(CYGPATH_W) 'mdsettings.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsettings.cpp'; fi`
 
 tulip-mdsystem.o: mdsystem.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem.o -MD -MP -MF $(DEPDIR)/tulip-mdsystem.Tpo -c -o tulip-mdsystem.o `test -f 'mdsystem.cpp' || echo '$(srcdir)/'`mdsystem.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem.o -MD -MP -MF $(DEPDIR)/tulip-mdsystem.Tpo -c -o tulip-mdsystem.o `test -f 'mdsystem.cpp' || echo '$(srcdir)/'`mdsystem.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-mdsystem.Tpo $(DEPDIR)/tulip-mdsystem.Po
 #	$(AM_V_CXX)source='mdsystem.cpp' object='tulip-mdsystem.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem.o `test -f 'mdsystem.cpp' || echo '$(srcdir)/'`mdsystem.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem.o `test -f 'mdsystem.cpp' || echo '$(srcdir)/'`mdsystem.cpp
 
 tulip-mdsystem.obj: mdsystem.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem.obj -MD -MP -MF $(DEPDIR)/tulip-mdsystem.Tpo -c -o tulip-mdsystem.obj `if test -f 'mdsystem.cpp'; then $(CYGPATH_W) 'mdsystem.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem.obj -MD -MP -MF $(DEPDIR)/tulip-mdsystem.Tpo -c -o tulip-mdsystem.obj `if test -f 'mdsystem.cpp'; then $(CYGPATH_W) 'mdsystem.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-mdsystem.Tpo $(DEPDIR)/tulip-mdsystem.Po
 #	$(AM_V_CXX)source='mdsystem.cpp' object='tulip-mdsystem.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem.obj `if test -f 'mdsystem.cpp'; then $(CYGPATH_W) 'mdsystem.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem.obj `if test -f 'mdsystem.cpp'; then $(CYGPATH_W) 'mdsystem.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem.cpp'; fi`
 
 tulip-mdsystem-force.o: mdsystem-force.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-force.o -MD -MP -MF $(DEPDIR)/tulip-mdsystem-force.Tpo -c -o tulip-mdsystem-force.o `test -f 'mdsystem-force.cpp' || echo '$(srcdir)/'`mdsystem-force.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-force.o -MD -MP -MF $(DEPDIR)/tulip-mdsystem-force.Tpo -c -o tulip-mdsystem-force.o `test -f 'mdsystem-force.cpp' || echo '$(srcdir)/'`mdsystem-force.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-mdsystem-force.Tpo $(DEPDIR)/tulip-mdsystem-force.Po
 #	$(AM_V_CXX)source='mdsystem-force.cpp' object='tulip-mdsystem-force.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-force.o `test -f 'mdsystem-force.cpp' || echo '$(srcdir)/'`mdsystem-force.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-force.o `test -f 'mdsystem-force.cpp' || echo '$(srcdir)/'`mdsystem-force.cpp
 
 tulip-mdsystem-force.obj: mdsystem-force.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-force.obj -MD -MP -MF $(DEPDIR)/tulip-mdsystem-force.Tpo -c -o tulip-mdsystem-force.obj `if test -f 'mdsystem-force.cpp'; then $(CYGPATH_W) 'mdsystem-force.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-force.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-force.obj -MD -MP -MF $(DEPDIR)/tulip-mdsystem-force.Tpo -c -o tulip-mdsystem-force.obj `if test -f 'mdsystem-force.cpp'; then $(CYGPATH_W) 'mdsystem-force.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-force.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-mdsystem-force.Tpo $(DEPDIR)/tulip-mdsystem-force.Po
 #	$(AM_V_CXX)source='mdsystem-force.cpp' object='tulip-mdsystem-force.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-force.obj `if test -f 'mdsystem-force.cpp'; then $(CYGPATH_W) 'mdsystem-force.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-force.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-force.obj `if test -f 'mdsystem-force.cpp'; then $(CYGPATH_W) 'mdsystem-force.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-force.cpp'; fi`
 
 tulip-mdsystem-pot-abop.o: mdsystem-pot-abop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-pot-abop.o -MD -MP -MF $(DEPDIR)/tulip-mdsystem-pot-abop.Tpo -c -o tulip-mdsystem-pot-abop.o `test -f 'mdsystem-pot-abop.cpp' || echo '$(srcdir)/'`mdsystem-pot-abop.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-pot-abop.o -MD -MP -MF $(DEPDIR)/tulip-mdsystem-pot-abop.Tpo -c -o tulip-mdsystem-pot-abop.o `test -f 'mdsystem-pot-abop.cpp' || echo '$(srcdir)/'`mdsystem-pot-abop.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-mdsystem-pot-abop.Tpo $(DEPDIR)/tulip-mdsystem-pot-abop.Po
 #	$(AM_V_CXX)source='mdsystem-pot-abop.cpp' object='tulip-mdsystem-pot-abop.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-pot-abop.o `test -f 'mdsystem-pot-abop.cpp' || echo '$(srcdir)/'`mdsystem-pot-abop.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-pot-abop.o `test -f 'mdsystem-pot-abop.cpp' || echo '$(srcdir)/'`mdsystem-pot-abop.cpp
 
 tulip-mdsystem-pot-abop.obj: mdsystem-pot-abop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-pot-abop.obj -MD -MP -MF $(DEPDIR)/tulip-mdsystem-pot-abop.Tpo -c -o tulip-mdsystem-pot-abop.obj `if test -f 'mdsystem-pot-abop.cpp'; then $(CYGPATH_W) 'mdsystem-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-abop.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-pot-abop.obj -MD -MP -MF $(DEPDIR)/tulip-mdsystem-pot-abop.Tpo -c -o tulip-mdsystem-pot-abop.obj `if test -f 'mdsystem-pot-abop.cpp'; then $(CYGPATH_W) 'mdsystem-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-abop.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-mdsystem-pot-abop.Tpo $(DEPDIR)/tulip-mdsystem-pot-abop.Po
 #	$(AM_V_CXX)source='mdsystem-pot-abop.cpp' object='tulip-mdsystem-pot-abop.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-pot-abop.obj `if test -f 'mdsystem-pot-abop.cpp'; then $(CYGPATH_W) 'mdsystem-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-abop.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-pot-abop.obj `if test -f 'mdsystem-pot-abop.cpp'; then $(CYGPATH_W) 'mdsystem-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-abop.cpp'; fi`
 
 tulip-mdsystem-pot-eam.o: mdsystem-pot-eam.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-pot-eam.o -MD -MP -MF $(DEPDIR)/tulip-mdsystem-pot-eam.Tpo -c -o tulip-mdsystem-pot-eam.o `test -f 'mdsystem-pot-eam.cpp' || echo '$(srcdir)/'`mdsystem-pot-eam.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-pot-eam.o -MD -MP -MF $(DEPDIR)/tulip-mdsystem-pot-eam.Tpo -c -o tulip-mdsystem-pot-eam.o `test -f 'mdsystem-pot-eam.cpp' || echo '$(srcdir)/'`mdsystem-pot-eam.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-mdsystem-pot-eam.Tpo $(DEPDIR)/tulip-mdsystem-pot-eam.Po
 #	$(AM_V_CXX)source='mdsystem-pot-eam.cpp' object='tulip-mdsystem-pot-eam.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-pot-eam.o `test -f 'mdsystem-pot-eam.cpp' || echo '$(srcdir)/'`mdsystem-pot-eam.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-pot-eam.o `test -f 'mdsystem-pot-eam.cpp' || echo '$(srcdir)/'`mdsystem-pot-eam.cpp
 
 tulip-mdsystem-pot-eam.obj: mdsystem-pot-eam.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-pot-eam.obj -MD -MP -MF $(DEPDIR)/tulip-mdsystem-pot-eam.Tpo -c -o tulip-mdsystem-pot-eam.obj `if test -f 'mdsystem-pot-eam.cpp'; then $(CYGPATH_W) 'mdsystem-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-eam.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-pot-eam.obj -MD -MP -MF $(DEPDIR)/tulip-mdsystem-pot-eam.Tpo -c -o tulip-mdsystem-pot-eam.obj `if test -f 'mdsystem-pot-eam.cpp'; then $(CYGPATH_W) 'mdsystem-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-eam.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-mdsystem-pot-eam.Tpo $(DEPDIR)/tulip-mdsystem-pot-eam.Po
 #	$(AM_V_CXX)source='mdsystem-pot-eam.cpp' object='tulip-mdsystem-pot-eam.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-pot-eam.obj `if test -f 'mdsystem-pot-eam.cpp'; then $(CYGPATH_W) 'mdsystem-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-eam.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-pot-eam.obj `if test -f 'mdsystem-pot-eam.cpp'; then $(CYGPATH_W) 'mdsystem-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-eam.cpp'; fi`
 
 tulip-mdsystem-relax.o: mdsystem-relax.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-relax.o -MD -MP -MF $(DEPDIR)/tulip-mdsystem-relax.Tpo -c -o tulip-mdsystem-relax.o `test -f 'mdsystem-relax.cpp' || echo '$(srcdir)/'`mdsystem-relax.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-relax.o -MD -MP -MF $(DEPDIR)/tulip-mdsystem-relax.Tpo -c -o tulip-mdsystem-relax.o `test -f 'mdsystem-relax.cpp' || echo '$(srcdir)/'`mdsystem-relax.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-mdsystem-relax.Tpo $(DEPDIR)/tulip-mdsystem-relax.Po
 #	$(AM_V_CXX)source='mdsystem-relax.cpp' object='tulip-mdsystem-relax.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-relax.o `test -f 'mdsystem-relax.cpp' || echo '$(srcdir)/'`mdsystem-relax.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-relax.o `test -f 'mdsystem-relax.cpp' || echo '$(srcdir)/'`mdsystem-relax.cpp
 
 tulip-mdsystem-relax.obj: mdsystem-relax.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-relax.obj -MD -MP -MF $(DEPDIR)/tulip-mdsystem-relax.Tpo -c -o tulip-mdsystem-relax.obj `if test -f 'mdsystem-relax.cpp'; then $(CYGPATH_W) 'mdsystem-relax.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-relax.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-mdsystem-relax.obj -MD -MP -MF $(DEPDIR)/tulip-mdsystem-relax.Tpo -c -o tulip-mdsystem-relax.obj `if test -f 'mdsystem-relax.cpp'; then $(CYGPATH_W) 'mdsystem-relax.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-relax.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-mdsystem-relax.Tpo $(DEPDIR)/tulip-mdsystem-relax.Po
 #	$(AM_V_CXX)source='mdsystem-relax.cpp' object='tulip-mdsystem-relax.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-relax.obj `if test -f 'mdsystem-relax.cpp'; then $(CYGPATH_W) 'mdsystem-relax.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-relax.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-mdsystem-relax.obj `if test -f 'mdsystem-relax.cpp'; then $(CYGPATH_W) 'mdsystem-relax.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-relax.cpp'; fi`
 
 tulip-param-pot.o: param-pot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-param-pot.o -MD -MP -MF $(DEPDIR)/tulip-param-pot.Tpo -c -o tulip-param-pot.o `test -f 'param-pot.cpp' || echo '$(srcdir)/'`param-pot.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-param-pot.o -MD -MP -MF $(DEPDIR)/tulip-param-pot.Tpo -c -o tulip-param-pot.o `test -f 'param-pot.cpp' || echo '$(srcdir)/'`param-pot.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-param-pot.Tpo $(DEPDIR)/tulip-param-pot.Po
 #	$(AM_V_CXX)source='param-pot.cpp' object='tulip-param-pot.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-param-pot.o `test -f 'param-pot.cpp' || echo '$(srcdir)/'`param-pot.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-param-pot.o `test -f 'param-pot.cpp' || echo '$(srcdir)/'`param-pot.cpp
 
 tulip-param-pot.obj: param-pot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-param-pot.obj -MD -MP -MF $(DEPDIR)/tulip-param-pot.Tpo -c -o tulip-param-pot.obj `if test -f 'param-pot.cpp'; then $(CYGPATH_W) 'param-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/param-pot.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-param-pot.obj -MD -MP -MF $(DEPDIR)/tulip-param-pot.Tpo -c -o tulip-param-pot.obj `if test -f 'param-pot.cpp'; then $(CYGPATH_W) 'param-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/param-pot.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-param-pot.Tpo $(DEPDIR)/tulip-param-pot.Po
 #	$(AM_V_CXX)source='param-pot.cpp' object='tulip-param-pot.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-param-pot.obj `if test -f 'param-pot.cpp'; then $(CYGPATH_W) 'param-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/param-pot.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-param-pot.obj `if test -f 'param-pot.cpp'; then $(CYGPATH_W) 'param-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/param-pot.cpp'; fi`
 
 tulip-potclasses-pot-abop.o: potclasses-pot-abop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potclasses-pot-abop.o -MD -MP -MF $(DEPDIR)/tulip-potclasses-pot-abop.Tpo -c -o tulip-potclasses-pot-abop.o `test -f 'potclasses-pot-abop.cpp' || echo '$(srcdir)/'`potclasses-pot-abop.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potclasses-pot-abop.o -MD -MP -MF $(DEPDIR)/tulip-potclasses-pot-abop.Tpo -c -o tulip-potclasses-pot-abop.o `test -f 'potclasses-pot-abop.cpp' || echo '$(srcdir)/'`potclasses-pot-abop.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potclasses-pot-abop.Tpo $(DEPDIR)/tulip-potclasses-pot-abop.Po
 #	$(AM_V_CXX)source='potclasses-pot-abop.cpp' object='tulip-potclasses-pot-abop.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potclasses-pot-abop.o `test -f 'potclasses-pot-abop.cpp' || echo '$(srcdir)/'`potclasses-pot-abop.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potclasses-pot-abop.o `test -f 'potclasses-pot-abop.cpp' || echo '$(srcdir)/'`potclasses-pot-abop.cpp
 
 tulip-potclasses-pot-abop.obj: potclasses-pot-abop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potclasses-pot-abop.obj -MD -MP -MF $(DEPDIR)/tulip-potclasses-pot-abop.Tpo -c -o tulip-potclasses-pot-abop.obj `if test -f 'potclasses-pot-abop.cpp'; then $(CYGPATH_W) 'potclasses-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-abop.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potclasses-pot-abop.obj -MD -MP -MF $(DEPDIR)/tulip-potclasses-pot-abop.Tpo -c -o tulip-potclasses-pot-abop.obj `if test -f 'potclasses-pot-abop.cpp'; then $(CYGPATH_W) 'potclasses-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-abop.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potclasses-pot-abop.Tpo $(DEPDIR)/tulip-potclasses-pot-abop.Po
 #	$(AM_V_CXX)source='potclasses-pot-abop.cpp' object='tulip-potclasses-pot-abop.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potclasses-pot-abop.obj `if test -f 'potclasses-pot-abop.cpp'; then $(CYGPATH_W) 'potclasses-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-abop.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potclasses-pot-abop.obj `if test -f 'potclasses-pot-abop.cpp'; then $(CYGPATH_W) 'potclasses-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-abop.cpp'; fi`
 
 tulip-potclasses-pot-eam.o: potclasses-pot-eam.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potclasses-pot-eam.o -MD -MP -MF $(DEPDIR)/tulip-potclasses-pot-eam.Tpo -c -o tulip-potclasses-pot-eam.o `test -f 'potclasses-pot-eam.cpp' || echo '$(srcdir)/'`potclasses-pot-eam.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potclasses-pot-eam.o -MD -MP -MF $(DEPDIR)/tulip-potclasses-pot-eam.Tpo -c -o tulip-potclasses-pot-eam.o `test -f 'potclasses-pot-eam.cpp' || echo '$(srcdir)/'`potclasses-pot-eam.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potclasses-pot-eam.Tpo $(DEPDIR)/tulip-potclasses-pot-eam.Po
 #	$(AM_V_CXX)source='potclasses-pot-eam.cpp' object='tulip-potclasses-pot-eam.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potclasses-pot-eam.o `test -f 'potclasses-pot-eam.cpp' || echo '$(srcdir)/'`potclasses-pot-eam.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potclasses-pot-eam.o `test -f 'potclasses-pot-eam.cpp' || echo '$(srcdir)/'`potclasses-pot-eam.cpp
 
 tulip-potclasses-pot-eam.obj: potclasses-pot-eam.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potclasses-pot-eam.obj -MD -MP -MF $(DEPDIR)/tulip-potclasses-pot-eam.Tpo -c -o tulip-potclasses-pot-eam.obj `if test -f 'potclasses-pot-eam.cpp'; then $(CYGPATH_W) 'potclasses-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-eam.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potclasses-pot-eam.obj -MD -MP -MF $(DEPDIR)/tulip-potclasses-pot-eam.Tpo -c -o tulip-potclasses-pot-eam.obj `if test -f 'potclasses-pot-eam.cpp'; then $(CYGPATH_W) 'potclasses-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-eam.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potclasses-pot-eam.Tpo $(DEPDIR)/tulip-potclasses-pot-eam.Po
 #	$(AM_V_CXX)source='potclasses-pot-eam.cpp' object='tulip-potclasses-pot-eam.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potclasses-pot-eam.obj `if test -f 'potclasses-pot-eam.cpp'; then $(CYGPATH_W) 'potclasses-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-eam.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potclasses-pot-eam.obj `if test -f 'potclasses-pot-eam.cpp'; then $(CYGPATH_W) 'potclasses-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-eam.cpp'; fi`
 
 tulip-potclasses-reppot.o: potclasses-reppot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potclasses-reppot.o -MD -MP -MF $(DEPDIR)/tulip-potclasses-reppot.Tpo -c -o tulip-potclasses-reppot.o `test -f 'potclasses-reppot.cpp' || echo '$(srcdir)/'`potclasses-reppot.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potclasses-reppot.o -MD -MP -MF $(DEPDIR)/tulip-potclasses-reppot.Tpo -c -o tulip-potclasses-reppot.o `test -f 'potclasses-reppot.cpp' || echo '$(srcdir)/'`potclasses-reppot.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potclasses-reppot.Tpo $(DEPDIR)/tulip-potclasses-reppot.Po
 #	$(AM_V_CXX)source='potclasses-reppot.cpp' object='tulip-potclasses-reppot.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potclasses-reppot.o `test -f 'potclasses-reppot.cpp' || echo '$(srcdir)/'`potclasses-reppot.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potclasses-reppot.o `test -f 'potclasses-reppot.cpp' || echo '$(srcdir)/'`potclasses-reppot.cpp
 
 tulip-potclasses-reppot.obj: potclasses-reppot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potclasses-reppot.obj -MD -MP -MF $(DEPDIR)/tulip-potclasses-reppot.Tpo -c -o tulip-potclasses-reppot.obj `if test -f 'potclasses-reppot.cpp'; then $(CYGPATH_W) 'potclasses-reppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-reppot.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potclasses-reppot.obj -MD -MP -MF $(DEPDIR)/tulip-potclasses-reppot.Tpo -c -o tulip-potclasses-reppot.obj `if test -f 'potclasses-reppot.cpp'; then $(CYGPATH_W) 'potclasses-reppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-reppot.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potclasses-reppot.Tpo $(DEPDIR)/tulip-potclasses-reppot.Po
 #	$(AM_V_CXX)source='potclasses-reppot.cpp' object='tulip-potclasses-reppot.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potclasses-reppot.obj `if test -f 'potclasses-reppot.cpp'; then $(CYGPATH_W) 'potclasses-reppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-reppot.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potclasses-reppot.obj `if test -f 'potclasses-reppot.cpp'; then $(CYGPATH_W) 'potclasses-reppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-reppot.cpp'; fi`
 
 tulip-potinfo.o: potinfo.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo.o -MD -MP -MF $(DEPDIR)/tulip-potinfo.Tpo -c -o tulip-potinfo.o `test -f 'potinfo.cpp' || echo '$(srcdir)/'`potinfo.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo.o -MD -MP -MF $(DEPDIR)/tulip-potinfo.Tpo -c -o tulip-potinfo.o `test -f 'potinfo.cpp' || echo '$(srcdir)/'`potinfo.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potinfo.Tpo $(DEPDIR)/tulip-potinfo.Po
 #	$(AM_V_CXX)source='potinfo.cpp' object='tulip-potinfo.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo.o `test -f 'potinfo.cpp' || echo '$(srcdir)/'`potinfo.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo.o `test -f 'potinfo.cpp' || echo '$(srcdir)/'`potinfo.cpp
 
 tulip-potinfo.obj: potinfo.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo.obj -MD -MP -MF $(DEPDIR)/tulip-potinfo.Tpo -c -o tulip-potinfo.obj `if test -f 'potinfo.cpp'; then $(CYGPATH_W) 'potinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo.obj -MD -MP -MF $(DEPDIR)/tulip-potinfo.Tpo -c -o tulip-potinfo.obj `if test -f 'potinfo.cpp'; then $(CYGPATH_W) 'potinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potinfo.Tpo $(DEPDIR)/tulip-potinfo.Po
 #	$(AM_V_CXX)source='potinfo.cpp' object='tulip-potinfo.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo.obj `if test -f 'potinfo.cpp'; then $(CYGPATH_W) 'potinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo.obj `if test -f 'potinfo.cpp'; then $(CYGPATH_W) 'potinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo.cpp'; fi`
 
 tulip-potinfo-readeam.o: potinfo-readeam.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readeam.o -MD -MP -MF $(DEPDIR)/tulip-potinfo-readeam.Tpo -c -o tulip-potinfo-readeam.o `test -f 'potinfo-readeam.cpp' || echo '$(srcdir)/'`potinfo-readeam.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readeam.o -MD -MP -MF $(DEPDIR)/tulip-potinfo-readeam.Tpo -c -o tulip-potinfo-readeam.o `test -f 'potinfo-readeam.cpp' || echo '$(srcdir)/'`potinfo-readeam.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potinfo-readeam.Tpo $(DEPDIR)/tulip-potinfo-readeam.Po
 #	$(AM_V_CXX)source='potinfo-readeam.cpp' object='tulip-potinfo-readeam.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readeam.o `test -f 'potinfo-readeam.cpp' || echo '$(srcdir)/'`potinfo-readeam.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readeam.o `test -f 'potinfo-readeam.cpp' || echo '$(srcdir)/'`potinfo-readeam.cpp
 
 tulip-potinfo-readeam.obj: potinfo-readeam.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readeam.obj -MD -MP -MF $(DEPDIR)/tulip-potinfo-readeam.Tpo -c -o tulip-potinfo-readeam.obj `if test -f 'potinfo-readeam.cpp'; then $(CYGPATH_W) 'potinfo-readeam.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readeam.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readeam.obj -MD -MP -MF $(DEPDIR)/tulip-potinfo-readeam.Tpo -c -o tulip-potinfo-readeam.obj `if test -f 'potinfo-readeam.cpp'; then $(CYGPATH_W) 'potinfo-readeam.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readeam.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potinfo-readeam.Tpo $(DEPDIR)/tulip-potinfo-readeam.Po
 #	$(AM_V_CXX)source='potinfo-readeam.cpp' object='tulip-potinfo-readeam.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readeam.obj `if test -f 'potinfo-readeam.cpp'; then $(CYGPATH_W) 'potinfo-readeam.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readeam.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readeam.obj `if test -f 'potinfo-readeam.cpp'; then $(CYGPATH_W) 'potinfo-readeam.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readeam.cpp'; fi`
 
 tulip-potinfo-readinfo.o: potinfo-readinfo.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readinfo.o -MD -MP -MF $(DEPDIR)/tulip-potinfo-readinfo.Tpo -c -o tulip-potinfo-readinfo.o `test -f 'potinfo-readinfo.cpp' || echo '$(srcdir)/'`potinfo-readinfo.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readinfo.o -MD -MP -MF $(DEPDIR)/tulip-potinfo-readinfo.Tpo -c -o tulip-potinfo-readinfo.o `test -f 'potinfo-readinfo.cpp' || echo '$(srcdir)/'`potinfo-readinfo.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potinfo-readinfo.Tpo $(DEPDIR)/tulip-potinfo-readinfo.Po
 #	$(AM_V_CXX)source='potinfo-readinfo.cpp' object='tulip-potinfo-readinfo.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readinfo.o `test -f 'potinfo-readinfo.cpp' || echo '$(srcdir)/'`potinfo-readinfo.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readinfo.o `test -f 'potinfo-readinfo.cpp' || echo '$(srcdir)/'`potinfo-readinfo.cpp
 
 tulip-potinfo-readinfo.obj: potinfo-readinfo.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readinfo.obj -MD -MP -MF $(DEPDIR)/tulip-potinfo-readinfo.Tpo -c -o tulip-potinfo-readinfo.obj `if test -f 'potinfo-readinfo.cpp'; then $(CYGPATH_W) 'potinfo-readinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readinfo.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readinfo.obj -MD -MP -MF $(DEPDIR)/tulip-potinfo-readinfo.Tpo -c -o tulip-potinfo-readinfo.obj `if test -f 'potinfo-readinfo.cpp'; then $(CYGPATH_W) 'potinfo-readinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readinfo.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potinfo-readinfo.Tpo $(DEPDIR)/tulip-potinfo-readinfo.Po
 #	$(AM_V_CXX)source='potinfo-readinfo.cpp' object='tulip-potinfo-readinfo.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readinfo.obj `if test -f 'potinfo-readinfo.cpp'; then $(CYGPATH_W) 'potinfo-readinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readinfo.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readinfo.obj `if test -f 'potinfo-readinfo.cpp'; then $(CYGPATH_W) 'potinfo-readinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readinfo.cpp'; fi`
 
 tulip-potinfo-readreppot.o: potinfo-readreppot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readreppot.o -MD -MP -MF $(DEPDIR)/tulip-potinfo-readreppot.Tpo -c -o tulip-potinfo-readreppot.o `test -f 'potinfo-readreppot.cpp' || echo '$(srcdir)/'`potinfo-readreppot.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readreppot.o -MD -MP -MF $(DEPDIR)/tulip-potinfo-readreppot.Tpo -c -o tulip-potinfo-readreppot.o `test -f 'potinfo-readreppot.cpp' || echo '$(srcdir)/'`potinfo-readreppot.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potinfo-readreppot.Tpo $(DEPDIR)/tulip-potinfo-readreppot.Po
 #	$(AM_V_CXX)source='potinfo-readreppot.cpp' object='tulip-potinfo-readreppot.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readreppot.o `test -f 'potinfo-readreppot.cpp' || echo '$(srcdir)/'`potinfo-readreppot.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readreppot.o `test -f 'potinfo-readreppot.cpp' || echo '$(srcdir)/'`potinfo-readreppot.cpp
 
 tulip-potinfo-readreppot.obj: potinfo-readreppot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readreppot.obj -MD -MP -MF $(DEPDIR)/tulip-potinfo-readreppot.Tpo -c -o tulip-potinfo-readreppot.obj `if test -f 'potinfo-readreppot.cpp'; then $(CYGPATH_W) 'potinfo-readreppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readreppot.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readreppot.obj -MD -MP -MF $(DEPDIR)/tulip-potinfo-readreppot.Tpo -c -o tulip-potinfo-readreppot.obj `if test -f 'potinfo-readreppot.cpp'; then $(CYGPATH_W) 'potinfo-readreppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readreppot.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potinfo-readreppot.Tpo $(DEPDIR)/tulip-potinfo-readreppot.Po
 #	$(AM_V_CXX)source='potinfo-readreppot.cpp' object='tulip-potinfo-readreppot.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readreppot.obj `if test -f 'potinfo-readreppot.cpp'; then $(CYGPATH_W) 'potinfo-readreppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readreppot.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readreppot.obj `if test -f 'potinfo-readreppot.cpp'; then $(CYGPATH_W) 'potinfo-readreppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readreppot.cpp'; fi`
 
 tulip-potinfo-readspecs.o: potinfo-readspecs.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readspecs.o -MD -MP -MF $(DEPDIR)/tulip-potinfo-readspecs.Tpo -c -o tulip-potinfo-readspecs.o `test -f 'potinfo-readspecs.cpp' || echo '$(srcdir)/'`potinfo-readspecs.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readspecs.o -MD -MP -MF $(DEPDIR)/tulip-potinfo-readspecs.Tpo -c -o tulip-potinfo-readspecs.o `test -f 'potinfo-readspecs.cpp' || echo '$(srcdir)/'`potinfo-readspecs.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potinfo-readspecs.Tpo $(DEPDIR)/tulip-potinfo-readspecs.Po
 #	$(AM_V_CXX)source='potinfo-readspecs.cpp' object='tulip-potinfo-readspecs.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readspecs.o `test -f 'potinfo-readspecs.cpp' || echo '$(srcdir)/'`potinfo-readspecs.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readspecs.o `test -f 'potinfo-readspecs.cpp' || echo '$(srcdir)/'`potinfo-readspecs.cpp
 
 tulip-potinfo-readspecs.obj: potinfo-readspecs.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readspecs.obj -MD -MP -MF $(DEPDIR)/tulip-potinfo-readspecs.Tpo -c -o tulip-potinfo-readspecs.obj `if test -f 'potinfo-readspecs.cpp'; then $(CYGPATH_W) 'potinfo-readspecs.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readspecs.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-potinfo-readspecs.obj -MD -MP -MF $(DEPDIR)/tulip-potinfo-readspecs.Tpo -c -o tulip-potinfo-readspecs.obj `if test -f 'potinfo-readspecs.cpp'; then $(CYGPATH_W) 'potinfo-readspecs.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readspecs.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-potinfo-readspecs.Tpo $(DEPDIR)/tulip-potinfo-readspecs.Po
 #	$(AM_V_CXX)source='potinfo-readspecs.cpp' object='tulip-potinfo-readspecs.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readspecs.obj `if test -f 'potinfo-readspecs.cpp'; then $(CYGPATH_W) 'potinfo-readspecs.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readspecs.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-potinfo-readspecs.obj `if test -f 'potinfo-readspecs.cpp'; then $(CYGPATH_W) 'potinfo-readspecs.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readspecs.cpp'; fi`
 
 tulip-propfun.o: propfun.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-propfun.o -MD -MP -MF $(DEPDIR)/tulip-propfun.Tpo -c -o tulip-propfun.o `test -f 'propfun.cpp' || echo '$(srcdir)/'`propfun.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-propfun.o -MD -MP -MF $(DEPDIR)/tulip-propfun.Tpo -c -o tulip-propfun.o `test -f 'propfun.cpp' || echo '$(srcdir)/'`propfun.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-propfun.Tpo $(DEPDIR)/tulip-propfun.Po
 #	$(AM_V_CXX)source='propfun.cpp' object='tulip-propfun.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-propfun.o `test -f 'propfun.cpp' || echo '$(srcdir)/'`propfun.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-propfun.o `test -f 'propfun.cpp' || echo '$(srcdir)/'`propfun.cpp
 
 tulip-propfun.obj: propfun.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-propfun.obj -MD -MP -MF $(DEPDIR)/tulip-propfun.Tpo -c -o tulip-propfun.obj `if test -f 'propfun.cpp'; then $(CYGPATH_W) 'propfun.cpp'; else $(CYGPATH_W) '$(srcdir)/propfun.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-propfun.obj -MD -MP -MF $(DEPDIR)/tulip-propfun.Tpo -c -o tulip-propfun.obj `if test -f 'propfun.cpp'; then $(CYGPATH_W) 'propfun.cpp'; else $(CYGPATH_W) '$(srcdir)/propfun.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-propfun.Tpo $(DEPDIR)/tulip-propfun.Po
 #	$(AM_V_CXX)source='propfun.cpp' object='tulip-propfun.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-propfun.obj `if test -f 'propfun.cpp'; then $(CYGPATH_W) 'propfun.cpp'; else $(CYGPATH_W) '$(srcdir)/propfun.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-propfun.obj `if test -f 'propfun.cpp'; then $(CYGPATH_W) 'propfun.cpp'; else $(CYGPATH_W) '$(srcdir)/propfun.cpp'; fi`
 
 tulip-report.o: report.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-report.o -MD -MP -MF $(DEPDIR)/tulip-report.Tpo -c -o tulip-report.o `test -f 'report.cpp' || echo '$(srcdir)/'`report.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-report.o -MD -MP -MF $(DEPDIR)/tulip-report.Tpo -c -o tulip-report.o `test -f 'report.cpp' || echo '$(srcdir)/'`report.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-report.Tpo $(DEPDIR)/tulip-report.Po
 #	$(AM_V_CXX)source='report.cpp' object='tulip-report.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-report.o `test -f 'report.cpp' || echo '$(srcdir)/'`report.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-report.o `test -f 'report.cpp' || echo '$(srcdir)/'`report.cpp
 
 tulip-report.obj: report.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-report.obj -MD -MP -MF $(DEPDIR)/tulip-report.Tpo -c -o tulip-report.obj `if test -f 'report.cpp'; then $(CYGPATH_W) 'report.cpp'; else $(CYGPATH_W) '$(srcdir)/report.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-report.obj -MD -MP -MF $(DEPDIR)/tulip-report.Tpo -c -o tulip-report.obj `if test -f 'report.cpp'; then $(CYGPATH_W) 'report.cpp'; else $(CYGPATH_W) '$(srcdir)/report.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-report.Tpo $(DEPDIR)/tulip-report.Po
 #	$(AM_V_CXX)source='report.cpp' object='tulip-report.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-report.obj `if test -f 'report.cpp'; then $(CYGPATH_W) 'report.cpp'; else $(CYGPATH_W) '$(srcdir)/report.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-report.obj `if test -f 'report.cpp'; then $(CYGPATH_W) 'report.cpp'; else $(CYGPATH_W) '$(srcdir)/report.cpp'; fi`
 
 tulip-specs-fit-prop-pot.o: specs-fit-prop-pot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-specs-fit-prop-pot.o -MD -MP -MF $(DEPDIR)/tulip-specs-fit-prop-pot.Tpo -c -o tulip-specs-fit-prop-pot.o `test -f 'specs-fit-prop-pot.cpp' || echo '$(srcdir)/'`specs-fit-prop-pot.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-specs-fit-prop-pot.o -MD -MP -MF $(DEPDIR)/tulip-specs-fit-prop-pot.Tpo -c -o tulip-specs-fit-prop-pot.o `test -f 'specs-fit-prop-pot.cpp' || echo '$(srcdir)/'`specs-fit-prop-pot.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-specs-fit-prop-pot.Tpo $(DEPDIR)/tulip-specs-fit-prop-pot.Po
 #	$(AM_V_CXX)source='specs-fit-prop-pot.cpp' object='tulip-specs-fit-prop-pot.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-specs-fit-prop-pot.o `test -f 'specs-fit-prop-pot.cpp' || echo '$(srcdir)/'`specs-fit-prop-pot.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-specs-fit-prop-pot.o `test -f 'specs-fit-prop-pot.cpp' || echo '$(srcdir)/'`specs-fit-prop-pot.cpp
 
 tulip-specs-fit-prop-pot.obj: specs-fit-prop-pot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-specs-fit-prop-pot.obj -MD -MP -MF $(DEPDIR)/tulip-specs-fit-prop-pot.Tpo -c -o tulip-specs-fit-prop-pot.obj `if test -f 'specs-fit-prop-pot.cpp'; then $(CYGPATH_W) 'specs-fit-prop-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/specs-fit-prop-pot.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-specs-fit-prop-pot.obj -MD -MP -MF $(DEPDIR)/tulip-specs-fit-prop-pot.Tpo -c -o tulip-specs-fit-prop-pot.obj `if test -f 'specs-fit-prop-pot.cpp'; then $(CYGPATH_W) 'specs-fit-prop-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/specs-fit-prop-pot.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-specs-fit-prop-pot.Tpo $(DEPDIR)/tulip-specs-fit-prop-pot.Po
 #	$(AM_V_CXX)source='specs-fit-prop-pot.cpp' object='tulip-specs-fit-prop-pot.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-specs-fit-prop-pot.obj `if test -f 'specs-fit-prop-pot.cpp'; then $(CYGPATH_W) 'specs-fit-prop-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/specs-fit-prop-pot.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-specs-fit-prop-pot.obj `if test -f 'specs-fit-prop-pot.cpp'; then $(CYGPATH_W) 'specs-fit-prop-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/specs-fit-prop-pot.cpp'; fi`
 
 tulip-tulip.o: tulip.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-tulip.o -MD -MP -MF $(DEPDIR)/tulip-tulip.Tpo -c -o tulip-tulip.o `test -f 'tulip.cpp' || echo '$(srcdir)/'`tulip.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-tulip.o -MD -MP -MF $(DEPDIR)/tulip-tulip.Tpo -c -o tulip-tulip.o `test -f 'tulip.cpp' || echo '$(srcdir)/'`tulip.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-tulip.Tpo $(DEPDIR)/tulip-tulip.Po
 #	$(AM_V_CXX)source='tulip.cpp' object='tulip-tulip.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-tulip.o `test -f 'tulip.cpp' || echo '$(srcdir)/'`tulip.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-tulip.o `test -f 'tulip.cpp' || echo '$(srcdir)/'`tulip.cpp
 
 tulip-tulip.obj: tulip.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip-tulip.obj -MD -MP -MF $(DEPDIR)/tulip-tulip.Tpo -c -o tulip-tulip.obj `if test -f 'tulip.cpp'; then $(CYGPATH_W) 'tulip.cpp'; else $(CYGPATH_W) '$(srcdir)/tulip.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -MT tulip-tulip.obj -MD -MP -MF $(DEPDIR)/tulip-tulip.Tpo -c -o tulip-tulip.obj `if test -f 'tulip.cpp'; then $(CYGPATH_W) 'tulip.cpp'; else $(CYGPATH_W) '$(srcdir)/tulip.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip-tulip.Tpo $(DEPDIR)/tulip-tulip.Po
 #	$(AM_V_CXX)source='tulip.cpp' object='tulip-tulip.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip-tulip.obj `if test -f 'tulip.cpp'; then $(CYGPATH_W) 'tulip.cpp'; else $(CYGPATH_W) '$(srcdir)/tulip.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_CXXFLAGS) $(CXXFLAGS) -c -o tulip-tulip.obj `if test -f 'tulip.cpp'; then $(CYGPATH_W) 'tulip.cpp'; else $(CYGPATH_W) '$(srcdir)/tulip.cpp'; fi`
 
 tulip_static-compound.o: compound.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compound.o -MD -MP -MF $(DEPDIR)/tulip_static-compound.Tpo -c -o tulip_static-compound.o `test -f 'compound.cpp' || echo '$(srcdir)/'`compound.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compound.o -MD -MP -MF $(DEPDIR)/tulip_static-compound.Tpo -c -o tulip_static-compound.o `test -f 'compound.cpp' || echo '$(srcdir)/'`compound.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-compound.Tpo $(DEPDIR)/tulip_static-compound.Po
 #	$(AM_V_CXX)source='compound.cpp' object='tulip_static-compound.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compound.o `test -f 'compound.cpp' || echo '$(srcdir)/'`compound.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compound.o `test -f 'compound.cpp' || echo '$(srcdir)/'`compound.cpp
 
 tulip_static-compound.obj: compound.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compound.obj -MD -MP -MF $(DEPDIR)/tulip_static-compound.Tpo -c -o tulip_static-compound.obj `if test -f 'compound.cpp'; then $(CYGPATH_W) 'compound.cpp'; else $(CYGPATH_W) '$(srcdir)/compound.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compound.obj -MD -MP -MF $(DEPDIR)/tulip_static-compound.Tpo -c -o tulip_static-compound.obj `if test -f 'compound.cpp'; then $(CYGPATH_W) 'compound.cpp'; else $(CYGPATH_W) '$(srcdir)/compound.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-compound.Tpo $(DEPDIR)/tulip_static-compound.Po
 #	$(AM_V_CXX)source='compound.cpp' object='tulip_static-compound.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compound.obj `if test -f 'compound.cpp'; then $(CYGPATH_W) 'compound.cpp'; else $(CYGPATH_W) '$(srcdir)/compound.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compound.obj `if test -f 'compound.cpp'; then $(CYGPATH_W) 'compound.cpp'; else $(CYGPATH_W) '$(srcdir)/compound.cpp'; fi`
 
 tulip_static-compoundfit.o: compoundfit.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compoundfit.o -MD -MP -MF $(DEPDIR)/tulip_static-compoundfit.Tpo -c -o tulip_static-compoundfit.o `test -f 'compoundfit.cpp' || echo '$(srcdir)/'`compoundfit.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compoundfit.o -MD -MP -MF $(DEPDIR)/tulip_static-compoundfit.Tpo -c -o tulip_static-compoundfit.o `test -f 'compoundfit.cpp' || echo '$(srcdir)/'`compoundfit.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-compoundfit.Tpo $(DEPDIR)/tulip_static-compoundfit.Po
 #	$(AM_V_CXX)source='compoundfit.cpp' object='tulip_static-compoundfit.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compoundfit.o `test -f 'compoundfit.cpp' || echo '$(srcdir)/'`compoundfit.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compoundfit.o `test -f 'compoundfit.cpp' || echo '$(srcdir)/'`compoundfit.cpp
 
 tulip_static-compoundfit.obj: compoundfit.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compoundfit.obj -MD -MP -MF $(DEPDIR)/tulip_static-compoundfit.Tpo -c -o tulip_static-compoundfit.obj `if test -f 'compoundfit.cpp'; then $(CYGPATH_W) 'compoundfit.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compoundfit.obj -MD -MP -MF $(DEPDIR)/tulip_static-compoundfit.Tpo -c -o tulip_static-compoundfit.obj `if test -f 'compoundfit.cpp'; then $(CYGPATH_W) 'compoundfit.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-compoundfit.Tpo $(DEPDIR)/tulip_static-compoundfit.Po
 #	$(AM_V_CXX)source='compoundfit.cpp' object='tulip_static-compoundfit.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compoundfit.obj `if test -f 'compoundfit.cpp'; then $(CYGPATH_W) 'compoundfit.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compoundfit.obj `if test -f 'compoundfit.cpp'; then $(CYGPATH_W) 'compoundfit.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit.cpp'; fi`
 
 tulip_static-compoundfit-getprop.o: compoundfit-getprop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compoundfit-getprop.o -MD -MP -MF $(DEPDIR)/tulip_static-compoundfit-getprop.Tpo -c -o tulip_static-compoundfit-getprop.o `test -f 'compoundfit-getprop.cpp' || echo '$(srcdir)/'`compoundfit-getprop.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compoundfit-getprop.o -MD -MP -MF $(DEPDIR)/tulip_static-compoundfit-getprop.Tpo -c -o tulip_static-compoundfit-getprop.o `test -f 'compoundfit-getprop.cpp' || echo '$(srcdir)/'`compoundfit-getprop.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-compoundfit-getprop.Tpo $(DEPDIR)/tulip_static-compoundfit-getprop.Po
 #	$(AM_V_CXX)source='compoundfit-getprop.cpp' object='tulip_static-compoundfit-getprop.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compoundfit-getprop.o `test -f 'compoundfit-getprop.cpp' || echo '$(srcdir)/'`compoundfit-getprop.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compoundfit-getprop.o `test -f 'compoundfit-getprop.cpp' || echo '$(srcdir)/'`compoundfit-getprop.cpp
 
 tulip_static-compoundfit-getprop.obj: compoundfit-getprop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compoundfit-getprop.obj -MD -MP -MF $(DEPDIR)/tulip_static-compoundfit-getprop.Tpo -c -o tulip_static-compoundfit-getprop.obj `if test -f 'compoundfit-getprop.cpp'; then $(CYGPATH_W) 'compoundfit-getprop.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-getprop.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compoundfit-getprop.obj -MD -MP -MF $(DEPDIR)/tulip_static-compoundfit-getprop.Tpo -c -o tulip_static-compoundfit-getprop.obj `if test -f 'compoundfit-getprop.cpp'; then $(CYGPATH_W) 'compoundfit-getprop.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-getprop.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-compoundfit-getprop.Tpo $(DEPDIR)/tulip_static-compoundfit-getprop.Po
 #	$(AM_V_CXX)source='compoundfit-getprop.cpp' object='tulip_static-compoundfit-getprop.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compoundfit-getprop.obj `if test -f 'compoundfit-getprop.cpp'; then $(CYGPATH_W) 'compoundfit-getprop.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-getprop.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compoundfit-getprop.obj `if test -f 'compoundfit-getprop.cpp'; then $(CYGPATH_W) 'compoundfit-getprop.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-getprop.cpp'; fi`
 
 tulip_static-compoundfit-list.o: compoundfit-list.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compoundfit-list.o -MD -MP -MF $(DEPDIR)/tulip_static-compoundfit-list.Tpo -c -o tulip_static-compoundfit-list.o `test -f 'compoundfit-list.cpp' || echo '$(srcdir)/'`compoundfit-list.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compoundfit-list.o -MD -MP -MF $(DEPDIR)/tulip_static-compoundfit-list.Tpo -c -o tulip_static-compoundfit-list.o `test -f 'compoundfit-list.cpp' || echo '$(srcdir)/'`compoundfit-list.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-compoundfit-list.Tpo $(DEPDIR)/tulip_static-compoundfit-list.Po
 #	$(AM_V_CXX)source='compoundfit-list.cpp' object='tulip_static-compoundfit-list.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compoundfit-list.o `test -f 'compoundfit-list.cpp' || echo '$(srcdir)/'`compoundfit-list.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compoundfit-list.o `test -f 'compoundfit-list.cpp' || echo '$(srcdir)/'`compoundfit-list.cpp
 
 tulip_static-compoundfit-list.obj: compoundfit-list.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compoundfit-list.obj -MD -MP -MF $(DEPDIR)/tulip_static-compoundfit-list.Tpo -c -o tulip_static-compoundfit-list.obj `if test -f 'compoundfit-list.cpp'; then $(CYGPATH_W) 'compoundfit-list.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-list.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-compoundfit-list.obj -MD -MP -MF $(DEPDIR)/tulip_static-compoundfit-list.Tpo -c -o tulip_static-compoundfit-list.obj `if test -f 'compoundfit-list.cpp'; then $(CYGPATH_W) 'compoundfit-list.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-list.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-compoundfit-list.Tpo $(DEPDIR)/tulip_static-compoundfit-list.Po
 #	$(AM_V_CXX)source='compoundfit-list.cpp' object='tulip_static-compoundfit-list.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compoundfit-list.obj `if test -f 'compoundfit-list.cpp'; then $(CYGPATH_W) 'compoundfit-list.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-list.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-compoundfit-list.obj `if test -f 'compoundfit-list.cpp'; then $(CYGPATH_W) 'compoundfit-list.cpp'; else $(CYGPATH_W) '$(srcdir)/compoundfit-list.cpp'; fi`
 
 tulip_static-elem-iacs.o: elem-iacs.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-elem-iacs.o -MD -MP -MF $(DEPDIR)/tulip_static-elem-iacs.Tpo -c -o tulip_static-elem-iacs.o `test -f 'elem-iacs.cpp' || echo '$(srcdir)/'`elem-iacs.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-elem-iacs.o -MD -MP -MF $(DEPDIR)/tulip_static-elem-iacs.Tpo -c -o tulip_static-elem-iacs.o `test -f 'elem-iacs.cpp' || echo '$(srcdir)/'`elem-iacs.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-elem-iacs.Tpo $(DEPDIR)/tulip_static-elem-iacs.Po
 #	$(AM_V_CXX)source='elem-iacs.cpp' object='tulip_static-elem-iacs.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-elem-iacs.o `test -f 'elem-iacs.cpp' || echo '$(srcdir)/'`elem-iacs.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-elem-iacs.o `test -f 'elem-iacs.cpp' || echo '$(srcdir)/'`elem-iacs.cpp
 
 tulip_static-elem-iacs.obj: elem-iacs.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-elem-iacs.obj -MD -MP -MF $(DEPDIR)/tulip_static-elem-iacs.Tpo -c -o tulip_static-elem-iacs.obj `if test -f 'elem-iacs.cpp'; then $(CYGPATH_W) 'elem-iacs.cpp'; else $(CYGPATH_W) '$(srcdir)/elem-iacs.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-elem-iacs.obj -MD -MP -MF $(DEPDIR)/tulip_static-elem-iacs.Tpo -c -o tulip_static-elem-iacs.obj `if test -f 'elem-iacs.cpp'; then $(CYGPATH_W) 'elem-iacs.cpp'; else $(CYGPATH_W) '$(srcdir)/elem-iacs.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-elem-iacs.Tpo $(DEPDIR)/tulip_static-elem-iacs.Po
 #	$(AM_V_CXX)source='elem-iacs.cpp' object='tulip_static-elem-iacs.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-elem-iacs.obj `if test -f 'elem-iacs.cpp'; then $(CYGPATH_W) 'elem-iacs.cpp'; else $(CYGPATH_W) '$(srcdir)/elem-iacs.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-elem-iacs.obj `if test -f 'elem-iacs.cpp'; then $(CYGPATH_W) 'elem-iacs.cpp'; else $(CYGPATH_W) '$(srcdir)/elem-iacs.cpp'; fi`
 
 tulip_static-get-comp-prop.o: get-comp-prop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-get-comp-prop.o -MD -MP -MF $(DEPDIR)/tulip_static-get-comp-prop.Tpo -c -o tulip_static-get-comp-prop.o `test -f 'get-comp-prop.cpp' || echo '$(srcdir)/'`get-comp-prop.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-get-comp-prop.o -MD -MP -MF $(DEPDIR)/tulip_static-get-comp-prop.Tpo -c -o tulip_static-get-comp-prop.o `test -f 'get-comp-prop.cpp' || echo '$(srcdir)/'`get-comp-prop.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-get-comp-prop.Tpo $(DEPDIR)/tulip_static-get-comp-prop.Po
 #	$(AM_V_CXX)source='get-comp-prop.cpp' object='tulip_static-get-comp-prop.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-get-comp-prop.o `test -f 'get-comp-prop.cpp' || echo '$(srcdir)/'`get-comp-prop.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-get-comp-prop.o `test -f 'get-comp-prop.cpp' || echo '$(srcdir)/'`get-comp-prop.cpp
 
 tulip_static-get-comp-prop.obj: get-comp-prop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-get-comp-prop.obj -MD -MP -MF $(DEPDIR)/tulip_static-get-comp-prop.Tpo -c -o tulip_static-get-comp-prop.obj `if test -f 'get-comp-prop.cpp'; then $(CYGPATH_W) 'get-comp-prop.cpp'; else $(CYGPATH_W) '$(srcdir)/get-comp-prop.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-get-comp-prop.obj -MD -MP -MF $(DEPDIR)/tulip_static-get-comp-prop.Tpo -c -o tulip_static-get-comp-prop.obj `if test -f 'get-comp-prop.cpp'; then $(CYGPATH_W) 'get-comp-prop.cpp'; else $(CYGPATH_W) '$(srcdir)/get-comp-prop.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-get-comp-prop.Tpo $(DEPDIR)/tulip_static-get-comp-prop.Po
 #	$(AM_V_CXX)source='get-comp-prop.cpp' object='tulip_static-get-comp-prop.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-get-comp-prop.obj `if test -f 'get-comp-prop.cpp'; then $(CYGPATH_W) 'get-comp-prop.cpp'; else $(CYGPATH_W) '$(srcdir)/get-comp-prop.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-get-comp-prop.obj `if test -f 'get-comp-prop.cpp'; then $(CYGPATH_W) 'get-comp-prop.cpp'; else $(CYGPATH_W) '$(srcdir)/get-comp-prop.cpp'; fi`
 
 tulip_static-get-ini-fit-data.o: get-ini-fit-data.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-get-ini-fit-data.o -MD -MP -MF $(DEPDIR)/tulip_static-get-ini-fit-data.Tpo -c -o tulip_static-get-ini-fit-data.o `test -f 'get-ini-fit-data.cpp' || echo '$(srcdir)/'`get-ini-fit-data.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-get-ini-fit-data.o -MD -MP -MF $(DEPDIR)/tulip_static-get-ini-fit-data.Tpo -c -o tulip_static-get-ini-fit-data.o `test -f 'get-ini-fit-data.cpp' || echo '$(srcdir)/'`get-ini-fit-data.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-get-ini-fit-data.Tpo $(DEPDIR)/tulip_static-get-ini-fit-data.Po
 #	$(AM_V_CXX)source='get-ini-fit-data.cpp' object='tulip_static-get-ini-fit-data.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-get-ini-fit-data.o `test -f 'get-ini-fit-data.cpp' || echo '$(srcdir)/'`get-ini-fit-data.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-get-ini-fit-data.o `test -f 'get-ini-fit-data.cpp' || echo '$(srcdir)/'`get-ini-fit-data.cpp
 
 tulip_static-get-ini-fit-data.obj: get-ini-fit-data.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-get-ini-fit-data.obj -MD -MP -MF $(DEPDIR)/tulip_static-get-ini-fit-data.Tpo -c -o tulip_static-get-ini-fit-data.obj `if test -f 'get-ini-fit-data.cpp'; then $(CYGPATH_W) 'get-ini-fit-data.cpp'; else $(CYGPATH_W) '$(srcdir)/get-ini-fit-data.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-get-ini-fit-data.obj -MD -MP -MF $(DEPDIR)/tulip_static-get-ini-fit-data.Tpo -c -o tulip_static-get-ini-fit-data.obj `if test -f 'get-ini-fit-data.cpp'; then $(CYGPATH_W) 'get-ini-fit-data.cpp'; else $(CYGPATH_W) '$(srcdir)/get-ini-fit-data.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-get-ini-fit-data.Tpo $(DEPDIR)/tulip_static-get-ini-fit-data.Po
 #	$(AM_V_CXX)source='get-ini-fit-data.cpp' object='tulip_static-get-ini-fit-data.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-get-ini-fit-data.obj `if test -f 'get-ini-fit-data.cpp'; then $(CYGPATH_W) 'get-ini-fit-data.cpp'; else $(CYGPATH_W) '$(srcdir)/get-ini-fit-data.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-get-ini-fit-data.obj `if test -f 'get-ini-fit-data.cpp'; then $(CYGPATH_W) 'get-ini-fit-data.cpp'; else $(CYGPATH_W) '$(srcdir)/get-ini-fit-data.cpp'; fi`
 
 tulip_static-helpfuns.o: helpfuns.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-helpfuns.o -MD -MP -MF $(DEPDIR)/tulip_static-helpfuns.Tpo -c -o tulip_static-helpfuns.o `test -f 'helpfuns.cpp' || echo '$(srcdir)/'`helpfuns.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-helpfuns.o -MD -MP -MF $(DEPDIR)/tulip_static-helpfuns.Tpo -c -o tulip_static-helpfuns.o `test -f 'helpfuns.cpp' || echo '$(srcdir)/'`helpfuns.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-helpfuns.Tpo $(DEPDIR)/tulip_static-helpfuns.Po
 #	$(AM_V_CXX)source='helpfuns.cpp' object='tulip_static-helpfuns.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-helpfuns.o `test -f 'helpfuns.cpp' || echo '$(srcdir)/'`helpfuns.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-helpfuns.o `test -f 'helpfuns.cpp' || echo '$(srcdir)/'`helpfuns.cpp
 
 tulip_static-helpfuns.obj: helpfuns.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-helpfuns.obj -MD -MP -MF $(DEPDIR)/tulip_static-helpfuns.Tpo -c -o tulip_static-helpfuns.obj `if test -f 'helpfuns.cpp'; then $(CYGPATH_W) 'helpfuns.cpp'; else $(CYGPATH_W) '$(srcdir)/helpfuns.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-helpfuns.obj -MD -MP -MF $(DEPDIR)/tulip_static-helpfuns.Tpo -c -o tulip_static-helpfuns.obj `if test -f 'helpfuns.cpp'; then $(CYGPATH_W) 'helpfuns.cpp'; else $(CYGPATH_W) '$(srcdir)/helpfuns.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-helpfuns.Tpo $(DEPDIR)/tulip_static-helpfuns.Po
 #	$(AM_V_CXX)source='helpfuns.cpp' object='tulip_static-helpfuns.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-helpfuns.obj `if test -f 'helpfuns.cpp'; then $(CYGPATH_W) 'helpfuns.cpp'; else $(CYGPATH_W) '$(srcdir)/helpfuns.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-helpfuns.obj `if test -f 'helpfuns.cpp'; then $(CYGPATH_W) 'helpfuns.cpp'; else $(CYGPATH_W) '$(srcdir)/helpfuns.cpp'; fi`
 
 tulip_static-lattice-simple.o: lattice-simple.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-lattice-simple.o -MD -MP -MF $(DEPDIR)/tulip_static-lattice-simple.Tpo -c -o tulip_static-lattice-simple.o `test -f 'lattice-simple.cpp' || echo '$(srcdir)/'`lattice-simple.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-lattice-simple.o -MD -MP -MF $(DEPDIR)/tulip_static-lattice-simple.Tpo -c -o tulip_static-lattice-simple.o `test -f 'lattice-simple.cpp' || echo '$(srcdir)/'`lattice-simple.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-lattice-simple.Tpo $(DEPDIR)/tulip_static-lattice-simple.Po
 #	$(AM_V_CXX)source='lattice-simple.cpp' object='tulip_static-lattice-simple.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-lattice-simple.o `test -f 'lattice-simple.cpp' || echo '$(srcdir)/'`lattice-simple.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-lattice-simple.o `test -f 'lattice-simple.cpp' || echo '$(srcdir)/'`lattice-simple.cpp
 
 tulip_static-lattice-simple.obj: lattice-simple.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-lattice-simple.obj -MD -MP -MF $(DEPDIR)/tulip_static-lattice-simple.Tpo -c -o tulip_static-lattice-simple.obj `if test -f 'lattice-simple.cpp'; then $(CYGPATH_W) 'lattice-simple.cpp'; else $(CYGPATH_W) '$(srcdir)/lattice-simple.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-lattice-simple.obj -MD -MP -MF $(DEPDIR)/tulip_static-lattice-simple.Tpo -c -o tulip_static-lattice-simple.obj `if test -f 'lattice-simple.cpp'; then $(CYGPATH_W) 'lattice-simple.cpp'; else $(CYGPATH_W) '$(srcdir)/lattice-simple.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-lattice-simple.Tpo $(DEPDIR)/tulip_static-lattice-simple.Po
 #	$(AM_V_CXX)source='lattice-simple.cpp' object='tulip_static-lattice-simple.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-lattice-simple.obj `if test -f 'lattice-simple.cpp'; then $(CYGPATH_W) 'lattice-simple.cpp'; else $(CYGPATH_W) '$(srcdir)/lattice-simple.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-lattice-simple.obj `if test -f 'lattice-simple.cpp'; then $(CYGPATH_W) 'lattice-simple.cpp'; else $(CYGPATH_W) '$(srcdir)/lattice-simple.cpp'; fi`
 
 tulip_static-mdsettings.o: mdsettings.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsettings.o -MD -MP -MF $(DEPDIR)/tulip_static-mdsettings.Tpo -c -o tulip_static-mdsettings.o `test -f 'mdsettings.cpp' || echo '$(srcdir)/'`mdsettings.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsettings.o -MD -MP -MF $(DEPDIR)/tulip_static-mdsettings.Tpo -c -o tulip_static-mdsettings.o `test -f 'mdsettings.cpp' || echo '$(srcdir)/'`mdsettings.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-mdsettings.Tpo $(DEPDIR)/tulip_static-mdsettings.Po
 #	$(AM_V_CXX)source='mdsettings.cpp' object='tulip_static-mdsettings.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsettings.o `test -f 'mdsettings.cpp' || echo '$(srcdir)/'`mdsettings.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsettings.o `test -f 'mdsettings.cpp' || echo '$(srcdir)/'`mdsettings.cpp
 
 tulip_static-mdsettings.obj: mdsettings.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsettings.obj -MD -MP -MF $(DEPDIR)/tulip_static-mdsettings.Tpo -c -o tulip_static-mdsettings.obj `if test -f 'mdsettings.cpp'; then $(CYGPATH_W) 'mdsettings.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsettings.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsettings.obj -MD -MP -MF $(DEPDIR)/tulip_static-mdsettings.Tpo -c -o tulip_static-mdsettings.obj `if test -f 'mdsettings.cpp'; then $(CYGPATH_W) 'mdsettings.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsettings.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-mdsettings.Tpo $(DEPDIR)/tulip_static-mdsettings.Po
 #	$(AM_V_CXX)source='mdsettings.cpp' object='tulip_static-mdsettings.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsettings.obj `if test -f 'mdsettings.cpp'; then $(CYGPATH_W) 'mdsettings.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsettings.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsettings.obj `if test -f 'mdsettings.cpp'; then $(CYGPATH_W) 'mdsettings.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsettings.cpp'; fi`
 
 tulip_static-mdsystem.o: mdsystem.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem.o -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem.Tpo -c -o tulip_static-mdsystem.o `test -f 'mdsystem.cpp' || echo '$(srcdir)/'`mdsystem.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem.o -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem.Tpo -c -o tulip_static-mdsystem.o `test -f 'mdsystem.cpp' || echo '$(srcdir)/'`mdsystem.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-mdsystem.Tpo $(DEPDIR)/tulip_static-mdsystem.Po
 #	$(AM_V_CXX)source='mdsystem.cpp' object='tulip_static-mdsystem.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem.o `test -f 'mdsystem.cpp' || echo '$(srcdir)/'`mdsystem.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem.o `test -f 'mdsystem.cpp' || echo '$(srcdir)/'`mdsystem.cpp
 
 tulip_static-mdsystem.obj: mdsystem.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem.obj -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem.Tpo -c -o tulip_static-mdsystem.obj `if test -f 'mdsystem.cpp'; then $(CYGPATH_W) 'mdsystem.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem.obj -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem.Tpo -c -o tulip_static-mdsystem.obj `if test -f 'mdsystem.cpp'; then $(CYGPATH_W) 'mdsystem.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-mdsystem.Tpo $(DEPDIR)/tulip_static-mdsystem.Po
 #	$(AM_V_CXX)source='mdsystem.cpp' object='tulip_static-mdsystem.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem.obj `if test -f 'mdsystem.cpp'; then $(CYGPATH_W) 'mdsystem.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem.obj `if test -f 'mdsystem.cpp'; then $(CYGPATH_W) 'mdsystem.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem.cpp'; fi`
 
 tulip_static-mdsystem-force.o: mdsystem-force.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-force.o -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-force.Tpo -c -o tulip_static-mdsystem-force.o `test -f 'mdsystem-force.cpp' || echo '$(srcdir)/'`mdsystem-force.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-force.o -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-force.Tpo -c -o tulip_static-mdsystem-force.o `test -f 'mdsystem-force.cpp' || echo '$(srcdir)/'`mdsystem-force.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-mdsystem-force.Tpo $(DEPDIR)/tulip_static-mdsystem-force.Po
 #	$(AM_V_CXX)source='mdsystem-force.cpp' object='tulip_static-mdsystem-force.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-force.o `test -f 'mdsystem-force.cpp' || echo '$(srcdir)/'`mdsystem-force.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-force.o `test -f 'mdsystem-force.cpp' || echo '$(srcdir)/'`mdsystem-force.cpp
 
 tulip_static-mdsystem-force.obj: mdsystem-force.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-force.obj -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-force.Tpo -c -o tulip_static-mdsystem-force.obj `if test -f 'mdsystem-force.cpp'; then $(CYGPATH_W) 'mdsystem-force.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-force.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-force.obj -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-force.Tpo -c -o tulip_static-mdsystem-force.obj `if test -f 'mdsystem-force.cpp'; then $(CYGPATH_W) 'mdsystem-force.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-force.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-mdsystem-force.Tpo $(DEPDIR)/tulip_static-mdsystem-force.Po
 #	$(AM_V_CXX)source='mdsystem-force.cpp' object='tulip_static-mdsystem-force.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-force.obj `if test -f 'mdsystem-force.cpp'; then $(CYGPATH_W) 'mdsystem-force.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-force.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-force.obj `if test -f 'mdsystem-force.cpp'; then $(CYGPATH_W) 'mdsystem-force.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-force.cpp'; fi`
 
 tulip_static-mdsystem-pot-abop.o: mdsystem-pot-abop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-pot-abop.o -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-pot-abop.Tpo -c -o tulip_static-mdsystem-pot-abop.o `test -f 'mdsystem-pot-abop.cpp' || echo '$(srcdir)/'`mdsystem-pot-abop.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-pot-abop.o -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-pot-abop.Tpo -c -o tulip_static-mdsystem-pot-abop.o `test -f 'mdsystem-pot-abop.cpp' || echo '$(srcdir)/'`mdsystem-pot-abop.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-mdsystem-pot-abop.Tpo $(DEPDIR)/tulip_static-mdsystem-pot-abop.Po
 #	$(AM_V_CXX)source='mdsystem-pot-abop.cpp' object='tulip_static-mdsystem-pot-abop.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-pot-abop.o `test -f 'mdsystem-pot-abop.cpp' || echo '$(srcdir)/'`mdsystem-pot-abop.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-pot-abop.o `test -f 'mdsystem-pot-abop.cpp' || echo '$(srcdir)/'`mdsystem-pot-abop.cpp
 
 tulip_static-mdsystem-pot-abop.obj: mdsystem-pot-abop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-pot-abop.obj -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-pot-abop.Tpo -c -o tulip_static-mdsystem-pot-abop.obj `if test -f 'mdsystem-pot-abop.cpp'; then $(CYGPATH_W) 'mdsystem-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-abop.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-pot-abop.obj -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-pot-abop.Tpo -c -o tulip_static-mdsystem-pot-abop.obj `if test -f 'mdsystem-pot-abop.cpp'; then $(CYGPATH_W) 'mdsystem-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-abop.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-mdsystem-pot-abop.Tpo $(DEPDIR)/tulip_static-mdsystem-pot-abop.Po
 #	$(AM_V_CXX)source='mdsystem-pot-abop.cpp' object='tulip_static-mdsystem-pot-abop.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-pot-abop.obj `if test -f 'mdsystem-pot-abop.cpp'; then $(CYGPATH_W) 'mdsystem-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-abop.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-pot-abop.obj `if test -f 'mdsystem-pot-abop.cpp'; then $(CYGPATH_W) 'mdsystem-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-abop.cpp'; fi`
 
 tulip_static-mdsystem-pot-eam.o: mdsystem-pot-eam.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-pot-eam.o -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-pot-eam.Tpo -c -o tulip_static-mdsystem-pot-eam.o `test -f 'mdsystem-pot-eam.cpp' || echo '$(srcdir)/'`mdsystem-pot-eam.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-pot-eam.o -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-pot-eam.Tpo -c -o tulip_static-mdsystem-pot-eam.o `test -f 'mdsystem-pot-eam.cpp' || echo '$(srcdir)/'`mdsystem-pot-eam.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-mdsystem-pot-eam.Tpo $(DEPDIR)/tulip_static-mdsystem-pot-eam.Po
 #	$(AM_V_CXX)source='mdsystem-pot-eam.cpp' object='tulip_static-mdsystem-pot-eam.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-pot-eam.o `test -f 'mdsystem-pot-eam.cpp' || echo '$(srcdir)/'`mdsystem-pot-eam.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-pot-eam.o `test -f 'mdsystem-pot-eam.cpp' || echo '$(srcdir)/'`mdsystem-pot-eam.cpp
 
 tulip_static-mdsystem-pot-eam.obj: mdsystem-pot-eam.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-pot-eam.obj -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-pot-eam.Tpo -c -o tulip_static-mdsystem-pot-eam.obj `if test -f 'mdsystem-pot-eam.cpp'; then $(CYGPATH_W) 'mdsystem-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-eam.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-pot-eam.obj -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-pot-eam.Tpo -c -o tulip_static-mdsystem-pot-eam.obj `if test -f 'mdsystem-pot-eam.cpp'; then $(CYGPATH_W) 'mdsystem-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-eam.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-mdsystem-pot-eam.Tpo $(DEPDIR)/tulip_static-mdsystem-pot-eam.Po
 #	$(AM_V_CXX)source='mdsystem-pot-eam.cpp' object='tulip_static-mdsystem-pot-eam.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-pot-eam.obj `if test -f 'mdsystem-pot-eam.cpp'; then $(CYGPATH_W) 'mdsystem-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-eam.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-pot-eam.obj `if test -f 'mdsystem-pot-eam.cpp'; then $(CYGPATH_W) 'mdsystem-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-pot-eam.cpp'; fi`
 
 tulip_static-mdsystem-relax.o: mdsystem-relax.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-relax.o -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-relax.Tpo -c -o tulip_static-mdsystem-relax.o `test -f 'mdsystem-relax.cpp' || echo '$(srcdir)/'`mdsystem-relax.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-relax.o -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-relax.Tpo -c -o tulip_static-mdsystem-relax.o `test -f 'mdsystem-relax.cpp' || echo '$(srcdir)/'`mdsystem-relax.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-mdsystem-relax.Tpo $(DEPDIR)/tulip_static-mdsystem-relax.Po
 #	$(AM_V_CXX)source='mdsystem-relax.cpp' object='tulip_static-mdsystem-relax.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-relax.o `test -f 'mdsystem-relax.cpp' || echo '$(srcdir)/'`mdsystem-relax.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-relax.o `test -f 'mdsystem-relax.cpp' || echo '$(srcdir)/'`mdsystem-relax.cpp
 
 tulip_static-mdsystem-relax.obj: mdsystem-relax.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-relax.obj -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-relax.Tpo -c -o tulip_static-mdsystem-relax.obj `if test -f 'mdsystem-relax.cpp'; then $(CYGPATH_W) 'mdsystem-relax.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-relax.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-mdsystem-relax.obj -MD -MP -MF $(DEPDIR)/tulip_static-mdsystem-relax.Tpo -c -o tulip_static-mdsystem-relax.obj `if test -f 'mdsystem-relax.cpp'; then $(CYGPATH_W) 'mdsystem-relax.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-relax.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-mdsystem-relax.Tpo $(DEPDIR)/tulip_static-mdsystem-relax.Po
 #	$(AM_V_CXX)source='mdsystem-relax.cpp' object='tulip_static-mdsystem-relax.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-relax.obj `if test -f 'mdsystem-relax.cpp'; then $(CYGPATH_W) 'mdsystem-relax.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-relax.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-mdsystem-relax.obj `if test -f 'mdsystem-relax.cpp'; then $(CYGPATH_W) 'mdsystem-relax.cpp'; else $(CYGPATH_W) '$(srcdir)/mdsystem-relax.cpp'; fi`
 
 tulip_static-param-pot.o: param-pot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-param-pot.o -MD -MP -MF $(DEPDIR)/tulip_static-param-pot.Tpo -c -o tulip_static-param-pot.o `test -f 'param-pot.cpp' || echo '$(srcdir)/'`param-pot.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-param-pot.o -MD -MP -MF $(DEPDIR)/tulip_static-param-pot.Tpo -c -o tulip_static-param-pot.o `test -f 'param-pot.cpp' || echo '$(srcdir)/'`param-pot.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-param-pot.Tpo $(DEPDIR)/tulip_static-param-pot.Po
 #	$(AM_V_CXX)source='param-pot.cpp' object='tulip_static-param-pot.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-param-pot.o `test -f 'param-pot.cpp' || echo '$(srcdir)/'`param-pot.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-param-pot.o `test -f 'param-pot.cpp' || echo '$(srcdir)/'`param-pot.cpp
 
 tulip_static-param-pot.obj: param-pot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-param-pot.obj -MD -MP -MF $(DEPDIR)/tulip_static-param-pot.Tpo -c -o tulip_static-param-pot.obj `if test -f 'param-pot.cpp'; then $(CYGPATH_W) 'param-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/param-pot.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-param-pot.obj -MD -MP -MF $(DEPDIR)/tulip_static-param-pot.Tpo -c -o tulip_static-param-pot.obj `if test -f 'param-pot.cpp'; then $(CYGPATH_W) 'param-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/param-pot.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-param-pot.Tpo $(DEPDIR)/tulip_static-param-pot.Po
 #	$(AM_V_CXX)source='param-pot.cpp' object='tulip_static-param-pot.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-param-pot.obj `if test -f 'param-pot.cpp'; then $(CYGPATH_W) 'param-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/param-pot.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-param-pot.obj `if test -f 'param-pot.cpp'; then $(CYGPATH_W) 'param-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/param-pot.cpp'; fi`
 
 tulip_static-potclasses-pot-abop.o: potclasses-pot-abop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potclasses-pot-abop.o -MD -MP -MF $(DEPDIR)/tulip_static-potclasses-pot-abop.Tpo -c -o tulip_static-potclasses-pot-abop.o `test -f 'potclasses-pot-abop.cpp' || echo '$(srcdir)/'`potclasses-pot-abop.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potclasses-pot-abop.o -MD -MP -MF $(DEPDIR)/tulip_static-potclasses-pot-abop.Tpo -c -o tulip_static-potclasses-pot-abop.o `test -f 'potclasses-pot-abop.cpp' || echo '$(srcdir)/'`potclasses-pot-abop.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potclasses-pot-abop.Tpo $(DEPDIR)/tulip_static-potclasses-pot-abop.Po
 #	$(AM_V_CXX)source='potclasses-pot-abop.cpp' object='tulip_static-potclasses-pot-abop.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potclasses-pot-abop.o `test -f 'potclasses-pot-abop.cpp' || echo '$(srcdir)/'`potclasses-pot-abop.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potclasses-pot-abop.o `test -f 'potclasses-pot-abop.cpp' || echo '$(srcdir)/'`potclasses-pot-abop.cpp
 
 tulip_static-potclasses-pot-abop.obj: potclasses-pot-abop.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potclasses-pot-abop.obj -MD -MP -MF $(DEPDIR)/tulip_static-potclasses-pot-abop.Tpo -c -o tulip_static-potclasses-pot-abop.obj `if test -f 'potclasses-pot-abop.cpp'; then $(CYGPATH_W) 'potclasses-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-abop.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potclasses-pot-abop.obj -MD -MP -MF $(DEPDIR)/tulip_static-potclasses-pot-abop.Tpo -c -o tulip_static-potclasses-pot-abop.obj `if test -f 'potclasses-pot-abop.cpp'; then $(CYGPATH_W) 'potclasses-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-abop.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potclasses-pot-abop.Tpo $(DEPDIR)/tulip_static-potclasses-pot-abop.Po
 #	$(AM_V_CXX)source='potclasses-pot-abop.cpp' object='tulip_static-potclasses-pot-abop.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potclasses-pot-abop.obj `if test -f 'potclasses-pot-abop.cpp'; then $(CYGPATH_W) 'potclasses-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-abop.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potclasses-pot-abop.obj `if test -f 'potclasses-pot-abop.cpp'; then $(CYGPATH_W) 'potclasses-pot-abop.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-abop.cpp'; fi`
 
 tulip_static-potclasses-pot-eam.o: potclasses-pot-eam.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potclasses-pot-eam.o -MD -MP -MF $(DEPDIR)/tulip_static-potclasses-pot-eam.Tpo -c -o tulip_static-potclasses-pot-eam.o `test -f 'potclasses-pot-eam.cpp' || echo '$(srcdir)/'`potclasses-pot-eam.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potclasses-pot-eam.o -MD -MP -MF $(DEPDIR)/tulip_static-potclasses-pot-eam.Tpo -c -o tulip_static-potclasses-pot-eam.o `test -f 'potclasses-pot-eam.cpp' || echo '$(srcdir)/'`potclasses-pot-eam.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potclasses-pot-eam.Tpo $(DEPDIR)/tulip_static-potclasses-pot-eam.Po
 #	$(AM_V_CXX)source='potclasses-pot-eam.cpp' object='tulip_static-potclasses-pot-eam.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potclasses-pot-eam.o `test -f 'potclasses-pot-eam.cpp' || echo '$(srcdir)/'`potclasses-pot-eam.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potclasses-pot-eam.o `test -f 'potclasses-pot-eam.cpp' || echo '$(srcdir)/'`potclasses-pot-eam.cpp
 
 tulip_static-potclasses-pot-eam.obj: potclasses-pot-eam.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potclasses-pot-eam.obj -MD -MP -MF $(DEPDIR)/tulip_static-potclasses-pot-eam.Tpo -c -o tulip_static-potclasses-pot-eam.obj `if test -f 'potclasses-pot-eam.cpp'; then $(CYGPATH_W) 'potclasses-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-eam.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potclasses-pot-eam.obj -MD -MP -MF $(DEPDIR)/tulip_static-potclasses-pot-eam.Tpo -c -o tulip_static-potclasses-pot-eam.obj `if test -f 'potclasses-pot-eam.cpp'; then $(CYGPATH_W) 'potclasses-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-eam.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potclasses-pot-eam.Tpo $(DEPDIR)/tulip_static-potclasses-pot-eam.Po
 #	$(AM_V_CXX)source='potclasses-pot-eam.cpp' object='tulip_static-potclasses-pot-eam.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potclasses-pot-eam.obj `if test -f 'potclasses-pot-eam.cpp'; then $(CYGPATH_W) 'potclasses-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-eam.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potclasses-pot-eam.obj `if test -f 'potclasses-pot-eam.cpp'; then $(CYGPATH_W) 'potclasses-pot-eam.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-pot-eam.cpp'; fi`
 
 tulip_static-potclasses-reppot.o: potclasses-reppot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potclasses-reppot.o -MD -MP -MF $(DEPDIR)/tulip_static-potclasses-reppot.Tpo -c -o tulip_static-potclasses-reppot.o `test -f 'potclasses-reppot.cpp' || echo '$(srcdir)/'`potclasses-reppot.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potclasses-reppot.o -MD -MP -MF $(DEPDIR)/tulip_static-potclasses-reppot.Tpo -c -o tulip_static-potclasses-reppot.o `test -f 'potclasses-reppot.cpp' || echo '$(srcdir)/'`potclasses-reppot.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potclasses-reppot.Tpo $(DEPDIR)/tulip_static-potclasses-reppot.Po
 #	$(AM_V_CXX)source='potclasses-reppot.cpp' object='tulip_static-potclasses-reppot.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potclasses-reppot.o `test -f 'potclasses-reppot.cpp' || echo '$(srcdir)/'`potclasses-reppot.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potclasses-reppot.o `test -f 'potclasses-reppot.cpp' || echo '$(srcdir)/'`potclasses-reppot.cpp
 
 tulip_static-potclasses-reppot.obj: potclasses-reppot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potclasses-reppot.obj -MD -MP -MF $(DEPDIR)/tulip_static-potclasses-reppot.Tpo -c -o tulip_static-potclasses-reppot.obj `if test -f 'potclasses-reppot.cpp'; then $(CYGPATH_W) 'potclasses-reppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-reppot.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potclasses-reppot.obj -MD -MP -MF $(DEPDIR)/tulip_static-potclasses-reppot.Tpo -c -o tulip_static-potclasses-reppot.obj `if test -f 'potclasses-reppot.cpp'; then $(CYGPATH_W) 'potclasses-reppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-reppot.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potclasses-reppot.Tpo $(DEPDIR)/tulip_static-potclasses-reppot.Po
 #	$(AM_V_CXX)source='potclasses-reppot.cpp' object='tulip_static-potclasses-reppot.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potclasses-reppot.obj `if test -f 'potclasses-reppot.cpp'; then $(CYGPATH_W) 'potclasses-reppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-reppot.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potclasses-reppot.obj `if test -f 'potclasses-reppot.cpp'; then $(CYGPATH_W) 'potclasses-reppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potclasses-reppot.cpp'; fi`
 
 tulip_static-potinfo.o: potinfo.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo.o -MD -MP -MF $(DEPDIR)/tulip_static-potinfo.Tpo -c -o tulip_static-potinfo.o `test -f 'potinfo.cpp' || echo '$(srcdir)/'`potinfo.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo.o -MD -MP -MF $(DEPDIR)/tulip_static-potinfo.Tpo -c -o tulip_static-potinfo.o `test -f 'potinfo.cpp' || echo '$(srcdir)/'`potinfo.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potinfo.Tpo $(DEPDIR)/tulip_static-potinfo.Po
 #	$(AM_V_CXX)source='potinfo.cpp' object='tulip_static-potinfo.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo.o `test -f 'potinfo.cpp' || echo '$(srcdir)/'`potinfo.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo.o `test -f 'potinfo.cpp' || echo '$(srcdir)/'`potinfo.cpp
 
 tulip_static-potinfo.obj: potinfo.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo.obj -MD -MP -MF $(DEPDIR)/tulip_static-potinfo.Tpo -c -o tulip_static-potinfo.obj `if test -f 'potinfo.cpp'; then $(CYGPATH_W) 'potinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo.obj -MD -MP -MF $(DEPDIR)/tulip_static-potinfo.Tpo -c -o tulip_static-potinfo.obj `if test -f 'potinfo.cpp'; then $(CYGPATH_W) 'potinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potinfo.Tpo $(DEPDIR)/tulip_static-potinfo.Po
 #	$(AM_V_CXX)source='potinfo.cpp' object='tulip_static-potinfo.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo.obj `if test -f 'potinfo.cpp'; then $(CYGPATH_W) 'potinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo.obj `if test -f 'potinfo.cpp'; then $(CYGPATH_W) 'potinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo.cpp'; fi`
 
 tulip_static-potinfo-readeam.o: potinfo-readeam.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readeam.o -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readeam.Tpo -c -o tulip_static-potinfo-readeam.o `test -f 'potinfo-readeam.cpp' || echo '$(srcdir)/'`potinfo-readeam.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readeam.o -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readeam.Tpo -c -o tulip_static-potinfo-readeam.o `test -f 'potinfo-readeam.cpp' || echo '$(srcdir)/'`potinfo-readeam.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potinfo-readeam.Tpo $(DEPDIR)/tulip_static-potinfo-readeam.Po
 #	$(AM_V_CXX)source='potinfo-readeam.cpp' object='tulip_static-potinfo-readeam.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readeam.o `test -f 'potinfo-readeam.cpp' || echo '$(srcdir)/'`potinfo-readeam.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readeam.o `test -f 'potinfo-readeam.cpp' || echo '$(srcdir)/'`potinfo-readeam.cpp
 
 tulip_static-potinfo-readeam.obj: potinfo-readeam.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readeam.obj -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readeam.Tpo -c -o tulip_static-potinfo-readeam.obj `if test -f 'potinfo-readeam.cpp'; then $(CYGPATH_W) 'potinfo-readeam.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readeam.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readeam.obj -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readeam.Tpo -c -o tulip_static-potinfo-readeam.obj `if test -f 'potinfo-readeam.cpp'; then $(CYGPATH_W) 'potinfo-readeam.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readeam.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potinfo-readeam.Tpo $(DEPDIR)/tulip_static-potinfo-readeam.Po
 #	$(AM_V_CXX)source='potinfo-readeam.cpp' object='tulip_static-potinfo-readeam.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readeam.obj `if test -f 'potinfo-readeam.cpp'; then $(CYGPATH_W) 'potinfo-readeam.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readeam.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readeam.obj `if test -f 'potinfo-readeam.cpp'; then $(CYGPATH_W) 'potinfo-readeam.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readeam.cpp'; fi`
 
 tulip_static-potinfo-readinfo.o: potinfo-readinfo.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readinfo.o -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readinfo.Tpo -c -o tulip_static-potinfo-readinfo.o `test -f 'potinfo-readinfo.cpp' || echo '$(srcdir)/'`potinfo-readinfo.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readinfo.o -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readinfo.Tpo -c -o tulip_static-potinfo-readinfo.o `test -f 'potinfo-readinfo.cpp' || echo '$(srcdir)/'`potinfo-readinfo.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potinfo-readinfo.Tpo $(DEPDIR)/tulip_static-potinfo-readinfo.Po
 #	$(AM_V_CXX)source='potinfo-readinfo.cpp' object='tulip_static-potinfo-readinfo.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readinfo.o `test -f 'potinfo-readinfo.cpp' || echo '$(srcdir)/'`potinfo-readinfo.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readinfo.o `test -f 'potinfo-readinfo.cpp' || echo '$(srcdir)/'`potinfo-readinfo.cpp
 
 tulip_static-potinfo-readinfo.obj: potinfo-readinfo.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readinfo.obj -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readinfo.Tpo -c -o tulip_static-potinfo-readinfo.obj `if test -f 'potinfo-readinfo.cpp'; then $(CYGPATH_W) 'potinfo-readinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readinfo.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readinfo.obj -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readinfo.Tpo -c -o tulip_static-potinfo-readinfo.obj `if test -f 'potinfo-readinfo.cpp'; then $(CYGPATH_W) 'potinfo-readinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readinfo.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potinfo-readinfo.Tpo $(DEPDIR)/tulip_static-potinfo-readinfo.Po
 #	$(AM_V_CXX)source='potinfo-readinfo.cpp' object='tulip_static-potinfo-readinfo.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readinfo.obj `if test -f 'potinfo-readinfo.cpp'; then $(CYGPATH_W) 'potinfo-readinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readinfo.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readinfo.obj `if test -f 'potinfo-readinfo.cpp'; then $(CYGPATH_W) 'potinfo-readinfo.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readinfo.cpp'; fi`
 
 tulip_static-potinfo-readreppot.o: potinfo-readreppot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readreppot.o -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readreppot.Tpo -c -o tulip_static-potinfo-readreppot.o `test -f 'potinfo-readreppot.cpp' || echo '$(srcdir)/'`potinfo-readreppot.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readreppot.o -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readreppot.Tpo -c -o tulip_static-potinfo-readreppot.o `test -f 'potinfo-readreppot.cpp' || echo '$(srcdir)/'`potinfo-readreppot.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potinfo-readreppot.Tpo $(DEPDIR)/tulip_static-potinfo-readreppot.Po
 #	$(AM_V_CXX)source='potinfo-readreppot.cpp' object='tulip_static-potinfo-readreppot.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readreppot.o `test -f 'potinfo-readreppot.cpp' || echo '$(srcdir)/'`potinfo-readreppot.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readreppot.o `test -f 'potinfo-readreppot.cpp' || echo '$(srcdir)/'`potinfo-readreppot.cpp
 
 tulip_static-potinfo-readreppot.obj: potinfo-readreppot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readreppot.obj -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readreppot.Tpo -c -o tulip_static-potinfo-readreppot.obj `if test -f 'potinfo-readreppot.cpp'; then $(CYGPATH_W) 'potinfo-readreppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readreppot.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readreppot.obj -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readreppot.Tpo -c -o tulip_static-potinfo-readreppot.obj `if test -f 'potinfo-readreppot.cpp'; then $(CYGPATH_W) 'potinfo-readreppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readreppot.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potinfo-readreppot.Tpo $(DEPDIR)/tulip_static-potinfo-readreppot.Po
 #	$(AM_V_CXX)source='potinfo-readreppot.cpp' object='tulip_static-potinfo-readreppot.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readreppot.obj `if test -f 'potinfo-readreppot.cpp'; then $(CYGPATH_W) 'potinfo-readreppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readreppot.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readreppot.obj `if test -f 'potinfo-readreppot.cpp'; then $(CYGPATH_W) 'potinfo-readreppot.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readreppot.cpp'; fi`
 
 tulip_static-potinfo-readspecs.o: potinfo-readspecs.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readspecs.o -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readspecs.Tpo -c -o tulip_static-potinfo-readspecs.o `test -f 'potinfo-readspecs.cpp' || echo '$(srcdir)/'`potinfo-readspecs.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readspecs.o -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readspecs.Tpo -c -o tulip_static-potinfo-readspecs.o `test -f 'potinfo-readspecs.cpp' || echo '$(srcdir)/'`potinfo-readspecs.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potinfo-readspecs.Tpo $(DEPDIR)/tulip_static-potinfo-readspecs.Po
 #	$(AM_V_CXX)source='potinfo-readspecs.cpp' object='tulip_static-potinfo-readspecs.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readspecs.o `test -f 'potinfo-readspecs.cpp' || echo '$(srcdir)/'`potinfo-readspecs.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readspecs.o `test -f 'potinfo-readspecs.cpp' || echo '$(srcdir)/'`potinfo-readspecs.cpp
 
 tulip_static-potinfo-readspecs.obj: potinfo-readspecs.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readspecs.obj -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readspecs.Tpo -c -o tulip_static-potinfo-readspecs.obj `if test -f 'potinfo-readspecs.cpp'; then $(CYGPATH_W) 'potinfo-readspecs.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readspecs.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-potinfo-readspecs.obj -MD -MP -MF $(DEPDIR)/tulip_static-potinfo-readspecs.Tpo -c -o tulip_static-potinfo-readspecs.obj `if test -f 'potinfo-readspecs.cpp'; then $(CYGPATH_W) 'potinfo-readspecs.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readspecs.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-potinfo-readspecs.Tpo $(DEPDIR)/tulip_static-potinfo-readspecs.Po
 #	$(AM_V_CXX)source='potinfo-readspecs.cpp' object='tulip_static-potinfo-readspecs.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readspecs.obj `if test -f 'potinfo-readspecs.cpp'; then $(CYGPATH_W) 'potinfo-readspecs.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readspecs.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-potinfo-readspecs.obj `if test -f 'potinfo-readspecs.cpp'; then $(CYGPATH_W) 'potinfo-readspecs.cpp'; else $(CYGPATH_W) '$(srcdir)/potinfo-readspecs.cpp'; fi`
 
 tulip_static-propfun.o: propfun.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-propfun.o -MD -MP -MF $(DEPDIR)/tulip_static-propfun.Tpo -c -o tulip_static-propfun.o `test -f 'propfun.cpp' || echo '$(srcdir)/'`propfun.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-propfun.o -MD -MP -MF $(DEPDIR)/tulip_static-propfun.Tpo -c -o tulip_static-propfun.o `test -f 'propfun.cpp' || echo '$(srcdir)/'`propfun.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-propfun.Tpo $(DEPDIR)/tulip_static-propfun.Po
 #	$(AM_V_CXX)source='propfun.cpp' object='tulip_static-propfun.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-propfun.o `test -f 'propfun.cpp' || echo '$(srcdir)/'`propfun.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-propfun.o `test -f 'propfun.cpp' || echo '$(srcdir)/'`propfun.cpp
 
 tulip_static-propfun.obj: propfun.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-propfun.obj -MD -MP -MF $(DEPDIR)/tulip_static-propfun.Tpo -c -o tulip_static-propfun.obj `if test -f 'propfun.cpp'; then $(CYGPATH_W) 'propfun.cpp'; else $(CYGPATH_W) '$(srcdir)/propfun.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-propfun.obj -MD -MP -MF $(DEPDIR)/tulip_static-propfun.Tpo -c -o tulip_static-propfun.obj `if test -f 'propfun.cpp'; then $(CYGPATH_W) 'propfun.cpp'; else $(CYGPATH_W) '$(srcdir)/propfun.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-propfun.Tpo $(DEPDIR)/tulip_static-propfun.Po
 #	$(AM_V_CXX)source='propfun.cpp' object='tulip_static-propfun.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-propfun.obj `if test -f 'propfun.cpp'; then $(CYGPATH_W) 'propfun.cpp'; else $(CYGPATH_W) '$(srcdir)/propfun.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-propfun.obj `if test -f 'propfun.cpp'; then $(CYGPATH_W) 'propfun.cpp'; else $(CYGPATH_W) '$(srcdir)/propfun.cpp'; fi`
 
 tulip_static-report.o: report.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-report.o -MD -MP -MF $(DEPDIR)/tulip_static-report.Tpo -c -o tulip_static-report.o `test -f 'report.cpp' || echo '$(srcdir)/'`report.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-report.o -MD -MP -MF $(DEPDIR)/tulip_static-report.Tpo -c -o tulip_static-report.o `test -f 'report.cpp' || echo '$(srcdir)/'`report.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-report.Tpo $(DEPDIR)/tulip_static-report.Po
 #	$(AM_V_CXX)source='report.cpp' object='tulip_static-report.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-report.o `test -f 'report.cpp' || echo '$(srcdir)/'`report.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-report.o `test -f 'report.cpp' || echo '$(srcdir)/'`report.cpp
 
 tulip_static-report.obj: report.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-report.obj -MD -MP -MF $(DEPDIR)/tulip_static-report.Tpo -c -o tulip_static-report.obj `if test -f 'report.cpp'; then $(CYGPATH_W) 'report.cpp'; else $(CYGPATH_W) '$(srcdir)/report.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-report.obj -MD -MP -MF $(DEPDIR)/tulip_static-report.Tpo -c -o tulip_static-report.obj `if test -f 'report.cpp'; then $(CYGPATH_W) 'report.cpp'; else $(CYGPATH_W) '$(srcdir)/report.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-report.Tpo $(DEPDIR)/tulip_static-report.Po
 #	$(AM_V_CXX)source='report.cpp' object='tulip_static-report.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-report.obj `if test -f 'report.cpp'; then $(CYGPATH_W) 'report.cpp'; else $(CYGPATH_W) '$(srcdir)/report.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-report.obj `if test -f 'report.cpp'; then $(CYGPATH_W) 'report.cpp'; else $(CYGPATH_W) '$(srcdir)/report.cpp'; fi`
 
 tulip_static-specs-fit-prop-pot.o: specs-fit-prop-pot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-specs-fit-prop-pot.o -MD -MP -MF $(DEPDIR)/tulip_static-specs-fit-prop-pot.Tpo -c -o tulip_static-specs-fit-prop-pot.o `test -f 'specs-fit-prop-pot.cpp' || echo '$(srcdir)/'`specs-fit-prop-pot.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-specs-fit-prop-pot.o -MD -MP -MF $(DEPDIR)/tulip_static-specs-fit-prop-pot.Tpo -c -o tulip_static-specs-fit-prop-pot.o `test -f 'specs-fit-prop-pot.cpp' || echo '$(srcdir)/'`specs-fit-prop-pot.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-specs-fit-prop-pot.Tpo $(DEPDIR)/tulip_static-specs-fit-prop-pot.Po
 #	$(AM_V_CXX)source='specs-fit-prop-pot.cpp' object='tulip_static-specs-fit-prop-pot.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-specs-fit-prop-pot.o `test -f 'specs-fit-prop-pot.cpp' || echo '$(srcdir)/'`specs-fit-prop-pot.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-specs-fit-prop-pot.o `test -f 'specs-fit-prop-pot.cpp' || echo '$(srcdir)/'`specs-fit-prop-pot.cpp
 
 tulip_static-specs-fit-prop-pot.obj: specs-fit-prop-pot.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-specs-fit-prop-pot.obj -MD -MP -MF $(DEPDIR)/tulip_static-specs-fit-prop-pot.Tpo -c -o tulip_static-specs-fit-prop-pot.obj `if test -f 'specs-fit-prop-pot.cpp'; then $(CYGPATH_W) 'specs-fit-prop-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/specs-fit-prop-pot.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-specs-fit-prop-pot.obj -MD -MP -MF $(DEPDIR)/tulip_static-specs-fit-prop-pot.Tpo -c -o tulip_static-specs-fit-prop-pot.obj `if test -f 'specs-fit-prop-pot.cpp'; then $(CYGPATH_W) 'specs-fit-prop-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/specs-fit-prop-pot.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-specs-fit-prop-pot.Tpo $(DEPDIR)/tulip_static-specs-fit-prop-pot.Po
 #	$(AM_V_CXX)source='specs-fit-prop-pot.cpp' object='tulip_static-specs-fit-prop-pot.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-specs-fit-prop-pot.obj `if test -f 'specs-fit-prop-pot.cpp'; then $(CYGPATH_W) 'specs-fit-prop-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/specs-fit-prop-pot.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-specs-fit-prop-pot.obj `if test -f 'specs-fit-prop-pot.cpp'; then $(CYGPATH_W) 'specs-fit-prop-pot.cpp'; else $(CYGPATH_W) '$(srcdir)/specs-fit-prop-pot.cpp'; fi`
 
 tulip_static-tulip.o: tulip.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-tulip.o -MD -MP -MF $(DEPDIR)/tulip_static-tulip.Tpo -c -o tulip_static-tulip.o `test -f 'tulip.cpp' || echo '$(srcdir)/'`tulip.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-tulip.o -MD -MP -MF $(DEPDIR)/tulip_static-tulip.Tpo -c -o tulip_static-tulip.o `test -f 'tulip.cpp' || echo '$(srcdir)/'`tulip.cpp
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-tulip.Tpo $(DEPDIR)/tulip_static-tulip.Po
 #	$(AM_V_CXX)source='tulip.cpp' object='tulip_static-tulip.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-tulip.o `test -f 'tulip.cpp' || echo '$(srcdir)/'`tulip.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-tulip.o `test -f 'tulip.cpp' || echo '$(srcdir)/'`tulip.cpp
 
 tulip_static-tulip.obj: tulip.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-tulip.obj -MD -MP -MF $(DEPDIR)/tulip_static-tulip.Tpo -c -o tulip_static-tulip.obj `if test -f 'tulip.cpp'; then $(CYGPATH_W) 'tulip.cpp'; else $(CYGPATH_W) '$(srcdir)/tulip.cpp'; fi`
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -MT tulip_static-tulip.obj -MD -MP -MF $(DEPDIR)/tulip_static-tulip.Tpo -c -o tulip_static-tulip.obj `if test -f 'tulip.cpp'; then $(CYGPATH_W) 'tulip.cpp'; else $(CYGPATH_W) '$(srcdir)/tulip.cpp'; fi`
 	$(AM_V_at)$(am__mv) $(DEPDIR)/tulip_static-tulip.Tpo $(DEPDIR)/tulip_static-tulip.Po
 #	$(AM_V_CXX)source='tulip.cpp' object='tulip_static-tulip.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tulip_static_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-tulip.obj `if test -f 'tulip.cpp'; then $(CYGPATH_W) 'tulip.cpp'; else $(CYGPATH_W) '$(srcdir)/tulip.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tulip_static_CXXFLAGS) $(CXXFLAGS) -c -o tulip_static-tulip.obj `if test -f 'tulip.cpp'; then $(CYGPATH_W) 'tulip.cpp'; else $(CYGPATH_W) '$(srcdir)/tulip.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

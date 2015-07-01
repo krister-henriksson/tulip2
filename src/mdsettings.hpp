@@ -14,8 +14,8 @@ public:
   bool debug_forces;
   bool debug_pressure;
   bool report_step;
-  bool   use_def_dump_xyz_fmt;
-  std::string def_dump_xyz_fmt;
+  bool        use_def_dump_xyz_fmt;
+  std::string     def_dump_xyz_fmt;
 
 
   MDSettings_common();

@@ -618,9 +618,10 @@ int main(int argc, char *argv[]){
 
 
 
-
-
-
+  /*
+  std::cout << myomp_get_chunksize(sizeof(double)) << std::endl;
+  exit(1);
+  */
 
 
 
