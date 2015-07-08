@@ -58,7 +58,7 @@ LatticeSimple::LatticeSimple(){
   cvec     = Vector3<double>(0.0);
   pbc      = Vector3<bool>(true);
   csystem  = "unknown";
-  csystem_sub = 0;
+  csystem_sub = -1;
   csymaxis = "";
   pointgroup = "1";
   spacegroup = "1";
@@ -86,14 +86,20 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
   for (ic=0; ic<nc; ++ic){
     // Local copy:
     cmp = cmplist[ic];
+
+    if (cmp.csystem=="any") continue;
+
+    if (!cmp.pbc[0] || !cmp.pbc[1] || !cmp.pbc[2]) continue;
+
     cmp.csystem="unknown";
-    cmp.csystem_sub=0;
+    cmp.csystem_sub = -1;
     cmp.csymaxis = "";
     cmp.pointgroup = "1";
     cmp.spacegroup = "1";
     cmp.spacegroup_number = 0;
 
-    if (!cmp.pbc[0] || !cmp.pbc[1] || !cmp.pbc[2]) continue;
+
+
 
 
     name = cmp.name;

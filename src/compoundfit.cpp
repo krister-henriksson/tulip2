@@ -386,7 +386,7 @@ void CompoundStructureFit::check_and_fix_Cij(){
   // Warn user and exit? Or rewrite to use "standard" settings?
 
 
-  if ( pbc[0] && pbc[1] && pbc[2] && csystem_sub<=0){
+  if ( pbc[0] && pbc[1] && pbc[2] && csystem_sub<0){
     aborterror("ERROR: Failed to find symmetry operations for compound "
 	       + name + " with stated crystal system " + csystem
 	       + ". Exiting.");

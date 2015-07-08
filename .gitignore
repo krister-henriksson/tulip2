@@ -3,13 +3,9 @@
 # Ignore contents of some directories:
 obj/
 bin/
-config/
-config.*
-Makefile
-configure
 src/.deps/
 src/discarded/
-src/Makefile
+old/
 
 
 # Ignore stuff in current directory and recursively down:

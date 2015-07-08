@@ -232,6 +232,8 @@ CompoundListFit::CompoundListFit(Elements & el,
 	compounds[ilat].csystem = "tetragonal";
       else if ( args[1][0] == 'm' || args[1][0] == 'M' )
 	compounds[ilat].csystem = "monoclinic";
+      else if ( args[1] == "any" )
+	compounds[ilat].csystem = "any";
       else {
 	aborterror("ERROR: Unknown crystal system " + args[1] + ". Exiting.");
       }

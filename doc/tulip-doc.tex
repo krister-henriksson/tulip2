@@ -959,6 +959,7 @@ that a string is needed.
 LAT                   <= starts readin of new lattice info
 
 name          = ...   string
+csystem       = ...   OPTIONAL, crystal system
 file          = ...   LAT file, string
 elements      = ...   element names (e.g. W H), strings
 Ndesired      = ...   number of cells in direction a, three integers
@@ -1094,12 +1095,30 @@ mds_error_boxlen_gt = 1e4   Fatal error if any boxlen gets over this limit (Angs
 
 \end{Verbatim}
 
+\stars
 
-Note: If a boolean value of logical true is to be input, use
+Note 1: The space group is determined by a call to the \verb+spglib+ library.
+The SPG information is used to determine which elastic constants $C_{ij}$ that can be
+calculated. If elastic constants are not used, and especially if the compound \eg
+contains defects that complicate the determination of the space group, use
+
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+csystem = any
+\end{Verbatim}
+
+This setting makes the program skip the determination of the space group for that
+compound. This skipping is also performed if the compound is non-periodic in any
+dimension.
+
+\stars
+
+Note 2: If a boolean value of logical true is to be input, use
 \verb+yes+, \verb+Yes+, \verb+true+, \verb+True+ or the first letter in these strings.
 Any other string evaluates to logical false.
 
-Note: If neither weight nor uncertainty is specified for any property a default weight of 1
+\stars
+
+Note 3: If neither weight nor uncertainty is specified for any property a default weight of 1
 is used. The weights $w_i$ are normalized: $\sum_i w_i = 1$, where the sum goes over
 properties with weights only, properties with uncertainties are not taken into account.
 
