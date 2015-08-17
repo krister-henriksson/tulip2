@@ -1,47 +1,47 @@
 
 
 # #######################################################
-# Defaults:
+# Default paths, change values if needed:
 # #######################################################
-prefix = $(HOME)
+prefix       = $(HOME)
 inc_libutils = $(prefix)/include/libutils
 inc_spglib   = $(prefix)/include/spglib
 lib_libutils = $(prefix)/lib
 lib_spglib   = $(prefix)/lib
 BINDIR       = $(prefix)/bin
 # #######################################################
+# #######################################################
 
 
-.PHONY: default dynamic dynamic2 static static2 dirs clean
-
-INCDIR = $(inc_libutils) $(inc_spglib)
-LIBDIR = $(lib_libutils) $(lib_spglib)
-LIBDIRPATH = $(lib_libutils)":"$(lib_spglib)
-
-
-# --------------------------------------------------------------------------
-# --------------------------------------------------------------------------
-# Settings:
-
+# #######################################################
+# Default settings, change values if needed:
+# #######################################################
 CC      = g++
 WARN    = -Wstrict-aliasing #-Wall -Wextra 
 STD     = -ansi -pedantic -std=c++98 
 DEBUG   = -g 
 PROF    = -pg 
-OPT     = -O2 -fstrict-aliasing #-funsafe-loop-optimizations -funroll-loops
+OPT     = -O3 -fstrict-aliasing #-funsafe-loop-optimizations -funroll-loops
 OPENMP  = -fopenmp 
+# #######################################################
+# #######################################################
 
-CFLAGS  = -c $(WARN) $(STD) $(DEBUG) $(OPT) $(PROF) $(OPENMP)
 
-INC     = $(addprefix -I, $(INCDIR))
-LIB     = $(addprefix -L, $(LIBDIR))
-
+CXXFLAGS   = -c $(WARN) $(STD) $(DEBUG) $(OPT) $(PROF) $(OPENMP)
+INCDIR     = $(inc_libutils) $(inc_spglib)
+LIBDIR     = $(lib_libutils) $(lib_spglib)
+LIBDIRPATH = $(lib_libutils)":"$(lib_spglib)
+INC        = $(addprefix -I, $(INCDIR))
+LIB        = $(addprefix -L, $(LIBDIR))
 LDFLAGS        = $(LIB) -lutils  -lsymspg  -lm -lrt
 LDFLAGS_STATIC = $(LDFLAGS) -static 
+EXE_DYNAMIC   := bin/tulip
+EXE_STATIC    := bin/tulip_static
+EXECUTABLES    = $(EXE_DYNAMIC) $(EXE_STATIC)
 
-EXE_DYNAMIC := bin/tulip
-EXE_STATIC  := bin/tulip_static
-EXECUTABLES = $(EXE_DYNAMIC) $(EXE_STATIC)
+
+.PHONY: default dynamic static dirs note clean
+
 
 SRC    := $(wildcard src/*.cpp)
 
@@ -52,26 +52,35 @@ DEPS    = obj/make.dep
 REBUILDABLES = $(OBJECTS) $(EXECUTABLES)
 
 
-
-default: dirs note $(OBJECTS)
+default: dirs note dynamic static
 
 
 install: default
-	@echo ""
-	@echo " *** Installing under " $(prefix)
-	@echo " *** Installing executables in " $(BINDIR)
-	@echo ""
-	@echo ' *** If running bash, put these lines into ~/.bashrc :'
+	@echo "-----------------------------------------------------------"
+	@echo "*** Installing under " $(prefix)
+	@echo "*** Installing executables in " $(BINDIR)
+	@echo "-----------------------------------------------------------"
+	@echo '*** If running bash, put these lines into ~/.bashrc :'
 	@echo 'export LD_LIBRARY_PATH='$(LIBDIRPATH)':$${LD_LIBRARY_PATH}'
 	@echo 'export LD_RUN_PATH='$(LIBDIRPATH)':$${LD_RUN_PATH}'
-	@echo ""
-	$(CC) $(OBJECTS) $(OPENMP) -o $(EXE_DYNAMIC)  $(LDFLAGS) $(PROF)
-	# strip -s $(EXE_DYNAMIC)
+	@echo "-----------------------------------------------------------"
+	chmod a+rx $(EXE_DYNAMIC)
 	cp $(EXE_DYNAMIC) $(BINDIR)/
-	$(CC) $(OBJECTS) $(OPENMP) -o $(EXE_STATIC)  $(LDFLAGS_STATIC) $(PROF)
-	#strip -s $(EXE_STATIC)
+	chmod a+rx $(EXE_STATIC)
 	cp $(EXE_STATIC) $(BINDIR)/
 
+
+strip: $(EXE_DYNAMIC) $(EXE_STATIC)
+	strip -g $(EXE_DYNAMIC) $(EXE_STATIC)
+	cp $(EXE_DYNAMIC) $(EXE_STATIC) $(BINDIR)/
+
+
+dynamic: $(OBJECTS)
+	$(CC) $(OBJECTS) $(OPENMP) -o $(EXE_DYNAMIC)  $(LDFLAGS) $(PROF)
+
+
+static: $(OBJECTS)
+	$(CC) $(OBJECTS) $(OPENMP) -o $(EXE_STATIC)  $(LDFLAGS_STATIC) $(PROF)
 
 
 # --------------------------------------------------------------------------
@@ -88,7 +97,7 @@ include $(DEPS)
 
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
-# Phony rules:
+# Other rules:
 
 dirs:
 	- mkdir -p obj
@@ -98,18 +107,16 @@ dirs:
 	- mkdir -p $(BINDIR)
 
 note:
-	@echo ""
-	@echo " *** Using these settings:"
-	@echo " *** Include files for 'libutils'    : "$(inc_libutils)
-	@echo " *** Include files for 'spglib'      : "$(inc_spglib)
-	@echo " *** Library directory for 'libutils': "$(inc_libutils)
-	@echo " *** Library directory for 'spglib'  : "$(inc_spglib)
-	@echo ""
+	@echo "-----------------------------------------------------------"
+	@echo "*** Include files for 'libutils'    : "$(inc_libutils)
+	@echo "*** Include files for 'spglib'      : "$(inc_spglib)
+	@echo "*** Library directory for 'libutils': "$(lib_libutils)
+	@echo "*** Library directory for 'spglib'  : "$(lib_spglib)
+	@echo "-----------------------------------------------------------"
 
 
 clean:
-	-mkdir obj
-	-rm -f obj/*
+	- rm -f obj/*
 
 
 # $@: the target filename.

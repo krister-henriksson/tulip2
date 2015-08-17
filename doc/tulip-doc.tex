@@ -1423,7 +1423,7 @@ prop:dogleg_minradius = 1e-5   exit when radius gets this low
 prop:barrier_scale    = 0.0    scaling constant for barrier penalty function,
                                to keep parameter values inside min/max interval
 prop:simann_delta_rel = 0.2    initial displacements in coordinate directions
-prop:use_data_scales  = true   use/do not use scaled values in the merit function
+prop:use_data_scales  = false  use/do not use scaled values in the merit function
 
 
 # ------------------------------------
@@ -1504,7 +1504,7 @@ pot:dogleg_radius    = 0.2
 pot:dogleg_minradius = 1e-5
 pot:barrier_scale    = 0.0     barrier value
 pot:simann_delta_rel = 0.2
-pot:use_data_scales  = true    scaling option
+pot:use_data_scales  = false   scaling option
 
 
   INFO:
@@ -1695,6 +1695,9 @@ the bulk modulus of the second compound (if two or more compounds are used
 and this compound has a bulk modulus specified as a fitting target).
 The $t_i$ is either a weight, $t_i = w_i$, if a weight is used for property $Y_i$,
 and $t_i = 1/u_i$ if an uncertainty is used.
+\textbf{Default: Using weights, with value 1.0. Specifying weight or uncertainty
+overrides the default.}
+
 
 Note: The weights $w_i$ are normalized: $\sum_i w_i = 1$,
 so that properties using uncertainties have zero weight in this normalization sum.
@@ -1702,6 +1705,10 @@ so that properties using uncertainties have zero weight in this normalization su
 The $s_i = 1$ if scales are not used (\verb+use_data_scales = false+ in the
 specifications file), and $s_i = Y_i$ if scales are used.
 By using scaled properties all are on an equal footing.
+\textbf{Default: Scales are used, specify 'false' to turn it off. If a property
+value is positive and less than machine accuracy then it is replaced by the
+machine accuracy.}
+
 
 Assume the predicted value is $\widetilde{Y}_i = Y_i + \delta Y_i$, then
 $(\widetilde{Y}_i - Y_i)/s_i = \delta Y_i / Y_i$ if scales are used, and

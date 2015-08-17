@@ -167,11 +167,11 @@ void PotentialInformationFit::read_specs(std::string filename){
 	strbuf.str(args[2]); strbuf >> ri; strbuf.clear();
 	if (ri[0]=='y' || ri[0]=='Y' || ri[0]=='t' || ri[0]=='T'){
 	  if      (c==1) specs_prop.use_data_scales = true;
-	  else if (c==2) specs_pot.use_data_scales = true;
+	  else if (c==2) specs_pot.use_data_scales  = true;
 	}
 	else {
-	  if      (c==1) specs_prop.use_data_scales = true;
-	  else if (c==2) specs_pot.use_data_scales = true;
+	  if      (c==1) specs_prop.use_data_scales = false;
+	  else if (c==2) specs_pot.use_data_scales  = false;
 	}
       }
 

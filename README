@@ -10,3 +10,7 @@
 
   make install
 
+4. Strip debug symbols from compiled and installed files:
+
+  make strip
+
