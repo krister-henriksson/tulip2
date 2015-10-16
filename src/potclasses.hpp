@@ -36,8 +36,8 @@ public:
   Vector<double> r_rep;
   Vector<double> V_rep;
   Vector<double> d2_V_rep;
-  double bfermi;
-  double rfermi;
+  // double bfermi;
+  // double rfermi;
 
   Potential_Reppot();
   double rcut(void);
@@ -120,10 +120,13 @@ public:
     else if (name=="h") return 7;
     else if (name=="R") return 8;
     else if (name=="D") return 9;
+    else if (name=="bfermi") return 10;
+    else if (name=="rfermi") return 11;
+    else if (name=="p") return 12;
     else return -1;
   }
   std::string paridx2name(int idx){
-    if (idx<0 || idx>=10) return "none";
+    if (idx<0 || idx>12) return "none";
     else return parname[idx];
   }
   double & parname2val(std::string name){

@@ -17,7 +17,7 @@ using namespace utils;
 
 
 Potential_Reppot::Potential_Reppot()
-  : elemname1("none"), elemname2("none"), Nr_rep(0), bfermi(0), rfermi(0)
+  : elemname1("none"), elemname2("none"), Nr_rep(0)
 {}
 
 double Potential_Reppot::rcut(void){

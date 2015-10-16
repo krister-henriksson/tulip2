@@ -426,26 +426,9 @@ void PotentialInformation::read_info(string filename){
     if (ns==0 && fp) continue;
 
 
-    // Reppot parameters
-    if (args[0]=="bfermi"){
-      strbuf.str(args[1]); strbuf >> ts1; strbuf.clear();
-      strbuf.str(args[2]); strbuf >> ts2; strbuf.clear();
-      strbuf.str(args[3]); strbuf >> td;  strbuf.clear();
-
-      if (use_reppot(ts1, ts2))
-	pot_Reppot[ reppot_vecidx(ts1, ts2) ].bfermi = td;
-    }
-    else if (args[0]=="rfermi"){
-      strbuf.str(args[1]); strbuf >> ts1; strbuf.clear();
-      strbuf.str(args[2]); strbuf >> ts2; strbuf.clear();
-      strbuf.str(args[3]); strbuf >> td;  strbuf.clear();
-
-      if (use_reppot(ts1, ts2))
-	pot_Reppot[ reppot_vecidx(ts1, ts2) ].rfermi = td;
-    }
 
     // Parameters of potentials
-    else if (args[0]=="potpar"){
+    if (args[0]=="potpar"){
       strbuf.str(args[1]); strbuf >> ts1; strbuf.clear();
       strbuf.str(args[2]); strbuf >> ts2; strbuf.clear();
       strbuf.str(args[3]); strbuf >> ts;  strbuf.clear();
@@ -489,21 +472,9 @@ void PotentialInformation::read_info(string filename){
 	  strbuf.str(args[4]); strbuf >> td;  strbuf.clear();
 
 	  int ip = pot_ABOP[ivec].parname2idx(ts);
-	  if (ip>=0 && ip<10)
+	  if (ip>=0 && ip<=12)
 	    pot_ABOP[ivec].parval[ip] = td;
 
-	  /*
-	  if      (ts=="D0") pot_ABOP[ivec].D0 = td;
-	  else if (ts=="r0") pot_ABOP[ivec].r0 = td;
-	  else if (ts=="beta") pot_ABOP[ivec].beta = td;
-	  else if (ts=="S") pot_ABOP[ivec].S = td;
-	  else if (ts=="gamma") pot_ABOP[ivec].gamma = td;
-	  else if (ts=="c") pot_ABOP[ivec].c = td;
-	  else if (ts=="d") pot_ABOP[ivec].d = td;
-	  else if (ts=="h") pot_ABOP[ivec].h = td;
-	  else if (ts=="R") pot_ABOP[ivec].R = td;
-	  else if (ts=="D") pot_ABOP[ivec].D = td;
-	  */
 	  
 	}
 
@@ -823,11 +794,17 @@ void PotentialInformationFit::read_info_fit(string filename){
 
     if ( is_fittable(ts,ts) ) continue;
 
+    if (elem.reflat(ts)=="skip"){
+      std::cout << "WARNING: Skipping this reference lattice. Hopefully you know what you are doing ..."
+		<< std::endl;
+      continue;
+    }
+
+
     if (elem.reflat(ts)=="none"){
       aborterror("ERROR: Reference lattice for species " + ts +
 		 " has not been specified. Exiting.");
     }
-
     if (elem.reflat_a(ts)<0)
       aborterror("Error: Lattice parameter a for reference lattice " + ts + " " +
 		 "is missing. Exiting.");
@@ -905,7 +882,7 @@ void PotentialInformationFit::read_info_fit(string filename){
 	  int ip = pot_ABOP[ivec].parname2idx(ts);
 
 	  if (args[0]=="min"){
-	    if (ip>=0 && ip<10) pot_ABOP[ivec].parmin[ip] = td;
+	    if (ip>=0 && ip<=12) pot_ABOP[ivec].parmin[ip] = td;
 	    
 	    /*
 	    if      (ts=="D0") pot_ABOP[ivec].parmin->D0 = td;
@@ -921,7 +898,7 @@ void PotentialInformationFit::read_info_fit(string filename){
 	    */
 	  }
 	  else if (args[0]=="max"){
-	    if (ip>=0 && ip<10) pot_ABOP[ivec].parmax[ip] = td;
+	    if (ip>=0 && ip<=12) pot_ABOP[ivec].parmax[ip] = td;
 
 	    /*
 	    if      (ts=="D0") pot_ABOP[ivec].parmax->D0 = td;
@@ -1055,53 +1032,6 @@ void PotentialInformationFit::read_info_fit(string filename){
 	    
 
 	  }
-
-	    /*
-	      if (pot_ABOP[iv].parmin->D0    > pot_ABOP[iv].parmax->D0)    limerr1("ABOP", s1, s2, "D0");
-	      if (pot_ABOP[iv].parmin->r0    > pot_ABOP[iv].parmax->r0)    limerr1("ABOP", s1, s2, "r0");
-	      if (pot_ABOP[iv].parmin->beta  > pot_ABOP[iv].parmax->beta)  limerr1("ABOP", s1, s2, "beta");
-	      if (pot_ABOP[iv].parmin->S     > pot_ABOP[iv].parmax->S)     limerr1("ABOP", s1, s2, "S");
-	      if (pot_ABOP[iv].parmin->gamma > pot_ABOP[iv].parmax->gamma) limerr1("ABOP", s1, s2, "gamma");
-	      if (pot_ABOP[iv].parmin->c > pot_ABOP[iv].parmax->c) limerr1("ABOP", s1, s2, "c");
-	      if (pot_ABOP[iv].parmin->d > pot_ABOP[iv].parmax->d) limerr1("ABOP", s1, s2, "d");
-	      if (pot_ABOP[iv].parmin->h > pot_ABOP[iv].parmax->h) limerr1("ABOP", s1, s2, "h");
-	      if (pot_ABOP[iv].parmin->R > pot_ABOP[iv].parmax->R) limerr1("ABOP", s1, s2, "R");
-	      if (pot_ABOP[iv].parmin->D > pot_ABOP[iv].parmax->D) limerr1("ABOP", s1, s2, "D");
-
-	      set_param_type(pot_ABOP[iv].parmin->D0,    pot_ABOP[iv].parmax->D0,    pot_ABOP[iv].partype->D0);
-	      set_param_type(pot_ABOP[iv].parmin->r0,    pot_ABOP[iv].parmax->r0,    pot_ABOP[iv].partype->r0);
-	      set_param_type(pot_ABOP[iv].parmin->beta,  pot_ABOP[iv].parmax->beta,  pot_ABOP[iv].partype->beta);
-	      set_param_type(pot_ABOP[iv].parmin->S,     pot_ABOP[iv].parmax->S,     pot_ABOP[iv].partype->S);
-	      set_param_type(pot_ABOP[iv].parmin->gamma, pot_ABOP[iv].parmax->gamma, pot_ABOP[iv].partype->gamma);
-	      set_param_type(pot_ABOP[iv].parmin->c, pot_ABOP[iv].parmax->c, pot_ABOP[iv].partype->c);
-	      set_param_type(pot_ABOP[iv].parmin->d, pot_ABOP[iv].parmax->d, pot_ABOP[iv].partype->d);
-	      set_param_type(pot_ABOP[iv].parmin->h, pot_ABOP[iv].parmax->h, pot_ABOP[iv].partype->h);
-	      set_param_type(pot_ABOP[iv].parmin->R, pot_ABOP[iv].parmax->R, pot_ABOP[iv].partype->R);
-	      set_param_type(pot_ABOP[iv].parmin->D, pot_ABOP[iv].parmax->D, pot_ABOP[iv].partype->D);
-
-	      if (pot_ABOP[ivec].partype->D0 == PARAM_FREE_WITH_LIMITS    && (pot_ABOP[iv].parmin->D0 >    pot_ABOP[iv].D0))    limerr2("ABOP", s1, s2, "D0");
-	      if (pot_ABOP[ivec].partype->r0 == PARAM_FREE_WITH_LIMITS    && (pot_ABOP[iv].parmin->r0 >    pot_ABOP[iv].r0))    limerr2("ABOP", s1, s2, "r0");
-	      if (pot_ABOP[ivec].partype->beta == PARAM_FREE_WITH_LIMITS  && (pot_ABOP[iv].parmin->beta >  pot_ABOP[iv].beta))  limerr2("ABOP", s1, s2, "beta");
-	      if (pot_ABOP[ivec].partype->S == PARAM_FREE_WITH_LIMITS     && (pot_ABOP[iv].parmin->S >     pot_ABOP[iv].S))     limerr2("ABOP", s1, s2, "S");
-	      if (pot_ABOP[ivec].partype->gamma == PARAM_FREE_WITH_LIMITS && (pot_ABOP[iv].parmin->gamma > pot_ABOP[iv].gamma)) limerr2("ABOP", s1, s2, "gamma");
-	      if (pot_ABOP[ivec].partype->c == PARAM_FREE_WITH_LIMITS && (pot_ABOP[iv].parmin->c > pot_ABOP[iv].c)) limerr2("ABOP", s1, s2, "c");
-	      if (pot_ABOP[ivec].partype->d == PARAM_FREE_WITH_LIMITS && (pot_ABOP[iv].parmin->d > pot_ABOP[iv].d)) limerr2("ABOP", s1, s2, "d");
-	      if (pot_ABOP[ivec].partype->h == PARAM_FREE_WITH_LIMITS && (pot_ABOP[iv].parmin->h > pot_ABOP[iv].h)) limerr2("ABOP", s1, s2, "h");
-	      if (pot_ABOP[ivec].partype->R == PARAM_FREE_WITH_LIMITS && (pot_ABOP[iv].parmin->R > pot_ABOP[iv].R)) limerr2("ABOP", s1, s2, "D");
-	      if (pot_ABOP[ivec].partype->D == PARAM_FREE_WITH_LIMITS && (pot_ABOP[iv].parmin->D > pot_ABOP[iv].D)) limerr2("ABOP", s1, s2, "R");
-
-	      if (pot_ABOP[ivec].partype->D0 == PARAM_FREE_WITH_LIMITS    && (pot_ABOP[iv].D0 >    pot_ABOP[iv].parmax->D0))   limerr3("ABOP", s1, s2, "D0");
-	      if (pot_ABOP[ivec].partype->r0 == PARAM_FREE_WITH_LIMITS    && (pot_ABOP[iv].r0 >    pot_ABOP[iv].parmax->r0))   limerr3("ABOP", s1, s2, "r0");
-	      if (pot_ABOP[ivec].partype->beta == PARAM_FREE_WITH_LIMITS  && (pot_ABOP[iv].beta >  pot_ABOP[iv].parmax->beta)) limerr3("ABOP", s1, s2, "beta");
-	      if (pot_ABOP[ivec].partype->S == PARAM_FREE_WITH_LIMITS     && (pot_ABOP[iv].S >     pot_ABOP[iv].parmax->S))    limerr3("ABOP", s1, s2, "S");
-	      if (pot_ABOP[ivec].partype->gamma == PARAM_FREE_WITH_LIMITS && (pot_ABOP[iv].gamma > pot_ABOP[iv].parmax->gamma)) limerr3("ABOP", s1, s2, "gamma");
-	      if (pot_ABOP[ivec].partype->c == PARAM_FREE_WITH_LIMITS && (pot_ABOP[iv].c > pot_ABOP[iv].parmax->c)) limerr3("ABOP", s1, s2, "c");
-	      if (pot_ABOP[ivec].partype->d == PARAM_FREE_WITH_LIMITS && (pot_ABOP[iv].d > pot_ABOP[iv].parmax->d)) limerr3("ABOP", s1, s2, "d");
-	      if (pot_ABOP[ivec].partype->h == PARAM_FREE_WITH_LIMITS && (pot_ABOP[iv].h > pot_ABOP[iv].parmax->h)) limerr3("ABOP", s1, s2, "h");
-	      if (pot_ABOP[ivec].partype->R == PARAM_FREE_WITH_LIMITS && (pot_ABOP[iv].R > pot_ABOP[iv].parmax->R)) limerr3("ABOP", s1, s2, "D");
-	      if (pot_ABOP[ivec].partype->D == PARAM_FREE_WITH_LIMITS && (pot_ABOP[iv].D > pot_ABOP[iv].parmax->D)) limerr3("ABOP", s1, s2, "R");
-	    */
-
 
 	}
 

@@ -19,7 +19,7 @@ using namespace utils;
 Potential_ABOP::Potential_ABOP()
   :
   elemname1("none"), elemname2("none"),
-  parval(10,0), parname(10)
+  parval(13,0), parname(13)
 {
   parname[0] = "D0";
   parname[1] = "r0";
@@ -31,14 +31,22 @@ Potential_ABOP::Potential_ABOP()
   parname[7] = "h";
   parname[8] = "R";
   parname[9] = "D";
+  parname[10] = "bfermi";
+  parname[11] = "rfermi";
+  parname[12] = "p";
+
+  parval[10] = 10.0;
+  parval[11] = 1.0;
+  parval[12] = 0.5;
 }
 
 
 void Potential_ABOP::init_lims(void){
-  partype.resize(10);
-  parmin.resize(10);
-  parmax.resize(10);
-  for (int i=0; i<10; ++i){
+  int n = parname.size();
+  partype.resize(n);
+  parmin.resize(n);
+  parmax.resize(n);
+  for (int i=0; i<n; ++i){
     partype[i] = PARAM_FIXED;
     parmin[i] = 1;
     parmax[i] = 1;

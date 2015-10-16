@@ -129,6 +129,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
   //cout << "rcut_max and skint are " << mds.rcut_max << " " << mds.skint << endl;
 
 
+  // std::cout << "NB: compoundfit-getprop: Tstart " << mds.specs.Tstart << std::endl;
 
 
   bool retry;
@@ -528,7 +529,7 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 
 
   cs.barrier_scale() = param.p_potinfo->specs_prop.barrier_scale;
-  cs.barrier_scale() = param.p_potinfo->specs_prop.use_data_scales;
+  cs.use_scales()    = param.p_potinfo->specs_prop.use_data_scales;
 
   cond_conv.functolabs = param.p_potinfo->specs_prop.functolabs;
   cond_conv.functolrel = param.p_potinfo->specs_prop.functolrel;
@@ -1062,7 +1063,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       fit_OK = false;
 
       cs.barrier_scale() = param.p_potinfo->specs_prop.barrier_scale;
-      cs.barrier_scale() = param.p_potinfo->specs_prop.use_data_scales;
+      cs.use_scales()    = param.p_potinfo->specs_prop.use_data_scales;
 
       cond_conv.functolabs = param.p_potinfo->specs_prop.functolabs;
       cond_conv.functolrel = param.p_potinfo->specs_prop.functolrel;

@@ -394,11 +394,14 @@ int main(int argc, char *argv[]){
 	   << " is fittable? " << potinfo.is_fittable(s1,s2)
 	   << " uses reppot? " << potinfo.use_reppot(s1,s2);
 
+      /*
       if (potinfo.use_reppot(s1,s2)){
 	ivec = potinfo.reppot_vecidx(s1,s2);
 	cout << " bermi= "  << potinfo.pot_Reppot[ivec].bfermi
 	     << " rfermi= " << potinfo.pot_Reppot[ivec].rfermi;
       }
+      */
+
 
       std::cout << std::endl;
     }
@@ -748,7 +751,7 @@ int main(int argc, char *argv[]){
     std::cout << "Starting time for simulation (usually 0.0)              : " << complistfit.compounds[i].mds_specs.tstart << std::endl;
     std::cout << "Ending time for simulation                              : " << complistfit.compounds[i].mds_specs.tend << std::endl;
     std::cout << "Dump info every n:th step, n is                         : " << complistfit.compounds[i].mds_specs.ndump << std::endl;
-    std::cout << "Starting/desired temperature (e.g. 300.0)               : " << complistfit.compounds[i].mds_specs.Tstart << std::endl;
+    std::cout << "Starting temperature (e.g. 300.0)                       : " << complistfit.compounds[i].mds_specs.Tstart << std::endl;
     std::cout << "Initial time step                                       : " << complistfit.compounds[i].mds_specs.dt << std::endl;
     std::cout << "  Maximum time step                                     : " << complistfit.compounds[i].mds_specs.max_dt << std::endl;
     std::cout << "  Maximum allowed energy change for an atom/timestep    : " << complistfit.compounds[i].mds_specs.max_dE << std::endl;
@@ -1072,6 +1075,18 @@ int main(int argc, char *argv[]){
     std::string sref = potinfo.elem.idx2name(iref);
     std::string latref = potinfo.elem.reflat(sref);
 
+    if (latref=="skip"){
+      std::cout << "*********************************************************************************" << std::endl;
+      std::cout << "*********************************************************************************" << std::endl;
+      std::cout << "WARNING: Skipping calculation of properties of the reference lattice "
+		<< "for pure element " << sref << "." << std::endl;
+      std::cout << "*********************************************************************************" << std::endl;
+      std::cout << "*********************************************************************************" << std::endl;
+      continue;
+    }
+
+
+
     if (potinfo.is_fittable(sref,sref)){
       std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cout << "Elemental combination " << sref << "-" << sref << " is to be fitted."
@@ -1321,7 +1336,7 @@ int main(int argc, char *argv[]){
     cs.ReportFuncPointer() = report_pot_prop;
 
     cs.barrier_scale() = potinfo.specs_pot.barrier_scale;
-    cs.use_scales() = potinfo.specs_pot.use_data_scales;
+    cs.use_scales()    = potinfo.specs_pot.use_data_scales;
 
     cs.finalize_setup();
 

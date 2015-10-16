@@ -1,0 +1,45 @@
+
+
+Latest release, October 15, 2015.
+
+Most important changes:
+
+  1. Exponent 1/2 occurring in the expression for the bond order factor bij has been
+turned into a fitting parameter called 'p'. The default value is fixed at 1/2 if
+the exponent is not mentioned in the potinfo input file.
+
+  Example usage:
+    potpar( Y, O ):p = 0.333
+min:potpar( Y, O ):p = 0.1
+max:potpar( Y, O ):p = 0.5
+
+
+  2. Repulsive potential constants 'bfermi' and 'rfermi' has been converted into
+fitting parameters with the same names, and absorbed into the ABOP. The setting
+'use_rep_core( A , B )' for the interaction between elements A and B must be
+used to switch on the repulsive potential. If it is not used then 'bfermi' and
+'rfermi' will not have any effect. Especially if parameter limits have been
+specified but potential is not switched on, then expect the code to correctly
+and silently fail.
+
+  Example usage:
+    potpar( Y, O ):bfermi = 8.0
+min:potpar( Y, O ):bfermi = 5.0
+max:potpar( Y, O ):bfermi = 12.0
+
+    potpar( Y, O ):rfermi = 0.4
+min:potpar( Y, O ):rfermi = 0.1
+max:potpar( Y, O ):rfermi = 1.0
+
+
+  3. Calculations of properties of reference lattices can now be skipped by using
+the keyword 'skip' instead of the lattice name. This allows settings like D0 = 0.0
+to disable an interaction between atoms of the same species, without the code
+exiting due to imploding or exploding reference lattice.
+
+  Example usage:
+lat( Y , Y ) = skip  (was HCP)
+  a( Y , Y ) = 3.6461970493
+cpa( Y , Y ) = 1.5661531464
+
+

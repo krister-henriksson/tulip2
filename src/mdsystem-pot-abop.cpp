@@ -98,6 +98,7 @@ double MDSystem::force_ABOP(){
   double gammaik,cik,dik,hik,r0ik,Rik,Dik,fcik,rik,rcutik;
   double V1, dV1, fermi, dfermi, bfermi, rfermi;
   double VRij,VAij,bij,Chiij,gijk,c2,d2,cost,hcost,hcost2,alphaijk,twomuik;
+  double pij;
 
   //double eps = std::numeric_limits<double>::epsilon();
   double VRij_r, VAij_r, dVRij_r, dVAij_r;
@@ -224,8 +225,10 @@ double MDSystem::force_ABOP(){
 	Nr = p_potinfo->pot_Reppot[ivec_reppot].r_rep.size();
 	td = p_potinfo->pot_Reppot[ivec_reppot].r_rep[Nr-1];
 
-	bfermi = p_potinfo->pot_Reppot[ivec_reppot].bfermi;
-	rfermi = p_potinfo->pot_Reppot[ivec_reppot].rfermi;
+	bfermi = p_potinfo->pot_ABOP[ivecij].parval[10];
+	rfermi = p_potinfo->pot_ABOP[ivecij].parval[11];
+	//bfermi = p_potinfo->pot_Reppot[ivec_reppot].bfermi;
+	//rfermi = p_potinfo->pot_Reppot[ivec_reppot].rfermi;
 	  
 	td = exp(- bfermi * (rij - rfermi));
 	fermi  = 1.0/(1.0 + td);
@@ -376,7 +379,12 @@ double MDSystem::force_ABOP(){
 	
 	Chiij += fcik * gijk * F1 * F2;
       } // end of loop over neighbors k
-      bij = 1.0/sqrt(1.0 + Chiij);
+
+
+
+      // bij = 1.0/sqrt(1.0 + Chiij);
+      pij = p_potinfo->pot_ABOP[ivecij].parval[12];
+      bij = 1.0 / pow(1.0 + Chiij, pij);
       //std::cout << "bij " << bij << std::endl;
 
 
@@ -443,7 +451,10 @@ double MDSystem::force_ABOP(){
       // Three-body forces:
       // ################################################################
       
-      threebodyfactor = - 0.25 * fcij * VAij * bij*bij*bij;
+      // threebodyfactor = - 0.25 * fcij * VAij * bij*bij*bij;
+      threebodyfactor = - 0.5 * pij * fcij * VAij * bij * 1.0/(1.0 + Chiij);
+
+
 
 
       // kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk

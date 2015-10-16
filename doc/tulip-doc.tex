@@ -23,6 +23,8 @@
 
 \usepackage{dcolumn}
 
+\usepackage{paralist}
+
 
 
 \usepackage[utf8]{inputenc}
@@ -398,26 +400,49 @@ f'_{c}(r) =
 The bond-order parameter is defined as
 
 \begin{equation}
-B_{ij} = \left( 1 + \chi_{ij} \right)^{-{1 \over 2}}
+B_{ij} = \left( 1 + \chi_{ij} \right)^{-p_{ij}}
 \end{equation}
 
-where
+The usual ABOP has $p_{ij} \equiv 1/2$.
+
+Here
 
 \begin{equation}
 \chi_{ij} =
-\sum_{k, k \neq i, k \neq j} f_{c,ik} g_{ijk} \omega_{ijk} \exp\left[
-  \alpha_{ijk}(r_{ij} - r_{ik}) \right]
+\sum_{k, k \neq i, k \neq j} f_{c,ik} g_{ijk}
+\omega_{ijk} \exp\left[ \alpha_{ijk}(r_{ij} - r_{ik}) \right]
 \end{equation}
 
-If the Brenner form is used then
+We have now three different possibilities:
+
+(V1) $\alpha_{ijk}$ and $\omega_{ijk}$ are used as parameters.
+
+(V2) If $\alpha_{ijk}$ is used but $\omega_{ijk}$ is not, then the
+Brenner form is used for the latter:
 
 \begin{equation}
 \omega_{ijk} = \exp\left[
 - \alpha_{ijk} ( r_{0,ij} - r_{0,ik})
 \right]
+\label{eq:omegaijk}
 \end{equation}
 
-and $\omega_{ijk}$ is \textbf{not} a separate parameter. Also,
+and $\omega_{ijk}$ is \textbf{not} a separate parameter.
+
+(V3) If $\alpha_{ijk}$ is not used and $2\mu_{ik}$ is used, then the
+whole factor
+
+\begin{equation}
+\omega_{ijk} \exp\left[ \alpha_{ijk}(r_{ij} - r_{ik}) \right]
+\end{equation}
+
+is replaced in its entirety by
+
+\begin{equation}
+\exp\left[ 2\mu_{ik} (r_{ij} - r_{ik}) \right]
+\end{equation}
+
+The function $g_{ijk}(\theta_{ijk})$ is given by the expression
 
 \begin{equation}
 g_{ijk} = \gamma \left(
@@ -427,10 +452,54 @@ g_{ijk} = \gamma \left(
 
 where $\theta_{ijk}$ is the angle between the bonds $ij$ and $ik$.
 
+The ABOP potential is insufficient for small interatomic distances.
+To ensure a more correct description a (repulsive) potential
+$V_{\mathrm{rep}}(r)$ --- e.g. the ZBL potential --- describing
+interactions at small distances should be used.
+The original potential presented above is then modified to
 
+\begin{equation}
+V(r) = (1-F(r)) V_{\mathrm{rep}}(r) + F(r) V_{\mathrm{orig}}(r)
+\end{equation}
 
+where $F(r)$ is the Fermi function
 
+\begin{equation}
+F(r) = 1/(1 + e^{-b_f(r-r_f)})
+\end{equation}
 
+and $b_f, r_f$ are parameters that need to be supplied.
+
+All parameters that can be used with the ABOP potential are:
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\hline
+Parameter & Notes \\
+\hline
+\hline
+$D_0$ & \\
+$r_0$ & \\
+$\beta$ & \\
+$S$ & \\
+$\gamma$ & \\
+$c$ & \\
+$d$ & \\
+$h$ & \\
+$D$ & \\
+$R$ & Cutoff is $r_c = R + D$. \\
+$b_f$ & Defaults to $10$. \\
+$r_f$ & Defaults to $1$. \\
+$p$ & Defaults to $1/2$. \\
+\hline
+(V1) $\alpha_{ijk}$ and $\omega_{ijk}$ & \\
+(V2) $\alpha_{ijk}$ & $\omega_{ijk}$ given by Eq.~(\ref{eq:omegaijk}).\\
+(V3) $2\mu_{ik}$ & \\
+\hline
+\hline
+\end{tabular}
+\end{center}
 
 
 
@@ -439,8 +508,9 @@ where $\theta_{ijk}$ is the angle between the bonds $ij$ and $ik$.
 \subsection{EAM potentials}
 
 EAM potentials can as of now not be fitted, but only be used
-together with other potentials. The total energy of a solid
-is in the EAM formalism
+as read-in potentials.
+
+The total energy of a solid is in the EAM formalism
 
 \begin{equation}
 V = {1 \over 2} \sum_i \sum_{j, j \neq i} V_2(r_{ij})
@@ -660,7 +730,7 @@ mass(C ) = 12.0110
 
 
 # Reference lattices:
-lat(Cr, Cr) = BCC
+lat(Cr, Cr) = skip   BCC  Calc. for this will be skipped, we will have Ecoh(Cr)=0.0.
 lat(Fe, Fe) = BCC
 lat(C,  C ) = GRA
 
@@ -699,31 +769,11 @@ fit(Fe, Cr) = yes    symmetric
 # Repulsive potentials (ZBL):
 
 use_rep_core( Fe, Fe ) = yes
-bfermi( Fe, Fe ) = 10
-rfermi( Fe, Fe ) = 1.0
-
 use_rep_core( Cr, Cr ) = yes
-bfermi( Cr, Cr ) = 12
-rfermi( Cr, Cr ) = 1.7
-
-use_rep_core( C, C ) = yes
-bfermi( C, C ) = 8
-rfermi( C, C ) = 0.6
-
-use_rep_core( Fe, Cr ) = no
-bfermi( Fe, Cr ) = 10
-rfermi( Fe, Cr ) = 1 
-
-use_rep_core( Fe, C ) = yes
-bfermi( Fe, C ) = 10
-rfermi( Fe, C ) = 1
-
-use_rep_core( Cr, C ) = yes
-bfermi( Cr, C ) = 8
-rfermi( Cr, C ) = 1.2
-
-
-
+use_rep_core( C,  C  ) = yes
+use_rep_core( Fe, Cr ) = yes
+use_rep_core( Fe, C  ) = yes
+use_rep_core( Cr, C  ) = yes
 
 # Parameters for fixed interactions
 
@@ -737,6 +787,8 @@ potpar( Fe, Fe ):d = 0.3413219
 potpar( Fe, Fe ):h = -0.26
 potpar( Fe, Fe ):R = 3.15
 potpar( Fe, Fe ):D = 0.2
+potpar( Fe, Fe ):bfermi = 10
+potpar( Fe, Fe ):rfermi = 1
 
 potpar(Cr, Cr ):D0 = 4.04222081
 potpar(Cr, Cr ):r0 = 2.13018547
@@ -748,6 +800,8 @@ potpar(Cr, Cr ):d = 0.13813230
 potpar(Cr, Cr ):h = -0.28569237
 potpar(Cr, Cr ):R = 3.2
 potpar(Cr, Cr ):D = 0.20
+potpar( Cr, Cr ):bfermi = 12
+potpar( Cr, Cr ):rfermi = 1.7
 
 potpar(C, C ):D0 = 6.0
 potpar(C, C ):r0 = 1.39
@@ -759,6 +813,8 @@ potpar(C, C ):d = 3.5
 potpar(C, C ):h = 1.0
 potpar(C, C ):R = 1.85
 potpar(C, C ):D = 0.15
+potpar( C , C  ):bfermi = 8
+potpar( C , C  ):rfermi = 0.6
 
 potpar(Fe, C ):D0 = 3.95000634
 potpar(Fe, C ):r0 = 1.53426579
@@ -770,6 +826,8 @@ potpar(Fe, C ):d = 0.94663188
 potpar(Fe, C ):h = -0.18665305
 potpar(Fe, C ):R = 2.6
 potpar(Fe, C ):D = 0.20
+potpar( Fe, C  ):bfermi = 10
+potpar( Fe, C  ):rfermi = 1
 
 potpar( Cr, C ):D0        =  2.77620074
 potpar( Cr, C ):r0        =  1.81289285
@@ -781,6 +839,8 @@ potpar( Cr, C ):d         =  0.17497204
 potpar( Cr, C ):h         =  -0.17850001
 potpar( Cr, C ):R         =  2.95
 potpar( Cr, C ):D         =  0.1
+potpar( Cr, C  ):bfermi = 8
+potpar( Cr, C  ):rfermi = 1.2
 
 
 # Parameters for fittable interactions
@@ -825,6 +885,13 @@ max: potpar( Fe, Cr ):R  = 2.0
 min: potpar( Fe, Cr ):D  = 1.0
 max: potpar( Fe, Cr ):D  = 1.0
 
+     potpar( Fe, Cr ):bfermi = 10
+min: potpar( Fe, Cr ):bfermi =  5
+max: potpar( Fe, Cr ):bfermi = 15
+
+     potpar( Fe, Cr ):rfermi = 1
+min: potpar( Fe, Cr ):rfermi = 0.1
+max: potpar( Fe, Cr ):rfermi = 5
 
 
 
@@ -1045,15 +1112,15 @@ frc_file      = ***  string
 frc_use       = ***  boolean
 # => use atomic forces
 frc_use_w     = ***  boolean, use weights for force components (default)
-# frc_use_u   = ***  boolean, use weights for force components
+# frc_use_u   = ***  boolean, use uncertainties for force components
 #
 # Format of forces file: Lines of
-#   fx  fy  fz  dfx  dfy  dfz
-# in eV/fs, where dfx, dfy, dfz is interpreted as weights/uncertainties,
+#   fx  fy  fz  wufx  wufy  wufz
+# in eV/fs, where wufx, wufy, wufz is interpreted as weights/uncertainties,
 # depending on which of frc_use_w/frc_use_u is set.
 #
 
-# Options that still exist but are deprecated:
+# Options that still exist (?) but are deprecated:
 # Fmax          = ...    try to achieve this largest atomic force
 #                        in relaxed compound
 # Pmax          = ...    try to achieve this largest Cartesian pressure
@@ -1201,41 +1268,51 @@ Format of LAT file:
 
 \begin{Verbatim}[fontsize=\relsize{-1},frame=single]
 Comment                      Arbitrary comment.
-  L                          Overall scaling constant.
+  S                          Overall scaling constant.
 a1 a2 a3  optional-string    Components of the first primitive vector U1.
 b1 b2 b3  optional-string    Components of the second primitive vector U2.
 c1 c2 c3  optional-string    Components of the third primitive vector U3.
   format                     internal or direct
   Nbasis                     number of basis vectors
-S1  B11  B12  B13 constr1    Species and vector components of first basis atom.
-S2  B21  B22  B23 constr2    Species and vector components of second basis atom.
+E1  B11  B12  B13 constr1    Element name and vector components of first basis atom.
+E2  B21  B22  B23 constr2    Element name and vector components of second basis atom.
 ...
 \end{Verbatim}
 
-The real primitive vectors are $\mathbf{v}_i = L \mathbf{u}_i$.
+The real primitive vectors are
 
-The strings \verb+S+$i$ --- e.g. Cr, H, W --- specify the species
-of the basis atom.
+\begin{equation}
+\mathbf{v}_i = S \mathbf{u}_i
+\end{equation}
+
+The strings $E_i$ --- e.g. Cr, H, W --- specify the element/species of the basis atom.
 
 If \verb+optional-string+ is present and is \verb+pbc+, then
 the corresponding direction is
 considered periodic, i.e. it is a true primitive vector
 in an infinite lattice. Other strings are ignored.
 
-
 If the \verb+format+ keyword is \verb+scaled+ or \verb+Scaled+ or
 letter \verb+s+ or \verb+S+ then \eg the $j:$th basis vector is
 
-$\qquad$ $\mathbf{b}_j =$
-\verb+(L * Bj1)+ $\mathbf{e}_x +$ \verb+(L * Bj2)+ $\mathbf{e}_y$ \verb+(L * Bj3)+ $\mathbf{e}_z$
+\begin{equation}
+\mathbf{b}_j = S B_{j1} \mathbf{e}_x
++ S B_{j2} \mathbf{e}_y
++ S B_{j3} \mathbf{e}_z
+= \sum_i S B_{ji} \mathbf{e}_i
+\end{equation}
 
 This is equivalent to \textbf{Cartesian} in VASP.
 
 If instead the \verb+format+ keyword is \verb+internal+ or \verb+Internal+
 or letter \verb+i+ or \verb+I+ then the basis vector is
 
-$\qquad$ $\mathbf{b}_j = $
-\verb+(L * Bj1)+ $\mathbf{u}_1 + $ \verb+(L * Bj2)+ $\mathbf{u}_2 + $ \verb+(L * Bj3)+ $\mathbf{u}_3$.
+\begin{equation}
+\mathbf{b}_j = S B_{j1} \mathbf{u}_x
++ S B_{j2} \mathbf{u}_y
++ S B_{j3} \mathbf{u}_z
+= \sum_i S B_{ji} \mathbf{u}_i
+\end{equation}
 
 This is equivalent to \textbf{Direct} in VASP.
 
@@ -1319,8 +1396,8 @@ Scripts are provided to convert between POSCAR, XYZ and LAT formats.
 
 \stars
 
-A simulation box with box lenghts $L_1, L_2, L_3$ is constructed from
-a compound with primitive vectors $\mathbf{v}_1$, $\mathbf{v}_2$, $\mathbf{v}_3$,
+A simulation box with box lenghts $L_i = N_i |\mathbf{v}_i|$ is constructed from
+a compound with primitive vectors $\mathbf{v}_i = S \mathbf{u}_i$,
 so that all box lenghts are more than twice the largest cutoff radius
 for the elements occuring in the compound:
 
@@ -1342,6 +1419,23 @@ Predicted lattice parameter $\widetilde{a}$ is calculated as
 where $a$ is the read-in lattice parameter in the file listing the compounds,
 $L_1$ is the initial length of the simulation box in the $\mathbf{v}_1$ direction, and
 $\widetilde{L}_1$ is the relaxed length of the simulation box in the same direction.
+
+Q: Why are read-in values for $a,b,c$ not equal to $v_1,v_2,v_3$ ?
+Why are predicted values for $a,b,c$ not equal to relaxed values of $v_1,v_2,v_3$ ?
+
+A: Primitive vectors for compounds may be given in many different ways.
+The current scheme avoids keeping track of them all, lightening the work
+burden for the user and minimizes additional coding.
+
+
+
+
+The tradeoff is that for e.g. cubic phases $a=b=c$, but now $a$ is taken
+from the change in $v_1$, changes in $v_2,v_3$ are not taken into
+account.
+
+
+
 
 \stars
 
@@ -1555,16 +1649,23 @@ parameters.
 \section{Calculation of physical properties}
 
 
-Predicted lattice parameter $\widetilde{a}$ is calculated as
+Predicted value of a property with the read-in value $P$ is written
+$\widetilde{P}$. In order to simplify notation in this section the
+tilde will be omitted, with the understanding that all values used
+are based on the relaxed compounds. If a read-in value is used,
+it is written $P^{ri}$.
+
+Predicted lattice parameter $\widetilde{a}$ (\AA{}ngstr\"oms) is calculated as
 
 \begin{equation}
-\widetilde{a} = (\widetilde{L}_1 / L_1) a,
+\widetilde{a} = (\widetilde{L_1} / L_1) \times a,
 \end{equation}
 
 where $a$ is the read-in lattice parameter in the compounds file
 (the file listing all the compounds to be used),
 $L_1$ is the initial length of the simulation box in the $\mathbf{v}_1$ direction, and
-$\widetilde{L}_1$ is the relaxed length of the simulation box in the same direction.
+$\widetilde{L_1}$ is the relaxed length of the simulation box in the same direction.
+
 
 $L_i$ are determined from $\mathbf{v}_i$ as $L_i = $\verb+Ndesired+$(i) \times v_i$,
 is the \verb+Ndesired+ option is used. Otherwise $N_i$ is determined from the requirement
@@ -1573,41 +1674,99 @@ species present in the compound. In this calculations the options \verb+Neven_de
 \verb+Nodd_desired+ are considered, if given in the compounds file.
 
 Predicted lattice parameters $\widetilde{b}, \widetilde{c}$ are calculated
-in a similar way.
+in a similar way:
 
 \begin{eqnarray}
-\widetilde{b/a} &=& (\widetilde{L}_2/L_2) / (\widetilde{L}_1/L_1 ) \times b/a \\
-\widetilde{c/a} &=& (\widetilde{L}_3/L_3) / (\widetilde{L}_1/L_1 ) \times c/a
+\widetilde{b} &=& (\widetilde{L_2} / L_2) \times b \\
+\widetilde{c} &=& (\widetilde{L_3} / L_3) \times c \\
 \end{eqnarray}
 
-Cohesive energy:
+Ratios of lattice parameters:
 
 \begin{eqnarray}
-\widetilde{E}_{\mathrm{coh}} &=& \widetilde{E}_P/N \\
-\widetilde{\Delta E}_{\mathrm{coh}} 
-&=& \widetilde{E}_{\mathrm{coh}} - \widetilde{E}_{\mathrm{coh}}^{\mathrm{ref}}
+\widetilde{b/a} &=& { \widetilde{L_2}/L_2 \over \widetilde{L_1}/L_1 } \times b/a \\
+\widetilde{c/a} &=& { \widetilde{L_3}/L_3 \over \widetilde{L_1}/L_1 } \times c/a
 \end{eqnarray}
 
-Here $N$ is the number of atoms in the compound, and
-$\widetilde{E}_{\mathrm{coh}}^{\mathrm{ref}}$ is the cohesive energy of the reference
+Dimer bond length (\AA{}ngstr\"oms)::
+
+\begin{eqnarray}
+\widetilde{r_o} &=& | \widetilde{\mathbf{r}_2} - \widetilde{\mathbf{r}_1} |
+\end{eqnarray}
+
+Angle $\widetilde{\gamma}$ (in degrees), i.e.
+angle between primitive vectors
+$\widetilde{\mathbf{a}} = \widetilde{\mathbf{v}_1}$ and
+$\widetilde{\mathbf{b}} = \widetilde{\mathbf{v}_2}$:
+
+\begin{eqnarray}
+\widetilde{\gamma} &=&
+= \arccos \left(
+{ \widetilde{\mathbf{L}_1} \cdot \widetilde{\mathbf{L}_2} \over \widetilde{L_1} \widetilde{L_2} }
+\right) \cdot 1/(2 \pi) \cdot 360
+\end{eqnarray}
+
+Angle $\widetilde{\beta}$ (in degrees), i.e.
+angle between primitive vectors
+$\widetilde{\mathbf{a}} = \widetilde{\mathbf{v}_1}$ and
+$\widetilde{\mathbf{c}} = \widetilde{\mathbf{v}_3}$:
+
+\begin{eqnarray}
+\widetilde{\beta} &=&
+= \arccos \left(
+{ \widetilde{\mathbf{L}_1} \cdot \widetilde{\mathbf{L}_3} \over \widetilde{L_1} \widetilde{L_3} }
+\right) \cdot 1/(2 \pi) \cdot 360
+\end{eqnarray}
+
+Angle $\widetilde{\alpha}$ (in degrees), i.e.
+angle between primitive vectors
+$\widetilde{\mathbf{b}} = \widetilde{\mathbf{v}_2}$ and
+$\widetilde{\mathbf{c}} = \widetilde{\mathbf{v}_3}$:
+
+\begin{eqnarray}
+\widetilde{\alpha} &=&
+= \arccos \left(
+{ \widetilde{\mathbf{L}_2} \cdot \widetilde{\mathbf{L}_3} \over \widetilde{L_2} \widetilde{L_3} }
+\right) \cdot 1/(2 \pi) \cdot 360
+\end{eqnarray}
+
+Atomic volume (cubic \AA{}ngstr\"oms):
+
+\begin{eqnarray}
+\widetilde{V_a} &=& \widetilde{V_{tot}}/N
+\end{eqnarray}
+
+where $N$ is the number of atoms in the cell.
+
+Cohesive energy (eVs):
+
+\begin{eqnarray}
+\widetilde{E_{\mathrm{coh}}} &=& \widetilde{E_P}/N < 0\\
+\widetilde{\Delta E_{\mathrm{coh}}}
+&=& \widetilde{E_{\mathrm{coh}}} - \widetilde{E_{\mathrm{coh}}^{\mathrm{ref}}}
+\end{eqnarray}
+
+Here $N$ is the number of atoms in the compound,
+$\widetilde{E_P}$ is the potential energy of the compound, and
+$\widetilde{E_{\mathrm{coh}}^{\mathrm{ref}}}$ is the cohesive energy of the reference
 compound, if used.
 
-
-Mixing energy:
+Formation energies are read in and calculated as ''mixing energies'',
+which is simply the formation energy normalized with the number of atoms
+in the cell. Hence the mixing energy (eVs) is:
 
 \begin{eqnarray}
-\widetilde{E}_{\mathrm{mix}} &=& \widetilde{E}_f/N \\
-\widetilde{E}_f &=& \widetilde{E}_p - \sum_s N(s) E_{\mathrm{coh}}(s)
+\widetilde{E}_{\mathrm{mix}} &=& \widetilde{E_f}/N \\
+\widetilde{E_f} &=& \widetilde{E_p} - \sum_s N(s) \widetilde{E_{\mathrm{coh}}(s)}
 \end{eqnarray}
 
 Here $N(s)$ is the number of atoms of species $s$ in the compound, and
-$E_{\mathrm{coh}}(s)$ is the cohesive energy of the ground state of species $s$.
+$\widetilde{E_{\mathrm{coh}}(s)}$ is the cohesive energy of the ground state of species $s$.
 Parametrization for species $s$ must be given.
 For instance, if $s$ is C, then ground state might be GRA (graphite).
 
 
-
-Bulk modulus $B$ and its pressure derivative $B'(P)$ is calculated from
+Bulk modulus $B$ (GPa) and its pressure derivative $B'(P)$ is calculated from
 $(V(\varepsilon), E_p(\varepsilon))$ data using the Birch-Murnaghan equation of state
 
 \begin{eqnarray}
@@ -1628,7 +1787,7 @@ relax (\verb+prop:BM_rel_sys = yes+),
 or not (\verb+prop:BM_rel_sys = no+).
 
 
-Elastic constants $C_{ij}$ are calculated using volume-non-conserving strains
+Elastic constants $C_{ij}$ (GPa) are calculated using volume-non-conserving strains
 $\varepsilon_{ij}$. Given a strain matrix
 
 \begin{equation}
@@ -1673,6 +1832,14 @@ constants.
 Each box --- for a given value of $\varepsilon$ --- may be allowed to
 relax (\verb+prop:C_rel_sys = yes+), or not (\verb+prop:C_rel_sys = no+).
 
+\stars
+
+The physical properties are not independent: e.g. $a$ and $V_a$ are dependent
+for a cubic lattice, since $V_a \propto a^3$. Specifying properties which are
+dependent on each other as fitting targets will most likely give rise to
+singular matrices when using a fitting method relying on matrix inversion,
+due to presence of zero-valued rows/columns.
+
 
 
 
@@ -1690,53 +1857,95 @@ parameters. The best fit is achieved by minimizing the merit/cost function
 f_i &=& t_i {\widetilde{Y}_i - Y_i \over s_i}
 \end{eqnarray}
 
-Here $\widetilde{Y}_i$ is the predicted value of property $Y_i$, e.g.
-the bulk modulus of the second compound (if two or more compounds are used
-and this compound has a bulk modulus specified as a fitting target).
-The $t_i$ is either a weight, $t_i = w_i$, if a weight is used for property $Y_i$,
-and $t_i = 1/u_i$ if an uncertainty is used.
-\textbf{Default: Using weights, with value 1.0. Specifying weight or uncertainty
-overrides the default.}
+Here
 
+\begin{itemize}
+\item the $\widetilde{Y}_i$ is the predicted value of property $i$
+which has the read-in (desired) value of $Y_i$;
+\item the $t_i$ is either a weight ($t_i=w_i$ if weight is used)
+or an inverse uncertainty ($t_i=1/u_i$ if uncertainty is used); and
+\item the $s_i = 1$ if scales are not used (\verb+use_data_scales = false+ in the
+specifications file), and $s_i = Y_i$ if scales are used.
+\end{itemize}
+
+\textbf{Defaults:}
+\begin{itemize}
+\item
+Weights are used, with $w_i=1$ for all $i$. Specifying weight or uncertainty for
+any property $i$ overrides any default.
+\item 
+Scales are used. If a property value is positive and less than machine accuracy
+then it is replaced by the machine accuracy.
+By using scaled properties all are on an equal footing.
+\end{itemize}
 
 Note: The weights $w_i$ are normalized: $\sum_i w_i = 1$,
 so that properties using uncertainties have zero weight in this normalization sum.
 
-The $s_i = 1$ if scales are not used (\verb+use_data_scales = false+ in the
-specifications file), and $s_i = Y_i$ if scales are used.
-By using scaled properties all are on an equal footing.
-\textbf{Default: Scales are used, specify 'false' to turn it off. If a property
-value is positive and less than machine accuracy then it is replaced by the
-machine accuracy.}
-
+\stars
 
 Assume the predicted value is $\widetilde{Y}_i = Y_i + \delta Y_i$, then
-$(\widetilde{Y}_i - Y_i)/s_i = \delta Y_i / Y_i$ if scales are used, and
-$(\widetilde{Y}_i - Y_i)/s_i = \delta Y_i$ otherwise.
-Suppose the relative change $\delta Y_i/Y_i = 50\%$ for two properties,
-but the properties themselves have values of $1$ and $10^{-7}$.
-The former choice (using scales) gives balanced contributions to the
-merit function, but the latter does not. In worst case scenario
-properties with small values will have a small impact on the fitting
-process.
+$f_i = t_i (\widetilde{Y}_i - Y_i)/s_i = t_i \delta Y_i / Y_i$ if scales are used, and
+$f_i = t_i \delta Y_i$ otherwise.
+
+Suppose the relative deviation $\delta Y_i/Y_i \approx \delta Y_j/Y_j \approx 10\%$
+for two properties $i,j$,
+e.g. lattice parameter, formation energy.
+If they are equally important to the fitting then $t_i=t_j$ and $f_i \approx f_j$
+and these properties give equal contributions to the
+merit function.
+
+Now consider the general case that the read-in values
+are vastly different, e.g. $Y_i = 1$ and $Y_j = 10^{-3}$.
+Using the former choice of scaling there is no dependence on the absolute values of
+the read-in property values, and we have no problems.
+If scales are not used, then the contributions to the merit function are
+$f_i = t_i$ and $f_j = t_j \times 10^{-3} = t_i 10^{-3}$ and there is a considerable
+relative difference, although both properties were assumed to be equally
+important. In this case property $i$ will have a larger impact on the
+fitting process (assuming $J_{ik} \equiv \partial f_i / \partial x_k \approx J_{jk}$).
 
 \stars
 
 Consider now the use of any of the deprecated options, e.g. \verb+Fmax+.
 This option may be used to try to guide the fitting process to accept
 parametrizations giving small forces of relaxed compounds.
-Consider now e.g. \verb+Fmax+$ = 10^{-10}$.
-Let the predicted value be e.g. $10^{-7}$. The term $f_i$ (with $t_i=1$
-and using scaling, $s_i=Y_i$) is
+Assume $t_i=1$ and that scaling is used, so $s_i = Y_i$.
 
-$${10^{-7} - 10^{-10} \over 10^{-10}} \sim 10^3,$$
+(1) Case $\widetilde{Y}_i \gg Y_i$: Now
+
+\begin{equation}
+f_i = {\widetilde{Y}_i - Y_i \over Y_i}
+= \widetilde{Y}_i/Y_i - 1 \sim \widetilde{Y}_i/Y_i \gg 1
+\end{equation}
+
+E.g. \verb+Fmax+$ = 10^{-10}$ and the predicted value is e.g. $10^{-5}$:
+
+\begin{equation}
+f_i \sim 10^{-5} / 10^{-10} = 10^5
+\end{equation}
 
 i.e. probably much larger than for any of the conventional properties.
 In a gradient-based search the moves in parameter space will tend to focus
 on minimizing the forces, paying less attention to other properties,
 e.g. differences in cohesive energies.
 
-Lesson: Do not use \verb+Fmax+, \verb+Pmax+ or \verb+displmax+. Rely on the
+(2) Case $\widetilde{Y}_i \ll Y_i$: Now
+
+\begin{equation}
+f_i = {\widetilde{Y}_i - Y_i \over Y_i}
+= \widetilde{Y}_i/Y_i - 1 \sim 1
+\end{equation}
+
+E.g. \verb+Fmax+$ = 10^{-3}$ and the predicted value is e.g. $10^{-5}$.
+Only in this case will the contribution be manageable.
+
+In the general case the predicted forces could be very small. And in
+the general case we also want force values close to zero (read-in force
+values). Involving very small values and especially their ratios in the
+calculations is not desirable.
+
+Conclusion: Do not use \verb+Fmax+, \verb+Pmax+ or \verb+displmax+. Rely on the
 MD relaxation instead, to provide zero forces and zero pressure.
 In fact, the MD run can be made to scale the pressure to any desired
 value (\verb+mds_bpc_P0+), so it's better to use that one.

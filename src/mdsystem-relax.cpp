@@ -152,6 +152,9 @@ void MDSystem::relax(void){
   mass1 = elem.mass(matter[0]); //type1
 
 
+  std::cout << "NB: mdsystem-relax: Tstart " << specs.Tstart << std::endl;
+
+
   rand_mtwister mtwister(specs.seed);
   Vector<double> vrms(elem.nelem(), 0.0);
   td = sqrt( 8.817343e-5 * 2 * 0.5*specs.Tstart * 1.602 / 1.661 * 0.01 );

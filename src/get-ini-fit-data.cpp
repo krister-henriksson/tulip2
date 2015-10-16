@@ -342,7 +342,7 @@ void get_ini_fit_data(ParamPot & param,
 
     double nb = nbonds_list[iDX] * 1.0/ (nat1[iDX] + nat2[iDX]);
 
-    std::cout << "sum_k bond_list[iDX].ndist[k] = " << nbonds << " nbonds_list[iDX] = " << nbonds_list[iDX] << std::endl;
+    // std::cout << "sum_k bond_list[iDX].ndist[k] = " << nbonds << " nbonds_list[iDX] = " << nbonds_list[iDX] << std::endl;
 
     printf( "%20.10f  %20.10f  # Compound %20s : ave(rbond) Vbond   nbonds %d  ave(nbonds/nat_with_bonds) %20.10f\n",
 	   rb, Vb, DX[iDX].name.c_str(), nbonds, nb );

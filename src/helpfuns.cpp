@@ -173,7 +173,9 @@ bool get_boolean_choice(std::string ts){
   if (nc>=1) c1=ts[0];
   if (nc>=2) c2=ts[1];
 
-  if (c1=='y' || c1=='Y' || c1=='t' || c1=='T')
+  // yes, true, set
+  // on
+  if (c1=='y' || c1=='Y' || c1=='t' || c1=='T' || c1=='s' || c1=='S')
     return true;
   else if ( (c1=='o' && c2=='n') || (c1=='O' && c2=='N') )
     return true;
