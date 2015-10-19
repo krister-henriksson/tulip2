@@ -25,7 +25,7 @@ mass(C ) = 12.0110
 # Reference lattices:
 lat(Cr, Cr) = BCC
 lat(Fe, Fe) = BCC
-lat(C,  C ) = GRA
+lat(C,  C ) = skip  GRA
 
 # Supported ref. lattices:
 # DIM1 (homomer), DIM2 (heteromer), SC, BCC, BCC-P, FCC, FCC-P, DIA, HCP, GRA, GRP (graphene)
@@ -55,31 +55,11 @@ fit(Fe, Cr) = yes
 
 
 use_rep_core( Fe, Fe ) = yes
-bfermi( Fe, Fe ) = 10
-rfermi( Fe, Fe ) = 1.0
-
 use_rep_core( Cr, Cr ) = yes
-bfermi( Cr, Cr ) = 12
-rfermi( Cr, Cr ) = 1.7
-
-use_rep_core( C, C ) = yes
-bfermi( C, C ) = 8
-rfermi( C, C ) = 0.6
-
-
-
+use_rep_core( C, C )   = yes
 use_rep_core( Fe, Cr ) = no
-bfermi( Fe, Cr ) = 10
-rfermi( Fe, Cr ) = 1 
-
-use_rep_core( Fe, C ) = yes
-bfermi( Fe, C ) = 10
-rfermi( Fe, C ) = 1
-
-use_rep_core( Cr, C ) = yes
-bfermi( Cr, C ) = 8
-rfermi( Cr, C ) = 1.2
-
+use_rep_core( Fe, C )  = yes
+use_rep_core( Cr, C )  = yes
 
 
 
@@ -96,6 +76,9 @@ potpar( Fe, Fe ):d = 0.3413219
 potpar( Fe, Fe ):h = -0.26
 potpar( Fe, Fe ):R = 3.15
 potpar( Fe, Fe ):D = 0.2
+potpar( Fe, Fe ):bfermi = 10
+potpar( Fe, Fe ):rfermi = 1
+
 
 potpar(Cr, Cr ):D0 = 4.04222081
 potpar(Cr, Cr ):r0 = 2.13018547
@@ -107,6 +90,9 @@ potpar(Cr, Cr ):d = 0.13813230
 potpar(Cr, Cr ):h = -0.28569237
 potpar(Cr, Cr ):R = 3.2
 potpar(Cr, Cr ):D = 0.20
+potpar(Cr, Cr ):bfermi = 12
+potpar(Cr, Cr ):rfermi = 1.7
+
 
 potpar(C, C ):D0 = 6.0
 potpar(C, C ):r0 = 1.39
@@ -118,6 +104,9 @@ potpar(C, C ):d = 3.5
 potpar(C, C ):h = 1.0
 potpar(C, C ):R = 1.85
 potpar(C, C ):D = 0.15
+potpar(C, C ):bfermi = 8
+potpar(C, C ):rfermi = 0.6
+
 
 potpar(Fe, C ):D0 = 3.95000634
 potpar(Fe, C ):r0 = 1.53426579
@@ -129,6 +118,9 @@ potpar(Fe, C ):d = 0.94663188
 potpar(Fe, C ):h = -0.18665305
 potpar(Fe, C ):R = 2.6
 potpar(Fe, C ):D = 0.20
+potpar(Fe, C ):bfermi = 10
+potpar(Fe, C ):rfermi = 1
+
 
 potpar( Cr, C ):D0        =  2.77620074
 potpar( Cr, C ):r0        =  1.81289285
@@ -140,6 +132,9 @@ potpar( Cr, C ):d         =  0.17497204
 potpar( Cr, C ):h         =  -0.17850001
 potpar( Cr, C ):R         =  2.95
 potpar( Cr, C ):D         =  0.1
+potpar(Cr, C ):bfermi = 8
+potpar(Cr, C ):rfermi = 1.2
+
 
 
 # Parameters for fittable interactions
@@ -184,6 +179,8 @@ max: potpar( Fe, Cr ):R  = 2.0
 min: potpar( Fe, Cr ):D  = 1.0
 max: potpar( Fe, Cr ):D  = 1.0
 
+potpar(Fe, Cr ):bfermi = 10
+potpar(Fe, Cr ):rfermi = 1
 
 
 

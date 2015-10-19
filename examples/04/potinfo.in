@@ -36,8 +36,6 @@ fit(Fe, Fe) = yes
 # If using them you need reppot.A.B.in, reppot.B.A.in for the elements A and B.
 
 use_rep_core( Fe, Fe) = yes
-bfermi(Fe, Fe) = 12
-rfermi(Fe, Fe) = 1.7
 
 
 # Parameters for fittable interactions
@@ -91,6 +89,14 @@ max: potpar(Fe, Fe):R = 2.0
      potpar(Fe, Fe):D = 0.20
 min: potpar(Fe, Fe):D = 1.0
 max: potpar(Fe, Fe):D = 1.0
+
+     potpar(Fe, Fe):bfermi = 12
+min: potpar(Fe, Fe):bfermi = 1
+max: potpar(Fe, Fe):bfermi = 1
+
+     potpar(Fe, Fe):rfermi = 1.7
+min: potpar(Fe, Fe):rfermi = 1
+max: potpar(Fe, Fe):rfermi = 1
 
 
 

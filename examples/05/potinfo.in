@@ -15,8 +15,7 @@ iac( Y , Y ) = ABOP
 
 fit( Y , Y ) = yes
 use_rep_core( Y , Y ) = no
-      bfermi( Y , Y ) = 10.0
-      rfermi( Y , Y ) = 1.0
+
 
 
     potpar( Y , Y ):D0      = 1.6
@@ -56,6 +55,16 @@ min:potpar( Y , Y ):R       = 3.50
 max:potpar( Y , Y ):R       = 3.50
 
     potpar( Y , Y ):D       = 0.1
+
+    potpar( Y , Y ):bfermi  = 10
+min:potpar( Y , Y ):bfermi  = 1
+max:potpar( Y , Y ):bfermi  = 1
+
+    potpar( Y , Y ):rfermi  = 1
+min:potpar( Y , Y ):rfermi  = 1
+max:potpar( Y , Y ):rfermi  = 1
+
+
 
     abop_alpha( Y , Y , Y ) =  0.0 0.1
 min:abop_alpha( Y , Y , Y ) =   10.0 -0.1

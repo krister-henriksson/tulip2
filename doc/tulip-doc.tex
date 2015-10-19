@@ -373,7 +373,7 @@ f_c(r) =
 \begin{array}{ll}
 1,                   & r \leq R - D, \\
 {1 \over 2} \left( 1 - \sin \left( {\pi \over 2} {r - R \over D}
-    \right) \right), & |R - r| < D  \\
+    \right) \right), & R-D < r < R + D \\
 0,                   & r \geq R + D
 \end{array}
 \right.
@@ -388,7 +388,7 @@ f'_{c}(r) =
 \begin{array}{ll}
 0,                   & r \leq R - D, \\
 {1 \over 2} \left( 1 - {\pi \over 2D} \cos \left( {\pi \over 2} {r - R \over D}
-    \right) \right), & |R - r| < D  \\
+    \right) \right), & R-D < r < R + D \\
 0,                   & r \geq R + D
 \end{array}
 \right.
@@ -409,7 +409,7 @@ Here
 
 \begin{equation}
 \chi_{ij} =
-\sum_{k, k \neq i, k \neq j} f_{c,ik} g_{ijk}
+\sum_{k, k \neq i, k \neq j} f_{c,ik} g_{ijk}(\theta_{ijk})
 \omega_{ijk} \exp\left[ \alpha_{ijk}(r_{ij} - r_{ik}) \right]
 \end{equation}
 
@@ -445,7 +445,7 @@ is replaced in its entirety by
 The function $g_{ijk}(\theta_{ijk})$ is given by the expression
 
 \begin{equation}
-g_{ijk} = \gamma \left(
+g_{ijk}(\theta_{ijk}) = \gamma \left(
 1 + {c^2 \over d^2} - {c^2 \over d^2 + (h + \cos \theta_{ijk})^2}
 \right)
 \end{equation}
@@ -994,6 +994,11 @@ min: abop_omega( Cr, Cr, Fe ) =  100.0
 max: abop_omega( Cr, Cr, Fe ) =  100.0
 
 
+# Not used:
+#     abop_2mu( Fe, Cr ) = 1.0
+#     abop_2mu( Cr, Fe ) = 1.0
+
+
 \end{Verbatim}
 
 
@@ -1164,7 +1169,8 @@ mds_error_boxlen_gt = 1e4   Fatal error if any boxlen gets over this limit (Angs
 
 \stars
 
-Note 1: The space group is determined by a call to the \verb+spglib+ library.
+\textbf{Ignoring elastic constants:}
+The space group is determined by a call to the \verb+spglib+ library.
 The SPG information is used to determine which elastic constants $C_{ij}$ that can be
 calculated. If elastic constants are not used, and especially if the compound \eg
 contains defects that complicate the determination of the space group, use
@@ -1179,13 +1185,18 @@ dimension.
 
 \stars
 
-Note 2: If a boolean value of logical true is to be input, use
-\verb+yes+, \verb+Yes+, \verb+true+, \verb+True+ or the first letter in these strings.
-Any other string evaluates to logical false.
+\textbf{Providing logical true or false:}
+If a boolean value of logical true is to be input, use
+\verb+yes+, \verb+Yes+, \verb+true+, \verb+True+, \verb+set+, or \verb+Set+.
+Only the first letter is significant. The string \verb+on+
+or a mixed version of lower- and upper-case also translates to logical true.
+In addition, the digit \verb+1+ also means logical true.
+Any other string or character evaluates to logical false.
 
 \stars
 
-Note 3: If neither weight nor uncertainty is specified for any property a default weight of 1
+\textbf{Default behavior for weights and uncertainties:}
+If neither weight nor uncertainty is specified for any property a default weight of 1
 is used. The weights $w_i$ are normalized: $\sum_i w_i = 1$, where the sum goes over
 properties with weights only, properties with uncertainties are not taken into account.
 
