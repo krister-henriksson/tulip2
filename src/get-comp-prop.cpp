@@ -191,7 +191,9 @@ Vector<double> get_comp_prop(ParamPot & param, Vector<CompoundStructureFit> & DX
   // debugged forces of read-in compound, and we can quit the program.
   if ( ! DX[ DX.size()-1 ].mds_specs.is_ref_comp
        &&
-       param.p_potinfo->specs_prop.mds_specs_common.debug_forces)
+       ( param.p_potinfo->specs_prop.mds_specs_common.debug_forces
+	 ||
+	 param.p_potinfo->specs_prop.mds_specs_common.debug_pressure) )
     aborterror("Warning: Debugging of forces done, performing quick and dirty exit.");
   
 

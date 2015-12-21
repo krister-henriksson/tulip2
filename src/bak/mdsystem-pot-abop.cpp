@@ -156,6 +156,11 @@ double MDSystem::force_ABOP(){
 
 
 
+
+
+
+
+
   // iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
   // Loop over atoms i
   // iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
@@ -319,8 +324,72 @@ double MDSystem::force_ABOP(){
     // Kik: prefactor = threebodyfactor * fcik * gijk * F1 * F2 ;
 
 
-      if (pair_ij_perriot)
+      if (pair_ij_perriot){
 	force_ABOP_perriot_K(i, j, Kij, dposij );
+#if 0
+	// kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+	// Loop over k
+	// kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+	Tijk_n_sum=0.0;
+	for (ik=0; ik<neighborcollection[i].size(); ik++){
+	  k = neighborcollection[i][ik];
+	  if (k==i) continue;
+	  if (k==j) continue;
+	  typek = elem.name2idx( matter[k] );
+	  if (! iac_pure_ABOP) if (p_potinfo->basepot(typei, typek) != "ABOP") continue;
+	  if (! iac_pure_ABOP) if (p_potinfo->basepot(typej, typek) != "ABOP") continue;
+
+	  ivecik = se_ivecij;
+	  if (! sys_single_elem) ivecik = p_potinfo->basepot_vecidx(typei, typek);
+	  if (ivecik<0) continue;
+
+	  ivecjk = se_ivecij;
+	  if (! sys_single_elem) ivecjk = p_potinfo->basepot_vecidx(typej, typek);
+	  if (ivecjk<0) continue;
+	
+	  get_atom_distance_vec(pos[i], pos[k], dposik);
+	  rik = dposik.magn();
+	  get_atom_distance_vec(pos[j], pos[k], dposjk);
+	  rjk = dposjk.magn();
+
+	  pair_ik_perriot = false;
+	  if (p_potinfo->pot_ABOP[ivecik].rcut_fun=="perriot"){
+	    pair_ik_perriot = true;
+	    rcutik = p_potinfo->pot_ABOP[ivecik].parname2val("prcut");
+	    mik = p_potinfo->pot_ABOP[ivecik].parname2val("pm");
+	  }
+	  pair_jk_perriot = false;
+	  if (p_potinfo->pot_ABOP[ivecjk].rcut_fun=="perriot"){
+	    pair_jk_perriot = true;
+	    rcutjk = p_potinfo->pot_ABOP[ivecjk].parname2val("prcut");
+	    mjk = p_potinfo->pot_ABOP[ivecjk].parname2val("pm");
+	  }
+
+	  if (pair_ik_perriot==false || pair_jk_perriot==false)
+	    continue;
+
+	  if (rik > rcutik) continue;
+	  if (rjk > rcutjk) continue;
+
+	  Xik = rik/(1.0 - pow(rik/rcutik, mik));
+	  Xjk = rjk/(1.0 - pow(rjk/rcutjk, mjk));
+
+	  // *****************************************************
+	  if (Xik + Xjk > 3.0*rij) continue;
+	  // *****************************************************
+
+	  Tijk = 0.0;
+	  if (Xik + Xjk < 3.0*rij){
+	    Tijk = -0.5 + rij/(Xik + Xjk - rij);
+	  }
+	  td = 0.0;
+	  if (Tijk>0.0) td = pow(Tijk, nij);
+	  Tijk_n_sum += td;
+	}
+	Kij = exp( - Tijk_n_sum);
+#endif
+      }
+
 
 
 
@@ -425,9 +494,73 @@ double MDSystem::force_ABOP(){
 	  }
 
 	  force_ABOP_perriot_K(i, k, Kik, dposik);
-	  
+
+#if 0
+	  // Screening factor Kik:
+	  // kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+	  // Loop over s
+	  // kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+	  Tiks_n_sum=0.0;
+	  for (is=0; is<neighborcollection[i].size(); is++){
+	    s = neighborcollection[i][is];
+	    if (s==i) continue;
+	    if (s==k) continue;
+	    types = elem.name2idx( matter[s] );
+	    if (! iac_pure_ABOP) if (p_potinfo->basepot(typei, types) != "ABOP") continue;
+	    if (! iac_pure_ABOP) if (p_potinfo->basepot(typek, types) != "ABOP") continue;
+
+	    ivecis = se_ivecij;
+	    if (! sys_single_elem) ivecis = p_potinfo->basepot_vecidx(typei, types);
+	    if (ivecis<0) continue;
+
+	    ivecks = se_ivecij;
+	    if (! sys_single_elem) ivecks = p_potinfo->basepot_vecidx(typek, types);
+	    if (ivecks<0) continue;
+	    
+	    get_atom_distance_vec(pos[i], pos[s], dposis);
+	    ris = dposis.magn();
+	    get_atom_distance_vec(pos[k], pos[s], dposks);
+	    rks = dposks.magn();
+
+	    pair_is_perriot = false;
+	    if (p_potinfo->pot_ABOP[ivecis].rcut_fun=="perriot"){
+	      pair_is_perriot = true;
+	      rcutis = p_potinfo->pot_ABOP[ivecis].parname2val("prcut");
+	      mis = p_potinfo->pot_ABOP[ivecis].parname2val("pm");
+	    }
+	    pair_ks_perriot = false;
+	    if (p_potinfo->pot_ABOP[ivecks].rcut_fun=="perriot"){
+	      pair_ks_perriot = true;
+	      rcutks = p_potinfo->pot_ABOP[ivecks].parname2val("prcut");
+	      mks = p_potinfo->pot_ABOP[ivecks].parname2val("pm");
+	    }
+
+	    if (pair_is_perriot==false || pair_ks_perriot==false)
+	      continue;
+
+	    if (ris > rcutis) continue;
+	    if (rks > rcutks) continue;
+
+	    Xis = ris/(1.0 - pow(ris/rcutis, mis));
+	    Xks = rks/(1.0 - pow(rks/rcutks, mks));
+
+	    // *****************************************************
+	    if (Xis + Xks > 3.0*rik) continue;
+	    // *****************************************************
+	    
+	    Tiks = 0.0;
+	    if (Xis + Xks < 3.0*rik){
+	      Tiks = -0.5 + rik/(Xis + Xks - rik);
+	    }
+
+	    td = 0.0;
+	    if (Tiks>0.0) td = pow(Tiks, nik);
+	    Tiks_n_sum += td;
+	  }
+	  Kik = exp( - Tiks_n_sum);
+#endif
 	}
-	
+
 
 
 	c2 = cik*cik;
@@ -559,6 +692,165 @@ double MDSystem::force_ABOP(){
       if (pair_ij_perriot){
 	double pref = - 0.5 * (VRij - bij * VAij);
 	force_ABOP_perriot_K_frc(i, j, Kij, dposij, pref);
+
+#if 0
+	// kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+	// Loop over k
+	// kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+	Tijk_n_sum=0.0;
+	for (ik=0; ik<neighborcollection[i].size(); ik++){
+	  k = neighborcollection[i][ik];
+	  if (k==i) continue;
+	  if (k==j) continue;
+	  typek = elem.name2idx( matter[k] );
+	  if (! iac_pure_ABOP) if (p_potinfo->basepot(typei, typek) != "ABOP") continue;
+	  if (! iac_pure_ABOP) if (p_potinfo->basepot(typej, typek) != "ABOP") continue;
+
+	  ivecik = se_ivecij;
+	  if (! sys_single_elem) ivecik = p_potinfo->basepot_vecidx(typei, typek);
+	  if (ivecik<0) continue;
+
+	  ivecjk = se_ivecij;
+	  if (! sys_single_elem) ivecjk = p_potinfo->basepot_vecidx(typej, typek);
+	  if (ivecjk<0) continue;
+	
+	  get_atom_distance_vec(pos[i], pos[k], dposik);
+	  rik = dposik.magn();
+	  get_atom_distance_vec(pos[j], pos[k], dposjk);
+	  rjk = dposjk.magn();
+
+	  pair_ik_perriot = false;
+	  if (p_potinfo->pot_ABOP[ivecik].rcut_fun=="perriot"){
+	    pair_ik_perriot = true;
+	    rcutik = p_potinfo->pot_ABOP[ivecik].parname2val("prcut");
+	    mik = p_potinfo->pot_ABOP[ivecik].parname2val("pm");
+	  }
+	  pair_jk_perriot = false;
+	  if (p_potinfo->pot_ABOP[ivecjk].rcut_fun=="perriot"){
+	    pair_jk_perriot = true;
+	    rcutjk = p_potinfo->pot_ABOP[ivecjk].parname2val("prcut");
+	    mjk = p_potinfo->pot_ABOP[ivecjk].parname2val("pm");
+	  }
+
+	  if (pair_ik_perriot==false || pair_jk_perriot==false)
+	    continue;
+
+	  if (rik > rcutik) continue;
+	  if (rjk > rcutjk) continue;
+
+	  Xik = rik/(1.0 - pow(rik/rcutik, mik));
+	  Xjk = rjk/(1.0 - pow(rjk/rcutjk, mjk));
+
+	  // *****************************************************
+	  if (Xik + Xjk > 3.0*rij) continue;
+	  // *****************************************************
+
+	  Tijk = 0.0;
+	  if (Xik + Xjk < 3.0*rij){
+	    Tijk = -0.5 + rij/(Xik + Xjk - rij);
+	  }
+
+	  dXik = Xik/rik + mik * (Xik/rik)*(Xik/rik) * pow(rik/rcutik, mik);
+	  dXjk = Xjk/rjk + mjk * (Xjk/rjk)*(Xjk/rjk) * pow(rjk/rcutjk, mjk);
+
+	  td1 = 1.0/(Xik + Xjk - rij);
+	  td2 = - rij * td1 * td1;
+
+	  for (p=0; p<3; ++p){
+	    dTijk_ij[p] = td1 *   dposij[p]/rij  + td2 * ( (-1)*  dposij[p]/rij  );
+	    dTijk_ik[p] = td2 * ( dXik *   dposik[p]/rik );
+
+	    dTijk_ji[p] = - dTijk_ij[p];
+	    //dTijk_ji[p] = td1 * (-dposij[p]/rij) + td2 * ( (-1)*(-dposij[p]/rij) );
+	    dTijk_jk[p] = td2 * ( dXjk *   dposjk[p]/rjk );
+
+	    dTijk_ki[p] = - dTijk_ik[p];
+	    dTijk_kj[p] = - dTijk_jk[p];
+	    //dTijk_ki[p] = td2 * ( dXik * (-dposik[p]/rik));
+	    //dTijk_kj[p] = td2 * ( dXjk * (-dposjk[p]/rjk));
+	  }
+
+	  td = nij * pow(Tijk, nij-1.0);
+	  for (p=0; p<3; ++p){
+	    dKij_ij[p] = - Kij * td * (dTijk_ij[p]);
+	    dKij_ik[p] = - Kij * td * (dTijk_ik[p]);
+
+	    dKij_ji[p] = - Kij * td * (dTijk_ji[p]);
+	    dKij_jk[p] = - Kij * td * (dTijk_jk[p]);
+
+	    dKij_ki[p] = - Kij * td * (dTijk_ki[p]);
+	    dKij_kj[p] = - Kij * td * (dTijk_kj[p]);
+	  }
+
+
+
+
+
+	  // Use previously calc. results to get total pairwise forces:
+	  for (p=0; p<3; ++p){
+	    frc_ij[p] = - 0.5 * dKij_ij[p] * (VRij - bij * VAij) ;
+	    frc_ik[p] = - 0.5 * dKij_ik[p] * (VRij - bij * VAij) ;
+	    frc_jk[p] = - 0.5 * dKij_jk[p] * (VRij - bij * VAij) ;
+	  }
+
+
+
+
+
+	  // Add to total atomic forces for all atoms participating:
+	  for (p=0; p<3; ++p){
+	    frc[i][p] +=   frc_ij[p] + frc_ik[p];
+	    frc[j][p] += - frc_ij[p] + frc_jk[p];
+	    frc[k][p] +=  -frc_ik[p] - frc_jk[p];
+	    /*
+	    frc[i][p] += - 0.5 * (dKij_ij[p] + dKij_ik[p]) * (VRij - bij * VAij) ;
+	    frc[j][p] += - 0.5 * (dKij_ji[p] + dKij_jk[p]) * (VRij - bij * VAij) ;
+	    frc[k][p] += - 0.5 * (dKij_ki[p] + dKij_kj[p]) * (VRij - bij * VAij) ;
+	    */
+	  }
+
+	  // Add to total atomic virials for all atoms participating:
+	  for (int v1=0; v1<3; ++v1){
+	    for (int v2=0; v2<3; ++v2){
+	      // ij
+	      virials[i].elem(v1,v2) += 0.5 *   frc_ij[v1]  *   dposij[v2];
+	      virials[j].elem(v1,v2) += 0.5 * (-frc_ij[v1]) * (-dposij[v2]);
+	      // ik
+	      virials[i].elem(v1,v2) += 0.5 *   frc_ik[v1]  *   dposik[v2];
+	      virials[k].elem(v1,v2) += 0.5 * (-frc_ik[v1]) * (-dposik[v2]);
+	      // jk
+	      virials[j].elem(v1,v2) += 0.5 *   frc_jk[v1]  *   dposjk[v2];
+	      virials[k].elem(v1,v2) += 0.5 * (-frc_jk[v1]) * (-dposjk[v2]);
+
+	      /*
+	      // ij contributions to i
+	      virials[i].elem(v1,v2) += 0.5*
+		( - 0.5 * dKij_ij[v1] * (VRij - bij * VAij) ) * dposij[v2];
+	      // ij contributions to j
+	      virials[j].elem(v1,v2) += 0.5*
+		( - 0.5 * dKij_ji[v1] * (VRij - bij * VAij) ) * (-dposij[v2]);
+
+	      // ik contributions to i
+	      virials[i].elem(v1,v2) += 0.5*
+		( - 0.5 * dKij_ik[v1] * (VRij - bij * VAij) ) * dposik[v2];
+	      // ik contributions to k
+	      virials[k].elem(v1,v2) += 0.5*
+		( - 0.5 * dKij_ki[v1] * (VRij - bij * VAij) ) * (-dposik[v2]);
+
+	      // jk contributions to j
+	      virials[j].elem(v1,v2) += 0.5*
+		( - 0.5 * dKij_jk[v1] * (VRij - bij * VAij) ) * dposjk[v2];
+	      // jk contributions to k
+	      virials[k].elem(v1,v2) += 0.5*
+		( - 0.5 * dKij_kj[v1] * (VRij - bij * VAij) ) * (-dposjk[v2]);
+	      */
+	    }
+	  }
+	  
+
+	}
+#endif
+
       }
       
 
@@ -675,8 +967,74 @@ double MDSystem::force_ABOP(){
 
 	Kik = 1.0;
 
+#if 0
+	if (pair_ik_perriot){
 
-	
+	  // Screening factor Kik:
+	  Tiks_n_sum=0.0;
+	  for (is=0; is<neighborcollection[i].size(); is++){
+	    s = neighborcollection[i][is];
+	    if (s==i) continue;
+	    if (s==k) continue;
+	    types = elem.name2idx( matter[s] );
+	    if (! iac_pure_ABOP) if (p_potinfo->basepot(typei, types) != "ABOP") continue;
+	    if (! iac_pure_ABOP) if (p_potinfo->basepot(typek, types) != "ABOP") continue;
+
+	    ivecis = se_ivecij;
+	    if (! sys_single_elem) ivecis = p_potinfo->basepot_vecidx(typei, types);
+	    if (ivecis<0) continue;
+
+	    ivecks = se_ivecij;
+	    if (! sys_single_elem) ivecks = p_potinfo->basepot_vecidx(typek, types);
+	    if (ivecks<0) continue;
+	    
+	    get_atom_distance_vec(pos[i], pos[s], dposis);
+	    ris = dposis.magn();
+	    get_atom_distance_vec(pos[k], pos[s], dposks);
+	    rks = dposks.magn();
+
+	    pair_is_perriot = false;
+	    if (p_potinfo->pot_ABOP[ivecis].rcut_fun=="perriot"){
+	      pair_is_perriot = true;
+	      rcutis = p_potinfo->pot_ABOP[ivecis].parname2val("prcut");
+	      mis = p_potinfo->pot_ABOP[ivecis].parname2val("pm");
+	    }
+	    pair_ks_perriot = false;
+	    if (p_potinfo->pot_ABOP[ivecks].rcut_fun=="perriot"){
+	      pair_ks_perriot = true;
+	      rcutks = p_potinfo->pot_ABOP[ivecks].parname2val("prcut");
+	      mks = p_potinfo->pot_ABOP[ivecks].parname2val("pm");
+	    }
+
+	    if (pair_is_perriot==false || pair_ks_perriot==false)
+	      continue;
+
+	    if (ris > rcutis) continue;
+	    if (rks > rcutks) continue;
+
+	    Xis = ris/(1.0 - pow(ris/rcutis, mis));
+	    Xks = rks/(1.0 - pow(rks/rcutks, mks));
+
+	    // *****************************************************
+	    if (Xis + Xks > 3.0*rik) continue;
+	    // *****************************************************
+	    
+	    Tiks = 0.0;
+	    if (Xis + Xks < 3.0*rik){
+	      Tiks = -0.5 + rik/(Xis + Xks - rik);
+	    }
+
+	    td = 0.0;
+	    if (Tiks>0.0) td = pow(Tiks, nik);
+	    Tiks_n_sum += td;
+	  }
+	  Kik = exp( - Tiks_n_sum);
+#endif
+	}
+
+
+
+
 	c2 = cik*cik;
 	d2 = dik*dik;
 	cost = (dposij * dposik) / (rij*rik);
@@ -829,6 +1187,133 @@ double MDSystem::force_ABOP(){
 	if (pair_ik_perriot){
 	  double pref = threebodyfactor * fcik * gijk * F1 * F2 ;
 	  force_ABOP_perriot_K_frc(i, k, Kik, dposik, pref);
+	  
+	  
+#if 0
+	  // kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+	  // Loop over s
+	  // kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+	  Tiks_n_sum=0.0;
+	  for (is=0; is<neighborcollection[i].size(); is++){
+	    s = neighborcollection[i][is];
+	    if (s==i) continue;
+	    if (s==k) continue;
+	    types = elem.name2idx( matter[s] );
+	    if (! iac_pure_ABOP) if (p_potinfo->basepot(typei, types) != "ABOP") continue;
+	    if (! iac_pure_ABOP) if (p_potinfo->basepot(typek, types) != "ABOP") continue;
+
+	    ivecis = se_ivecij;
+	    if (! sys_single_elem) ivecis = p_potinfo->basepot_vecidx(typei, types);
+	    if (ivecis<0) continue;
+
+	    ivecks = se_ivecij;
+	    if (! sys_single_elem) ivecks = p_potinfo->basepot_vecidx(typek, types);
+	    if (ivecks<0) continue;
+	
+	    get_atom_distance_vec(pos[i], pos[s], dposis);
+	    ris = dposis.magn();
+	    get_atom_distance_vec(pos[k], pos[s], dposks);
+	    rks = dposks.magn();
+
+	    pair_is_perriot = false;
+	    if (p_potinfo->pot_ABOP[ivecis].rcut_fun=="perriot"){
+	      pair_is_perriot = true;
+	      rcutis = p_potinfo->pot_ABOP[ivecis].parname2val("prcut");
+	      mis = p_potinfo->pot_ABOP[ivecis].parname2val("pm");
+	    }
+	    pair_ks_perriot = false;
+	    if (p_potinfo->pot_ABOP[ivecks].rcut_fun=="perriot"){
+	      pair_ks_perriot = true;
+	      rcutks = p_potinfo->pot_ABOP[ivecks].parname2val("prcut");
+	      mks = p_potinfo->pot_ABOP[ivecks].parname2val("pm");
+	    }
+
+	    if (pair_is_perriot==false || pair_ks_perriot==false)
+	      continue;
+	    
+	    if (ris > rcutis) continue;
+	    if (rks > rcutks) continue;
+
+	    Xis = ris/(1.0 - pow(ris/rcutis, mis));
+	    Xks = rks/(1.0 - pow(rks/rcutks, mks));
+
+	    // *****************************************************
+	    if (Xis + Xks > 3.0*rik) continue;
+	    // *****************************************************
+
+	    Tiks = 0.0;
+	    if (Xis + Xks < 3.0*rik){
+	      Tiks = -0.5 + rik/(Xis + Xks - rik);
+	    }
+
+
+
+
+	    
+	    dXis = Xis/ris + mis * (Xis/ris)*(Xis/ris) * pow(ris/rcutis, mis);
+	    dXks = Xks/rks + mks * (Xks/rks)*(Xks/rks) * pow(rks/rcutks, mks);
+
+	    td1 = 1.0/(Xis + Xks - rik);
+	    td2 = - rik * td1 * td1;
+
+	    for (p=0; p<3; ++p){
+	      dTiks_ik[p] = td1 *   dposik[p]/rik  + td2 * ( (-1)*  dposik[p]/rik  );
+	      dTiks_is[p] = td2 * ( dXis *   dposis[p]/ris );
+	      
+	      dTiks_ki[p] = - dTiks_ik[p];
+	      //dTijk_ji[p] = td1 * (-dposij[p]/rij) + td2 * ( (-1)*(-dposij[p]/rij) );
+	      dTiks_ks[p] = td2 * ( dXks *   dposks[p]/rks );
+
+	      dTiks_si[p] = - dTiks_is[p];
+	      dTiks_sk[p] = - dTiks_ks[p];
+	      //dTijk_ki[p] = td2 * ( dXik * (-dposik[p]/rik));
+	      //dTijk_kj[p] = td2 * ( dXjk * (-dposjk[p]/rjk));
+	    }
+
+	    td = nik * pow(Tiks, nik-1.0);
+	    for (p=0; p<3; ++p){
+	      dKik_ik[p] = - Kik * td * (dTiks_ik[p]);
+	      dKik_is[p] = - Kik * td * (dTiks_is[p]);
+	      
+	      dKik_ki[p] = - Kik * td * (dTiks_ki[p]);
+	      dKik_ks[p] = - Kik * td * (dTiks_ks[p]);
+	      
+	      dKik_si[p] = - Kik * td * (dTiks_si[p]);
+	      dKik_sk[p] = - Kik * td * (dTiks_ks[p]);
+	    }
+	  
+
+	    // Establish pairwise forces:
+	    for (p=0; p<3; ++p){
+	      frc_ik[p] = threebodyfactor * dKik_ik[p] * fcik * gijk * F1 * F2 ;
+	      frc_is[p] = threebodyfactor * dKik_is[p] * fcik * gijk * F1 * F2 ;
+	      frc_ks[p] = threebodyfactor * dKik_ks[p] * fcik * gijk * F1 * F2 ;
+	    }
+	    // Add pairwise contributions to virials:
+	    for (int v1=0; v1<3; ++v1){
+	      for (int v2=0; v2<3; ++v2){
+		virials[i].elem(v1,v2) += 0.5 *   frc_ik[v1]  *   dposik[v2];
+		virials[k].elem(v1,v2) += 0.5 * (-frc_ik[v1]) * (-dposik[v2]);
+		
+		virials[i].elem(v1,v2) += 0.5 *   frc_is[v1]  *   dposis[v2];
+		virials[s].elem(v1,v2) += 0.5 * (-frc_is[v1]) * (-dposis[v2]);
+		
+		virials[k].elem(v1,v2) += 0.5 *   frc_ks[v1]  *   dposks[v2];
+		virials[s].elem(v1,v2) += 0.5 * (-frc_ks[v1]) * (-dposks[v2]);
+	      }
+	    }
+
+	    // Add pairwise forces to total foces:
+	    for (p=0; p<3; ++p){
+	      frc[i][p] +=   frc_ik[p] + frc_is[p];
+	      frc[k][p] += - frc_ik[p] + frc_ks[p];
+	      frc[s][p] +=  -frc_is[p] - frc_ks[p];
+	    }
+
+
+	  }
+#endif
+
 	}
 
 
@@ -1084,31 +1569,10 @@ void MDSystem::force_ABOP_perriot_K_frc(int i,
   force_ABOP_perriot_K(i, j, Kij, dposij);
 
 
-
-  int k, typei, typej, typek;
-  int se_ivecij, ivecij, ivecjk, ivecik;
-  bool pair_ik_perriot, pair_jk_perriot;
-
-  typei = elem.name2idx( matter[i] );
-  typej = elem.name2idx( matter[j] );
-  typek = elem.name2idx( matter[k] );
-  se_ivecij = p_potinfo->basepot_vecidx(typei, typei);
-
-  Vector3<double> dposik, dposjk;
-  double rik, rjk, rcutik, rcutjk, mik, mjk, Xik, Xjk, Tijk_n_sum, Tijk, nij;
-  double rij, td, td1, td2;
-
-
-
-  nij = p_potinfo->pot_ABOP[ivecij].parname2val("pn");
-  rij = dposij.magn();
-
   Vector3<double> dTijk_ij, dTijk_ik, dTijk_jk, dTijk_ji, dTijk_ki, dTijk_kj;
   Vector3<double> dKij_ij, dKij_ik, dKij_jk, dKij_ji, dKij_ki, dKij_kj;
   Vector3<double> frc_ij, frc_ik, frc_jk;
-
-  double dXik, dXjk;
-
+  
   
   Tijk_n_sum=0.0;
   for (int ik=0; ik<neighborcollection[i].size(); ik++){
@@ -1212,9 +1676,9 @@ void MDSystem::force_ABOP_perriot_K_frc(int i,
 
     // Use previously calc. results to get total pairwise forces:
     for (int p=0; p<3; ++p){
-      frc_ij[p] = dKij_ij[p] * pref;
-      frc_ik[p] = dKij_ik[p] * pref;
-      frc_jk[p] = dKij_jk[p] * pref;
+      frc_ij[p] = - 0.5 * dKij_ij[p] * (VRij - bij * VAij) ;
+      frc_ik[p] = - 0.5 * dKij_ik[p] * (VRij - bij * VAij) ;
+      frc_jk[p] = - 0.5 * dKij_jk[p] * (VRij - bij * VAij) ;
     }
 
     // Add to total atomic forces for all atoms participating:

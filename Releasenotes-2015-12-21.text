@@ -1,0 +1,37 @@
+
+
+Latest release, December 21, 2015.
+
+Most important changes:
+
+  1/1. The screening method by Perriot et al. (PRB 88 (2013) 064101) has been
+introduced. In this method the term
+  fc_ij*(VR_ij - b_ij*VA_ij)
+
+is replaced with
+  S_ij*(VR_ij - b_ij*VA_ij)
+
+where S runs over neighbors s of atom i; and the term
+  fc_ik * g_ijk * omega_ijk * ...
+
+is replaced with
+
+  fcP_ik * S_ik * g_ijk * omega_ijk * ...
+
+where S runs over neighbors s of atom i and fcP is a smoother cutoff
+than the Brenner-Tersoff version.
+
+The new implementation has been tested (analytical and numerical forces and pressure)
+with a combination of Y-Y, O-O, and Y-O to ensure that the ij,jk,ik, etc contributions
+are properly included.
+
+Example usage: Replace D and R parameters with the following, or keep them but
+specify 'rcut_fun = perriot' (and the parameter values of course):
+
+    potpar( Y , Y ):option: rcut_fun = perriot
+    potpar( Y , Y ):pn       = 5
+    potpar( Y , Y ):pm       = 48
+    potpar( Y , Y ):prcut    = 3.95
+    potpar( Y , Y ):prmin    = 3.80
+    potpar( Y , Y ):prmax    = 3.95  selected to equal prcut
+

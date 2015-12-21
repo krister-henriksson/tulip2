@@ -34,16 +34,16 @@ MDSettings::MDSettings(){
   max_dE  = 1.0;
   max_dr  = 0.1;
 
-  btc_tau = 20.0;
+  btc_tau = -20.0;
   btc_T0  = 0.0;
 
-  bpc_tau   = 20.0;
+  bpc_tau   = -20.0;
   bpc_P0    = 0.0;
   bpc_scale = 80.0;
 
   use_quench   = false;
-  use_Tcontrol = true;
-  use_Pcontrol = true;
+  use_Tcontrol = false;
+  use_Pcontrol = false;
 
   quench_tstart = -1.0;
   quench_rate   = 0.0;

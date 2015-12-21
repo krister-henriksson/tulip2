@@ -23,6 +23,7 @@
 #include "utils-matrix.hpp"
 #include "utils-string.hpp"
 #include "utils-vector.hpp"
+#include "utils-vector3.hpp"
 #include "utils-errors.hpp"
 #include "atomsystem.hpp"
 
@@ -60,11 +61,12 @@ double MDSystem::force_EAM(){
   double drsq, rcutsq;
   double td, dx,dy,dz, eps=numeric_limits<double>::epsilon(), dr_ij, dx_ij, dy_ij, dz_ij;
   int ivec=-1;
-  Vector3<double> pos1, pos2, drvec;
+  Vector3<double> pos1, pos2, drvec, dposij, frc_ij;
   Vector<double> dF_drho_d(natoms(), 0), dF_drho_p(natoms(), 0), dF_drho_s(natoms(), 0);
   std::string s1, s2;
   double Ep_tot_local = 0.0;
   int type1, type2;
+  double rij;
 
 
   if (sys_single_elem){
@@ -120,6 +122,7 @@ double MDSystem::force_EAM(){
       //	    printf("Position of second atom: %f %f %f\n", x2, y2, z2);
 
       get_atom_distance_vec(pos1, pos2, drvec);
+
       drsq = drvec[0]*drvec[0] + drvec[1]*drvec[1] + drvec[2]*drvec[2];
 
 
@@ -310,6 +313,10 @@ double MDSystem::force_EAM(){
       //	    printf("Position of second atom: %f %f %f\n", x2, y2, z2);
 
       get_atom_distance_vec(pos1, pos2, drvec);
+      dposij = drvec;
+      rij = dposij.magn();
+
+
       dr_ij = drvec.magn();
 
       if (dr_ij < eps) continue;
@@ -352,6 +359,7 @@ double MDSystem::force_EAM(){
 			 p_potinfo->pot_EAM[ivec].d2_V2,
 			 dr_ij);
 
+      /*
       frc[iat][0] += - 2  * 0.5 * dV2_ij * dx ;
       frc[iat][1] += - 2  * 0.5 * dV2_ij * dy ;
       frc[iat][2] += - 2  * 0.5 * dV2_ij * dz ;
@@ -359,6 +367,21 @@ double MDSystem::force_EAM(){
       virials[iat].elem(0,0) += -dx_ij * (- 1  * 0.5 * dV2_ij * -dx ) ;
       virials[iat].elem(1,1) += -dy_ij * (- 1  * 0.5 * dV2_ij * -dy ) ;
       virials[iat].elem(2,2) += -dz_ij * (- 1  * 0.5 * dV2_ij * -dz ) ;
+      */
+
+      for (int p=0; p<3; ++p){
+	frc_ij[p] = - dV2_ij * dposij[p]/rij;
+      }
+      for (int p=0; p<3; ++p){
+	frc[iat][p] +=   frc_ij[p];
+	frc[jat][p] += - frc_ij[p];
+      }
+      for (int v1=0; v1<3; v1++){
+	for (int v2=0; v2<3; v2++){
+	  virials[iat].elem(v1,v2) += 0.5 *    frc_ij[v1]  *    dposij[v2];
+	  virials[jat].elem(v1,v2) += 0.5 * (- frc_ij[v1]) * (- dposij[v2]);
+	}
+      }
 
 
 
@@ -380,6 +403,7 @@ double MDSystem::force_EAM(){
 		 dF_drho_p[jat] * drho_p_ij +
 		 dF_drho_d[jat] * drho_d_ij);
 	
+      /*
       frc[iat][0] += td * dx ;
       frc[iat][1] += td * dy ;
       frc[iat][2] += td * dz ;
@@ -387,6 +411,25 @@ double MDSystem::force_EAM(){
       virials[iat].elem(0,0) += -dx_ij * td * -dx;
       virials[iat].elem(1,1) += -dy_ij * td * -dy;
       virials[iat].elem(2,2) += -dz_ij * td * -dz;
+      */
+
+      for (int p=0; p<3; ++p){
+	frc_ij[p] = td * dposij[p]/rij;
+      }
+      for (int p=0; p<3; ++p){
+	frc[iat][p] +=   frc_ij[p];
+	frc[jat][p] += - frc_ij[p];
+      }
+      for (int v1=0; v1<3; v1++){
+	for (int v2=0; v2<3; v2++){
+	  virials[iat].elem(v1,v2) += 0.5 *    frc_ij[v1]  *    dposij[v2];
+	  virials[jat].elem(v1,v2) += 0.5 * (- frc_ij[v1]) * (- dposij[v2]);
+	}
+      }
+
+
+
+
 
 
       /* Go to next atom 'jat'. */

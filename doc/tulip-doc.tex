@@ -328,7 +328,8 @@ program, but this type of interactions cannot be fitted.
 
 \subsection{ABOP potential}
 
-The Brenner-Tersoff or ABOP potential gives the total energy of a system of atoms as
+The Abell-Brenner-Tersoff~\cite{Abell-PRB31-1985,Brenner-PRB42-1990,Tersoff-PRL56-1986}
+or ABOP~\cite{Juslin-JAP98-2005} potential gives the total energy of a system of atoms as
 
 \begin{equation}
 V = {1 \over 2} \sum_i \sum_{j} f_{c,ij} \left( V_{R,ij} - B_{ij} V_{A,ij} \right)
@@ -365,7 +366,8 @@ with
 r_{ij} = |\mathbf{r}_{ij}| = | \mathbf{r}_i - \mathbf{r}_j |
 \end{equation}
 
-The cutoff-function is
+
+The Tersoff~\cite{Tersoff-PRL56-1986} cutoff function is
 
 \begin{equation}
 f_c(r) =
@@ -393,8 +395,6 @@ f'_{c}(r) =
 \end{array}
 \right.
 \end{equation}
-
-
 
 
 The bond-order parameter is defined as
@@ -445,15 +445,76 @@ is replaced in its entirety by
 The function $g_{ijk}(\theta_{ijk})$ is given by the expression
 
 \begin{equation}
-g_{ijk}(\theta_{ijk}) = \gamma \left(
-1 + {c^2 \over d^2} - {c^2 \over d^2 + (h + \cos \theta_{ijk})^2}
+g_{ijk}(\theta_{ijk}) = \gamma_{ik} \left(
+1 + {c_{ik}^2 \over d_{ik}^2} - {c_{ik}^2 \over d_{ik}^2 + (h_{ik} + \cos \theta_{ijk})^2}
 \right)
 \end{equation}
 
 where $\theta_{ijk}$ is the angle between the bonds $ij$ and $ik$.
 
-The ABOP potential is insufficient for small interatomic distances.
-To ensure a more correct description a (repulsive) potential
+\stars
+
+The Perriot cutoff/screening method~\cite{Perriot-2013} can be used instead of the Tersoff function.
+In this method the total potential energy is given by
+
+\begin{equation}
+V = {1 \over 2} \sum_i \sum_{j} K_{ij} \left( V_{R,ij} - B_{ij} V_{A,ij} \right)
+\label{eq:abop-perriot}
+\end{equation}
+
+The bond-order is modified in the following way:
+
+\begin{equation}
+\chi_{ij} =
+\sum_{k, k \neq i, k \neq j} f^{(P)}_{c,ik} K_{ik} g_{ijk}(\theta_{ijk})
+\omega_{ijk} \exp\left[ \alpha_{ijk}(r_{ij} - r_{ik}) \right]
+\end{equation}
+
+The Perriot method contains the following functions:
+
+\begin{eqnarray}
+K_{ij} &=& \exp\left[ - \sum_{s, s\neq i, s\neq j} T_{ijs}^{n_{ij}} \right] \\
+T_{ijs} &=&
+\left\{
+\begin{array}{rl}
+-{1\over 2} + {r_{ij} \over X_{is} + X_{js} - r_{ij}}, & X_{is}+X_{js} < 3 r_{ij}\\
+0, & \mathrm{otherwise}
+\end{array}
+\right.
+\\
+X_{is} &=& {r_{is} \over 1 - (r_{is}/r_{c,is})^{m_{is}}} \\
+X_{jk} &=& {r_{js} \over 1 - (r_{js}/r_{c,js})^{m_{js}}} \\
+f^{(P)}_{c,ik} &=& \left\{
+\begin{array}{rl}
+1, &  r_{ik} < r_{ik,min} \\
+1 - q_{ik}^3 (6 q_{ik}^2 - 15 q_{ik} - 10), & r_{ik,min} \leq r_{ik} \leq r_{ik,max} \\
+0, & r > r_{ik,max}
+\end{array}
+\right.
+\\
+q_{ik} &=& {r_{ik} - r_{ik,min} \over r_{ik,max} - r_{ik,min}}
+\end{eqnarray}
+
+Here $n,m,r_c,r_{min},r_{max}$ are parameters.
+
+Technically, if $r_{is}$ or $r_{js}$ equals $r_c$ then the corresponding $X$ is
+infinite and $T_{ijs}$ becomes 0. This can be exactly handled by the following rule:
+If neighbor $s$ of atom $i$ is beyond the cutoff radius $r_{c,is}$
+or $r_{c,js}$, then $T_{ijs}=0$ and it does not contribute at all to the $K_{ij}$.
+This does not account for the following situation:
+If $r_{is}$ or $r_{js}$ is larger than $r_c$ then the corresponding $X$ is
+negative. Mathematically, it can still satisfy $X_{is}+X_{js}<r_{ij}$ so it should
+be considered for the sum $T_{ijs}$. As of now, this case is ignored due to the rule above.
+
+
+
+
+
+
+\stars
+
+The ABOP potential is inadequate for small interatomic distances.
+To ensure a more correct description a repulsive potential
 $V_{\mathrm{rep}}(r)$ --- e.g. the ZBL potential --- describing
 interactions at small distances should be used.
 The original potential presented above is then modified to
@@ -469,6 +530,8 @@ F(r) = 1/(1 + e^{-b_f(r-r_f)})
 \end{equation}
 
 and $b_f, r_f$ are parameters that need to be supplied.
+
+\stars
 
 All parameters that can be used with the ABOP potential are:
 
@@ -487,11 +550,18 @@ $\gamma$ & \\
 $c$ & \\
 $d$ & \\
 $h$ & \\
-$D$ & \\
-$R$ & Cutoff is $r_c = R + D$. \\
+$p$ & Defaults to $1/2$. \\
 $b_f$ & Defaults to $10$. \\
 $r_f$ & Defaults to $1$. \\
-$p$ & Defaults to $1/2$. \\
+\hline
+$D$ & Tersoff cutoff parameters \\
+$R$ & Cutoff radius is $r_c = R + D$. \\
+\hline
+$n$ & Perriot cutoff parameters \\
+$m$ & \\
+$r_c$ & \\
+$r_{min}$ & \\
+$r_{max}$ & \\
 \hline
 (V1) $\alpha_{ijk}$ and $\omega_{ijk}$ & \\
 (V2) $\alpha_{ijk}$ & $\omega_{ijk}$ given by Eq.~(\ref{eq:omegaijk}).\\
@@ -785,10 +855,18 @@ potpar( Fe, Fe ):gamma = 0.0115751
 potpar( Fe, Fe ):c = 1.2898716
 potpar( Fe, Fe ):d = 0.3413219
 potpar( Fe, Fe ):h = -0.26
-potpar( Fe, Fe ):R = 3.15
-potpar( Fe, Fe ):D = 0.2
 potpar( Fe, Fe ):bfermi = 10
 potpar( Fe, Fe ):rfermi = 1
+
+potpar( Fe, Fe ):option: rcut_fun = perriot
+potpar( Fe, Fe ):n = 5
+potpar( Fe, Fe ):m = 48
+potpar( Fe, Fe ):rcut = 3.3
+potpar( Fe, Fe ):rmin = 3.0
+potpar( Fe, Fe ):rmax = 3.3
+
+
+
 
 potpar(Cr, Cr ):D0 = 4.04222081
 potpar(Cr, Cr ):r0 = 2.13018547
@@ -1151,9 +1229,12 @@ mds_dt        = 3.0
 mds_max_dt    = 3.0
 
 mds_Tstart    =    0.5  starting temperature T (K)
+
+# Negative values or missing settings turn off control:
 mds_btc_tau   =   10.0  Berendsen time constant for T control (fs)
 mds_btc_T0    =    0.0  desired T (K)
 
+# Negative values or missing settings turn off control:
 mds_bpc_tau   = 80.0   Berendsen time constant for P control (fs)
 mds_bpc_P0    =  0.0   desired P (GPa)
 mds_bpc_scale = 50.0   scaling constant, usually on the order of bulk modulus (GPa)
@@ -1161,6 +1242,7 @@ mds_bpc_scale = 50.0   scaling constant, usually on the order of bulk modulus (G
 # mds_quench_tstart = 2000
 # mds_quench_rate   = 1.0   # quenching rate (K/fs), negative value => heating
 
+# Some default values are always used, even if no settings here:
 mds_error_T_gt      = 1e6   Fatal error if T gets over this limit (K).
 mds_error_dt_lt     = 0.01  Fatal error if dt gets under this limit (fs).
 mds_error_boxlen_gt = 1e4   Fatal error if any boxlen gets over this limit (Angstrom).
@@ -1545,9 +1627,11 @@ prop:mds_max_dt  = 1.0
 
 prop:mds_Tstart  = 300.0   starting temperature T (K)
 
+# Negative values or missing settings turn off control:
 prop:mds_btc_tau =  20     Berendsen time constant for T control (fs)
 prop:mds_btc_T0  =  0      desired T (K)
 
+# Negative values or missing settings turn off control:
 prop:mds_bpc_tau   = 100   Berendsen time constant for P control (fs)
 prop:mds_bpc_P0    = 0     desired P (GPa)
 prop:mds_bpc_scale = 100   scaling constant, usually on the order of bulk modulus
@@ -1576,9 +1660,11 @@ prop:ref:mds_max_dt  = 5.0
 
 prop:ref:mds_Tstart  = 1.0   starting temperature T (K)
 
+# Negative values or missing settings turn off control:
 prop:ref:mds_btc_tau =  20   Berendsen time constant for T control (fs)
 prop:ref:mds_btc_T0  =  0    desired T (K)
 
+# Negative values or missing settings turn off control:
 prop:ref:mds_bpc_tau   = 80  Berendsen time constant for P control (fs)
 prop:ref:mds_bpc_P0    = 0   desired P (GPa)
 prop:ref:mds_bpc_scale = 80  scaling constant, usually on the order of bulk modulus
@@ -1656,8 +1742,31 @@ parameters.
 
 
 
-
 \section{Calculation of physical properties}
+
+Temperature $T$ is obtained from the equipartition theorem:
+
+\begin{eqnarray}
+{3 \over 2} N kT &=& \sum_{i=1}^N {1\over 2} m_i v_i^2
+\end{eqnarray}
+
+The pressure is obtained from the general stress tensor $\sigma_{ab}$,
+
+\begin{eqnarray}
+\sigma_{ab} = {1\over 2} \sum_i \sum_j F_{ij,a} r_{ij,b}
+\end{eqnarray}
+
+where $\mathbf{F}_{ij} \propto \mathbf{r}_{ij}$ and $\mathbf{r}_{ij}=\mathbf{r}_{i}-\mathbf{r}_{j}$.
+The Cartesian pressure components are $P_x = \sigma_{xx}$, \ldots, and
+$P=(P_x+P_y+P_z)/3$.
+
+Temperature and pressure is controlled according to the method of
+Berendsen et al.~\cite{berendsen1984}.
+
+
+
+
+\section{Calculation of fittable properties}
 
 
 Predicted value of a property with the read-in value $P$ is written
@@ -1778,7 +1887,8 @@ For instance, if $s$ is C, then ground state might be GRA (graphite).
 
 
 Bulk modulus $B$ (GPa) and its pressure derivative $B'(P)$ is calculated from
-$(V(\varepsilon), E_p(\varepsilon))$ data using the Birch-Murnaghan equation of state
+$(V(\varepsilon), E_p(\varepsilon))$ data using the
+Birch-Murnaghan equation of state~\cite{Birch-PR71-1947,Mur44}
 
 \begin{eqnarray}
 E &=& E_0 + {9 \over 16} V_0 B_0 \left( \left({V_0 \over V}\right)^{2/3} - 1 \right)^2 \nonumber \\
@@ -2998,6 +3108,9 @@ concerning constrained minimization (CM).
 
 
 \bibliography{local}
+
+
+
 
 
 \end{document}

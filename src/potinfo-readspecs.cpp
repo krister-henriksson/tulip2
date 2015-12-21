@@ -335,25 +335,12 @@ void PotentialInformationFit::read_specs(std::string filename){
 
 	else if (args[id]=="mds_btc_tau"){
 	  strbuf.str(args[id+1]);
-	  if (t==1){
-	    strbuf >> specs_prop.mds_specs.btc_tau;
-	    if (specs_prop.mds_specs.btc_tau<0.0 ||
-		abs(specs_prop.mds_specs.btc_tau)<eps)
-	      specs_prop.mds_specs.use_Tcontrol = false;
-	    else
-	      specs_prop.mds_specs.use_Tcontrol = true;
-	  }
-	  else {
-	    strbuf >> specs_prop.mds_specs_ref.btc_tau;
-	    if (specs_prop.mds_specs_ref.btc_tau<0.0 ||
-		abs(specs_prop.mds_specs_ref.btc_tau)<eps)
-	      specs_prop.mds_specs_ref.use_Tcontrol = false;
-	    else
-	      specs_prop.mds_specs_ref.use_Tcontrol = true;
-	  }
+	  if (t==1) strbuf >> specs_prop.mds_specs.btc_tau;
+	  else      strbuf >> specs_prop.mds_specs_ref.btc_tau;
 	  strbuf.clear();
+	  if (t==1) specs_prop.mds_specs.use_Tcontrol = false;
+	  else      specs_prop.mds_specs.use_Tcontrol = true;
 	}
-
 	else if (args[id]=="mds_btc_T0"){
 	  strbuf.str(args[id+1]);
 	  if (t==1) strbuf >> specs_prop.mds_specs.btc_T0;
@@ -362,25 +349,17 @@ void PotentialInformationFit::read_specs(std::string filename){
 	  if (t==1) specs_prop.mds_specs.use_Tcontrol = true;
 	  else      specs_prop.mds_specs_ref.use_Tcontrol = true;
 	}
+
+
+
 	else if (args[id]=="mds_bpc_tau"){
 	  strbuf.str(args[id+1]);
-	  if (t==1){
-	    strbuf >> specs_prop.mds_specs.bpc_tau;
-	    if (specs_prop.mds_specs.bpc_tau<0.0 ||
-		abs(specs_prop.mds_specs.bpc_tau)<eps)
-	      specs_prop.mds_specs.use_Pcontrol = false;
-	    else
-	      specs_prop.mds_specs.use_Pcontrol = true;
-	  }
-	  else {
-	    strbuf >> specs_prop.mds_specs_ref.bpc_tau;
-	    if (specs_prop.mds_specs_ref.bpc_tau<0.0 ||
-		abs(specs_prop.mds_specs_ref.bpc_tau)<eps)
-	      specs_prop.mds_specs_ref.use_Pcontrol = true;
-	  }
+	  if (t==1) strbuf >> specs_prop.mds_specs.bpc_tau;
+	  else 	    strbuf >> specs_prop.mds_specs_ref.bpc_tau;
 	  strbuf.clear();
+	  if (t==1) specs_prop.mds_specs.use_Pcontrol = true;
+	  else      specs_prop.mds_specs_ref.use_Pcontrol = true;
 	}
-
 	else if (args[id]=="mds_bpc_P0"){
 	  strbuf.str(args[id+1]);
 	  if (t==1) strbuf >> specs_prop.mds_specs.bpc_P0;
@@ -397,6 +376,8 @@ void PotentialInformationFit::read_specs(std::string filename){
 	  if (t==1) specs_prop.mds_specs.use_Pcontrol = true;
 	  else      specs_prop.mds_specs_ref.use_Pcontrol = true;
 	}
+
+
 	else if (args[id]=="mds_quench_tstart"){
 	  strbuf.str(args[id+1]);
 	  if (t==1) strbuf >> specs_prop.mds_specs.quench_tstart;
@@ -449,6 +430,38 @@ void PotentialInformationFit::read_specs(std::string filename){
   }
   fp.close();
   fp.clear();
+
+
+  // Debugging
+  
+  if (specs_prop.mds_specs.bpc_tau<0.0     || abs(specs_prop.mds_specs.bpc_tau)<eps)
+    specs_prop.mds_specs.use_Pcontrol = false;
+  if (specs_prop.mds_specs.bpc_P0<0.0      || abs(specs_prop.mds_specs.bpc_P0)<eps)
+    specs_prop.mds_specs.use_Pcontrol = false;
+  if (specs_prop.mds_specs.bpc_scale<0.0   || abs(specs_prop.mds_specs.bpc_scale)<eps)
+    specs_prop.mds_specs.use_Pcontrol = false;
+
+  if (specs_prop.mds_specs.btc_tau<0.0     || abs(specs_prop.mds_specs.btc_tau)<eps)
+    specs_prop.mds_specs.use_Tcontrol = false;
+  if (specs_prop.mds_specs.btc_T0<0.0     || abs(specs_prop.mds_specs.btc_T0)<eps)
+    specs_prop.mds_specs.use_Tcontrol = false;
+
+
+
+
+  if (specs_prop.mds_specs_ref.bpc_tau<0.0     || abs(specs_prop.mds_specs_ref.bpc_tau)<eps)
+    specs_prop.mds_specs_ref.use_Pcontrol = false;
+  if (specs_prop.mds_specs_ref.bpc_P0<0.0      || abs(specs_prop.mds_specs_ref.bpc_P0)<eps)
+    specs_prop.mds_specs_ref.use_Pcontrol = false;
+  if (specs_prop.mds_specs_ref.bpc_scale<0.0   || abs(specs_prop.mds_specs_ref.bpc_scale)<eps)
+    specs_prop.mds_specs_ref.use_Pcontrol = false;
+
+  if (specs_prop.mds_specs_ref.btc_tau<0.0     || abs(specs_prop.mds_specs_ref.btc_tau)<eps)
+    specs_prop.mds_specs_ref.use_Tcontrol = false;
+  if (specs_prop.mds_specs_ref.btc_T0<0.0     || abs(specs_prop.mds_specs_ref.btc_T0)<eps)
+    specs_prop.mds_specs_ref.use_Tcontrol = false;
+
+
 
 
   std::cout << "Read-in of specifications completed." << std::endl;

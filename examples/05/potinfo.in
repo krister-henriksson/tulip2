@@ -50,11 +50,6 @@ max:potpar( Y , Y ):d       =  1e4
 min:potpar( Y , Y ):h       =  1.0
 max:potpar( Y , Y ):h       =  1.0
 
-    potpar( Y , Y ):R       = 3.85
-min:potpar( Y , Y ):R       = 3.50
-max:potpar( Y , Y ):R       = 3.50
-
-    potpar( Y , Y ):D       = 0.1
 
     potpar( Y , Y ):bfermi  = 10
 min:potpar( Y , Y ):bfermi  = 1
@@ -74,4 +69,11 @@ max:abop_alpha( Y , Y , Y ) =   10.0
 min:abop_omega( Y , Y , Y ) =  10.0
 max:abop_omega( Y , Y , Y ) =  10.0
 
+
+    potpar( Y , Y ):option: rcut_fun = perriot
+    potpar( Y , Y ):pn       = 5
+    potpar( Y , Y ):pm       = 48
+    potpar( Y , Y ):prcut    = 3.95
+    potpar( Y , Y ):prmin    = 3.80
+    potpar( Y , Y ):prmax    = 3.95
 

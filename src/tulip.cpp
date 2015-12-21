@@ -240,8 +240,8 @@ int main(int argc, char *argv[]){
     std::cout << "                        NOTE 2: 'fitpot0' is always set to true, others are false by default." << std::endl;
     std::cout << "" << std::endl;
 
-    std::cout << "     -dforces           Debug the forces. Default: not used" << std::endl;
-    std::cout << "     -dpressure         Debug the pressure. Default: not used" << std::endl;
+    std::cout << "     -dforces           Debug the forces. You need to disable pressure control! Default: not used" << std::endl;
+    std::cout << "     -dpressure         Debug the pressure. You need to disable pressure control! Only works for Cartesian cells. Default: not used" << std::endl;
     std::cout << "     -dmdsprop          Debug MDS runs of the structures. Default: not used" << std::endl;
 
     std::cout << "     -dall              Activate all debugging options (top level only). Default: not used" << std::endl;
@@ -251,13 +251,15 @@ int main(int argc, char *argv[]){
     std::cout << "                        ABOP: Put D0=0.0 for the binary interaction you want to fit. Keep all other" << std::endl;
     std::cout << "                        parametrizations at their normal values." << std::endl;
     std::cout << "" << std::endl;
-    
+
+#if 0
     std::cout << "" << std::endl;
     std::cout << "     -omp               Request maximal number of threads ("
 	 << omp_info.nt_max() << ") for any OpenMP parts." << std::endl;
     std::cout << "     -omp_nt num        Request 'num' number of threads for any OpenMP parts. Default: "
 	 << omp_info.nt_use() << std::endl;
     std::cout << "" << std::endl;
+#endif
 
     return 0;
   }

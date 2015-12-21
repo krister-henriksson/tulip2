@@ -22,6 +22,8 @@ using namespace utils;
 enum PotentialClasses { Reppot, EAMpot, ABOPpot };
 
 
+
+
 // ###############################################################
 // Tabulated potentials
 // ###############################################################
@@ -102,6 +104,11 @@ public:
   Vector<double> parmin;
   Vector<double> parmax;
 
+  int maxindex;
+
+  std::string rcut_fun;
+
+
   Potential_ABOP();
   /*
   ~Potential_ABOP();
@@ -109,35 +116,14 @@ public:
   Potential_ABOP & operator=(const Potential_ABOP & sv);
   */
 
-  int   parname2idx(std::string name){
-    if      (name=="D0") return 0;
-    else if (name=="r0") return 1;
-    else if (name=="beta") return 2;
-    else if (name=="S") return 3;
-    else if (name=="gamma") return 4;
-    else if (name=="c") return 5;
-    else if (name=="d") return 6;
-    else if (name=="h") return 7;
-    else if (name=="R") return 8;
-    else if (name=="D") return 9;
-    else if (name=="bfermi") return 10;
-    else if (name=="rfermi") return 11;
-    else if (name=="p") return 12;
-    else return -1;
-  }
-  std::string paridx2name(int idx){
-    if (idx<0 || idx>12) return "none";
-    else return parname[idx];
-  }
-  double & parname2val(std::string name){
-    int i = parname2idx(name);
-    return parval[i];
-  }
+  int         parname2idx(std::string name);
+  std::string paridx2name(int idx);
+  double    & parname2val(std::string name);
+  double      rcut(void);
 
-  double rcut(void){ return parval[8] + parval[9]; }
-  
   // for fittable versions:
   void init_lims(void);
+
 };
 
 

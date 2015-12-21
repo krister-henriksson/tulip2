@@ -96,7 +96,9 @@ void MDSystem::relax(void){
   rv.to_array(xt3);
 
 
-
+  MatrixSq3<double> stresstensor_xyz_ana;
+  double Px_ana, Py_ana, Pz_ana, Ptot_ana;
+  double Px_num, Py_num, Pz_num, Ptot_num;
 
 
 
@@ -345,11 +347,14 @@ void MDSystem::relax(void){
   Pz = stresstensor_xyz.elem(2,2) = W.elem(2,2);  /* Unit now: GPa. */
   P = 1.0/3.0 * (Px + Py + Pz);
 
+
+
   //std::cout << "Stress tensor (Cartesian system): " << stresstensor_xyz << std::endl;
   //printf("Px Py Pz:  %15.10e  %15.10e  %15.10e\n", Px, Py, Pz);
   //  fflush(stdout);
   
   /* Get pressure components in skewed system: */
+  /*
   {
     double td0,td1,td2;
     double te0,te1,te2;
@@ -383,7 +388,30 @@ void MDSystem::relax(void){
     stresstensor_abc.elem(1,1) = te1;
     stresstensor_abc.elem(2,2) = te2;
   }
-
+  */
+  /* Get pressure components in skewed system: */
+  // Default to Cartesian box:    
+  for (int p=0; p<3; ++p){
+    for (int q=0; q<3; ++q){
+      stresstensor_xyz.elem(p,q) = W.elem(p,q);
+      stresstensor_abc.elem(p,q) = stresstensor_xyz.elem(p,q);
+    }
+  }
+  if (! isCart){
+    for (int p=0; p<3; ++p){
+      for (int q=0; q<3; ++q){
+	stresstensor_abc.elem(p,q) = 0.0;
+	for (int m=0; m<3; ++m){
+	  for (int n=0; n<3; ++n){
+	    stresstensor_abc.elem(p,q) += 
+	        Bravaismatrix_inv.elem(p,m)
+	      * Bravaismatrix_inv.elem(q,n)
+	      * stresstensor_xyz.elem(m,n);
+	  }
+	}
+      }
+    }
+  }
 
   //std::cout << "Stress tensor (skew system): " << stresstensor_abc << std::endl;
   //    printf("  Px Py Pz = %20.10f  %20.10f  %20.10f\n", Px, Py, Pz);
@@ -753,7 +781,7 @@ void MDSystem::relax(void){
 	  //std::cout << " " << k;
 	  d = abs(pos[i][k]);
 	  //d = (d < eps) ? t : t*d;
-	  d = (d < eps) ? t*eps : t*d;
+	  d = (d < t) ? t : t*d;
 
 	  //std::cout << " backstep ";
 	  pos[i][k] = pos_bak[k] - d;
@@ -764,6 +792,7 @@ void MDSystem::relax(void){
 	  Ep2 = calc_potential_energy();
 	  //std::cout << " done ";
 	  frc_num[i][k] = - (Ep2 - Ep1)/(2.0*d);
+
 	  //std::cout << " reset ";
 	  pos[i][k] = pos_bak[k]; // reset
 	}
@@ -778,17 +807,60 @@ void MDSystem::relax(void){
     /* ######################################################################
        Get numerical pressure
        ###################################################################### */
+
     if (specs_common.debug_pressure){
+      // Only works for Cartesian boxes !!!
+      // P = - dE/dV = - (E(V+dV) - E(V)   )/(V2-V1) = - (E(V+dV) - E(V))/dV
+      // P = - dE/dV = - (E(V+dV) - E(V-dV))/(2*dV)
+
+      std::cout << "Debugging pressure" << std::endl;
       
       Vector< Vector3<double> > pos_bak = pos;
       
       double bx=boxlen[0], by=boxlen[1], bz=boxlen[2];
-      double t = pow(eps, 1.0/3.0);
-      double d,dx,dy,dz,rx,ry,rz;
-      double V0,Ep1,Ep2;
+      double t = pow(eps, 1.0/3.0), s = t / 10.0;
+      double d,rd, V0,V1,V2,Ep1,Ep2, displ, bd;
+      double dx, dy, dz, rx, ry, rz;
 
       V0 = bx*by*bz;
-      double s = t / (3.0);
+
+      for (int id=0; id<3; ++id){
+	if      (id==0){ displ = s * bx; bd = bx; }
+	else if (id==1){ displ = s * by; bd = by; }
+	else           { displ = s * bz; bd = bz; }
+
+	// Point 1:
+	boxlen[id] += displ;
+	V1 = boxlen[0]*boxlen[1]*boxlen[2];
+	// Fractional change:
+	rd = boxlen[id] / bd;
+	for (i=0; i<nat; ++i) pos[i][id] *= rd;
+	Ep1 = calc_potential_energy();
+
+	// Reset:
+	boxlen[id] = bd;
+	for (i=0; i<nat; ++i) pos[i][id] = pos_bak[i][id];
+
+	// Point 2:
+	boxlen[id] -= displ;
+	V2 = boxlen[0]*boxlen[1]*boxlen[2];
+	// Fractional change:
+	rd = boxlen[id] / bd;
+	for (i=0; i<nat; ++i) pos[i][id] *= rd;
+	Ep2 = calc_potential_energy();
+
+	// Reset:
+	boxlen[id] = bd;
+	for (i=0; i<nat; ++i) pos[i][id] = pos_bak[i][id];
+
+	double td = - (Ep1 - Ep2)/(V1-V2) * eVA3_to_GPa;
+	if      (id==0) Px_num = td;
+	else if (id==1) Py_num = td;
+	else            Pz_num = td;
+
+      }
+
+      // Total pressure:
       dx = s * bx;
       dy = s * by;
       dz = s * bz;
@@ -797,13 +869,14 @@ void MDSystem::relax(void){
       boxlen[0] += dx;
       boxlen[1] += dy;
       boxlen[2] += dz;
+      V1 = boxlen[0]*boxlen[1]*boxlen[2];
       // Fractional change:
       rx = boxlen[0] / bx;
       ry = boxlen[1] / by;
       rz = boxlen[2] / bz;
-#pragma omp parallel for schedule(static)
+
       for (i=0; i<nat; ++i){
-	pos[i][0] *= rz;
+	pos[i][0] *= rx;
 	pos[i][1] *= ry;
 	pos[i][2] *= rz;
       }
@@ -813,7 +886,6 @@ void MDSystem::relax(void){
       boxlen[0] = bx;
       boxlen[1] = by;
       boxlen[2] = bz;
-#pragma omp parallel for schedule(static)
       for (i=0; i<nat; ++i){
 	pos[i][0] = pos_bak[i][0];
 	pos[i][1] = pos_bak[i][1];
@@ -824,11 +896,12 @@ void MDSystem::relax(void){
       boxlen[0] -= dx;
       boxlen[1] -= dy;
       boxlen[2] -= dz;
+      V2 = boxlen[0]*boxlen[1]*boxlen[2];
       // Fractional change:
       rx = boxlen[0] / bx;
       ry = boxlen[1] / by;
       rz = boxlen[2] / bz;
-#pragma omp parallel for schedule(static)
+
       for (i=0; i<nat; ++i){
 	pos[i][0] *= rx;
 	pos[i][1] *= ry;
@@ -840,15 +913,17 @@ void MDSystem::relax(void){
       boxlen[0] = bx;
       boxlen[1] = by;
       boxlen[2] = bz;
-#pragma omp parallel for schedule(static)
       for (i=0; i<nat; ++i){
 	pos[i][0] = pos_bak[i][0];
 	pos[i][1] = pos_bak[i][1];
 	pos[i][2] = pos_bak[i][2];
       }
-      
-      std::cout << "Numerical pressure is " << - (Ep1 - Ep2)/(2.0*V0*3*s) * eVA3_to_GPa << std::endl;
+
+      Ptot_num = - (Ep1 - Ep2)/(V1-V2) * eVA3_to_GPa;
+
     }
+
+
 
 
     //std::cout << "made it here 05.5" << std::endl;
@@ -860,6 +935,28 @@ void MDSystem::relax(void){
     get_pot_force  = true;
     get_pot_energy = true;
     get_forces_and_energies_common();
+
+
+
+    if (specs_common.debug_forces && ! specs_common.debug_pressure) break;
+
+    if (specs_common.debug_pressure){
+      get_virials(nat, W);
+
+      Px_ana = stresstensor_xyz.elem(0,0);
+      Py_ana = stresstensor_xyz.elem(1,1);
+      Pz_ana = stresstensor_xyz.elem(2,2);
+      Ptot_ana = 1.0/3.0 * (Px_ana + Py_ana + Pz_ana);
+      stresstensor_xyz_ana = stresstensor_xyz;
+
+      break;
+    }
+
+
+
+
+
+
 
     /*
       std::cout << "After calc_forces...():" << std::endl;
@@ -875,7 +972,7 @@ void MDSystem::relax(void){
     // printf("After energy calculation: Box now: box1 box2 box3  %10.5e %10.5e %10.5e\n", box[1], box[2], box[3]); fflush(stdout);
 
 
-    if (specs_common.debug_forces) break;
+
 
 
     /* ----------------------------------------------------------------------
@@ -1074,17 +1171,10 @@ void MDSystem::relax(void){
     //  printf("P_vir(GPa): %20.10f  %20.10f  %20.10f\n", W_x/ V * 160.21773, W_y/ V * 160.21773, W_z/ V * 160.21773);
 
 
-    /* Calculate Cartesian pressure components: */
-    Px = stresstensor_xyz.elem(0,0) = W.elem(0,0);  /* Unit now: GPa. */
-    Py = stresstensor_xyz.elem(1,1) = W.elem(1,1);  /* Unit now: GPa. */
-    Pz = stresstensor_xyz.elem(2,2) = W.elem(2,2);  /* Unit now: GPa. */
-    P = 1.0/3.0 * (Px + Py + Pz);
 
-    if (specs_common.debug_pressure){
-      std::cout << "Virial matrix: " << W << std::endl;
-    }
 
     /* Get pressure components in skewed system: */
+    /*
     double td0,td1,td2;
     double te0,te1,te2;
 
@@ -1117,6 +1207,36 @@ void MDSystem::relax(void){
     stresstensor_abc.elem(0,0) = te0;
     stresstensor_abc.elem(1,1) = te1;
     stresstensor_abc.elem(2,2) = te2;
+    */
+
+
+
+    /* Get pressure components in skewed system: */
+    // Default to Cartesian box:    
+    for (int p=0; p<3; ++p){
+      for (int q=0; q<3; ++q){
+	stresstensor_xyz.elem(p,q) = W.elem(p,q);
+	stresstensor_abc.elem(p,q) = stresstensor_xyz.elem(p,q);
+      }
+    }
+    if (! isCart){
+      for (int p=0; p<3; ++p){
+	for (int q=0; q<3; ++q){
+	  stresstensor_abc.elem(p,q) = 0.0;
+
+	  for (int m=0; m<3; ++m){
+	    for (int n=0; n<3; ++n){
+	      stresstensor_abc.elem(p,q) += 
+	        Bravaismatrix_inv.elem(p,m) * Bravaismatrix_inv.elem(q,n)
+		* stresstensor_xyz.elem(m,n);
+	    }
+	  }
+
+	}
+      }
+    }
+
+
 
     //std::cout << "Stress tensor (skew system): " << stresstensor_abc << std::endl;
     //    printf("  Px Py Pz = %20.10f  %20.10f  %20.10f\n", Px, Py, Pz);
@@ -1297,6 +1417,7 @@ void MDSystem::relax(void){
 	//  fflush(stdout);
   
 	/* Get pressure components in skewed system: */
+	/*
 	double td0,td1,td2;
 	double te0,te1,te2;
 
@@ -1329,6 +1450,31 @@ void MDSystem::relax(void){
 	stresstensor_abc.elem(0,0) = te0;
 	stresstensor_abc.elem(1,1) = te1;
 	stresstensor_abc.elem(2,2) = te2;
+	*/
+
+	/* Get pressure components in skewed system: */
+	// Default to Cartesian box:    
+	for (int p=0; p<3; ++p){
+	  for (int q=0; q<3; ++q){
+	    stresstensor_xyz.elem(p,q) = W.elem(p,q);
+	    stresstensor_abc.elem(p,q) = stresstensor_xyz.elem(p,q);
+	  }
+	}
+	if (! isCart){
+	  for (int p=0; p<3; ++p){
+	    for (int q=0; q<3; ++q){
+	      stresstensor_abc.elem(p,q) = 0.0;
+	      for (int m=0; m<3; ++m){
+		for (int n=0; n<3; ++n){
+		  stresstensor_abc.elem(p,q) += 
+		    Bravaismatrix_inv.elem(p,m)
+		    * Bravaismatrix_inv.elem(q,n)
+		    * stresstensor_xyz.elem(m,n);
+		}
+	      }
+	    }
+	  }
+	}
 	
 	/*
 	  std::cout << "After control_P():" << std::endl;
@@ -1602,9 +1748,31 @@ void MDSystem::relax(void){
     }
     fout.close();
 
+    if ( ! specs_common.debug_pressure) return;
+  }
 
+
+  if (specs_common.debug_pressure){
+    double td1;
+    std::string dumpfile = "debugpressure-" + name + ".out";
+    std::ofstream fout;
+
+    fout.open(dumpfile.c_str());
+
+    fout << "Cartesian analytical pressure:" << std::endl;
+    fout << "  Virial matrix: " << stresstensor_xyz_ana << std::endl;
+    fout << format("  Px Py Pz Ptot  =  %15.10f %15.10f %15.10f %15.10f")
+      % Px_ana % Py_ana % Pz_ana % Ptot_ana << std::endl;
+    fout << "Numerical pressure by varying box directions:" << std::endl;
+    fout << format("  Px Py Pz Ptot  =  %15.10f %15.10f %15.10f %15.10f")
+      % Px_num % Py_num % Pz_num % Ptot_num << std::endl;
+
+    fout.close();
+    
     return;
   }
+
+
 
 
   /* -------------------------------------------------------------
@@ -1661,25 +1829,45 @@ void MDSystem::get_virials(int nat, MatrixSq3<double> & W,
   mu[1]=muy;
   mu[2]=muz;
 
+
+  /*
+  for (i=0; i<nat; ++i){
+    for (v1=0; v1<3; ++v1){
+      for (v2=0; v2<3; ++v2){
+	virials[i].elem(v1,v2) =
+	  0.5 * (frc[i][v1] * pos[i][v2]
+		 + frc[i][v2] * pos[i][v1]);
+	// eV/A * A = eV
+      }
+    }
+  }
+  */
+
   // Virials: W_ij = sum frc_i * dpos_j
   for (v1=0; v1<3; ++v1){
     for (v2=0; v2<3; ++v2){
       W.elem(v1,v2) = 0.0;
+
       for (i=0; i<nat; ++i){
 	W.elem(v1,v2) += virials[i].elem(v1,v2) * mu[v2];
       }
+
     }
   }
   
   calc_volume();
 
   // Volume and unit transformation factors:
+  // eV * 1/A^3 = eV/A^3
   td = (1.0/vol) * eVA3_to_GPa;
   for (v1=0; v1<3; ++v1){
     for (v2=0; v2<3; ++v2){
       W.elem(v1,v2) *= td;
     }
   }
+
+  stresstensor_xyz = W;
+
       
   return;
 }

@@ -122,10 +122,12 @@ public:
   // List of force routines!
   // **********************************************
   double force_EAM();
+
   double force_ABOP();
-
-
-
+  void   force_ABOP_perriot_K(    int i, int j, double & Kij, Vector3<double> dposij);
+  void   force_ABOP_perriot_K_frc(int i, int j, double & Kij, Vector3<double> dposij, double pref);
+  
+  
   void relax(void);
 
   void get_virials(int nat, MatrixSq3<double> & W,

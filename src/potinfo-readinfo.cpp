@@ -457,7 +457,16 @@ void PotentialInformation::read_info(string filename){
 	if (ts=="option"){
 	  // ********************************************************
 	  strbuf.str(args[4]); strbuf >> tso;  strbuf.clear();
-	  strbuf.str(args[4]); strbuf >> tsoi; strbuf.clear();
+	  strbuf.str(args[5]); strbuf >> tsoi; strbuf.clear();
+
+	  if (tso=="rcut_fun"){
+	    if (tsoi=="tersoff"){
+	      pot_ABOP[ivec].rcut_fun = "tersoff";
+	    }
+	    else if (tsoi=="perriot"){
+	      pot_ABOP[ivec].rcut_fun = "perriot";
+	    }
+	  }
 
 	  /*
 	  if (tso=="albepot")
@@ -472,8 +481,16 @@ void PotentialInformation::read_info(string filename){
 	  strbuf.str(args[4]); strbuf >> td;  strbuf.clear();
 
 	  int ip = pot_ABOP[ivec].parname2idx(ts);
-	  if (ip>=0 && ip<=12)
+	  if (ip>=0 && ip<=pot_ABOP[ivec].maxindex)
 	    pot_ABOP[ivec].parval[ip] = td;
+
+	  if      (ts=="D" || ts=="R"){
+	    pot_ABOP[ivec].rcut_fun = "tersoff";
+	  }
+	  else if (ts=="pm" || ts=="pn" || ts=="prcut" ||
+		   ts=="prmin" || ts =="prmax" ){
+	    pot_ABOP[ivec].rcut_fun = "perriot";
+	  }
 
 	  
 	}
@@ -555,6 +572,10 @@ void PotentialInformation::read_info(string filename){
      ############################################################################ */
 
 
+  std::cout << "#########################################################################" << std::endl;
+  std::cout << "Debugging ABOP cutoff parameters ..." << std::endl;
+  std::cout << "#########################################################################" << std::endl;
+
   for (int i=0; i<elem.nelem(); i++){
     for (int j=i; j<elem.nelem(); j++){
       std::string s1 = elem.idx2name(i);
@@ -562,6 +583,20 @@ void PotentialInformation::read_info(string filename){
 
       if (basepot(s1,s2)=="none")
 	aborterror("Interaction type for " + s1 + "-" + s2 + " is unknown. Exiting.");
+
+
+      if (basepot(s1,s2)=="ABOP"){
+	ivec = basepot_vecidx(s1,s2);
+
+	if      (pot_ABOP[ivec].rcut_fun=="tersoff"){
+	  std::cout << "Note: Using Tersoff cutoff for " << s1 << "-" << s2 << "." << std::endl;
+	}
+	else if (pot_ABOP[ivec].rcut_fun=="perriot"){
+	  std::cout << "Note: Using Perriot cutoff for " << s1 << "-" << s2 << "." << std::endl;
+	}
+	else
+	  aborterror("ERROR: No cutoff given for " + s1 + "-" + s2 + ". Exiting.");
+      }
 
 
     }
@@ -585,7 +620,11 @@ void PotentialInformation::read_info(string filename){
       std::cout << "Using abop_2mu(" << s1 << "," << s2 << ")?: " << use_abop_2mu.elem(i1, i2) << std::endl;
     }
   }
-  std::cout << "-------------------------------------------------------------------------" << std::endl;  
+
+  std::cout << "#########################################################################" << std::endl;
+  std::cout << "Debugging ABOP alpha/omega/2mu parameter clashes ..." << std::endl;
+  std::cout << "#########################################################################" << std::endl;
+
 
   for (int i1=0; i1<elem.nelem(); i1++){
     for (int i3=0; i3<elem.nelem(); i3++){
@@ -628,12 +667,12 @@ void PotentialInformation::read_info(string filename){
 
     }
   }
+
+
+  std::cout << "#########################################################################" << std::endl;
+  std::cout << "Read-in of general information about potentials completed." << std::endl;
   std::cout << "#########################################################################" << std::endl;
 
-
-  
-
-  std::cout << "Read-in of general information about potentials completed." << std::endl;
 
   return;
 }
@@ -878,11 +917,10 @@ void PotentialInformationFit::read_info_fit(string filename){
 
 	// Allocate lower/upper limits of fittable potentials:
 	if (potname=="ABOP"){
-
 	  int ip = pot_ABOP[ivec].parname2idx(ts);
-
+	  
 	  if (args[0]=="min"){
-	    if (ip>=0 && ip<=12) pot_ABOP[ivec].parmin[ip] = td;
+	    if (ip>=0 && ip<=pot_ABOP[ivec].maxindex) pot_ABOP[ivec].parmin[ip] = td;
 	    
 	    /*
 	    if      (ts=="D0") pot_ABOP[ivec].parmin->D0 = td;
@@ -898,7 +936,7 @@ void PotentialInformationFit::read_info_fit(string filename){
 	    */
 	  }
 	  else if (args[0]=="max"){
-	    if (ip>=0 && ip<=12) pot_ABOP[ivec].parmax[ip] = td;
+	    if (ip>=0 && ip<=pot_ABOP[ivec].maxindex) pot_ABOP[ivec].parmax[ip] = td;
 
 	    /*
 	    if      (ts=="D0") pot_ABOP[ivec].parmax->D0 = td;
@@ -1020,6 +1058,29 @@ void PotentialInformationFit::read_info_fit(string filename){
 
 	if (basepot(s1,s2)=="ABOP"){
 	  int iv = basepot_vecidx(s1,s2);
+
+#if 0
+	  int i1,i2,i3;
+	  if (pot_ABOP[iv].use_cutoff_tersoff){
+	    // Disable all other cutoff parameters:
+	    // Perriot:
+	    i1 = pot_ABOP[iv].parname2idx("n");
+	    i2 = pot_ABOP[iv].parname2idx("m");
+	    i3 = pot_ABOP[iv].parname2idx("rc");
+	    pot_ABOP[iv].parmin[i1]=1; pot_ABOP[iv].parmax[i1]=1;
+	    pot_ABOP[iv].parmin[i2]=1; pot_ABOP[iv].parmax[i2]=1;
+	    pot_ABOP[iv].parmin[i3]=1; pot_ABOP[iv].parmax[i3]=1;
+	  }
+	  if (pot_ABOP[iv].use_cutoff_perriot){
+	    // Disable all other cutoff parameters:
+	    // Tersoff:
+	    i1 = pot_ABOP[iv].parname2idx("D");
+	    i2 = pot_ABOP[iv].parname2idx("R");
+	    pot_ABOP[iv].parmin[i1]=1; pot_ABOP[iv].parmax[i1]=1;
+	    pot_ABOP[iv].parmin[i2]=1; pot_ABOP[iv].parmax[i2]=1;
+	  }
+#endif
+
 
 	  for (int k=0; k<pot_ABOP[iv].parval.size(); ++k){
 
@@ -1156,8 +1217,9 @@ void PotentialInformationFit::read_info_fit(string filename){
   }
 
   std::cout << "##############################################################################" << std::endl;
-
   std::cout << "Read-in of information about fittable potentials completed." << std::endl;
+  std::cout << "##############################################################################" << std::endl;
+
 
 }
 
