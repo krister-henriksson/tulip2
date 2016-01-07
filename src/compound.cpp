@@ -546,6 +546,8 @@ void CompoundStructure::read_structure(Elements & el){
 	       filename + " for compound " +
 	       name + ". Exiting.");
   
+  std::cout << "Opened file " << filename << std::endl;
+
 
   int iline = 1;
   while (true){
@@ -554,6 +556,7 @@ void CompoundStructure::read_structure(Elements & el){
     ns = utils::get_substrings( line, args, "\t :,()[]=");
     // cout << line << endl;
 
+    //std::cout << "iline " << iline << std::endl;
 
 
     // iline = 1
@@ -637,6 +640,8 @@ void CompoundStructure::read_structure(Elements & el){
     if (iline >= 8 && iline < 8+nbasis){
       i = iline - 8;
 
+      //std::cout << "iline " << iline << " and i " << i << std::endl;
+
       if (ns==0)
 	aborterror("ERROR: Compound " + name + ": File ended prematurely when scanning "
 		   "for basis vector " + tostring(i) + ". Exiting.");
@@ -657,12 +662,12 @@ void CompoundStructure::read_structure(Elements & el){
       // *********************************************************************************************
       // CONSTRAINTS !!!
       std::string opt;
-      int ioa=4;
+      int ioa = 4;
       bool has_constr = false, is_fixed = false;
       Vector<double> freedir(0), freeplane(0);
 
       while (true){
-	if (ioa>=ns) break;
+	if (ns <= ioa) break;
 
 	strbuf.str(args[ioa]); strbuf >> opt; strbuf.clear();
 	if (opt=="fix"){
@@ -727,6 +732,8 @@ void CompoundStructure::read_structure(Elements & el){
 	  freeplane[1]=gy*norm;
 	  freeplane[2]=gz*norm;
 	}
+	else
+	  ioa++;
       }
 
       if (is_fixed==true) basis_is_fixed[i] = true;
@@ -770,6 +777,8 @@ void CompoundStructure::read_structure(Elements & el){
   fp.close();
   fp.clear();
 
+
+  std::cout << "Done. Closed file " << filename << std::endl;
 
   basis_types.resize(nbasis);
   for (i=0; i<nbasis; ++i){
