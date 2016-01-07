@@ -454,50 +454,66 @@ void PotentialInformation::read_info(string filename){
 	pot_ABOP[ivec].elemname1 = s1;
 	pot_ABOP[ivec].elemname2 = s2;
 
-	if (ts=="option"){
+	/*
+	  if (ts=="option"){
 	  // ********************************************************
 	  strbuf.str(args[4]); strbuf >> tso;  strbuf.clear();
 	  strbuf.str(args[5]); strbuf >> tsoi; strbuf.clear();
-
+	  
 	  if (tso=="rcut_fun"){
-	    if (tsoi=="tersoff"){
-	      pot_ABOP[ivec].rcut_fun = "tersoff";
-	    }
-	    else if (tsoi=="perriot"){
-	      pot_ABOP[ivec].rcut_fun = "perriot";
-	    }
+	  if (tsoi=="tersoff"){
+	  pot_ABOP[ivec].rcut_fun = "tersoff"; // detected
 	  }
-
-	  /*
+	  else if (tsoi=="perriot"){
+	  pot_ABOP[ivec].rcut_fun = "perriot";
+	  }
+	  }
+	  if (tso=="rcut_scr"){
+	  if (tsoi=="perriot"){
+	  pot_ABOP[ivec].rcut_scr = "perriot";
+	  pot_ABOP[ivec].use_screening = true;
+	  }
+	  }
+	*/
+	
+	/*
 	  if (tso=="albepot")
-	    pot_ABOP[ivec].albepot = get_boolean_choice(tsoi);
+	  pot_ABOP[ivec].albepot = get_boolean_choice(tsoi);
 	  else if (tso=="exponentone")
-	    pot_ABOP[ivec].exponentone = get_boolean_choice(tsoi);
-	  */
+	  pot_ABOP[ivec].exponentone = get_boolean_choice(tsoi);
+	*/
 
+	// ********************************************************
+
+	if (ts=="cutscr"){
+	  std::string na, mo;
+	  strbuf.str(args[4]); strbuf >> na;  strbuf.clear();
+	  mo="none";
+	  if (ns>5) strbuf.str(args[5]); strbuf >> mo;  strbuf.clear();
+	  pot_ABOP[ivec].rcs.set_name_mode(na,mo);
 	}
 	else {
-	  // ********************************************************
 	  strbuf.str(args[4]); strbuf >> td;  strbuf.clear();
-
+	  pot_ABOP[ivec].set_parval(ts, td);
+	  //std::cout << "setting parameter " << s1 << "-" << s2 << " " << ts << " value " << args[0] << " to value " << td << std::endl;
+	}
+	/*
 	  int ip = pot_ABOP[ivec].parname2idx(ts);
 	  if (ip>=0 && ip<=pot_ABOP[ivec].maxindex)
-	    pot_ABOP[ivec].parval[ip] = td;
-
-	  if      (ts=="D" || ts=="R"){
-	    pot_ABOP[ivec].rcut_fun = "tersoff";
-	  }
-	  else if (ts=="pm" || ts=="pn" || ts=="prcut" ||
-		   ts=="prmin" || ts =="prmax" ){
-	    pot_ABOP[ivec].rcut_fun = "perriot";
-	  }
-
+	  pot_ABOP[ivec].parval[ip] = td;
 	  
-	}
-
-
+	  if      (ts=="D" || ts=="R"){
+	  pot_ABOP[ivec].rcut_fun = "tersoff";
+	  }
+	  else if (ts=="pm" || ts=="pn" || ts=="prcut"){
+	  pot_ABOP[ivec].rcut_scr = "perriot";
+	  }
+	  else if (ts=="prmin" || ts =="prmax" ){
+	  pot_ABOP[ivec].rcut_fun = "perriot";
+	  }
+	*/
+	
       }
-      
     }
     else if (args[0]=="abop_alpha"){
       strbuf.str(args[1]); strbuf >> ts1; strbuf.clear();
@@ -588,16 +604,64 @@ void PotentialInformation::read_info(string filename){
       if (basepot(s1,s2)=="ABOP"){
 	ivec = basepot_vecidx(s1,s2);
 
-	if      (pot_ABOP[ivec].rcut_fun=="tersoff"){
-	  std::cout << "Note: Using Tersoff cutoff for " << s1 << "-" << s2 << "." << std::endl;
-	}
-	else if (pot_ABOP[ivec].rcut_fun=="perriot"){
-	  std::cout << "Note: Using Perriot cutoff for " << s1 << "-" << s2 << "." << std::endl;
-	}
-	else
-	  aborterror("ERROR: No cutoff given for " + s1 + "-" + s2 + ". Exiting.");
-      }
+	if (pot_ABOP[ivec].rcs.name=="none" && pot_ABOP[ivec].rcs.mode=="none")
+	  aborterror("ERROR: Cutoff/Screening name and mode have not been set for "
+		     + s1 + "-" + s2 + "! Use the 'cutscr' parameter "
+		     "before any other parameter such as 'R' which relates to the cutoff/screening. The "
+		     "arguments to 'cutscr' is two strings, with name and mode, respectively. Exiting.");
 
+	std::cout << "" << s1 << "-" << s2 << ": Using " << pot_ABOP[ivec].rcs.name << " "
+		  << pot_ABOP[ivec].rcs.mode << std::endl;
+
+
+
+	/*
+	// Update settings due to read-in information:
+	if (pot_ABOP[ivec].rcut_fun == "tersoff" && pot_ABOP[ivec].rcut_scr == "none"){
+	pot_ABOP[ivec].use_cutoff_only = true;
+	pot_ABOP[ivec].use_screening = false;
+	}
+	if (pot_ABOP[ivec].rcut_fun == "perriot" && pot_ABOP[ivec].rcut_scr == "none"){
+	pot_ABOP[ivec].use_cutoff_only = true;
+	pot_ABOP[ivec].use_screening = false;
+	}
+	if (pot_ABOP[ivec].rcut_fun == "none" && pot_ABOP[ivec].rcut_scr == "perriot"){
+	pot_ABOP[ivec].use_cutoff_only = false;
+	pot_ABOP[ivec].use_screening = true;
+	}
+	if (pot_ABOP[ivec].rcut_fun == "perriot" && pot_ABOP[ivec].rcut_scr == "perriot"){
+	pot_ABOP[ivec].rcut_fun = "none";
+	pot_ABOP[ivec].use_cutoff_only = false;
+	pot_ABOP[ivec].use_screening = true;
+	}
+
+
+	// Test possible combinations resulting from read-in information:
+	if      (pot_ABOP[ivec].rcut_fun == "none" &&
+	pot_ABOP[ivec].rcut_scr == "none")
+	aborterror("ERROR: Neither cutoff nor screening given for " + s1 + "-" + s2 + ". Exiting.");
+	if  (pot_ABOP[ivec].rcut_fun == "tersoff" &&
+	pot_ABOP[ivec].rcut_scr != "none")
+	aborterror("ERROR: Both Tersoff cutoff and some screening used for " + s1 + "-" + s2 + ". Exiting.");
+	if (pot_ABOP[ivec].rcut_fun == "perriot" &&
+	pot_ABOP[ivec].rcut_scr != "none")
+	aborterror("ERROR: Both Perriot cutoff and some screening used for " + s1 + "-" + s2 + ". Exiting.");
+	if (pot_ABOP[ivec].rcut_fun != "none" &&
+	pot_ABOP[ivec].rcut_scr == "perriot")
+	aborterror("ERROR: Both Perriot cutoff and some screening used for " + s1 + "-" + s2 + ". Exiting.");
+	
+	std::cout << "Note: ABOP " << s1 << "-" << s2 << " rcut function is  " << pot_ABOP[ivec].rcut_fun << std::endl;
+	std::cout << "Note: ABOP " << s1 << "-" << s2 << " rcut screening is " << pot_ABOP[ivec].rcut_scr << std::endl;
+
+
+
+	if (pot_ABOP[ivec].use_cutoff_only && pot_ABOP[ivec].use_screening)
+	aborterror("ERROR: Both cutoff and screening given for " + s1 + "-" + s2 + ". Exiting.");
+	if (!pot_ABOP[ivec].use_cutoff_only && !pot_ABOP[ivec].use_screening)
+	aborterror("ERROR: Neither cutoff nor screening given for " + s1 + "-" + s2 + ". Exiting.");
+	*/
+
+      }
 
     }
   }
@@ -917,6 +981,13 @@ void PotentialInformationFit::read_info_fit(string filename){
 
 	// Allocate lower/upper limits of fittable potentials:
 	if (potname=="ABOP"){
+
+	  if (args[0]=="min" || args[0]=="max"){
+	    pot_ABOP[ivec].set_par_extr(ts, td, args[0]);
+	    std::cout << "setting parameter " << s1 << "-" << s2 << " " << ts << " value " << args[0] << " to value " << td << std::endl;
+	  }
+
+#if 0
 	  int ip = pot_ABOP[ivec].parname2idx(ts);
 	  
 	  if (args[0]=="min"){
@@ -951,7 +1022,7 @@ void PotentialInformationFit::read_info_fit(string filename){
 	    else if (ts=="D") pot_ABOP[ivec].parmax->D = td;
 	    */
 	  }
-
+#endif
 	}
       }
 
@@ -1060,39 +1131,59 @@ void PotentialInformationFit::read_info_fit(string filename){
 	  int iv = basepot_vecidx(s1,s2);
 
 #if 0
-	  int i1,i2,i3;
-	  if (pot_ABOP[iv].use_cutoff_tersoff){
-	    // Disable all other cutoff parameters:
-	    // Perriot:
-	    i1 = pot_ABOP[iv].parname2idx("n");
-	    i2 = pot_ABOP[iv].parname2idx("m");
-	    i3 = pot_ABOP[iv].parname2idx("rc");
+	  int i1,i2,i3,i4,i5;
+	  if (pot_ABOP[iv].rcut_fun=="tersoff"){
+	    // Disable all other cutoff/screening parameters:
+	    i1 = pot_ABOP[iv].parname2idx("pn");
+	    i2 = pot_ABOP[iv].parname2idx("pm");
+	    i3 = pot_ABOP[iv].parname2idx("prcut");
+	    i4 = pot_ABOP[iv].parname2idx("prmin");
+	    i5 = pot_ABOP[iv].parname2idx("prmax");
+	    pot_ABOP[iv].parmin[i1]=1; pot_ABOP[iv].parmax[i1]=1;
+	    pot_ABOP[iv].parmin[i2]=1; pot_ABOP[iv].parmax[i2]=1;
+	    pot_ABOP[iv].parmin[i3]=1; pot_ABOP[iv].parmax[i3]=1;
+	    pot_ABOP[iv].parmin[i4]=1; pot_ABOP[iv].parmax[i4]=1;
+	    pot_ABOP[iv].parmin[i5]=1; pot_ABOP[iv].parmax[i5]=1;
+	  }
+	  if (pot_ABOP[iv].rcut_fun=="perriot"){
+	    // Disable all other cutoff/screening parameters:
+	    i1 = pot_ABOP[iv].parname2idx("D");
+	    i2 = pot_ABOP[iv].parname2idx("R");
+	    pot_ABOP[iv].parmin[i1]=1; pot_ABOP[iv].parmax[i1]=1;
+	    pot_ABOP[iv].parmin[i2]=1; pot_ABOP[iv].parmax[i2]=1;
+	    i1 = pot_ABOP[iv].parname2idx("pn");
+	    i2 = pot_ABOP[iv].parname2idx("pm");
+	    i3 = pot_ABOP[iv].parname2idx("prcut");
 	    pot_ABOP[iv].parmin[i1]=1; pot_ABOP[iv].parmax[i1]=1;
 	    pot_ABOP[iv].parmin[i2]=1; pot_ABOP[iv].parmax[i2]=1;
 	    pot_ABOP[iv].parmin[i3]=1; pot_ABOP[iv].parmax[i3]=1;
 	  }
-	  if (pot_ABOP[iv].use_cutoff_perriot){
-	    // Disable all other cutoff parameters:
-	    // Tersoff:
+	  if (pot_ABOP[iv].rcut_scr=="perriot"){
+	    // Disable all other cutoff/screening parameters:
 	    i1 = pot_ABOP[iv].parname2idx("D");
 	    i2 = pot_ABOP[iv].parname2idx("R");
 	    pot_ABOP[iv].parmin[i1]=1; pot_ABOP[iv].parmax[i1]=1;
 	    pot_ABOP[iv].parmin[i2]=1; pot_ABOP[iv].parmax[i2]=1;
 	  }
+
 #endif
 
 
 	  for (int k=0; k<pot_ABOP[iv].parval.size(); ++k){
-
 	    set_param_type(pot_ABOP[iv].parmin[k], pot_ABOP[iv].parmax[k], pot_ABOP[iv].partype[k]);
-
 	    limcheck("ABOP", pot_ABOP[iv].parname[k], s1 + "-" + s2,
 		     pot_ABOP[iv].partype[k],
 		     pot_ABOP[iv].parmin[k], pot_ABOP[iv].parmax[k],
 		     pot_ABOP[iv].parval[k]);
-	    
-
 	  }
+	  for (int k=0; k<pot_ABOP[iv].rcs.parval.size(); ++k){
+	    set_param_type(pot_ABOP[iv].rcs.parmin[k], pot_ABOP[iv].rcs.parmax[k], pot_ABOP[iv].rcs.partype[k]);
+	    limcheck("ABOP", pot_ABOP[iv].rcs.parname[k], s1 + "-" + s2,
+		     pot_ABOP[iv].rcs.partype[k],
+		     pot_ABOP[iv].rcs.parmin[k], pot_ABOP[iv].rcs.parmax[k],
+		     pot_ABOP[iv].rcs.parval[k]);
+	  }
+	  
 
 	}
 

@@ -74,6 +74,7 @@ potpar( Fe, Fe ):gamma = 0.0115751
 potpar( Fe, Fe ):c = 1.2898716
 potpar( Fe, Fe ):d = 0.3413219
 potpar( Fe, Fe ):h = -0.26
+potpar( Fe, Fe ):cutscr = tersoff
 potpar( Fe, Fe ):R = 3.15
 potpar( Fe, Fe ):D = 0.2
 potpar( Fe, Fe ):bfermi = 10
@@ -88,6 +89,7 @@ potpar(Cr, Cr ):gamma = 0.02388562
 potpar(Cr, Cr ):c = 1.03288255
 potpar(Cr, Cr ):d = 0.13813230
 potpar(Cr, Cr ):h = -0.28569237
+potpar(Cr, Cr ):cutscr = tersoff
 potpar(Cr, Cr ):R = 3.2
 potpar(Cr, Cr ):D = 0.20
 potpar(Cr, Cr ):bfermi = 12
@@ -102,6 +104,7 @@ potpar(C, C ):gamma = 2.0813e-4
 potpar(C, C ):c = 330.0
 potpar(C, C ):d = 3.5
 potpar(C, C ):h = 1.0
+potpar(C, C ):cutscr = tersoff
 potpar(C, C ):R = 1.85
 potpar(C, C ):D = 0.15
 potpar(C, C ):bfermi = 8
@@ -116,6 +119,7 @@ potpar(Fe, C ):gamma = 0.07485571
 potpar(Fe, C ):c = 1.11674155
 potpar(Fe, C ):d = 0.94663188
 potpar(Fe, C ):h = -0.18665305
+potpar(Fe, C ):cutscr = tersoff
 potpar(Fe, C ):R = 2.6
 potpar(Fe, C ):D = 0.20
 potpar(Fe, C ):bfermi = 10
@@ -130,10 +134,11 @@ potpar( Cr, C ):gamma     =  0.00068830
 potpar( Cr, C ):c         =  3.93353757
 potpar( Cr, C ):d         =  0.17497204
 potpar( Cr, C ):h         =  -0.17850001
+potpar( Cr, C ):cutscr = tersoff
 potpar( Cr, C ):R         =  2.95
 potpar( Cr, C ):D         =  0.1
-potpar(Cr, C ):bfermi = 8
-potpar(Cr, C ):rfermi = 1.2
+potpar( Cr, C ):bfermi = 8
+potpar( Cr, C ):rfermi = 1.2
 
 
 
@@ -170,6 +175,8 @@ max: potpar( Fe, Cr ):d  =   1e5
      potpar( Fe, Cr ):h  = -0.69
 min: potpar( Fe, Cr ):h  =  1.0
 max: potpar( Fe, Cr ):h  =  1.0
+
+     potpar( Fe, Cr ):cutscr = tersoff
 
      potpar( Fe, Cr ):R  = 3.10
 min: potpar( Fe, Cr ):R  = 2.0

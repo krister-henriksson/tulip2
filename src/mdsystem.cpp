@@ -285,6 +285,8 @@ void MDSystem::transform_cell(const MatrixSq3<double> & alpha_cart,
     pf2 = 1.0;
   }
 
+  // Make sure box direction vectors are normalized and that the
+  // Bravais matrix is up to date:
   update_box_geometry();
 
   if (pos_int_tmp.size()!=nat) pos_int_tmp.resize(nat);
@@ -295,7 +297,7 @@ void MDSystem::transform_cell(const MatrixSq3<double> & alpha_cart,
 
   // Get internal positions, with box lenghts scaled away.
 
-#pragma omp parallel for schedule(static)
+  // #pragma omp parallel for schedule(static)
   for (i=0; i<nat; ++i){
 
     // Original:
@@ -350,7 +352,7 @@ void MDSystem::transform_cell(const MatrixSq3<double> & alpha_cart,
   update_box_geometry();
 
   // Get new atomic positions:
-#pragma omp parallel for schedule(static)
+  // #pragma omp parallel for schedule(static)
   for (i=0; i<nat; ++i){
 
     pos_int_tmp[i][0] *= boxlen[0];

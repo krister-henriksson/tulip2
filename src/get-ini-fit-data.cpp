@@ -123,25 +123,18 @@ void get_ini_fit_data(ParamPot & param,
 	    << " to make some initial fitting calculations ..." << std::endl;
 
   int ivecij = param.p_potinfo->basepot_vecidx(typei, typej);
-  double Rij = param.p_potinfo->pot_ABOP[ivecij].parval[8];
-  double Dij = param.p_potinfo->pot_ABOP[ivecij].parval[9];
-  double rcutij = Rij + Dij;
+  double rcutij = param.p_potinfo->pot_ABOP[ivecij].rcut();
   std::cout << "rcutij: " << rcutij << std::endl;
 
-
   int ivecii = param.p_potinfo->basepot_vecidx(typei, typei);
-  double Rii = param.p_potinfo->pot_ABOP[ivecii].parval[8];
-  double Dii = param.p_potinfo->pot_ABOP[ivecii].parval[9];
-  double rcutii = Rii + Dii;
+  double rcutii = param.p_potinfo->pot_ABOP[ivecii].rcut();
+  std::cout << "rcutii: " << rcutii << std::endl;
 
   int ivecjj = param.p_potinfo->basepot_vecidx(typej, typej);
-  double Rjj = param.p_potinfo->pot_ABOP[ivecjj].parval[8];
-  double Djj = param.p_potinfo->pot_ABOP[ivecjj].parval[9];
-  double rcutjj = Rjj + Djj;
+  double rcutjj = param.p_potinfo->pot_ABOP[ivecjj].rcut();
+  std::cout << "rcutjj: " << rcutjj << std::endl;
 
   std::string ts1, ts2;
-
-
 
   Vector<double>        Ep_list(sizeDX);
   Vector<int>           nat1(sizeDX);

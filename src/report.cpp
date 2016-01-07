@@ -161,7 +161,6 @@ void report_pot(PotentialInformationFit * p_potinfo,
 	    && (p_potinfo->pot_ABOP[j].partype[k] != PARAM_FIXED);
 	  if (!o1 && !o2) continue;
 
-
 	  if (o1 || o2){
 	    fout << "ABOP "
 		 << format("%2s-%2s: ") % s1 % s2
@@ -182,8 +181,44 @@ void report_pot(PotentialInformationFit * p_potinfo,
 		 << "   " <<  partypestring;
 	  }
 	  if (o1 || o2) fout << std::endl;
-	  
 	} // loop: k
+
+	for (k=0; k<p_potinfo->pot_ABOP[j].rcs.parname.size(); ++k){
+
+	  o1 = fixed_ones
+	    && 
+	    ( 
+	     ((p_potinfo->is_fittable(s1,s2)) && (p_potinfo->pot_ABOP[j].rcs.partype[k] == PARAM_FIXED))
+	     ||
+	     (!(p_potinfo->is_fittable(s1,s2)))
+	      );
+	  o2 = fittable_ones
+	    && (p_potinfo->is_fittable(s1,s2)) 
+	    && (p_potinfo->pot_ABOP[j].rcs.partype[k] != PARAM_FIXED);
+	  if (!o1 && !o2) continue;
+
+	  if (o1 || o2){
+	    fout << "ABOP "
+		 << format("%2s-%2s: ") % s1 % s2
+		 << format("%20s : ") % p_potinfo->pot_ABOP[j].rcs.parname[k];
+
+	    td = p_potinfo->pot_ABOP[j].rcs.parval[k];
+	    if (abs(td)<llim || abs(td)>ulim) fout << format(formate) % td;
+	    else                              fout << format(formatf) % td;
+	  }
+
+	  if (o2){
+	    partypestring="unknown";
+	    if      (p_potinfo->pot_ABOP[j].rcs.partype[k] == PARAM_FIXED) partypestring="FIXED parameter";
+	    else if (p_potinfo->pot_ABOP[j].rcs.partype[k] == PARAM_FREE_WITH_LIMITS) partypestring="CONSTRAINED parameter";
+	    else if (p_potinfo->pot_ABOP[j].rcs.partype[k] == PARAM_FREE) partypestring="FREE parameter";
+	    fout << "   min: " << format("%20.10e") % p_potinfo->pot_ABOP[j].rcs.parmin[k]
+		 << "   max: " << format("%20.10e") % p_potinfo->pot_ABOP[j].rcs.parmax[k]
+		 << "   " <<  partypestring;
+	  }
+	  if (o1 || o2) fout << std::endl;
+	} // loop: k
+
       } // ABOP
     } // loop: i2
   }

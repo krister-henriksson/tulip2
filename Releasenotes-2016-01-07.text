@@ -1,0 +1,21 @@
+
+
+Latest release, January 7, 2016.
+
+Most important changes:
+
+  1/5. The cutoff function/screening method handling has been cleaned up. New parameter
+'cutscr' taking one or two strings as arguments specifies method name and mode. All
+cutoff/screening parameters must follow after this parameter.
+
+  2/5. Pairwise potential parameters are now stored in local arrays (storage proportional
+to number of elements squared) inside the ABOP potential routine for much faster operation.
+
+  3/5. Debugging of pressure now works with non-Cartesian cells.
+
+  4/5. A bug in calculation of the volumes for isotropically strained cells in the
+calculation of the bulk module has been fixed. The bug affected non-Cartesian cells only.
+Elastic constants are not affected.
+
+  5/5. OpenMP options have been removed due to lack of debugging and optimization.
+

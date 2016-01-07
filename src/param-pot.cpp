@@ -90,9 +90,19 @@ void ParamPot::update_pot(){
       //if (! (*p_potinfo).is_fittable(s1,s2)) continue;
 
       if ((*p_potinfo).basepot(i1,i2) == "ABOP"){
+
 	//if ((*p_potinfo).basepot(s1,s2) == "ABOP"){
 	for (k=0; k<(*p_potinfo).pot_ABOP[j].partype.size(); ++k)
 	  if ((*p_potinfo).pot_ABOP[j].partype[k] != PARAM_FIXED) (*p_potinfo).pot_ABOP[j].parval[k] = X(ipar++);
+
+	for (k=0; k<(*p_potinfo).pot_ABOP[j].rcs.partype.size(); ++k)
+	  if ((*p_potinfo).pot_ABOP[j].rcs.partype[k] != PARAM_FIXED) (*p_potinfo).pot_ABOP[j].rcs.parval[k] = X(ipar++);
+
+
+
+
+
+
       }
     }
   }
@@ -196,6 +206,17 @@ void ParamPot::update_par(){
 	    ximin.push_back((*p_potinfo).pot_ABOP[j].parmin[k]);
 	    ximax.push_back((*p_potinfo).pot_ABOP[j].parmax[k]);
 	  }
+
+	for (k=0; k<(*p_potinfo).pot_ABOP[j].rcs.partype.size(); ++k)
+	  if ((*p_potinfo).pot_ABOP[j].rcs.partype[k] != PARAM_FIXED){
+	    ++ipar;
+	    xi.push_back(   (*p_potinfo).pot_ABOP[j].rcs.parval[k]);
+	    xitype.push_back( (*p_potinfo).pot_ABOP[j].rcs.partype[k] );
+	    ximin.push_back((*p_potinfo).pot_ABOP[j].rcs.parmin[k]);
+	    ximax.push_back((*p_potinfo).pot_ABOP[j].rcs.parmax[k]);
+	  }
+
+
 
       }
 

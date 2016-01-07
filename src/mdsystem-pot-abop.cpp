@@ -133,22 +133,87 @@ double MDSystem::force_ABOP(){
   bool pair_ij_tersoff;
   bool pair_ik_tersoff;
 
-  bool pair_ij_perriot;
-  bool pair_ik_perriot;
-  bool pair_jk_perriot;
-  bool pair_is_perriot;
-  bool pair_ks_perriot;
+  bool pair_ij_perriot_cut;
+  bool pair_ij_perriot_scr;
+  bool pair_ik_perriot_cut;
+  bool pair_ik_perriot_scr;
+  bool pair_jk_perriot_cut;
+  bool pair_jk_perriot_scr;
 
-  double Kij, Tijk_n_sum, Tijk, Xik, Xjk, dXik, dXjk, mik, mjk, nij, rjk, rcutjk;
-  double Kik, Tiks_n_sum, Tiks, Xis, Xks, dXis, dXks, mis, mks, nik, rks, rcutks;
-  Vector3<double> dTijk_ij,dTijk_ji, dTijk_ik,dTijk_ki, dTijk_jk,dTijk_kj;
-  Vector3<double> dTiks_ik,dTiks_ki, dTiks_is,dTiks_si, dTiks_ks,dTiks_sk;
-  double rminik, rmaxik;
-
-  Vector3<double> dKij_ij,dKij_ji, dKij_ik,dKij_ki, dKij_jk,dKij_kj;
-  Vector3<double> dKik_ik,dKik_ki, dKik_is,dKik_si, dKik_ks,dKik_sk;
+  double Kij, Kik;
+  double rminij, rmaxij, rminik, rmaxik;
 
 
+
+
+
+  int nelem = elem.nelem();
+  Matrix<double> rcut_all(nelem,nelem);
+  Matrix<CutoffScreeningPair> rcs_all(nelem,nelem);
+  Matrix<Potential_ABOPPair> abop_params_all(nelem,nelem);
+  Matrix<std::string> basepot_all(nelem,nelem);
+  Matrix<int> basepot_vecidx_all(nelem,nelem);
+  Matrix<int> use_reppot_all(nelem,nelem);
+  Matrix<int> reppot_vecidx_all(nelem,nelem);
+
+  for (int i=0; i<nelem; ++i){
+    for (int j=0; j<nelem; ++j){
+      ivecij = p_potinfo->basepot_vecidx(i,j);
+      basepot_vecidx_all.elem(i,j)=ivecij;
+      if (ivecij<0) rcut_all.elem(i,j)=0.0;
+
+      if (p_potinfo->basepot(i,j) != "ABOP") continue;
+      basepot_all.elem(i,j)="ABOP";
+
+      rcut_all.elem(i,j)=p_potinfo->pot_ABOP[ivecij].rcut();
+
+      if (p_potinfo->pot_ABOP[ivecij].rcs.name=="tersoff"
+	  &&
+	  p_potinfo->pot_ABOP[ivecij].rcs.mode=="cut"){
+	rcs_all.elem(i,j).tersoff = true;
+	rcs_all.elem(i,j).R    = p_potinfo->pot_ABOP[ivecij].get_parval("R");
+	rcs_all.elem(i,j).D    = p_potinfo->pot_ABOP[ivecij].get_parval("D");
+	rcs_all.elem(i,j).rcut = p_potinfo->pot_ABOP[ivecij].rcut();
+      }
+      else if (p_potinfo->pot_ABOP[ivecij].rcs.name=="perriot"
+	       &&
+	       p_potinfo->pot_ABOP[ivecij].rcs.mode=="cut"){
+	rcs_all.elem(i,j).perriot_cut = true;
+	rcs_all.elem(i,j).prmin = p_potinfo->pot_ABOP[ivecij].get_parval("prmin");
+	rcs_all.elem(i,j).prmax = p_potinfo->pot_ABOP[ivecij].get_parval("prmax");
+	rcs_all.elem(i,j).rcut  = p_potinfo->pot_ABOP[ivecij].rcut();
+      }
+      else if (p_potinfo->pot_ABOP[ivecij].rcs.name=="perriot"
+	       &&
+	       p_potinfo->pot_ABOP[ivecij].rcs.mode=="scr"){
+	rcs_all.elem(i,j).perriot_scr = true;
+
+	rcs_all.elem(i,j).pn    = p_potinfo->pot_ABOP[ivecij].get_parval("pn");
+	rcs_all.elem(i,j).pm    = p_potinfo->pot_ABOP[ivecij].get_parval("pm");
+	rcs_all.elem(i,j).rcut  = p_potinfo->pot_ABOP[ivecij].get_parval("prcut");
+	rcs_all.elem(i,j).prmin = p_potinfo->pot_ABOP[ivecij].get_parval("prmin");
+	rcs_all.elem(i,j).prmax = p_potinfo->pot_ABOP[ivecij].get_parval("prmax");
+      }
+      else
+	rcs_all.elem(i,j).rcut = 0.0;
+
+      abop_params_all.elem(i,j).D0 = p_potinfo->pot_ABOP[ivecij].get_parval("D0");
+      abop_params_all.elem(i,j).r0 = p_potinfo->pot_ABOP[ivecij].get_parval("r0");
+      abop_params_all.elem(i,j).beta = p_potinfo->pot_ABOP[ivecij].get_parval("beta");
+      abop_params_all.elem(i,j).S = p_potinfo->pot_ABOP[ivecij].get_parval("S");
+      abop_params_all.elem(i,j).p = p_potinfo->pot_ABOP[ivecij].get_parval("p");
+      abop_params_all.elem(i,j).gamma = p_potinfo->pot_ABOP[ivecij].get_parval("gamma");
+      abop_params_all.elem(i,j).c = p_potinfo->pot_ABOP[ivecij].get_parval("c");
+      abop_params_all.elem(i,j).d = p_potinfo->pot_ABOP[ivecij].get_parval("d");
+      abop_params_all.elem(i,j).h = p_potinfo->pot_ABOP[ivecij].get_parval("h");
+      abop_params_all.elem(i,j).rfermi = p_potinfo->pot_ABOP[ivecij].get_parval("rfermi");
+      abop_params_all.elem(i,j).bfermi = p_potinfo->pot_ABOP[ivecij].get_parval("bfermi");
+
+      use_reppot_all.elem(i,j) = p_potinfo->use_reppot(i,j);
+      reppot_vecidx_all.elem(i,j) = p_potinfo->reppot_vecidx(i,j);
+      
+    }
+  }
 
 
 
@@ -175,46 +240,45 @@ double MDSystem::force_ABOP(){
 
       typej = elem.name2idx( matter[j] );
      
-      if (! iac_pure_ABOP) if (p_potinfo->basepot(typei,typej) != "ABOP") continue;
+      if (! iac_pure_ABOP) if (basepot_all.elem(typei,typej) != "ABOP") continue;
 
       ivecij = se_ivecij;
-      if (! sys_single_elem) ivecij = p_potinfo->basepot_vecidx(typei, typej);
+      if (! sys_single_elem) ivecij = basepot_vecidx_all.elem(typei, typej);
       if (ivecij<0) continue;
-      
+
+      /* ############################ cutoff/screening ############################ */
+      pair_ij_tersoff     = rcs_all.elem(typei,typej).tersoff;
+      pair_ij_perriot_cut = rcs_all.elem(typei,typej).perriot_cut;
+      pair_ij_perriot_scr = rcs_all.elem(typei,typej).perriot_scr;
+      Rij = rcs_all.elem(typei,typej).R;
+      Dij = rcs_all.elem(typei,typej).D;
+      rminij = rcs_all.elem(typei,typej).prmin;
+      rmaxij = rcs_all.elem(typei,typej).prmax;
+      rcutij = rcs_all.elem(typei,typej).rcut;
+
       get_atom_distance_vec(pos[i], pos[j], dposij);
       rij = dposij.magn();
-
-      /* ############################ cutoff ############################ */
-      pair_ij_tersoff = false;
-      pair_ij_perriot = false;
-      if (p_potinfo->pot_ABOP[ivecij].rcut_fun=="tersoff"){
-	pair_ij_tersoff = true;
-	Rij = p_potinfo->pot_ABOP[ivecij].parname2val("R");
-	Dij = p_potinfo->pot_ABOP[ivecij].parname2val("D");
-	rcutij = p_potinfo->pot_ABOP[ivecij].rcut();
-      }
-      else if (p_potinfo->pot_ABOP[ivecij].rcut_fun=="perriot"){
-	pair_ij_perriot = true;
-	nij = p_potinfo->pot_ABOP[ivecij].parname2val("pn");
-	rcutij = p_potinfo->pot_ABOP[ivecij].parname2val("prcut");
-      }
       if (rij > rcutij) continue;
       /* ################################################################### */
 
-
-      D0ij   = p_potinfo->pot_ABOP[ivecij].parname2val("D0");
-      r0ij   = p_potinfo->pot_ABOP[ivecij].parname2val("r0");
-      betaij = p_potinfo->pot_ABOP[ivecij].parname2val("beta");
-      Sij    = p_potinfo->pot_ABOP[ivecij].parname2val("S");
+      
+      D0ij   = abop_params_all.elem(typei,typej).D0;
+      r0ij   = abop_params_all.elem(typei,typej).r0;
+      betaij = abop_params_all.elem(typei,typej).beta;
+      Sij    = abop_params_all.elem(typei,typej).S;
       /*
       std::cout << "D0ij " << D0ij << " r0ij " << r0ij << " betaij " << betaij << " Sij " << Sij
 	   << " gammaij " << gammaij << " cij " << cij << " dij " << dij << " hij " << hij
 	   << " Rij " << Rij << " Dij " << Dij << std::endl;
       */
 
-      /* ############################ cutoff ############################ */
+      /* ############################ cutoff/screening ############################ */
+      /* For the ij pair we can have either a cutoff function (Tersoff/Perriot) or
+	 a screening (Perriot).
+       */
+      fcij  = 1.0;
+      dfcij = 0.0;
       if (pair_ij_tersoff){
-
 	if (rij < Rij-Dij){
 	  fcij = 1.0;  dfcij = 0.0;
 	}
@@ -229,6 +293,26 @@ double MDSystem::force_ABOP(){
 	  dfcij = -0.5 * 0.5*PI/Dij * cos( td );
 	}
 
+      }
+      else if (pair_ij_perriot_cut){
+	if (rij < rminij){
+	  fcij  = 1.0;  dfcij = 0.0;
+	}
+	else if (rij > rmaxij){
+	  fcij  = 0.0;  dfcij = 0.0;
+	  continue;
+	}
+	else {
+	  double invdrc = 1.0/(rmaxij - rminij);
+	  double a = (rij - rminij) * invdrc;
+
+	  double aa = a*a;
+	  double aaa = a*aa;
+
+	  double td1 = 6*aa - 15*a + 10;
+	  fcij = 1.0 - aaa * td1;
+	  dfcij = ( -3*aa * td1 - aaa * (12*a - 15) ) * invdrc;
+	}
       }
       /* ################################################################### */
 
@@ -249,19 +333,19 @@ double MDSystem::force_ABOP(){
       // ################################################################
 
       if ( (  sys_single_elem && se_use_reppot) ||
-	   (! sys_single_elem && p_potinfo->use_reppot(typei, typej)) ){
+	   (! sys_single_elem && use_reppot_all.elem(typei, typej)) ){
 
 	ivec_reppot = se_ivec_reppot;
 	if (! sys_single_elem)
-	  ivec_reppot = p_potinfo->reppot_vecidx(typei, typej);
+	  ivec_reppot = reppot_vecidx_all.elem(typei, typej);
 	//ivec_reppot = p_potinfo->reppot_vecidx(s1,s2);
 	if (ivec_reppot<0) break;
 
 	Nr = p_potinfo->pot_Reppot[ivec_reppot].r_rep.size();
 	td = p_potinfo->pot_Reppot[ivec_reppot].r_rep[Nr-1];
 
-	bfermi = p_potinfo->pot_ABOP[ivecij].parname2val("bfermi");
-	rfermi = p_potinfo->pot_ABOP[ivecij].parname2val("rfermi");
+	bfermi = abop_params_all.elem(typei,typej).bfermi;
+	rfermi = abop_params_all.elem(typei,typej).rfermi;
 	//bfermi = p_potinfo->pot_Reppot[ivec_reppot].bfermi;
 	//rfermi = p_potinfo->pot_Reppot[ivec_reppot].rfermi;
 	  
@@ -318,11 +402,11 @@ double MDSystem::force_ABOP(){
     // Kij: prefactor = - 0.5 * (VRij - bij * VAij) ;
     // Kik: prefactor = threebodyfactor * fcik * gijk * F1 * F2 ;
 
-
-      if (pair_ij_perriot)
-	force_ABOP_perriot_K(i, j, Kij, dposij );
-
-
+      
+      Kij=1.0;
+      if (pair_ij_perriot_scr)
+	force_ABOP_perriot_K(i, j, Kij, dposij, rcut_all, rcs_all, basepot_all, basepot_vecidx_all);
+      
 
 
       // ################################################################
@@ -344,47 +428,45 @@ double MDSystem::force_ABOP(){
 	typek = elem.name2idx( matter[k] );
 	//s3 = matter[k]; //p_potinfo->elem.idx2name(typek);
 
-	if (! iac_pure_ABOP) if (p_potinfo->basepot(typei, typek) != "ABOP") continue;
+	if (! iac_pure_ABOP) if (basepot_all.elem(typei, typek) != "ABOP") continue;
 	//if (p_potinfo->basepot(s1,s3) != "ABOP") continue;
 
 	ivecik = se_ivecij;
-	if (! sys_single_elem) ivecik = p_potinfo->basepot_vecidx(typei, typek);
+	if (! sys_single_elem) ivecik = basepot_vecidx_all.elem(typei, typek);
 	//ivecik = p_potinfo->basepot_vecidx(s1,s3);
 	if (ivecik<0) continue;
 	
+
+	/* ############################ cutoff/screening ############################ */
+	pair_ik_tersoff     = rcs_all.elem(typei,typek).tersoff;
+	pair_ik_perriot_cut = rcs_all.elem(typei,typek).perriot_cut;
+	pair_ik_perriot_scr = rcs_all.elem(typei,typek).perriot_scr;
+	Rik = rcs_all.elem(typei,typek).R;
+	Dik = rcs_all.elem(typei,typek).D;
+	rminik = rcs_all.elem(typei,typek).prmin;
+	rmaxik = rcs_all.elem(typei,typek).prmax;
+	rcutik = rcs_all.elem(typei,typek).rcut;
+	/* ################################################################### */
 	get_atom_distance_vec(pos[i], pos[k], dposik);
 	rik = dposik.magn();
-
-	r0ik = p_potinfo->pot_ABOP[ivecik].parname2val("r0");
-
-	/* ############################ cutoff ############################ */
-	pair_ik_tersoff = false;
-	pair_ik_perriot = false;
-	if (p_potinfo->pot_ABOP[ivecik].rcut_fun=="tersoff"){
-	  pair_ik_tersoff = true;
-	  Rik = p_potinfo->pot_ABOP[ivecik].parname2val("R");
-	  Dik = p_potinfo->pot_ABOP[ivecik].parname2val("D");
-	  rcutik = p_potinfo->pot_ABOP[ivecik].rcut();
-	}
-	if (p_potinfo->pot_ABOP[ivecik].rcut_fun=="perriot"){
-	  pair_ik_perriot = true;
-	  rcutik = p_potinfo->pot_ABOP[ivecik].parname2val("prcut");
-	  rminik = p_potinfo->pot_ABOP[ivecik].parname2val("prmin");
-	  rmaxik = p_potinfo->pot_ABOP[ivecik].parname2val("prmax");
-	}
 	if (rik > rcutik) continue;
+	/* ################################################################### */
 
-	gammaik = p_potinfo->pot_ABOP[ivecik].parname2val("gamma");
-	cik = p_potinfo->pot_ABOP[ivecik].parname2val("c");
-	dik = p_potinfo->pot_ABOP[ivecik].parname2val("d");
-	hik = p_potinfo->pot_ABOP[ivecik].parname2val("h");
+	
+
+	r0ik = abop_params_all.elem(typei,typek).r0;
+
+	gammaik = abop_params_all.elem(typei,typek).gamma;
+	cik = abop_params_all.elem(typei,typek).c;
+	dik = abop_params_all.elem(typei,typek).d;
+	hik = abop_params_all.elem(typei,typek).h;
 	/*
 	std::cout << "D0ik " << D0ik << " r0ik " << r0ik << " betaik " << betaik << " Sik " << Sik
 	     << " gammaik " << gammaik << " cik " << cik << " dik " << dik << " hik " << hik
 	     << " Rik " << Rik << " Dik " << Dik << std::endl;
 	*/
 
-	/* ############################ cutoff ############################ */
+	/* ############################ cutoff/screening ############################ */
 	fcik  = 1.0;
 	dfcik = 0.0;
 	Kik   = 1.0;
@@ -403,8 +485,7 @@ double MDSystem::force_ABOP(){
 	    dfcik = -0.5 * 0.5*PI/Dik * cos( td );
 	  }
 	}
-	else if (pair_ik_perriot){
-
+	else if (pair_ik_perriot_cut || pair_ik_perriot_scr){
 	  if (rik < rminik){
 	    fcik  = 1.0;  dfcik = 0.0;
 	  }
@@ -419,15 +500,25 @@ double MDSystem::force_ABOP(){
 	    double aa = a*a;
 	    double aaa = a*aa;
 
-	    double td1 = 6*aa - 15*a - 10;
+	    double td1 = 6*aa - 15*a + 10;
 	    fcik = 1.0 - aaa * td1;
 	    dfcik = ( -3*aa * td1 - aaa * (12*a - 15) ) * invdrc;
 	  }
 
-	  force_ABOP_perriot_K(i, k, Kik, dposik);
+	  if (pair_ik_perriot_scr)
+	    force_ABOP_perriot_K(i, k, Kik, dposik, rcut_all, rcs_all, basepot_all, basepot_vecidx_all);
 	  
 	}
-	
+	/* ################################################################### */	
+
+
+
+
+
+
+
+
+
 
 
 	c2 = cik*cik;
@@ -477,6 +568,14 @@ double MDSystem::force_ABOP(){
 
 
 
+      /*
+
+      if (p_potinfo->use_abop_gamma.elem(typei, typej, typek))
+	gamma_ijk = p_potinfo->abop_gamma.elem(typei, typej, typek);
+      if (p_potinfo->use_3body_sym && p_potinfo->use_abop_gamma.elem(typek, typej, typei))
+	gamma_ijk = p_potinfo->abop_gamma.elem(typek, typej, typei);
+
+      */
 
 
 
@@ -484,7 +583,7 @@ double MDSystem::force_ABOP(){
 
 
       // bij = 1.0/sqrt(1.0 + Chiij);
-      pij = p_potinfo->pot_ABOP[ivecij].parname2val("p");
+      pij = abop_params_all.elem(typei,typej).p;
       bij = 1.0 / pow(1.0 + Chiij, pij);
       //std::cout << "bij " << bij << std::endl;
 
@@ -493,11 +592,11 @@ double MDSystem::force_ABOP(){
       // Energy:
       // ################################################################
       Epij = 0.0;
-      if (pair_ij_tersoff)
+      if (pair_ij_tersoff || pair_ij_perriot_cut) // cutoff
 	Epij = 0.5 * fcij * (VRij - bij * VAij);
-      else if (pair_ij_perriot)
+      else if (pair_ij_perriot_scr) // screening
 	Epij = 0.5 * Kij * (VRij - bij * VAij);
-
+      
       Ep[i] += Epij;
       Ep_tot_local += Epij;
 
@@ -516,14 +615,14 @@ double MDSystem::force_ABOP(){
       // ################################################################
 
       /* ############################ cutoff ############################ */
-
-      if (pair_ij_tersoff){
+      for (p=0; p<3; ++p) frc_ij[p]=0.0;
+      if (pair_ij_tersoff || pair_ij_perriot_cut){
 	for (p=0; p<3; ++p){
 	  frc_ij[p] = - 0.5 * ( dfcij * VRij + fcij * dVRij
 				- bij * dfcij * VAij - bij * fcij * dVAij) * dposij[p]/rij;
 	}
       }
-      else if (pair_ij_perriot){
+      else if (pair_ij_perriot_scr){
 	for (p=0; p<3; ++p){
 	  frc_ij[p] = - 0.5 * Kij * ( dVRij - bij * dVAij) * dposij[p]/rij;
 	}
@@ -556,9 +655,9 @@ double MDSystem::force_ABOP(){
       // ################################################################
       // Derivatives coming from the screening factor Kij:
       // ################################################################
-      if (pair_ij_perriot){
+      if (pair_ij_perriot_scr){
 	double pref = - 0.5 * (VRij - bij * VAij);
-	force_ABOP_perriot_K_frc(i, j, Kij, dposij, pref);
+	force_ABOP_perriot_K_frc(i, j, Kij, dposij, pref, rcut_all, rcs_all, basepot_all, basepot_vecidx_all);
       }
       
 
@@ -570,11 +669,12 @@ double MDSystem::force_ABOP(){
       // ################################################################
 
       /* ############################ cutoff ############################ */
-      if (pair_ij_tersoff){
+      threebodyfactor=0.0;
+      if (pair_ij_tersoff || pair_ij_perriot_cut){
 	// threebodyfactor = - 0.25 * fcij * VAij * bij*bij*bij;
 	threebodyfactor = - 0.5 * pij * fcij * VAij * pow(1.0 + Chiij, -pij-1.0);
       }
-      else if (pair_ij_perriot){
+      else if (pair_ij_perriot_scr){
 	threebodyfactor = - 0.5 * pij * Kij * VAij * pow(1.0 + Chiij, -pij-1.0);
       }
 
@@ -594,44 +694,34 @@ double MDSystem::force_ABOP(){
 	//s3 = matter[k]; //p_potinfo->elem.idx2name(typek);
 
 	if (! iac_pure_ABOP)
-	  if (p_potinfo->basepot(typei, typek) != "ABOP") continue;
+	  if (basepot_all.elem(typei, typek) != "ABOP") continue;
 	//if (p_potinfo->basepot(s1,s3) != "ABOP") continue;
 
 	ivecik = se_ivecij;
 	if (! sys_single_elem)
-	  ivecik = p_potinfo->basepot_vecidx(typei, typek);
+	  ivecik = basepot_vecidx_all.elem(typei, typek);
 	//ivecik = p_potinfo->basepot_vecidx(s1,s3);
 	if (ivecik<0) continue;
 	
+
+
+	/* ############################ cutoff/screening ############################ */
+	pair_ik_tersoff     = rcs_all.elem(typei,typek).tersoff;
+	pair_ik_perriot_cut = rcs_all.elem(typei,typek).perriot_cut;
+	pair_ik_perriot_scr = rcs_all.elem(typei,typek).perriot_scr;
+	Rik = rcs_all.elem(typei,typek).R;
+	Dik = rcs_all.elem(typei,typek).D;
+	rminik = rcs_all.elem(typei,typek).prmin;
+	rmaxik = rcs_all.elem(typei,typek).prmax;
+	rcutik = rcs_all.elem(typei,typek).rcut;
+	/* ################################################################### */
 	get_atom_distance_vec(pos[i], pos[k], dposik);
 	rik = dposik.magn();
-
-	r0ik = p_potinfo->pot_ABOP[ivecik].parname2val("r0");
-
-	gammaik = p_potinfo->pot_ABOP[ivecik].parname2val("gamma");
-	cik = p_potinfo->pot_ABOP[ivecik].parname2val("c");
-	dik = p_potinfo->pot_ABOP[ivecik].parname2val("d");
-	hik = p_potinfo->pot_ABOP[ivecik].parname2val("h");
-
-
-	/* ############################ cutoff ############################ */
-	pair_ik_tersoff = false;
-	pair_ik_perriot = false;
-	if (p_potinfo->pot_ABOP[ivecik].rcut_fun=="tersoff"){
-	  pair_ik_tersoff = true;
-	  Rik = p_potinfo->pot_ABOP[ivecik].parname2val("R");
-	  Dik = p_potinfo->pot_ABOP[ivecik].parname2val("D");
-	  rcutik = p_potinfo->pot_ABOP[ivecik].rcut();
-	}
-	if (p_potinfo->pot_ABOP[ivecik].rcut_fun=="perriot"){
-	  pair_ik_perriot = true;
-	  rcutik = p_potinfo->pot_ABOP[ivecik].parname2val("prcut");
-	  rminik  = p_potinfo->pot_ABOP[ivecik].parname2val("prmin");
-	  rmaxik  = p_potinfo->pot_ABOP[ivecik].parname2val("prmax");
-	}
 	if (rik > rcutik) continue;
+	/* ################################################################### */
 
-	/* ############################ cutoff ############################ */
+
+	/* ############################ cutoff/screening ############################ */
 	fcik  = 1.0;
 	dfcik = 0.0;
 	if (pair_ik_tersoff){
@@ -649,8 +739,7 @@ double MDSystem::force_ABOP(){
 	    dfcik = -0.5 * 0.5*PI/Dik * cos( td );
 	  }
 	}
-	else if (pair_ik_perriot){
-
+	else if (pair_ik_perriot_cut || pair_ik_perriot_scr){
 	  if (rik < rminik){
 	    fcik  = 1.0;  dfcik = 0.0;
 	  }
@@ -661,20 +750,24 @@ double MDSystem::force_ABOP(){
 	  else {
 	    double invdrc = 1.0/(rmaxik - rminik);
 	    double a = (rik - rminik) * invdrc;
-
+	    
 	    double aa = a*a;
 	    double aaa = a*aa;
-
-	    double td1 = 6*aa - 15*a - 10;
+	    
+	    double td1 = 6*aa - 15*a + 10;
 	    fcik = 1.0 - aaa * td1;
 	    dfcik = ( -3*aa * td1 - aaa * (12*a - 15) ) * invdrc;
 	  }
 	}
+	Kik = 1.0; // stays at 1.0 if perriot cutoff but no perriot screening
 
 
+	r0ik = abop_params_all.elem(typei,typek).r0;
 
-	Kik = 1.0;
-
+	gammaik = abop_params_all.elem(typei,typek).gamma;
+	cik = abop_params_all.elem(typei,typek).c;
+	dik = abop_params_all.elem(typei,typek).d;
+	hik = abop_params_all.elem(typei,typek).h;
 
 	
 	c2 = cik*cik;
@@ -826,9 +919,9 @@ double MDSystem::force_ABOP(){
 	// ################################################################
 	// Derivatives coming from the screening factor Kik:
 	// ################################################################
-	if (pair_ik_perriot){
+	if (pair_ik_perriot_scr){
 	  double pref = threebodyfactor * fcik * gijk * F1 * F2 ;
-	  force_ABOP_perriot_K_frc(i, k, Kik, dposik, pref);
+	  force_ABOP_perriot_K_frc(i, k, Kik, dposik, pref, rcut_all, rcs_all, basepot_all, basepot_vecidx_all);
 	}
 
 
@@ -983,17 +1076,21 @@ double MDSystem::force_ABOP(){
 void MDSystem::force_ABOP_perriot_K(int i,
 				    int j,
 				    double & Kij,
-				    Vector3<double> dposij
+				    Vector3<double> dposij,
+				    Matrix<double> & rcut_all,
+				    Matrix<CutoffScreeningPair> & rcs_all,
+				    Matrix<std::string> & basepot_all,
+				    Matrix<int> & basepot_vecidx_all
 				    ){
   
   int k, typei, typej, typek;
   int se_ivecij, ivecij, ivecjk, ivecik;
-  bool pair_ik_perriot, pair_jk_perriot;
+  bool pair_ik_perriot_scr, pair_jk_perriot_scr;
 
   typei = elem.name2idx( matter[i] );
   typej = elem.name2idx( matter[j] );
   typek = elem.name2idx( matter[k] );
-  se_ivecij = p_potinfo->basepot_vecidx(typei, typei);
+  se_ivecij = basepot_vecidx_all.elem(typei, typei);
 
   Vector3<double> dposik, dposjk;
   double rik, rjk, rcutik, rcutjk, mik, mjk, Xik, Xjk, Tijk_n_sum, Tijk, nij;
@@ -1001,7 +1098,7 @@ void MDSystem::force_ABOP_perriot_K(int i,
 
 
 
-  nij = p_potinfo->pot_ABOP[ivecij].parname2val("pn");
+  nij = rcs_all.elem(typei,typej).pn;
   rij = dposij.magn();
 
 
@@ -1016,41 +1113,44 @@ void MDSystem::force_ABOP_perriot_K(int i,
     if (k==j) continue;
 
     typek = elem.name2idx( matter[k] );
-    if (! iac_pure_ABOP) if (p_potinfo->basepot(typei, typek) != "ABOP") continue;
-    if (! iac_pure_ABOP) if (p_potinfo->basepot(typej, typek) != "ABOP") continue;
+    if (! iac_pure_ABOP){
+      if (basepot_all.elem(typei, typek) != "ABOP") continue;
+      if (basepot_all.elem(typej, typek) != "ABOP") continue;
+    }
 
     ivecik = se_ivecij;
-    if (! sys_single_elem) ivecik = p_potinfo->basepot_vecidx(typei, typek);
+    if (! sys_single_elem) ivecik = basepot_vecidx_all.elem(typei, typek);
     if (ivecik<0) continue;
 
     ivecjk = se_ivecij;
-    if (! sys_single_elem) ivecjk = p_potinfo->basepot_vecidx(typej, typek);
+    if (! sys_single_elem) ivecjk = basepot_vecidx_all.elem(typej, typek);
     if (ivecjk<0) continue;
 	
+
+
+    /* ############################ cutoff/screening ############################ */
+    pair_ik_perriot_scr = rcs_all.elem(typei,typek).perriot_scr;
+    pair_jk_perriot_scr = rcs_all.elem(typej,typek).perriot_scr;
+    mik    = rcs_all.elem(typei,typek).pm;
+    rcutik = rcs_all.elem(typei,typek).rcut;
+    mjk    = rcs_all.elem(typej,typek).pm;
+    rcutjk = rcs_all.elem(typej,typek).rcut;
+    if (! pair_ik_perriot_scr) continue;
+    if (! pair_jk_perriot_scr) continue;
+    /* ################################################################### */
     get_atom_distance_vec(pos[i], pos[k], dposik);
     rik = dposik.magn();
+    if (rik > rcutik) continue;
     get_atom_distance_vec(pos[j], pos[k], dposjk);
     rjk = dposjk.magn();
-    
-    pair_ik_perriot = false;
-    if (p_potinfo->pot_ABOP[ivecik].rcut_fun=="perriot"){
-      pair_ik_perriot = true;
-      rcutik = p_potinfo->pot_ABOP[ivecik].parname2val("prcut");
-      mik = p_potinfo->pot_ABOP[ivecik].parname2val("pm");
-    }
-
-    pair_jk_perriot = false;
-    if (p_potinfo->pot_ABOP[ivecjk].rcut_fun=="perriot"){
-      pair_jk_perriot = true;
-      rcutjk = p_potinfo->pot_ABOP[ivecjk].parname2val("prcut");
-      mjk = p_potinfo->pot_ABOP[ivecjk].parname2val("pm");
-    }
-
-    if (pair_ik_perriot==false || pair_jk_perriot==false)
-      continue;
-
-    if (rik > rcutik) continue;
     if (rjk > rcutjk) continue;
+    /* ################################################################### */
+    if (fp_is_small(rik - rcutik)) // If true, then Xik is very large.
+      continue;
+    if (fp_is_small(rjk - rcutjk)) // If true, then Xjk is very large.
+      continue;
+    /* ################################################################### */
+
 
     Xik = rik/(1.0 - pow(rik/rcutik, mik));
     Xjk = rjk/(1.0 - pow(rjk/rcutjk, mjk));
@@ -1078,21 +1178,25 @@ void MDSystem::force_ABOP_perriot_K_frc(int i,
 					int j,
 					double & Kij,
 					Vector3<double> dposij,
-					double pref
+					double pref,
+					Matrix<double> & rcut_all,
+					Matrix<CutoffScreeningPair> & rcs_all,
+					Matrix<std::string> & basepot_all,
+					Matrix<int> & basepot_vecidx_all
 					){
   
-  force_ABOP_perriot_K(i, j, Kij, dposij);
+  force_ABOP_perriot_K(i, j, Kij, dposij, rcut_all, rcs_all, basepot_all, basepot_vecidx_all);
 
 
 
   int k, typei, typej, typek;
   int se_ivecij, ivecij, ivecjk, ivecik;
-  bool pair_ik_perriot, pair_jk_perriot;
+  bool pair_ik_perriot_scr, pair_jk_perriot_scr;
 
   typei = elem.name2idx( matter[i] );
   typej = elem.name2idx( matter[j] );
   typek = elem.name2idx( matter[k] );
-  se_ivecij = p_potinfo->basepot_vecidx(typei, typei);
+  se_ivecij = basepot_vecidx_all.elem(typei, typei);
 
   Vector3<double> dposik, dposjk;
   double rik, rjk, rcutik, rcutjk, mik, mjk, Xik, Xjk, Tijk_n_sum, Tijk, nij;
@@ -1100,7 +1204,7 @@ void MDSystem::force_ABOP_perriot_K_frc(int i,
 
 
 
-  nij = p_potinfo->pot_ABOP[ivecij].parname2val("pn");
+  nij = rcs_all.elem(typei,typej).pn;
   rij = dposij.magn();
 
   Vector3<double> dTijk_ij, dTijk_ik, dTijk_jk, dTijk_ji, dTijk_ki, dTijk_kj;
@@ -1117,41 +1221,43 @@ void MDSystem::force_ABOP_perriot_K_frc(int i,
     if (k==j) continue;
 
     typek = elem.name2idx( matter[k] );
-    if (! iac_pure_ABOP) if (p_potinfo->basepot(typei, typek) != "ABOP") continue;
-    if (! iac_pure_ABOP) if (p_potinfo->basepot(typej, typek) != "ABOP") continue;
+    if (! iac_pure_ABOP){
+      if (basepot_all.elem(typei, typek) != "ABOP") continue;
+      if (basepot_all.elem(typej, typek) != "ABOP") continue;
+    }
 
     ivecik = se_ivecij;
-    if (! sys_single_elem) ivecik = p_potinfo->basepot_vecidx(typei, typek);
+    if (! sys_single_elem) ivecik = basepot_vecidx_all.elem(typei, typek);
     if (ivecik<0) continue;
 
     ivecjk = se_ivecij;
-    if (! sys_single_elem) ivecjk = p_potinfo->basepot_vecidx(typej, typek);
+    if (! sys_single_elem) ivecjk = basepot_vecidx_all.elem(typej, typek);
     if (ivecjk<0) continue;
 	
+
+    /* ############################ cutoff/screening ############################ */
+    pair_ik_perriot_scr = rcs_all.elem(typei,typek).perriot_scr;
+    pair_jk_perriot_scr = rcs_all.elem(typej,typek).perriot_scr;
+    mik    = rcs_all.elem(typei,typek).pm;
+    rcutik = rcs_all.elem(typei,typek).rcut;
+    mjk    = rcs_all.elem(typej,typek).pm;
+    rcutjk = rcs_all.elem(typej,typek).rcut;
+    if (! pair_ik_perriot_scr) continue;
+    if (! pair_jk_perriot_scr) continue;
+    /* ################################################################### */
     get_atom_distance_vec(pos[i], pos[k], dposik);
     rik = dposik.magn();
+    if (rik > rcutik) continue;
     get_atom_distance_vec(pos[j], pos[k], dposjk);
     rjk = dposjk.magn();
-    
-    pair_ik_perriot = false;
-    if (p_potinfo->pot_ABOP[ivecik].rcut_fun=="perriot"){
-      pair_ik_perriot = true;
-      rcutik = p_potinfo->pot_ABOP[ivecik].parname2val("prcut");
-      mik = p_potinfo->pot_ABOP[ivecik].parname2val("pm");
-    }
-
-    pair_jk_perriot = false;
-    if (p_potinfo->pot_ABOP[ivecjk].rcut_fun=="perriot"){
-      pair_jk_perriot = true;
-      rcutjk = p_potinfo->pot_ABOP[ivecjk].parname2val("prcut");
-      mjk = p_potinfo->pot_ABOP[ivecjk].parname2val("pm");
-    }
-
-    if (pair_ik_perriot==false || pair_jk_perriot==false)
-      continue;
-
-    if (rik > rcutik) continue;
     if (rjk > rcutjk) continue;
+    /* ################################################################### */
+    if (fp_is_small(rik - rcutik)) // If true, then Xik is very large.
+      continue;
+    if (fp_is_small(rjk - rcutjk)) // If true, then Xjk is very large.
+      continue;
+    /* ################################################################### */
+
 
     Xik = rik/(1.0 - pow(rik/rcutik, mik));
     Xjk = rjk/(1.0 - pow(rjk/rcutjk, mjk));
@@ -1169,8 +1275,10 @@ void MDSystem::force_ABOP_perriot_K_frc(int i,
     Tijk_n_sum += td;
   
 
-    dXik = Xik/rik + mik * (Xik/rik)*(Xik/rik) * pow(rik/rcutik, mik);
-    dXjk = Xjk/rjk + mjk * (Xjk/rjk)*(Xjk/rjk) * pow(rjk/rcutjk, mjk);
+    td1 = Xik/rik;
+    td2 = Xjk/rjk;
+    dXik = td1 + mik * td1*td1 * pow(rik/rcutik, mik);
+    dXjk = td2 + mjk * td2*td2 * pow(rjk/rcutjk, mjk);
 
     td1 = 1.0/(Xik + Xjk - rij);
     td2 = - rij * td1 * td1;

@@ -46,6 +46,7 @@ potpar( H, H ):gamma = 12.33
 potpar( H, H ):c = 0.0
 potpar( H, H ):d = 1.0
 potpar( H, H ):h = 1.0
+potpar( H, H ):cutscr = tersoff
 potpar( H, H ):R = 1.4
 potpar( H, H ):D = 0.3
 potpar( H, H ):bfermi = 15
@@ -60,6 +61,7 @@ potpar(W, W ):gamma = 0.00083879
 potpar(W, W ):c = 0.850284
 potpar(W, W ):d = 0.144317
 potpar(W, W ):h = -0.36846
+potpar(W, W ):cutscr = tersoff
 potpar(W, W ):R = 4.13158
 potpar(W, W ):D = 0.93018
 potpar(W, W ):bfermi = 12
@@ -100,6 +102,8 @@ max:potpar( W, H ):d  =   500.0
     potpar( W, H ):h         =   0.4
 min:potpar( W, H ):h  =   1.1
 max:potpar( W, H ):h  =   1.1
+
+    potpar( W, H ):cutscr = tersoff
 
     potpar( W, H ):R         = 2.15
 min:potpar( W, H ):R  = 2.0

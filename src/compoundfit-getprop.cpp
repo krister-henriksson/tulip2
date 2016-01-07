@@ -395,10 +395,11 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
   for (j=0; j<Nf; ++j){
     f = fmin + j*df;
     g = 1 + f;
-    xp[j] = V0 * g*g*g;
     for (k=0; k<3; ++k) for (p=0; p<3; ++p) alpha.elem(k,p)=0;
     alpha.elem(0,0) = alpha.elem(1,1) = alpha.elem(2,2) = g; // Note!!!
     mds.transform_cell(alpha);
+    mds.calc_volume();
+    xp[j] = mds.vol_atom; //V0 * g*g*g;
 
 
     // **************************************************************

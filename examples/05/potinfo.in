@@ -70,10 +70,19 @@ min:abop_omega( Y , Y , Y ) =  10.0
 max:abop_omega( Y , Y , Y ) =  10.0
 
 
-    potpar( Y , Y ):option: rcut_fun = perriot
+    potpar( Y , Y ):cutscr = perriot scr
+
     potpar( Y , Y ):pn       = 5
+
     potpar( Y , Y ):pm       = 48
+min:potpar( Y , Y ):pm       = 44
+max:potpar( Y , Y ):pm       = 50
+
     potpar( Y , Y ):prcut    = 3.95
+
     potpar( Y , Y ):prmin    = 3.80
+min:potpar( Y , Y ):prmin    = 3.50
+max:potpar( Y , Y ):prmin    = 4.00
+
     potpar( Y , Y ):prmax    = 3.95
 

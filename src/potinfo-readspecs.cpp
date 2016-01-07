@@ -338,8 +338,8 @@ void PotentialInformationFit::read_specs(std::string filename){
 	  if (t==1) strbuf >> specs_prop.mds_specs.btc_tau;
 	  else      strbuf >> specs_prop.mds_specs_ref.btc_tau;
 	  strbuf.clear();
-	  if (t==1) specs_prop.mds_specs.use_Tcontrol = false;
-	  else      specs_prop.mds_specs.use_Tcontrol = true;
+	  if (t==1) specs_prop.mds_specs.use_Tcontrol = true;
+	  else      specs_prop.mds_specs_ref.use_Tcontrol = true;
 	}
 	else if (args[id]=="mds_btc_T0"){
 	  strbuf.str(args[id+1]);
@@ -434,33 +434,11 @@ void PotentialInformationFit::read_specs(std::string filename){
 
   // Debugging
   
-  if (specs_prop.mds_specs.bpc_tau<0.0     || abs(specs_prop.mds_specs.bpc_tau)<eps)
-    specs_prop.mds_specs.use_Pcontrol = false;
-  if (specs_prop.mds_specs.bpc_P0<0.0      || abs(specs_prop.mds_specs.bpc_P0)<eps)
-    specs_prop.mds_specs.use_Pcontrol = false;
-  if (specs_prop.mds_specs.bpc_scale<0.0   || abs(specs_prop.mds_specs.bpc_scale)<eps)
-    specs_prop.mds_specs.use_Pcontrol = false;
+  if (specs_prop.mds_specs.bpc_tau<eps) specs_prop.mds_specs.use_Pcontrol = false;
+  if (specs_prop.mds_specs.btc_tau<eps) specs_prop.mds_specs.use_Tcontrol = false;
 
-  if (specs_prop.mds_specs.btc_tau<0.0     || abs(specs_prop.mds_specs.btc_tau)<eps)
-    specs_prop.mds_specs.use_Tcontrol = false;
-  if (specs_prop.mds_specs.btc_T0<0.0     || abs(specs_prop.mds_specs.btc_T0)<eps)
-    specs_prop.mds_specs.use_Tcontrol = false;
-
-
-
-
-  if (specs_prop.mds_specs_ref.bpc_tau<0.0     || abs(specs_prop.mds_specs_ref.bpc_tau)<eps)
-    specs_prop.mds_specs_ref.use_Pcontrol = false;
-  if (specs_prop.mds_specs_ref.bpc_P0<0.0      || abs(specs_prop.mds_specs_ref.bpc_P0)<eps)
-    specs_prop.mds_specs_ref.use_Pcontrol = false;
-  if (specs_prop.mds_specs_ref.bpc_scale<0.0   || abs(specs_prop.mds_specs_ref.bpc_scale)<eps)
-    specs_prop.mds_specs_ref.use_Pcontrol = false;
-
-  if (specs_prop.mds_specs_ref.btc_tau<0.0     || abs(specs_prop.mds_specs_ref.btc_tau)<eps)
-    specs_prop.mds_specs_ref.use_Tcontrol = false;
-  if (specs_prop.mds_specs_ref.btc_T0<0.0     || abs(specs_prop.mds_specs_ref.btc_T0)<eps)
-    specs_prop.mds_specs_ref.use_Tcontrol = false;
-
+  if (specs_prop.mds_specs_ref.bpc_tau<eps) specs_prop.mds_specs_ref.use_Pcontrol = false;
+  if (specs_prop.mds_specs_ref.btc_tau<eps) specs_prop.mds_specs_ref.use_Tcontrol = false;
 
 
 

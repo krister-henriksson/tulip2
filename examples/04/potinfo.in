@@ -82,6 +82,8 @@ max: potpar(Fe, Fe):d =   1e5
 min: potpar(Fe, Fe):h =  1.0
 max: potpar(Fe, Fe):h =  1.0
 
+     potpar(Fe, Fe):cutscr = tersoff
+
      potpar(Fe, Fe):R = 3.15
 min: potpar(Fe, Fe):R = 2.0
 max: potpar(Fe, Fe):R = 2.0

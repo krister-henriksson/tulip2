@@ -273,9 +273,8 @@ Options:
      -dall              Activate all debugging options (top level only). Default: not used
 
      -mif               Suggest an initial fit and exit. Default: not used
-
-     -omp               Request maximal number of threads (8) for any OpenMP parts.
-     -omp_nt num        Request 'num' number of threads for any OpenMP parts. Default: 1
+                        ABOP: Put D0=0.0 for the binary interaction you want to fit. Keep all other
+                        parametrizations at their normal values.
 \end{Verbatim}
 
 
@@ -306,8 +305,8 @@ Useful options:
 -dmdsprop      Show progress of all MD relaxations of all compounds.
 \end{Verbatim}
 
-Note: The OpenMP options can be used, but the OpenMP parallellization has not been
-extensively debugged. Some cache trashing is likely to occur, degrading performance.
+%Note: The OpenMP options can be used, but the OpenMP parallellization has not been
+%extensively debugged. Some cache trashing is likely to occur, degrading performance.
 
 
 
@@ -366,8 +365,12 @@ with
 r_{ij} = |\mathbf{r}_{ij}| = | \mathbf{r}_i - \mathbf{r}_j |
 \end{equation}
 
+\stars
 
-The Tersoff~\cite{Tersoff-PRL56-1986} cutoff function is
+For the cutoff function $f_c$ there are two choices:
+
+\begin{enumerate}
+\item The Tersoff~\cite{Tersoff-PRL56-1986} cutoff function is
 
 \begin{equation}
 f_c(r) =
@@ -382,20 +385,44 @@ f_c(r) =
 \end{equation}
 
 Hence, full interaction is felt when $r<R-D$, and no interaction when $r>R+D$,
-making the cutoff distance $r_c = R+D$. The derivative is
+making the cutoff distance $r_c = R+D$.
+In order to use the Tersoff cutoff function, specify e.g. for Y-Y
 
-\begin{equation}
-f'_{c}(r) =
-\left\{
-\begin{array}{ll}
-0,                   & r \leq R - D, \\
-{1 \over 2} \left( 1 - {\pi \over 2D} \cos \left( {\pi \over 2} {r - R \over D}
-    \right) \right), & R-D < r < R + D \\
-0,                   & r \geq R + D
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+  potpar(Y, Y):cutscr = tersoff
+\end{Verbatim}
+
+\item The Perriot~\cite{Perriot-2013} cutoff function is
+
+\begin{eqnarray}
+f^{(P)}_{c}(r) &=& \left\{
+\begin{array}{rl}
+1, &  r < r_{min} \\
+1 - q^3 (6 q^2 - 15 q - 10), & r_{min} \leq r \leq r_{max} \\
+0, & r > r_{max}
 \end{array}
 \right.
-\end{equation}
+\\
+q &=& {r - r_{min} \over r_{max} - r_{min}}
+\end{eqnarray}
 
+Here $r_{min},r_{max}$ are parameters.
+In order to use the Perriot cutoff function, specify e.g. for Y-Y
+
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+  potpar(Y, Y):cutscr = perriot cut
+\end{Verbatim}
+
+Note the two strings! The second one must be exactly 'cut', not e.g. 'cutoff'!
+\end{enumerate}
+
+The default cutoff function is 'none', which causes the program to exit with an error message
+if a cutoff function is not specified.
+
+\textbf{All parameters relating to a cutoff function must be specified after the 'cutscr'
+setting! Otherwise these parameters are not set.}
+
+\stars
 
 The bond-order parameter is defined as
 
@@ -403,7 +430,8 @@ The bond-order parameter is defined as
 B_{ij} = \left( 1 + \chi_{ij} \right)^{-p_{ij}}
 \end{equation}
 
-The usual ABOP has $p_{ij} \equiv 1/2$.
+The usual ABOP has $p_{ij} \equiv 1/2$, which is the default if nothing is provided
+for this parameter.
 
 Here
 
@@ -413,7 +441,9 @@ Here
 \omega_{ijk} \exp\left[ \alpha_{ijk}(r_{ij} - r_{ik}) \right]
 \end{equation}
 
-We have now three different possibilities:
+\stars
+
+We have three different possibilities:
 
 (V1) $\alpha_{ijk}$ and $\omega_{ijk}$ are used as parameters.
 
@@ -442,6 +472,8 @@ is replaced in its entirety by
 \exp\left[ 2\mu_{ik} (r_{ij} - r_{ik}) \right]
 \end{equation}
 
+\stars
+
 The function $g_{ijk}(\theta_{ijk})$ is given by the expression
 
 \begin{equation}
@@ -454,15 +486,16 @@ where $\theta_{ijk}$ is the angle between the bonds $ij$ and $ik$.
 
 \stars
 
-The Perriot cutoff/screening method~\cite{Perriot-2013} can be used instead of the Tersoff function.
-In this method the total potential energy is given by
+The Perriot~\cite{Perriot-2013} screening method can be used instead of
+a cutoff function. In the Perriot method~\cite{Perriot-2013}
+the total potential energy is given by
 
 \begin{equation}
 V = {1 \over 2} \sum_i \sum_{j} K_{ij} \left( V_{R,ij} - B_{ij} V_{A,ij} \right)
 \label{eq:abop-perriot}
 \end{equation}
 
-The bond-order is modified in the following way:
+The bond-order is
 
 \begin{equation}
 \chi_{ij} =
@@ -483,33 +516,29 @@ T_{ijs} &=&
 \right.
 \\
 X_{is} &=& {r_{is} \over 1 - (r_{is}/r_{c,is})^{m_{is}}} \\
-X_{jk} &=& {r_{js} \over 1 - (r_{js}/r_{c,js})^{m_{js}}} \\
-f^{(P)}_{c,ik} &=& \left\{
+X_{js} &=& {r_{js} \over 1 - (r_{js}/r_{c,js})^{m_{js}}} \\
+f^{(P)}_c(r) &=& \left\{
 \begin{array}{rl}
-1, &  r_{ik} < r_{ik,min} \\
-1 - q_{ik}^3 (6 q_{ik}^2 - 15 q_{ik} - 10), & r_{ik,min} \leq r_{ik} \leq r_{ik,max} \\
-0, & r > r_{ik,max}
+1, &  r < r_{min} \\
+1 - q^3 (6 q^2 - 15 q - 10), & r_{min} \leq r \leq r_{max} \\
+0, & r > r_{max}
 \end{array}
 \right.
 \\
-q_{ik} &=& {r_{ik} - r_{ik,min} \over r_{ik,max} - r_{ik,min}}
+q &=& {r - r_{min} \over r_{max} - r_{min}}
 \end{eqnarray}
 
 Here $n,m,r_c,r_{min},r_{max}$ are parameters.
+In order to use the Perriot screening method, specify e.g. for Y-Y
 
-Technically, if $r_{is}$ or $r_{js}$ equals $r_c$ then the corresponding $X$ is
-infinite and $T_{ijs}$ becomes 0. This can be exactly handled by the following rule:
-If neighbor $s$ of atom $i$ is beyond the cutoff radius $r_{c,is}$
-or $r_{c,js}$, then $T_{ijs}=0$ and it does not contribute at all to the $K_{ij}$.
-This does not account for the following situation:
-If $r_{is}$ or $r_{js}$ is larger than $r_c$ then the corresponding $X$ is
-negative. Mathematically, it can still satisfy $X_{is}+X_{js}<r_{ij}$ so it should
-be considered for the sum $T_{ijs}$. As of now, this case is ignored due to the rule above.
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+  potpar(Y, Y):cutscr = perriot scr
+\end{Verbatim}
 
+Note the two strings! The second one must be exactly 'scr'.
 
-
-
-
+\textbf{All parameters relating to a screening method must be specified after the 'cutscr'
+setting! Otherwise these parameters are not set.}
 
 \stars
 
@@ -542,6 +571,8 @@ All parameters that can be used with the ABOP potential are:
 Parameter & Notes \\
 \hline
 \hline
+Group 1 & Basic ABOP parameters \\
+\hline
 $D_0$ & \\
 $r_0$ & \\
 $\beta$ & \\
@@ -551,17 +582,23 @@ $c$ & \\
 $d$ & \\
 $h$ & \\
 $p$ & Defaults to $1/2$. \\
-$b_f$ & Defaults to $10$. \\
-$r_f$ & Defaults to $1$. \\
+$b_f$ & \\
+$r_f$ & \\
 \hline
-$D$ & Tersoff cutoff parameters \\
+Group 2.1 & Tersoff cutoff parameters \\
+\hline
+$D$ & \\
 $R$ & Cutoff radius is $r_c = R + D$. \\
 \hline
-$n$ & Perriot cutoff parameters \\
+Group 2.2 & Perriot cutoff parameters \\
+\hline
+$n$ & \\
 $m$ & \\
-$r_c$ & \\
+$r_c$ & Cutoff radius for screening method. \\
 $r_{min}$ & \\
-$r_{max}$ & \\
+$r_{max}$ & Cutoff radius for cutoff function. \\
+\hline
+Group 3 & \\
 \hline
 (V1) $\alpha_{ijk}$ and $\omega_{ijk}$ & \\
 (V2) $\alpha_{ijk}$ & $\omega_{ijk}$ given by Eq.~(\ref{eq:omegaijk}).\\
@@ -571,7 +608,8 @@ $r_{max}$ & \\
 \end{tabular}
 \end{center}
 
-
+Default value for each parameter in groups 1 and 2 is zero, except for
+$p$.
 
 
 
@@ -858,7 +896,7 @@ potpar( Fe, Fe ):h = -0.26
 potpar( Fe, Fe ):bfermi = 10
 potpar( Fe, Fe ):rfermi = 1
 
-potpar( Fe, Fe ):option: rcut_fun = perriot
+potpar( Fe, Fe ):cutscr = perriot scr    Must be before Perriot parameters (below)
 potpar( Fe, Fe ):n = 5
 potpar( Fe, Fe ):m = 48
 potpar( Fe, Fe ):rcut = 3.3
@@ -876,10 +914,11 @@ potpar(Cr, Cr ):gamma = 0.02388562
 potpar(Cr, Cr ):c = 1.03288255
 potpar(Cr, Cr ):d = 0.13813230
 potpar(Cr, Cr ):h = -0.28569237
+potpar(Cr, Cr ):cutscr = tersoff    Must be before Tersoff parameters (below)
 potpar(Cr, Cr ):R = 3.2
 potpar(Cr, Cr ):D = 0.20
-potpar( Cr, Cr ):bfermi = 12
-potpar( Cr, Cr ):rfermi = 1.7
+potpar(Cr, Cr ):bfermi = 12
+potpar(Cr, Cr ):rfermi = 1.7
 
 potpar(C, C ):D0 = 6.0
 potpar(C, C ):r0 = 1.39
@@ -889,10 +928,11 @@ potpar(C, C ):gamma = 2.0813e-4
 potpar(C, C ):c = 330.0
 potpar(C, C ):d = 3.5
 potpar(C, C ):h = 1.0
+potpar(C, C ):cutscr = tersoff    Must be before Tersoff parameters (below)
 potpar(C, C ):R = 1.85
 potpar(C, C ):D = 0.15
-potpar( C , C  ):bfermi = 8
-potpar( C , C  ):rfermi = 0.6
+potpar(C, C ):bfermi = 8
+potpar(C, C ):rfermi = 0.6
 
 potpar(Fe, C ):D0 = 3.95000634
 potpar(Fe, C ):r0 = 1.53426579
@@ -902,10 +942,11 @@ potpar(Fe, C ):gamma = 0.07485571
 potpar(Fe, C ):c = 1.11674155
 potpar(Fe, C ):d = 0.94663188
 potpar(Fe, C ):h = -0.18665305
+potpar(Fe, C ):cutscr = tersoff    Must be before Tersoff parameters (below)
 potpar(Fe, C ):R = 2.6
 potpar(Fe, C ):D = 0.20
-potpar( Fe, C  ):bfermi = 10
-potpar( Fe, C  ):rfermi = 1
+potpar(Fe, C ):bfermi = 10
+potpar(Fe, C ):rfermi = 1
 
 potpar( Cr, C ):D0        =  2.77620074
 potpar( Cr, C ):r0        =  1.81289285
@@ -915,6 +956,7 @@ potpar( Cr, C ):gamma     =  0.00068830
 potpar( Cr, C ):c         =  3.93353757
 potpar( Cr, C ):d         =  0.17497204
 potpar( Cr, C ):h         =  -0.17850001
+potpar( Cr, C ):cutscr = tersoff    Must be before Tersoff parameters (below)
 potpar( Cr, C ):R         =  2.95
 potpar( Cr, C ):D         =  0.1
 potpar( Cr, C  ):bfermi = 8
@@ -954,6 +996,8 @@ max: potpar( Fe, Cr ):d  =   1e5
      potpar( Fe, Cr ):h  = -0.69
 min: potpar( Fe, Cr ):h  =  1.0
 max: potpar( Fe, Cr ):h  =  1.0
+
+     potpar( Fe, Cr ):cutscr = tersoff    Must be before Tersoff parameters (below)
 
      potpar( Fe, Cr ):R  = 3.10
 min: potpar( Fe, Cr ):R  = 2.0
@@ -1264,6 +1308,14 @@ csystem = any
 This setting makes the program skip the determination of the space group for that
 compound. This skipping is also performed if the compound is non-periodic in any
 dimension.
+
+
+\stars
+
+If any setting relating to temperature and pressure control is mentioned it activates
+the corresponding control. The default values are negative.
+After readin the values of the time constants are checked; if any time constant value is
+negative the corresponding control is turned off.
 
 \stars
 

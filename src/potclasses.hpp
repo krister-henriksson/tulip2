@@ -45,6 +45,8 @@ public:
   double rcut(void);
 };
 
+// ###############################################################
+
 
 class Potential_EAM {
 public:
@@ -86,8 +88,95 @@ public:
 
 
 // ###############################################################
+// Helper classes for parametrized potentials
+// ###############################################################
+
+
+class CutoffScreeningPair {
+public:
+  bool tersoff;
+  bool perriot_cut;
+  bool perriot_scr;
+
+  double R;
+  double D;
+  double pn;
+  double pm;
+  double prcut;
+  double prmin;
+  double prmax;
+
+  double rcut;
+  
+  CutoffScreeningPair();
+} ;
+
+
+// ###############################################################
+
+class CutoffScreening {
+public:
+  std::string mode;
+  std::string name;
+  bool use;
+
+  Vector<double>      parval;
+  Vector<std::string> parname;
+
+  // for fittable versions:
+  Vector<parametertype> partype;
+  Vector<double> parmin;
+  Vector<double> parmax;
+
+
+  CutoffScreening();
+
+  void set_name_mode(std::string na, std::string mo);
+  void   set_parval(std::string name, double pv);
+  double get_parval(std::string name);
+
+  double      rcut(void);
+
+  // for fittable versions:
+  void init_lims(void);
+
+  void   set_par_extr(std::string name, double min, std::string minmax);
+  double get_par_extr(std::string name, std::string minmax);
+
+  int           npar();
+  void          set_par_types();
+  void          set_par_type(std::string name);
+  parametertype get_par_type(std::string name);
+
+} ;
+
+
+
+
+
+// ###############################################################
 // Parametrized potentials
 // ###############################################################
+
+class Potential_ABOPPair {
+public:
+  std::string elemname1;
+  std::string elemname2;
+
+  double D0;
+  double r0;
+  double beta;
+  double S;
+  double p;
+  double gamma;
+  double c;
+  double d;
+  double h;
+  double bfermi;
+  double rfermi;
+
+  Potential_ABOPPair();
+} ;
 
 
 
@@ -106,7 +195,14 @@ public:
 
   int maxindex;
 
+  /*
+  bool use_cutoff_only;
+  bool use_screening;
+
   std::string rcut_fun;
+  std::string rcut_scr;
+  */
+  CutoffScreening rcs;
 
 
   Potential_ABOP();
@@ -116,13 +212,21 @@ public:
   Potential_ABOP & operator=(const Potential_ABOP & sv);
   */
 
-  int         parname2idx(std::string name);
-  std::string paridx2name(int idx);
-  double    & parname2val(std::string name);
+  void   set_parval(std::string name, double pv);
+  double get_parval(std::string name);
+
   double      rcut(void);
 
   // for fittable versions:
   void init_lims(void);
+
+  void   set_par_extr(std::string name, double min, std::string minmax);
+  double get_par_extr(std::string name, std::string minmax);
+
+  int           npar();
+  void          set_par_types();
+  void          set_par_type(std::string name);
+  parametertype get_par_type(std::string name);
 
 };
 
