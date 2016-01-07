@@ -1,8 +1,8 @@
 
 
 # Ignore contents of some directories:
-obj/*
-bin/*
+obj/**
+bin/**
 src/.deps/
 src/discarded/
 old/
