@@ -70,7 +70,7 @@ double MDSystem::force_EAM(){
 
 
   if (sys_single_elem){
-    type1 = elem.name2idx( matter[0] );
+    type1 = itype[0];
     ivec  = p_potinfo->basepot_vecidx(type1, type1);
   }
 
@@ -87,7 +87,7 @@ double MDSystem::force_EAM(){
 
     pos1 = pos[iat];
     s1   = matter[iat];
-    type1 = elem.name2idx( matter[iat] );
+    type1 = itype[iat];
       
     /* Loop over atom 'j'. */
     for (j=0; j<neighborcollection[iat].size(); ++j){
@@ -98,7 +98,7 @@ double MDSystem::force_EAM(){
 
       pos2 = pos[jat];
       s2   = matter[jat];
-      type2 = elem.name2idx( matter[jat] );
+      type2 = itype[jat];
 
       /* Is the interaction correct ? */
       if (! iac_pure_EAM)
@@ -275,7 +275,7 @@ double MDSystem::force_EAM(){
   for (iat=0; iat<natoms(); ++iat){
     pos1 = pos[iat];
     s1   = matter[iat];
-    type1 = elem.name2idx( matter[iat] );
+    type1 = itype[iat];
 
 
     /* Now loop over neighbors, calculating the derivatives of
@@ -288,7 +288,7 @@ double MDSystem::force_EAM(){
 
       pos2 = pos[jat];
       s2   = matter[jat];
-      type2 = elem.name2idx( matter[jat] );
+      type2 = itype[jat];
 
 
       /* Is the interaction correct ? */

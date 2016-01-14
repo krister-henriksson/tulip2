@@ -250,6 +250,7 @@ void MDSystem::create_from_structure(CompoundStructure & cmp,
 	  // Atom type info will be filled in later. Now just put something here:
 	  sitetype[iat] = p;
 	  type[iat] = 0;
+	  itype[iat] = 0;
 	  idx[iat] = atom_counter++;
 	  matter[iat] = cmp.basis_elems[p];
 

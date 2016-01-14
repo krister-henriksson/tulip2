@@ -77,7 +77,7 @@ void MDSystem::relax(void){
   double dmax = std::numeric_limits<double>::max();
   double dt_s_max=-1.0, dt_v_max=-1.0, dt_a_max=-1.0, dt_F_max=-1.0, dt_Ek_max=-1.0;
   Vector<double> dt_candidate(5, specs.max_dt);
-  int nat;
+  int nat = natoms();
   bad_mds err_bad_mds;
 
   double xt[5], xt3[3];
@@ -148,12 +148,13 @@ void MDSystem::relax(void){
   calc_volume();
   std::cout << "Atomic volume " << vol_atom << std::endl;
 
-  int type1;
+  int type1, itype1;
   double mass1;
 
 
+
   type1 = elem.atomtype(matter[0]);
-  //type1 = elem.name2idx(matter[0]);
+  itype1 = elem.name2idx(matter[0]);
   mass1 = elem.mass(matter[0]); //type1
 
 
@@ -179,7 +180,7 @@ void MDSystem::relax(void){
   if (pos.size()==0)
     aborterror("Error: Trying to initilize a MDSystem containing 0 atoms. Exiting.");
   
-  nat = natoms();
+
 
   vel.resize(nat);
   acc.resize(nat);
@@ -223,11 +224,19 @@ void MDSystem::relax(void){
 
     if (sys_single_elem) type[i] = type1;
     else                 type[i] = elem.atomtype(matter[i]);//name2idx(matter[i]);
+
+    if (sys_single_elem) itype[i] = itype1;
+    else                 itype[i] = elem.name2idx(matter[i]);
+
+    /*
+    std::cout  << "element number " << i << " has name " << name
+	       << " and is " << matter[i] << " and itype is " << itype[i] << std::endl;
+    */
     
     tmp1 = mtwister.gauss(); // has internal state which is updated after call
     tmp2 = mtwister.gauss();
     tmp3 = mtwister.gauss();
-    int n2i = elem.name2idx(matter[i]);
+    int n2i = itype[i]; //elem.name2idx(matter[i]);
     vel[i][0] = vrms[ n2i ] * tmp1; // type[i]
     vel[i][1] = vrms[ n2i ] * tmp2;
     vel[i][2] = vrms[ n2i ] * tmp3;
@@ -249,6 +258,9 @@ void MDSystem::relax(void){
     nspecies[ n2i ]++;
   }
   //std::cout << "MD system vectors resized to correct sizes." << std::endl;
+
+
+
 
   vel_cm[0] /= mass_cm;
   vel_cm[1] /= mass_cm;
@@ -998,9 +1010,10 @@ void MDSystem::relax(void){
 
     mass_cm = vel_cm[0] = vel_cm[1] = vel_cm[2] = 0.0;
     for (i=0; i<nat; ++i){
-      int n2i = elem.name2idx( matter[i] );
+      int n2i = itype[i];
       double td = 1.0 / elem.mass( n2i ) * 1.60217653 / 1.660538782 * 0.01;
       //td = 1.0 / elem.mass(elem.idx2name(type[i])) * 1.60217653 / 1.660538782 * 0.01;
+      //std::cout << "td = " << td << std::endl;
 
       if (atom_is_fixed[i])
 	frc[i][0] = frc[i][1] = frc[i][2] = 0.0;
@@ -1035,6 +1048,8 @@ void MDSystem::relax(void){
       }
 
     }
+
+
 
     Ek_tot = 0.0;
 
@@ -1264,6 +1279,13 @@ void MDSystem::relax(void){
 	  std::cout << "stresstensor_xyz.elem(2,2) " << stresstensor_xyz.elem(2,2) << std::endl;
 	*/
 
+	/*
+	std::cout << "bpc_scale " << specs.bpc_scale << " bpc_tau " << specs.bpc_tau << std::endl;
+	std::cout << "Pxx " << stresstensor_xyz.elem(0,0)
+		  << " Pyy " << stresstensor_xyz.elem(1,1)
+		  << " Pzz " << stresstensor_xyz.elem(2,2) << std::endl;
+	*/
+
 	double third = 1.0/3.0;
 
 	/*
@@ -1289,7 +1311,7 @@ void MDSystem::relax(void){
 	}
 
 	//#pragma omp parallel for schedule(static)
-#pragma omp parallel for schedule(static)
+	//#pragma omp parallel for schedule(static)
 	for (i=0; i<nat; ++i){
 	  pos[i][0] *= mu[0];
 	  pos[i][1] *= mu[1];

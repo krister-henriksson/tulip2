@@ -162,6 +162,7 @@ void CompoundStructureFit::getprop(ParamPot & param){
     bdir_ini[2] = mds.boxdir.col(2);
     for (i=0; i<mds.natoms(); i++){
       mds.type[i] = param.p_potinfo->elem.atomtype(mds.matter[i]);
+      mds.itype[i] = param.p_potinfo->elem.name2idx(mds.matter[i]);
     }
 
 
@@ -445,6 +446,7 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 	mds.create_from_structure(*this, 2.0*rm); // removes old atoms
 	for (int i=0; i<mds.natoms(); i++){
 	  mds.type[i] = param.p_potinfo->elem.atomtype(mds.matter[i]);
+	  mds.itype[i] = param.p_potinfo->elem.name2idx(mds.matter[i]);
 	}
       }
       mds.specs = specs_bak;
@@ -984,6 +986,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
 	    mds.create_from_structure(*this, 2.0*rm); // removes old atoms
 	    for (int i=0; i<mds.natoms(); i++){
 	      mds.type[i] = param.p_potinfo->elem.atomtype(mds.matter[i]);
+	      mds.itype[i] = param.p_potinfo->elem.name2idx(mds.matter[i]);
 	    }
 	  }
 	  mds.specs = specs_bak;

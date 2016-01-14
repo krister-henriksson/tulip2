@@ -1,0 +1,10 @@
+
+
+Latest release, January 14, 2016.
+
+Most important changes:
+
+  1/1. The implementation of the Perriot screening method now uses several helper
+arrays to store results instead of recalculating them. This should speed up the
+code somewhat.
+

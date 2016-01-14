@@ -91,6 +91,7 @@ obj/%.o: src/%.cpp
 	$(CC) $(INC) $(STD) $(WARN) $(DEBUG) $(OPT) $(PROF) $(OPENMP) -c  $< -o $@
 
 $(DEPS): $(SOURCES)
+	- mkdir obj
 	$(CC) -MM $(INC) $(SOURCES) | sed 's/\(.*\.o\)/obj\/\1/g' > $(DEPS)
 
 include $(DEPS)
@@ -100,7 +101,6 @@ include $(DEPS)
 # Other rules:
 
 dirs:
-	- mkdir -p obj
 	- mkdir -p bin
 	- mkdir -p $(INCDIR)
 	- mkdir -p $(LIBDIR)
@@ -116,7 +116,7 @@ note:
 
 
 clean:
-	- rm -f obj/*
+	- rm -f obj/* bin/* $(REBUILDABLES)
 
 
 # $@: the target filename.

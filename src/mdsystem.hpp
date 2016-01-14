@@ -124,16 +124,33 @@ public:
   double force_EAM();
 
   double force_ABOP();
-  void   force_ABOP_perriot_K(int i, int j, double & Kij, Vector3<double> dposij,
+  void   force_ABOP_perriot_K(int i, int j, double & Kij, Vector3<double> & dposij,
 			      Matrix<double> & rcut_all,
 			      Matrix<CutoffScreeningPair> & rcs_all,
 			      Matrix<std::string> & basepot_all,
-			      Matrix<int> & basepot_vecidx_all);
-  void   force_ABOP_perriot_K_frc(int i, int j, double & Kij, Vector3<double> dposij, double pref,
+			      Matrix<int> & basepot_vecidx_all,
+			      Vector<bool>   & hv0_perriot_scr_K_frc,
+			      Vector<double> & hv1_perriot_scr_K_frc,
+			      Vector<double> & hv2_perriot_scr_K_frc,
+			      Vector<double> & hv3_perriot_scr_K_frc,
+			      Vector<double> & hv4_perriot_scr_K_frc,
+			      Vector<double> & hv5_perriot_scr_K_frc,
+			      Vector< Vector3<double> > & hv6_perriot_scr_K_frc,
+			      Vector< Vector3<double> > & hv7_perriot_scr_K_frc);
+
+  void   force_ABOP_perriot_K_frc(int i, int j, double & Kij, Vector3<double> & dposij, double & pref,
 				  Matrix<double> & rcut_all,
 				  Matrix<CutoffScreeningPair> & rcs_all,
 				  Matrix<std::string> & basepot_all,
-				  Matrix<int> & basepot_vecidx_all);
+				  Matrix<int> & basepot_vecidx_all,
+				  Vector<bool>   & hv0_perriot_scr_K_frc,
+				  Vector<double> & hv1_perriot_scr_K_frc,
+				  Vector<double> & hv2_perriot_scr_K_frc,
+				  Vector<double> & hv3_perriot_scr_K_frc,
+				  Vector<double> & hv4_perriot_scr_K_frc,
+				  Vector<double> & hv5_perriot_scr_K_frc,
+				  Vector< Vector3<double> > & hv6_perriot_scr_K_frc,
+				  Vector< Vector3<double> > & hv7_perriot_scr_K_frc);
   
   void relax(void);
 
