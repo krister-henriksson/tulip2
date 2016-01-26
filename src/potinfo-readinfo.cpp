@@ -384,7 +384,6 @@ void PotentialInformation::read_info(string filename){
     }
 
 
-
     if (! fp) break; 
   }
   fp.close();

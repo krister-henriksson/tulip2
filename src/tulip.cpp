@@ -1246,8 +1246,7 @@ int main(int argc, char *argv[]){
       }
     }
     std::cout << "  Maximum force           : " << format("%15.10f") % cmpref[0].prop_pred.Fmax << std::endl;
-    if (cmpref[0].prop_use.Pmax)
-      std::cout << "  Maximum pressure        : " << format("%15.10f") % cmpref[0].prop_pred.Pmax << std::endl;
+    std::cout << "  Maximum pressure        : " << format("%15.10f") % cmpref[0].prop_pred.Pmax << std::endl;
     std::cout << "  Maximum displacement    : " << format("%15.10f") % cmpref[0].prop_pred.displmax << std::endl;
 
 

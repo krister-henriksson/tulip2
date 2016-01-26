@@ -4,11 +4,14 @@
 src/.deps/
 src/discarded/
 old/
+bin/*
+obj/*
 
 
 # Ignore stuff in current directory and recursively down:
 ./**/*~
 ./**/*.o
 ./**/a.out
+
 
 

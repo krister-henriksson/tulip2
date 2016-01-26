@@ -1,0 +1,10 @@
+
+
+Latest release, January 26, 2016.
+
+Most important changes:
+
+  1/1. Some helper vectors were added to the ABOP force calculation in order
+to avoid recalculating some pairwise factors (e.g. the cutoff fcij) and make
+the code faster.
+
