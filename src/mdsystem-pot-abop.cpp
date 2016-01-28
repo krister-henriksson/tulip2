@@ -257,6 +257,21 @@ double MDSystem::force_ABOP(){
 
   //#pragma omp parallel for reduction(+:Ep_tot_local)
 
+  // Allocate helper vectors once. We are mostly dealing with equilibrium structures
+  // where the number of neighbors of each atom is on average the same. In e.g.
+  // collision cascades some atoms may have many neighbors, and some very few.
+  // In those cases allocation once like here might waste memory.
+  int nijmax=0, ns;
+  for (i=0; i<nat; ++i){
+    ns = neighborcollection[i].size();
+    if (ns>=nijmax) nijmax=ns;
+  }
+  Vector<bool>   abop_is_neigh_ij(nijmax, false);
+  Vector<double> abop_fc_ij(nijmax, 0.0);
+  Vector<double> abop_dfc_ij(nijmax, 0.0);
+  Vector< Vector3<double> > abop_dpos_ij(nijmax, Vector3<double>(0) );
+
+
 
   for (i=0; i<nat; ++i){
     ijp = 0;
@@ -265,10 +280,17 @@ double MDSystem::force_ABOP(){
     // jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
     // Loop over j
     // jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
-    Vector<bool>   abop_is_neigh_ij(neighborcollection[i].size(), false);
-    Vector<double> abop_fc_ij(neighborcollection[i].size(), 0.0);
-    Vector<double> abop_dfc_ij(neighborcollection[i].size(), 0.0);
-    Vector< Vector3<double> > abop_dpos_ij(neighborcollection[i].size(), Vector3<double>(0) );
+
+    // Initialize:
+    for (ij=0; ij<nijmax; ij++){
+      abop_is_neigh_ij[ij]=false;
+      abop_fc_ij[ij]=0.0;
+      abop_dfc_ij[ij]=0.0;
+      abop_dpos_ij[ij][0]=0;
+      abop_dpos_ij[ij][1]=0;
+      abop_dpos_ij[ij][2]=0;
+    }
+
     ijh = -1;
     for (ij=0; ij<neighborcollection[i].size(); ij++){
       ijh++;
@@ -941,7 +963,6 @@ double MDSystem::force_ABOP(){
 	dik = abop_params_all.elem(typei,typek).d;
 	hik = abop_params_all.elem(typei,typek).h;
 	
-	
 	c2 = cik*cik;
 	d2 = dik*dik;
 	cost = (dposij * dposik) / (rij*rik);
@@ -972,7 +993,6 @@ double MDSystem::force_ABOP(){
 	  dcost_ik[p] = - cost/(rik*rik) * dposik[p]
 	    + 1.0/(rij*rik) * dposij[p];
 	}
-
 
 	dgijk = gammaik * c2 /((d2 + hcost2)*(d2 + hcost2)) * 2 * hcost;
 	for (p=0; p<3; ++p){
@@ -1292,9 +1312,6 @@ void MDSystem::force_ABOP_perriot_K(int i,
 
   Kij = 1.0;
 
-
-
-
   nij = rcs_all.elem(typei,typej).pn;
   rij = dposij.magn();
 
@@ -1333,22 +1350,20 @@ void MDSystem::force_ABOP_perriot_K(int i,
 
     if (k==j) continue;
 
-
     typek = itype[k]; //elem.name2idx( matter[k] );
     if (! iac_pure_ABOP){
-      if (basepot_all.elem(typei, typek) != "ABOP") continue;
-      if (basepot_all.elem(typej, typek) != "ABOP") continue;
+      if (basepot_all.elem(typei, typek) != "ABOP" || basepot_all.elem(typej, typek) != "ABOP")
+	continue;
     }
 
     ivecik = se_ivecij;
-    if (! sys_single_elem) ivecik = basepot_vecidx_all.elem(typei, typek);
-    if (ivecik<0) continue;
-
     ivecjk = se_ivecij;
-    if (! sys_single_elem) ivecjk = basepot_vecidx_all.elem(typej, typek);
-    if (ivecjk<0) continue;
+    if (! sys_single_elem){
+      ivecik = basepot_vecidx_all.elem(typei, typek);
+      ivecjk = basepot_vecidx_all.elem(typej, typek);
+    }
+    if (ivecik<0 || ivecjk<0) continue;
 	
-
 
     /* ############################ cutoff/screening ############################ */
     pair_ik_perriot_scr = rcs_all.elem(typei,typek).perriot_scr;
@@ -1367,12 +1382,9 @@ void MDSystem::force_ABOP_perriot_K(int i,
     rjk = dposjk.magn();
     if (rjk > rcutjk) continue;
     /* ################################################################### */
-    if (fp_is_small(rik - rcutik)) // If true, then Xik is very large.
-      continue;
-    if (fp_is_small(rjk - rcutjk)) // If true, then Xjk is very large.
-      continue;
+    if (fp_is_small(rik - rcutik) || fp_is_small(rjk - rcutjk))
+      continue; // If true, then Xik or Xjk or both are very large.
     /* ################################################################### */
-
 
 
     Xik = rik/(1.0 - pow(rik/rcutik, mik));
@@ -1424,8 +1436,6 @@ void MDSystem::force_ABOP_perriot_K(int i,
     ijkp++;
   }
   Kij = exp( - Tijk_n_sum);
-
-
 
 }
 

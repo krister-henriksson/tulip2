@@ -1,0 +1,9 @@
+
+
+Latest release, January 28, 2016.
+
+Most important changes:
+
+  1/1. Helper vectors in previous release where moved to an outer loop in order
+to further increase computational speed.
+
