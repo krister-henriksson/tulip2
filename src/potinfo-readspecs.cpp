@@ -162,19 +162,21 @@ void PotentialInformationFit::read_specs(std::string filename){
 	else if (c==2) strbuf >> specs_pot.barrier_scale;
 	strbuf.clear();
       }
+      else if (args[1]=="use_barrier_rescaling"){
+	std::string ri;
+	strbuf.str(args[2]); strbuf >> ri; strbuf.clear();
+	
+	if      (c==1) specs_prop.use_barrier_rescaling = get_boolean_choice(ri);
+	else if (c==2) specs_pot.use_barrier_rescaling  = get_boolean_choice(ri);
+      }
       else if (args[1]=="use_data_scales"){
 	std::string ri;
 	strbuf.str(args[2]); strbuf >> ri; strbuf.clear();
-	if (ri[0]=='y' || ri[0]=='Y' || ri[0]=='t' || ri[0]=='T'){
-	  if      (c==1) specs_prop.use_data_scales = true;
-	  else if (c==2) specs_pot.use_data_scales  = true;
-	}
-	else {
-	  if      (c==1) specs_prop.use_data_scales = false;
-	  else if (c==2) specs_pot.use_data_scales  = false;
-	}
-      }
 
+	if      (c==1) specs_prop.use_data_scales = get_boolean_choice(ri);
+	else if (c==2) specs_pot.use_data_scales  = get_boolean_choice(ri);
+      }
+      
 
     }
 
@@ -338,45 +340,32 @@ void PotentialInformationFit::read_specs(std::string filename){
 	  if (t==1) strbuf >> specs_prop.mds_specs.btc_tau;
 	  else      strbuf >> specs_prop.mds_specs_ref.btc_tau;
 	  strbuf.clear();
-	  if (t==1) specs_prop.mds_specs.use_Tcontrol = true;
-	  else      specs_prop.mds_specs_ref.use_Tcontrol = true;
 	}
 	else if (args[id]=="mds_btc_T0"){
 	  strbuf.str(args[id+1]);
 	  if (t==1) strbuf >> specs_prop.mds_specs.btc_T0;
 	  else      strbuf >> specs_prop.mds_specs_ref.btc_T0;
 	  strbuf.clear();
-	  if (t==1) specs_prop.mds_specs.use_Tcontrol = true;
-	  else      specs_prop.mds_specs_ref.use_Tcontrol = true;
 	}
-
-
 
 	else if (args[id]=="mds_bpc_tau"){
 	  strbuf.str(args[id+1]);
 	  if (t==1) strbuf >> specs_prop.mds_specs.bpc_tau;
 	  else 	    strbuf >> specs_prop.mds_specs_ref.bpc_tau;
 	  strbuf.clear();
-	  if (t==1) specs_prop.mds_specs.use_Pcontrol = true;
-	  else      specs_prop.mds_specs_ref.use_Pcontrol = true;
 	}
 	else if (args[id]=="mds_bpc_P0"){
 	  strbuf.str(args[id+1]);
 	  if (t==1) strbuf >> specs_prop.mds_specs.bpc_P0;
 	  else      strbuf >> specs_prop.mds_specs_ref.bpc_P0;
 	  strbuf.clear();
-	  if (t==1) specs_prop.mds_specs.use_Pcontrol = true;
-	  else      specs_prop.mds_specs_ref.use_Pcontrol = true;
 	}
 	else if (args[id]=="mds_bpc_scale"){
 	  strbuf.str(args[id+1]);
 	  if (t==1) strbuf >> specs_prop.mds_specs.bpc_scale;
 	  else      strbuf >> specs_prop.mds_specs_ref.bpc_scale;
 	  strbuf.clear();
-	  if (t==1) specs_prop.mds_specs.use_Pcontrol = true;
-	  else      specs_prop.mds_specs_ref.use_Pcontrol = true;
 	}
-
 
 	else if (args[id]=="mds_quench_tstart"){
 	  strbuf.str(args[id+1]);
@@ -434,11 +423,16 @@ void PotentialInformationFit::read_specs(std::string filename){
 
   // Debugging
   
-  if (specs_prop.mds_specs.bpc_tau<eps) specs_prop.mds_specs.use_Pcontrol = false;
-  if (specs_prop.mds_specs.btc_tau<eps) specs_prop.mds_specs.use_Tcontrol = false;
+  if (specs_prop.mds_specs.bpc_tau<0) specs_prop.mds_specs.use_Pcontrol = false;
+  else                                specs_prop.mds_specs.use_Pcontrol = true;
+  if (specs_prop.mds_specs.btc_tau<0) specs_prop.mds_specs.use_Tcontrol = false;
+  else                                specs_prop.mds_specs.use_Tcontrol = true;
 
-  if (specs_prop.mds_specs_ref.bpc_tau<eps) specs_prop.mds_specs_ref.use_Pcontrol = false;
-  if (specs_prop.mds_specs_ref.btc_tau<eps) specs_prop.mds_specs_ref.use_Tcontrol = false;
+  if (specs_prop.mds_specs_ref.bpc_tau<0) specs_prop.mds_specs_ref.use_Pcontrol = false;
+  else                                    specs_prop.mds_specs_ref.use_Pcontrol = true;
+  if (specs_prop.mds_specs_ref.btc_tau<0) specs_prop.mds_specs_ref.use_Tcontrol = false;
+  else                                    specs_prop.mds_specs_ref.use_Tcontrol = true;
+
 
 
 

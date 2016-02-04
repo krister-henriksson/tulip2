@@ -738,7 +738,8 @@ void report_prop(Vector<CompoundStructureFit> & DX,
 	  sstream << format("%15s") % cmpfit.name;
 	  compstr = "Compound: " + sstream.str() + " : ";
 
-	  propstr = compstr + "Force component  iat " + tostring(nb) + " direction " + tostring(k+1) + ")       : ";
+	  propstr = compstr + "Force component iat " + tostring(i+1) + " of " + tostring(nb)
+	    + " direction " + tostring(k+1) + "      : ";
 	  print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
 	}
       }

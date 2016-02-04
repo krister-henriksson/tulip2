@@ -32,6 +32,7 @@ SpecsFitProp::SpecsFitProp(){
   moldyn_min_dx = 1.0e-10;
   moldyn_max_dx = 0.1;
   barrier_scale = 0.0;
+  use_barrier_rescaling = false;
   use_data_scales = true;
 
   debug_fit_level0 = false;
@@ -61,8 +62,7 @@ SpecsFitProp::SpecsFitProp(){
   mds_specs_ref    = MDSettings();
 
   mds_specs_ref.is_ref_comp = true;
-  mds_specs_ref.heating_allowed = true;
-  mds_specs_ref.fixed_geometry = false;
+  mds_specs_ref.ext_relax = false;
   mds_specs_ref.quench_always = false;
 
 
@@ -91,6 +91,7 @@ SpecsFitPot::SpecsFitPot(){
   moldyn_min_dx = 1.0e-10;
   moldyn_max_dx = 0.1;
   barrier_scale = 0.0;
+  use_barrier_rescaling = false;
   use_data_scales = true;
 
   debug_fit_level0 = false;

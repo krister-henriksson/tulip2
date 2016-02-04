@@ -35,11 +35,11 @@ MDSettings::MDSettings(){
   max_dr  = 0.1;
 
   btc_tau = -20.0;
-  btc_T0  = 0.0;
+  btc_T0  =   0.0;
 
   bpc_tau   = -20.0;
-  bpc_P0    = 0.0;
-  bpc_scale = 80.0;
+  bpc_P0    =   0.0;
+  bpc_scale = 100.0;
 
   use_quench   = false;
   use_Tcontrol = false;
@@ -57,8 +57,7 @@ MDSettings::MDSettings(){
   error_boxlen_gt = 1.0e4;
 
   is_ref_comp = true;
-  heating_allowed = true;
-  fixed_geometry = false;
+  ext_relax = false;
   quench_always = false;
 
 }

@@ -1,0 +1,22 @@
+
+
+Latest release, February 4, 2016.
+
+Most important changes:
+
+  1/4. Fixed a bug in the evaluation of the barrier/penalty function U = mu * V.
+The value of U should now always be non-negative.
+
+  2/4. Added the possibility to adjust the barrier scaling constant mu in order to
+keep U equal to the merit function term chisq(without_barrier) = chisq(total) - U.
+The chisq(total) is the merit function the code tries to minimize. The adjustment
+is made only when chisq(total) is evaluated.
+
+  3/4. Removed some options and added one for the treatment of compounds. The existing
+ones are now 'option: quench_always' and 'option: ext_relax'. The latter one enables
+relaxation of the box dimensions to some specified pressure. This should facilitate
+fitting of read-in forces.
+
+  4/4. The weights are now arithmetic averages as claimed in the manual, and not geometric
+ones as implemented in previous versions of the code.
+

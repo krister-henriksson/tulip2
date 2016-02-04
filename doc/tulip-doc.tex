@@ -778,7 +778,7 @@ input value for an option are simply ignored.
 
 
 
-\subsection{File: Elements and interactions information}
+\section{File: Elements and interactions information}
 
 
 An overview of which potentials that can be read in from tabulated data
@@ -1130,7 +1130,7 @@ max: abop_omega( Cr, Cr, Fe ) =  100.0
 
 
 
-\subsection{File: Compounds information}
+\section{File: Compounds information}
 
 In order to specify a physical property to be fitted,
 the keywords in example below must be used.
@@ -1227,16 +1227,16 @@ C66           = ...
 # A SPGLIB call will determine space group and which Cij are correct.
 # Wrong ones will be turned off.
 
+
 # Options:
-option: no_heating          Do not use temperatures > 0 K.
-option: fixed_geometry      Do not allow atom positions in compounds to change.
-option: quench_always       Always scale velocities to 0.
+option: ext_relax           See text below.
+option: quench_always       See text below.
 
 
 # Force handling:
 frc_file      = ***  string
-# => use atomic forces, get them from specified file
-frc_use       = ***  boolean
+# => use atomic forces, get them from specified file, implies 'true':
+frc_use       = ***  boolean   'false' turns off read-in forces
 # => use atomic forces
 frc_use_w     = ***  boolean, use weights for force components (default)
 # frc_use_u   = ***  boolean, use uncertainties for force components
@@ -1245,7 +1245,7 @@ frc_use_w     = ***  boolean, use weights for force components (default)
 #   fx  fy  fz  wufx  wufy  wufz
 # in eV/fs, where wufx, wufy, wufz is interpreted as weights/uncertainties,
 # depending on which of frc_use_w/frc_use_u is set.
-#
+
 
 # Options that still exist (?) but are deprecated:
 # Fmax          = ...    try to achieve this largest atomic force
@@ -1274,11 +1274,11 @@ mds_max_dt    = 3.0
 
 mds_Tstart    =    0.5  starting temperature T (K)
 
-# Negative values or missing settings turn off control:
+# Negative value (tau) turns off control:
 mds_btc_tau   =   10.0  Berendsen time constant for T control (fs)
 mds_btc_T0    =    0.0  desired T (K)
 
-# Negative values or missing settings turn off control:
+# Negative value (tau) turns off control:
 mds_bpc_tau   = 80.0   Berendsen time constant for P control (fs)
 mds_bpc_P0    =  0.0   desired P (GPa)
 mds_bpc_scale = 50.0   scaling constant, usually on the order of bulk modulus (GPa)
@@ -1292,6 +1292,34 @@ mds_error_dt_lt     = 0.01  Fatal error if dt gets under this limit (fs).
 mds_error_boxlen_gt = 1e4   Fatal error if any boxlen gets over this limit (Angstrom).
 
 \end{Verbatim}
+
+
+
+
+\section{Treatment of compounds}
+\label{sec:comptreat}
+
+\textbf{Usual full relaxation:} Atomic positions and
+velocities are updated from the forces.
+Temperature and pressure control can be used.
+Velocities can be zeroed at each time step with the option \verb+option: quench_always+.
+
+\textbf{Internal relaxation}: Do a usual full relaxation, but disable pressure control.
+Pressure, box lengths and box volume are not changed from their initial values.
+
+\textbf{External relaxation:} Pressure is controlled towards a desired value by scaling
+atomic positions, box lengths and box volume.
+In the predictor/corrector changes in positions are zeroed and velocities are zeroed.
+Atomic forces are not zeroed.
+\textit{Only the pressure control can change the atomic positions.}
+To do external relaxation, specify the pressure control parameters and use the
+option \verb+option: ext_relax+.
+
+\textbf{Fixing atoms:} For a fixed atom
+changes in positions are zeroed and velocities are zeroed
+in the predictor/corrector.
+The force acting on the atom is not zeroed.
+Only the pressure control can change the position of a fixed atom.
 
 \stars
 
@@ -1312,10 +1340,12 @@ dimension.
 
 \stars
 
-If any setting relating to temperature and pressure control is mentioned it activates
-the corresponding control. The default values are negative.
-After readin the values of the time constants are checked; if any time constant value is
-negative the corresponding control is turned off.
+\textbf{Temperature and pressure control:}
+Default values for the time constants of the temperature and pressure control are negative.
+The other default values are reasonable.
+After readin the values of the time constants are checked: If they are negative the
+corresponding control is turned off, else the control is turned on.
+
 
 \stars
 
@@ -1331,7 +1361,7 @@ Any other string or character evaluates to logical false.
 
 \textbf{Default behavior for weights and uncertainties:}
 If neither weight nor uncertainty is specified for any property a default weight of 1
-is used. The weights $w_i$ are normalized: $\sum_i w_i = 1$, where the sum goes over
+is used. The weights $w_i$ are normalized: $\sum_i |w_i| = 1$, where the sum goes over
 properties with weights only, properties with uncertainties are not taken into account.
 
 
@@ -1354,7 +1384,9 @@ Ecoh     = -0.123
 u_Ecoh   = 0.0068           uncertainty (w and u can be freely mixed
                             for different properties)
 
-option: no_heating          Do not use temperatures > 0 K.
+frc_file   = in/dimer_forces.dat
+mds_Tstart = 0
+mds_tend   = 0
 
 
 
@@ -1372,6 +1404,13 @@ C12                = 20.4233027208
 w_C12              = 20
 C44                = 25.072362326
 w_C44              = 20
+
+frc_file    = in/bcc_forces.dat
+option: ext_relax
+mds_Tstart  = 0
+mds_tend    = 500
+mds_bpc_P0  = 1.0
+mds_bpc_tau = 100
 
 
 
@@ -1392,6 +1431,7 @@ mds_dt      = 3.0
 mds_max_dt  = 3.0
 
 mds_Tstart  =    0.5  starting temperature T (K)
+
 mds_btc_tau =   10.0  Berendsen time constant for T control (fs)
 mds_btc_T0  =    0.0  desired T (K)
 
@@ -1404,10 +1444,10 @@ mds_bpc_scale = 50.0  scaling constant, usually on the order of bulk modulus (GP
 
 
 
-\subsection{LAT files}
+\section{LAT files}
 
 
-\subsubsection{Basic structure}
+\subsection{Basic structure}
 
 Format of LAT file:
 
@@ -1466,7 +1506,7 @@ This is equivalent to \textbf{Direct} in VASP.
 
 
 
-\subsubsection{Constraints}
+\subsection{Constraints}
 
 The \verb+constr1+, \verb+constr2+, \etc are atomic constraint strings
 (each atom can be given constraints).
@@ -1494,7 +1534,7 @@ atom.
 
 
 
-\subsubsection{Specifying the origin}
+\subsection{Specifying the origin}
 
 An explicit origin can be specified on the line after the last basis atom.
 The first string has to start with lower- or upper-case O, then three coordinates
@@ -1502,7 +1542,7 @@ must be given. This origin will be used when the simulation cell is created.
 
 
 
-\subsubsection{Examples}
+\subsection{Examples}
 
 
 Example 1: Fe-Y dimer in vacuum, non-periodic boundaries:
@@ -1617,7 +1657,7 @@ Fe   0.25  0.25  0.25
 
 
 
-\subsection{Optional file: Technical specifications}
+\section{Optional file: Technical specifications}
 
 
 \begin{Verbatim}[fontsize=\relsize{-1},frame=single]
@@ -1659,8 +1699,10 @@ prop:steptolrel = -1e-5   ... change in step size ...
 
 prop:dogleg_radius    = 0.2    initial trust region radius
 prop:dogleg_minradius = 1e-5   exit when radius gets this low
-prop:barrier_scale    = 0.0    scaling constant for barrier penalty function,
+prop:barrier_scale    = 0.0    scaling constant mu for barrier penalty function,
                                to keep parameter values inside min/max interval
+prop:use_barrier_rescaling = yes   rescale mu so that ChiSq_barrier is approximately
+                                   equal to ChiSq_without_barrier
 prop:simann_delta_rel = 0.2    initial displacements in coordinate directions
 prop:use_data_scales  = false  use/do not use scaled values in the merit function
 
@@ -1679,11 +1721,11 @@ prop:mds_max_dt  = 1.0
 
 prop:mds_Tstart  = 300.0   starting temperature T (K)
 
-# Negative values or missing settings turn off control:
+# Negative value (tau) turns off control:
 prop:mds_btc_tau =  20     Berendsen time constant for T control (fs)
 prop:mds_btc_T0  =  0      desired T (K)
 
-# Negative values or missing settings turn off control:
+# Negative value (tau) turns off control:
 prop:mds_bpc_tau   = 100   Berendsen time constant for P control (fs)
 prop:mds_bpc_P0    = 0     desired P (GPa)
 prop:mds_bpc_scale = 100   scaling constant, usually on the order of bulk modulus
@@ -1712,11 +1754,11 @@ prop:ref:mds_max_dt  = 5.0
 
 prop:ref:mds_Tstart  = 1.0   starting temperature T (K)
 
-# Negative values or missing settings turn off control:
+# Negative value (tau) turns off control:
 prop:ref:mds_btc_tau =  20   Berendsen time constant for T control (fs)
 prop:ref:mds_btc_T0  =  0    desired T (K)
 
-# Negative values or missing settings turn off control:
+# Negative value (tau) turns off control:
 prop:ref:mds_bpc_tau   = 80  Berendsen time constant for P control (fs)
 prop:ref:mds_bpc_P0    = 0   desired P (GPa)
 prop:ref:mds_bpc_scale = 80  scaling constant, usually on the order of bulk modulus
@@ -1745,7 +1787,8 @@ pot:steptolrel = -1e-5
 
 pot:dogleg_radius    = 0.2
 pot:dogleg_minradius = 1e-5
-pot:barrier_scale    = 0.0     barrier value
+pot:barrier_scale = 0.0     barrier value
+pot:use_barrier_rescaling = yes
 pot:simann_delta_rel = 0.2
 pot:use_data_scales  = false   scaling option
 
@@ -2013,6 +2056,28 @@ dependent on each other as fitting targets will most likely give rise to
 singular matrices when using a fitting method relying on matrix inversion,
 due to presence of zero-valued rows/columns.
 
+\stars
+
+Forces to fit to can be read-in for any supplied compound.
+The MDS cell generally consists of multiple copies of the read-in compound,
+essentially in order to have box side lengths exceeding twice the cutoff radius.
+The $i$:th atom in the read-in compound with $n$ atoms is denoted as ''site type'' $i$.
+When the MDS cell is created there are $n_a, n_b, n_c$ copies of the original compound
+concatenated in the three primitive vector directions $a,b,c$, respectively,
+such that the final MDS cell consists of $n_a n_b n_c n$ atoms and
+$n_a n_b n_c$ sites of type $i$.
+The predicted forces are obtained by averaging over atoms sitting at
+equivalent sites.
+
+Note that you have to think about the conditions under which the forces are to be
+evaluated. If the forces are taken directly from the read-in compound without
+any relaxation, then use \verb+mds_tend = 0+ and e.g. \verb+mds_Tstart = 0+.
+If the compound needs to be relaxed in order to bring the pressure to
+some specified value, then use \verb+option: ext_relax+ in the LAT file,
+see Section~\ref{sec:comptreat}.
+The predicted forces are always obtained from the last MDS time step.
+
+
 
 
 
@@ -2024,13 +2089,112 @@ due to presence of zero-valued rows/columns.
 Given compounds and their desired properties, as well as technical specifications
 on how to compute them, the program tries to obtain a best fit of potential
 parameters. The best fit is achieved by minimizing the merit/cost function
+$\chi^2$, which contains a term with a sum over data points and a term with a
+sum over fitting parameters:
 
 \begin{eqnarray}
-\chi^2 &=& {1 \over 2} \sum_i f_i^2 \\
-f_i &=& t_i {\widetilde{Y}_i - Y_i \over s_i}
+\chi^2 &=& {1 \over 2} \sum_i f_i^2 + U = {1 \over 2} \sum_i f_i^2 + \sum_j U_j \\
+f_i &=& t_i {\widetilde{Y}_i - Y_i \over s_i} \\
+U_i &=& - \mu \left[ \ln (x_{\mathrm{max},i}-x_i) + \ln (x_i - x_{\mathrm{min},i})
+- 2 \ln {x_{\mathrm{max},i} - x_{\mathrm{min},i} \over 2} \right]
 \end{eqnarray}
 
-Here
+The parameters are $x_1, x_2, \ldots, x_M$.
+Parameter limits $x_i^{\mathrm{min}} = x_i^{\mathrm{max}} = 0$
+means that the parameter is
+\textbf{unconstrained} and can vary freely in the interval $(-\infty, \infty)$.
+
+The limits $x_i^{\mathrm{min}} = x_i^{\mathrm{max}} \neq 0$
+means that the parameter is \textbf{fixed}.
+The default for any parameter is $x_i^{\mathrm{min}} = x_i^{\mathrm{max}} = 1$.
+
+The limits $x_i^{\mathrm{min}} < x_i^{\mathrm{max}}$
+means that the parameter is \textbf{constrained} in the given interval.
+
+In order to constrain parameter values a barrier/penalty function is used.
+The option \verb+barrier_scale+$=\mu$ with a value $>0$ switches on the penalty
+function $U$:
+
+\begin{eqnarray}
+U &=& \sum_j U_j \\
+U_i &=& - \mu \left[ \ln (x_{\mathrm{max},i}-x_i) + \ln (x_i - x_{\mathrm{min},i})
+- 2 \ln {x_{\mathrm{max},i} - x_{\mathrm{min},i} \over 2} \right]
+\end{eqnarray}
+
+With the option \verb+use_barrier_rescaling+ with a value \verb+yes+ (or \verb+true+)
+the code tries to rescale $\mu$ each time $\chi^2$ is evaluated so that $U \approx \chi^2$.
+
+With $\mu=0$ the program still tries to stop parameter values from going outside their
+limits, but a penalty function is not used.
+
+\stars
+
+The \textbf{gradient} of the merit function is
+
+\begin{eqnarray}
+g_j &=& {\partial \chi^2 \over \partial x_j}
+= \sum_i f_i {\partial f_i \over x_j} + {\partial U_j \over \partial x_j}
+ \equiv  \sum_i f_i J_{ij} + {\partial U_j \over \partial x_j} \\
+&=& \sum_i \left( J^T_{ji} f_i + \delta_{ij} {\partial U_i \over \partial x_i} \right)
+= -h_j
+\end{eqnarray}
+
+where $h_j$ are components of the \textbf{antigradient}, and
+
+\begin{eqnarray}
+J_{ij} &=& {\partial f_i \over \partial x_j}
+= {t_i \over s_i} {\partial \widetilde{Y}_i \over \partial x_j}
+\end{eqnarray}
+
+Note:
+
+\begin{eqnarray}
+{\partial U_i \over \partial x_j}
+&=& - \mu \left[ - {1 \over x_{\mathrm{max},i}-x_i} + {1 \over x_i - x_{\mathrm{min},i}} \right] \delta_{ij}
+\end{eqnarray}
+
+The value is zero for $x_i = (x_{\mathrm{min},i} + x_{\mathrm{max},i})/2$, i.e. at the midpoint
+between the minimum and maximum allowed values of $x_i$.
+
+\begin{eqnarray}
+{\partial^2 U_i \over \partial x_j \partial x_k}
+&=& - \mu \left[ - {1 \over (x_{\mathrm{max},i}-x_i)^2} - {1 \over (x_i - x_{\mathrm{min},i})^2} \right] \delta_{ij} \delta_{ik} \\
+&=& \mu \left[ {1 \over (x_{\mathrm{max},i}-x_i)^2} + {1 \over (x_i - x_{\mathrm{min},i})^2} \right] \delta_{ij} \delta_{ik}
+\end{eqnarray}
+
+The second order derivative is positive at $x_{i,0} = (x_{\mathrm{min},i} + x_{\mathrm{max},i})/2$ so this is a local
+minimum for $U_i$. At this $x_{i,0}$ we have
+
+\begin{eqnarray}
+U_{i,0} &=& - \mu \left[ \ln {x_{\mathrm{max},i}-x_{\mathrm{min},i}\over 2}
++ \ln {x_{\mathrm{max},i}-x_{\mathrm{min},i}\over 2}
+- 2 \ln {x_{\mathrm{max},i} - x_{\mathrm{min},i} \over 2} \right]
+= 0
+\end{eqnarray}
+
+\stars
+
+The exact Hessian is
+
+\begin{eqnarray}
+H_{kp} & \equiv & {\partial^2 \chi^2 \over \partial x_k x_p}\\
+&=& {\partial x_p} \left( \sum_i f_i {\partial f_i \over \partial x_k} + {\partial U_k \over \partial x_k} \right) \\
+&=& \sum_i {\partial f_i \over \partial x_p} {\partial f_i \over \partial x_k}
++ \sum_i f_i {\partial^2 f_i \over \partial x_k \partial x_p}
++ \delta_{kp} {\partial^2 U_k \over \partial x_k \partial x_p}\\
+&=& \sum_i \left( J_{ip} J_{ik} + f_i {\partial^2 f_i \over \partial x_k \partial x_p}\right)
++ \delta_{kp} {\partial^2 U_k \over \partial x_k \partial x_p} \\
+&=& \sum_i \left( J^T_{pi} J_{ik} + f_i {\partial^2 f_i \over \partial x_k \partial x_p}\right)
++ \delta_{kp} {\partial^2 U_k \over \partial x_k \partial x_p} \\
+& \approx & \sum_i J^T_{pi} J_{ik} + \delta_{kp} {\partial^2 U_k \over \partial x_k \partial x_p}
+\equiv H'_{kp}
+\end{eqnarray}
+
+where the last line contains the approximate Hessian.
+
+\stars
+
+
 
 \begin{itemize}
 \item the $\widetilde{Y}_i$ is the predicted value of property $i$
@@ -2124,24 +2288,7 @@ In fact, the MD run can be made to scale the pressure to any desired
 value (\verb+mds_bpc_P0+), so it's better to use that one.
 
 
-\stars
 
-
-
-The \textbf{gradient} of the merit function is
-
-\begin{eqnarray}
-g_j &=& {\partial \chi^2 \over \partial x_j}
-= \sum_i f_i {\partial f_i \over x_j}
-\equiv \sum_i f_i J_{ij} = \sum_i J^T_{ji} f_i = -h_j
-\end{eqnarray}
-
-where $h_j$ are components of the \textbf{antigradient}, and
-
-\begin{eqnarray}
-J_{ij} &=& {\partial f_i \over \partial x_j}
-= {t_i \over s_i} {\partial \widetilde{Y}_i \over \partial x_j}
-\end{eqnarray}
 
 
 
@@ -2192,52 +2339,8 @@ the last step taken in parameter space.
 
 
 
-\section{Parameters}
-
-The parameters are $x_1, x_2, \ldots, x_M$.
-
-Parameter limits $x_i^{\mathrm{min}} = x_i^{\mathrm{max}} = 0$
-means that the parameter is
-\textbf{unconstrained} and can vary freely in the interval $(-\infty, \infty)$.
-
-The limits $x_i^{\mathrm{min}} = x_i^{\mathrm{max}} \neq 0$
-means that the parameter is \textbf{fixed}.
-The default for any parameter is $x_i^{\mathrm{min}} = x_i^{\mathrm{max}} = 1$.
-
-The limits $x_i^{\mathrm{min}} < x_i^{\mathrm{max}}$
-means that the parameter is \textbf{constrained} in the given interval.
 
 
-
-\section{Constraint method}
-
-In order to forcibly constrain parameter values a barrier penalty function can be used.
-The option \verb+barrier_scale+$=\mu$ with a value $>0$ switches on the penalty
-function $U$:
-
-\begin{eqnarray}
-U &=& - \sum_i \mu \ln \left\{
-{1 \over s_i} \left(
-\left[ {1 \over 2}(x_i^{\mathrm{min}}-x_i^{\mathrm{max}}) \right]^2
-- \left[ x_i - {1\over 2}(x_i^{\mathrm{min}} + x_i^{\mathrm{max}}) \right]^2
-\right)
-\right\}
-< 0
-\end{eqnarray}
-
-The total cost function is then
-
-\begin{eqnarray}
-\chi^2_{\mathrm{tot}} &=& \chi^2 + U
-\end{eqnarray}
-
-A complication with this scheme is that with small weights $w_i$ one may
-get $\chi^2_{\mathrm{tot}} = \chi^2 + U < 0$. This may interfere with the convergence
-criteria $\mathrm{min}(|\chi^2|)$, since $\chi^2_{\mathrm{tot}} < 0 < \mathrm{min}(|\chi^2|)$
-as soon as $|U|$ starts to dominate over $|\chi^2|$.
-
-With $\mu=0$ the program still tries to stop parameter values from going outside their
-limits, but a penalty function is not used.
 
 
 

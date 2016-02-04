@@ -166,25 +166,6 @@ Vector<double> convert_unc_to_wei(Vector<double> & x){
 
 
 
-bool get_boolean_choice(std::string ts){
-  int nc = ts.size();
-  int c1=' ', c2=' ';
-
-  if (nc>=1) c1=ts[0];
-  if (nc>=2) c2=ts[1];
-
-  // yes, true, set
-  // on
-  if (c1=='y' || c1=='Y' || c1=='t' || c1=='T' || c1=='s' || c1=='S')
-    return true;
-  else if ( (c1=='o' || c1=='O') && (c2=='n' || c2=='N') )
-    return true;
-  else if ( c1=='1' )
-    return true;
-  else
-    return false;
-
-}
 
 
 

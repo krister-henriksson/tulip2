@@ -131,6 +131,13 @@ void CompoundStructureFit::getprop(ParamPot & param){
 
   // std::cout << "NB: compoundfit-getprop: Tstart " << mds.specs.Tstart << std::endl;
 
+  /*
+  if (prop_use.frc){
+    // tend should be zero!
+    mds.specs.Tstart = 0;
+    mds.specs.tend = 0.0;
+  }
+  */
 
   bool retry;
   int mds_box_iter=0;
@@ -208,14 +215,27 @@ void CompoundStructureFit::getprop(ParamPot & param){
    */
   if (prop_use.frc){
     int nb = basis_elems.size();
+    int ncopies = mds.N[0] * mds.N[1] * mds.N[2];
+    int nat = mds.natoms();
 
     // Need to average over forces when compound is enlargened for mds !!!
-    // Use: prop_pred.frc[ sitetype[i] ][k] += mds.frc[i][k] ...
-
     for (int i=0; i<nb; ++i){
-      prop_pred.frc[i][0] = mds.frc[i][0];
-      prop_pred.frc[i][1] = mds.frc[i][1];
-      prop_pred.frc[i][2] = mds.frc[i][2];
+      prop_pred.frc[i][0]=0;
+      prop_pred.frc[i][1]=0;
+      prop_pred.frc[i][2]=0;
+    }
+
+    for (int i=0; i<nat; ++i){
+      prop_pred.frc[ mds.sitetype[i] ][0] += mds.frc[i][0];
+      prop_pred.frc[ mds.sitetype[i] ][1] += mds.frc[i][1];
+      prop_pred.frc[ mds.sitetype[i] ][2] += mds.frc[i][2];
+    }
+
+    double td = 1.0/ncopies;
+    for (int i=0; i<nb; ++i){
+      prop_pred.frc[i][0] *= td;
+      prop_pred.frc[i][1] *= td;
+      prop_pred.frc[i][2] *= td;
     }
   }
 
@@ -532,6 +552,7 @@ void CompoundStructureFit::get_B_Bp(MDSystem             & mds,
 
 
   cs.barrier_scale() = param.p_potinfo->specs_prop.barrier_scale;
+  cs.use_barrier_rescaling() = param.p_potinfo->specs_prop.use_barrier_rescaling;
   cs.use_scales()    = param.p_potinfo->specs_prop.use_data_scales;
 
   cond_conv.functolabs = param.p_potinfo->specs_prop.functolabs;
@@ -1067,6 +1088,7 @@ void CompoundStructureFit::get_Cij(MDSystem             & mds,
       fit_OK = false;
 
       cs.barrier_scale() = param.p_potinfo->specs_prop.barrier_scale;
+      cs.use_barrier_rescaling() = param.p_potinfo->specs_prop.use_barrier_rescaling;
       cs.use_scales()    = param.p_potinfo->specs_prop.use_data_scales;
 
       cond_conv.functolabs = param.p_potinfo->specs_prop.functolabs;

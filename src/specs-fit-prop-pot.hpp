@@ -42,6 +42,7 @@ public:
   double moldyn_max_dx;
   /* Restricted optimization options: */
   double   barrier_scale;
+  bool use_barrier_rescaling;
 
   bool use_data_scales;
 
@@ -108,6 +109,7 @@ public:
   double moldyn_max_dx;
   /* Restricted optimization options: */
   double   barrier_scale;
+  bool use_barrier_rescaling;
 
   bool use_data_scales;
 

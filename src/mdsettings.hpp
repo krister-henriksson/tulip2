@@ -65,8 +65,7 @@ public:
 
 
   bool is_ref_comp;
-  bool heating_allowed;
-  bool fixed_geometry;
+  bool ext_relax;
   bool quench_always;
 
   MDSettings();

@@ -244,12 +244,7 @@ CompoundListFit::CompoundListFit(Elements & el,
       compounds[ilat].prop_use.frc = true;
     }
     else if (args[0]=="frc_use"){
-      if (args[1][0]=='y' || args[1][0]=='Y' ||
-	  args[1][0]=='T' || args[1][0]=='T'){
-	compounds[ilat].prop_use.frc = true;
-      }
-      else
-	compounds[ilat].prop_use.frc = false;
+      compounds[ilat].prop_use.frc = get_boolean_choice(args[1]);
     }
     else if (args[0]=="frc_use_u"){
       compounds[ilat].prop_use.frc = true;
@@ -292,11 +287,8 @@ CompoundListFit::CompoundListFit(Elements & el,
 
     else if (args[0]=="option"){
 
-      if      (args[1]=="no_heating"){
-	compounds[ilat].mds_specs.heating_allowed = false;
-      }
-      else if (args[1]=="fixed_geometry"){
-	compounds[ilat].mds_specs.fixed_geometry = true;
+      if (args[1]=="ext_relax"){
+	compounds[ilat].mds_specs.ext_relax = true;
       }
       else if (args[1]=="quench_always"){
 	compounds[ilat].mds_specs.quench_always = true;
@@ -356,33 +348,22 @@ CompoundListFit::CompoundListFit(Elements & el,
 	strbuf >> compounds[ilat].mds_specs.max_dr;
 	strbuf.clear();
       }
+
       else if (args[0]=="mds_btc_tau"){
 	strbuf.str(args[1]);
 	strbuf >> compounds[ilat].mds_specs.btc_tau;
-	if (compounds[ilat].mds_specs.btc_tau<0.0 ||
-	    abs(compounds[ilat].mds_specs.btc_tau)<eps)
-	  compounds[ilat].mds_specs.use_Tcontrol = false;
-	else
-	  compounds[ilat].mds_specs.use_Tcontrol = true;
 	strbuf.clear();
       }
-
       else if (args[0]=="mds_btc_T0"){
 	strbuf.str(args[1]);
 	strbuf >> compounds[ilat].mds_specs.btc_T0;
 	strbuf.clear();
       }
+
       else if (args[0]=="mds_bpc_tau"){
 	strbuf.str(args[1]);
 	strbuf >> compounds[ilat].mds_specs.bpc_tau;
-
-	if (compounds[ilat].mds_specs.bpc_tau<0.0 ||
-	    abs(compounds[ilat].mds_specs.bpc_tau)<eps)
-	  compounds[ilat].mds_specs.use_Pcontrol = false;
-	else
-	  compounds[ilat].mds_specs.use_Pcontrol = true;
 	strbuf.clear();
-
       }
       else if (args[0]=="mds_bpc_P0"){
 	strbuf.str(args[1]);
@@ -394,6 +375,8 @@ CompoundListFit::CompoundListFit(Elements & el,
 	strbuf >> compounds[ilat].mds_specs.bpc_scale;
 	strbuf.clear();
       }
+
+
       else if (args[0]=="mds_quench_tstart"){
 	strbuf.str(args[1]);
 	strbuf >> compounds[ilat].mds_specs.quench_tstart;
@@ -715,26 +698,30 @@ CompoundListFit::CompoundListFit(Elements & el,
       aborterror("ERROR: Both Ecoh and Ecoh_delta are used for compound "
 		 + compounds[ilat].name + ". At most one of these can be used!");
 
-    if (compounds[ilat].mds_specs.fixed_geometry){
-      compounds[ilat].prop_use.displmax   = false;
-      compounds[ilat].prop_use.a = false;
-      compounds[ilat].prop_use.b = false;
-      compounds[ilat].prop_use.c = false;
-      compounds[ilat].prop_use.bpa = false;
-      compounds[ilat].prop_use.cpa = false;
-      compounds[ilat].prop_use.angle_ab = false;
-      compounds[ilat].prop_use.angle_ac = false;
-      compounds[ilat].prop_use.angle_bc = false;
-      compounds[ilat].prop_use.r0 = false;
-      compounds[ilat].prop_use.Vatom = false;
-      compounds[ilat].prop_use.frc = false;
+    if (compounds[ilat].mds_specs.ext_relax){
+      compounds[ilat].prop_use.displmax = false;
     }
+
+    if (compounds[ilat].mds_specs.btc_tau<0)
+      compounds[ilat].mds_specs.use_Tcontrol = false;
+    else
+      compounds[ilat].mds_specs.use_Tcontrol = true;
+    if (compounds[ilat].mds_specs.bpc_tau<0)
+      compounds[ilat].mds_specs.use_Pcontrol = false;
+    else
+      compounds[ilat].mds_specs.use_Pcontrol = true;
+
+
+
 
     if (compounds[ilat].prop_use.frc &&
 	compounds[ilat].filename_frc=="none"){
       aborterror("ERROR: No file specified for reading in the forces for compound "
 		 + compounds[ilat].name);
     }
+
+
+
   }
 
 
@@ -902,78 +889,78 @@ CompoundListFit::CompoundListFit(Elements & el,
   for (ilat=0; ilat<nc; ++ilat){
 
     if (compounds[ilat].prop_use.a && compounds[ilat].use_w.a)
-      wsum += square( compounds[ilat].prop_w.a );
+      wsum += abs( compounds[ilat].prop_w.a );
 
     if (compounds[ilat].prop_use.b && compounds[ilat].use_w.b)
-      wsum += square( compounds[ilat].prop_w.b );
+      wsum += abs( compounds[ilat].prop_w.b );
 
     if (compounds[ilat].prop_use.c && compounds[ilat].use_w.c)
-      wsum += square( compounds[ilat].prop_w.c );
+      wsum += abs( compounds[ilat].prop_w.c );
 
     if (compounds[ilat].prop_use.bpa && compounds[ilat].use_w.bpa)
-      wsum += square( compounds[ilat].prop_w.bpa );
+      wsum += abs( compounds[ilat].prop_w.bpa );
 
     if (compounds[ilat].prop_use.cpa && compounds[ilat].use_w.cpa)
-      wsum += square( compounds[ilat].prop_w.cpa );
+      wsum += abs( compounds[ilat].prop_w.cpa );
 
     if (compounds[ilat].prop_use.r0 && compounds[ilat].use_w.r0)
-      wsum += square( compounds[ilat].prop_w.r0 );
+      wsum += abs( compounds[ilat].prop_w.r0 );
 
     if (compounds[ilat].prop_use.angle_ab && compounds[ilat].use_w.angle_ab)
-      wsum += square( compounds[ilat].prop_w.angle_ab );
+      wsum += abs( compounds[ilat].prop_w.angle_ab );
 
     if (compounds[ilat].prop_use.angle_ac && compounds[ilat].use_w.angle_ac)
-      wsum += square( compounds[ilat].prop_w.angle_ac );
+      wsum += abs( compounds[ilat].prop_w.angle_ac );
 
     if (compounds[ilat].prop_use.angle_bc && compounds[ilat].use_w.angle_bc)
-      wsum += square( compounds[ilat].prop_w.angle_bc );
+      wsum += abs( compounds[ilat].prop_w.angle_bc );
 
     if (compounds[ilat].prop_use.Vatom && compounds[ilat].use_w.Vatom)
-      wsum += square( compounds[ilat].prop_w.Vatom );
+      wsum += abs( compounds[ilat].prop_w.Vatom );
 
     if (compounds[ilat].prop_use.Ecoh && compounds[ilat].use_w.Ecoh)
-      wsum += square( compounds[ilat].prop_w.Ecoh );
+      wsum += abs( compounds[ilat].prop_w.Ecoh );
 
     if (compounds[ilat].prop_use.Ecoh_delta && compounds[ilat].use_w.Ecoh_delta)
-      wsum += square( compounds[ilat].prop_w.Ecoh_delta );
+      wsum += abs( compounds[ilat].prop_w.Ecoh_delta );
 
     if (compounds[ilat].prop_use.Emix && compounds[ilat].use_w.Emix)
-      wsum += square( compounds[ilat].prop_w.Emix );
+      wsum += abs( compounds[ilat].prop_w.Emix );
 
     if (compounds[ilat].prop_use.B && compounds[ilat].use_w.B)
-      wsum += square( compounds[ilat].prop_w.B );
+      wsum += abs( compounds[ilat].prop_w.B );
 
     if (compounds[ilat].prop_use.Bp && compounds[ilat].use_w.Bp)
-      wsum += square( compounds[ilat].prop_w.Bp );
+      wsum += abs( compounds[ilat].prop_w.Bp );
 
     for (int k=0; k<6; ++k){
       for (int p=0; p<6; ++p){
 	if (compounds[ilat].prop_use.C.elem(k,p) && compounds[ilat].use_w.C.elem(k,p))
-	  wsum += square( compounds[ilat].prop_w.C.elem(k,p) );
+	  wsum += abs( compounds[ilat].prop_w.C.elem(k,p) );
       }
     }
 
     if (compounds[ilat].prop_use.Fmax && compounds[ilat].use_w.Fmax)
-      wsum += square( compounds[ilat].prop_w.Fmax );
+      wsum += abs( compounds[ilat].prop_w.Fmax );
 
     if (compounds[ilat].prop_use.Pmax && compounds[ilat].use_w.Pmax)
-      wsum += square( compounds[ilat].prop_w.Pmax );
+      wsum += abs( compounds[ilat].prop_w.Pmax );
 
     if (compounds[ilat].prop_use.displmax && compounds[ilat].use_w.displmax)
-      wsum += square( compounds[ilat].prop_w.displmax );
+      wsum += abs( compounds[ilat].prop_w.displmax );
 
     if (compounds[ilat].prop_use.frc){
       int nb = compounds[ilat].basis_elems.size();
       for (int iat=0; iat<nb; ++iat){
 	for (int k=0; k<3; ++k){
 	  if (compounds[ilat].use_w.frc)
-	    wsum += square( compounds[ilat].prop_w.frc[iat][k] );
+	    wsum += abs( compounds[ilat].prop_w.frc[iat][k] );
 	}
       }
     }
 
   }
-  wsum = 1.0/sqrt(wsum);
+  wsum = 1.0/(wsum);
   for (ilat=0; ilat<nc; ++ilat){
 
     if (compounds[ilat].prop_use.a && compounds[ilat].use_w.a)

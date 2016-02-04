@@ -456,6 +456,7 @@ int main(int argc, char *argv[]){
   std::cout << "MolDynFit: min_dx                                  : " << potinfo.specs_prop.moldyn_min_dx << std::endl;
   std::cout << "MolDynFit: max_dx                                  : " << potinfo.specs_prop.moldyn_max_dx << std::endl;
   std::cout << "Penalty function: barrier                          : " << potinfo.specs_prop.barrier_scale << std::endl;
+  std::cout << "Penalty function: use barrier rescaling?           : " << potinfo.specs_prop.use_barrier_rescaling << std::endl;
   std::cout << "Normalize data using initial values?               : " << potinfo.specs_prop.use_data_scales << std::endl;
   std::cout << "Debug: level0                                      : " << potinfo.specs_prop.debug_fit_level0 << std::endl;
   std::cout << "Debug: level1                                      : " << potinfo.specs_prop.debug_fit_level1 << std::endl;
@@ -513,8 +514,7 @@ int main(int argc, char *argv[]){
   std::cout << "  bl_limit                                              : " << potinfo.specs_prop.mds_specs.error_boxlen_gt << std::endl; 
   std::cout << "" << std::endl;
 
-  std::cout << "Options: heating allowed?                               : " << potinfo.specs_prop.mds_specs.heating_allowed << std::endl; 
-  std::cout << "Options: fixed geometry?                                : " << potinfo.specs_prop.mds_specs.fixed_geometry << std::endl; 
+  std::cout << "Options: external relaxation?                           : " << potinfo.specs_prop.mds_specs.ext_relax << std::endl; 
   std::cout << "Options: quench always?                                 : " << potinfo.specs_prop.mds_specs.quench_always << std::endl; 
   std::cout << "  If true, all velocities zeroed at every time step." << std::endl;
   std::cout << "" << std::endl;
@@ -554,8 +554,7 @@ int main(int argc, char *argv[]){
   std::cout << "  bl_limit                                              : " << potinfo.specs_prop.mds_specs_ref.error_boxlen_gt << std::endl; 
 
   std::cout << "" << std::endl;
-  std::cout << "Options: heating allowed?                               : " << potinfo.specs_prop.mds_specs_ref.heating_allowed << std::endl; 
-  std::cout << "Options: fixed geometry?                                : " << potinfo.specs_prop.mds_specs_ref.fixed_geometry << std::endl; 
+  std::cout << "Options: external relaxation?                           : " << potinfo.specs_prop.mds_specs_ref.ext_relax << std::endl; 
   std::cout << "Options: quench always?                                 : " << potinfo.specs_prop.mds_specs_ref.quench_always << std::endl; 
   std::cout << "  If true, all velocities zeroed at every time step." << std::endl;
   std::cout << "" << std::endl;
@@ -611,6 +610,7 @@ int main(int argc, char *argv[]){
   std::cout << "MolDynFit: min_dx                                  : " << potinfo.specs_pot.moldyn_min_dx << std::endl;
   std::cout << "MolDynFit: max_dx                                  : " << potinfo.specs_pot.moldyn_max_dx << std::endl;
   std::cout << "Penalty function: barrier                          : " << potinfo.specs_pot.barrier_scale << std::endl;
+  std::cout << "Penalty function: use barrier rescaling?           : " << potinfo.specs_pot.use_barrier_rescaling << std::endl;
   std::cout << "Normalize data using initial values?               : " << potinfo.specs_pot.use_data_scales << std::endl;
   std::cout << "Debug: level0                                      : " << potinfo.specs_pot.debug_fit_level0 << std::endl;
   std::cout << "Debug: level1                                      : " << potinfo.specs_pot.debug_fit_level1 << std::endl;
@@ -770,8 +770,7 @@ int main(int argc, char *argv[]){
     std::cout << "  P control: scale                                      : " << complistfit.compounds[i].mds_specs.bpc_scale << std::endl; 
     std::cout << "    The scale is usually equal to the approximate bulk modulus (GPa)." << std::endl;
     std::cout << "" << std::endl;
-    std::cout << "Options: heating allowed?                               : " << complistfit.compounds[i].mds_specs.heating_allowed << std::endl; 
-    std::cout << "Options: fixed geometry?                                : " << complistfit.compounds[i].mds_specs.fixed_geometry << std::endl; 
+    std::cout << "Options: external relaxation?                           : " << complistfit.compounds[i].mds_specs.ext_relax << std::endl; 
     std::cout << "Options: quench always?                                 : " << complistfit.compounds[i].mds_specs.quench_always << std::endl; 
     std::cout << "  If true, all velocities zeroed at every time step." << std::endl;
 
@@ -1337,6 +1336,7 @@ int main(int argc, char *argv[]){
     cs.ReportFuncPointer() = report_pot_prop;
 
     cs.barrier_scale() = potinfo.specs_pot.barrier_scale;
+    cs.use_barrier_rescaling() = potinfo.specs_pot.use_barrier_rescaling;
     cs.use_scales()    = potinfo.specs_pot.use_data_scales;
 
     cs.finalize_setup();

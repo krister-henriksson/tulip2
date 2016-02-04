@@ -17,8 +17,6 @@ w_r0 = 0.0001               weight
 Ec       = -0.123
 u_Ec     = 0.0068           uncertainty (w and u can be freely mixed for different properties)
 
-# All possible options:
-option: no_heating          Do not use temperatures > 0 K.
-option: fixed_geometry      Do not allow atom positions in compounds to change.
+
 option: quench_always       Always scale velocities to 0.
 

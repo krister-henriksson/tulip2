@@ -34,7 +34,6 @@ double calc_rel_change(double pred, double readin);
 
 Vector<double> convert_unc_to_wei(Vector<double> & x);
 
-bool get_boolean_choice(std::string ts);
 
 void get_parabolic_fit_from_triplet(utils::Vector3<double> x,
 				    utils::Vector3<double> y,

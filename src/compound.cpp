@@ -186,8 +186,6 @@ void CompoundStructure::create_from_model(Elements & el,
   basis_elems[0] = elem1;
   basis_vecs[0] = Vector3<double>(0.0);
 
-  //use_u=false;
-  //use_w=false;
 
   scalefactor = ai;
   lpa = ai;
@@ -493,9 +491,9 @@ void CompoundStructure::create_from_model(Elements & el,
 
 
   for (i=0; i<nbasis; ++i){
-    basis_types[ el.name2idx( basis_elems[i] ) ];
+    basis_types[i] = el.name2idx( basis_elems[i] );
   }
-
+  
 
   basis_is_fixed.resize(nbasis);
   basis_freedir.resize(nbasis);
@@ -781,12 +779,19 @@ void CompoundStructure::read_structure(Elements & el){
   std::cout << "Done. Closed file " << filename << std::endl;
 
   basis_types.resize(nbasis);
+
+  //std::cout << "nbasis: " << nbasis << std::endl;
+  //std::cout << "size of basis_types: " << basis_types.size() << std::endl;
+  //std::cout << "size of basis_elems: " << basis_elems.size() << std::endl;
+  //std::cout << "made it here 1000" << std::endl;
   for (i=0; i<nbasis; ++i){
-    basis_types[ el.name2idx( basis_elems[i] ) ];
+    basis_types[i] = el.name2idx( basis_elems[i] );
+    //std::cout << "made it here " << 1000 + i+1 << std::endl;
   }
 
 
   finalize(scalefactor, scalefactor, scalefactor);
+  //std::cout << "made it here 1100" << std::endl;
 
 }
 

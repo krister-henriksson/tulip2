@@ -531,7 +531,7 @@ void MDSystem::relax(void){
 
     dt_s_max = 0.0;
     while (true){
-      if (! specs.fixed_geometry){
+      if (! specs.ext_relax){
 	for (i=0; i<nat; ++i){
 	  double td1 = dt * vel[i][0] + 0.5 * dt*dt * acc[i][0];
 	  double td2 = dt * vel[i][1] + 0.5 * dt*dt * acc[i][1];
@@ -557,7 +557,7 @@ void MDSystem::relax(void){
       double td2 = dt * vel[i][1] + 0.5 * dt*dt * acc[i][1];
       double td3 = dt * vel[i][2] + 0.5 * dt*dt * acc[i][2];
 
-      if (specs.fixed_geometry) td1 = td2 = td3 = 0.0;
+
 
       if (atom_is_fixed[i]){
 	if (istep % specs.ndump == 0)
@@ -597,6 +597,7 @@ void MDSystem::relax(void){
 	       << std::endl;
       }
 
+      if (specs.ext_relax) td1 = td2 = td3 = 0.0;
 
 
       // cache trashing???
@@ -612,18 +613,32 @@ void MDSystem::relax(void){
       if (i==0 || (i>0 && td4 > dt_s_max*dt_s_max))
 	dt_s_max = sqrt(td4);
 
-      
+
+
+
+      td1 = 0.5 * dt * acc[i][0];
+      td2 = 0.5 * dt * acc[i][1];
+      td3 = 0.5 * dt * acc[i][2];
+
+      /*
       if (specs.heating_allowed){
 	vel[i][0] += 0.5 * dt * acc[i][0];
 	vel[i][1] += 0.5 * dt * acc[i][1];
 	vel[i][2] += 0.5 * dt * acc[i][2];
       }
-      if (specs.quench_always || atom_is_fixed[i])
-	vel[i][0] = vel[i][1] = vel[i][2] = 0.0;
+      */
+      if (specs.quench_always || specs.ext_relax || atom_is_fixed[i]){
+	vel[i][0] = 0;
+	vel[i][1] = 0;
+	vel[i][2] = 0;
+      }
+      else {
+	vel[i][0] += td1;
+	vel[i][1] += td2;
+	vel[i][2] += td3;
+      }
 
-
-
-
+      // CM:
       if (sys_single_elem){
 	mass_cm += mass1;
 	vel_cm[0] += mass1 * vel[i][0];
@@ -1015,8 +1030,10 @@ void MDSystem::relax(void){
       //td = 1.0 / elem.mass(elem.idx2name(type[i])) * 1.60217653 / 1.660538782 * 0.01;
       //std::cout << "td = " << td << std::endl;
 
+      /*
       if (atom_is_fixed[i])
 	frc[i][0] = frc[i][1] = frc[i][2] = 0.0;
+      */
 
       /* Convert force to acceleration. */
       acc[i][0] = frc[i][0] * td;
@@ -1024,15 +1041,30 @@ void MDSystem::relax(void){
       acc[i][2] = frc[i][2] * td;
 
       /* Get the corrected velocity. */
+      double td1 = 0.5 * dt * acc[i][0];
+      double td2 = 0.5 * dt * acc[i][1];
+      double td3 = 0.5 * dt * acc[i][2];
+
+      /*
       if (specs.heating_allowed){
 	vel[i][0] += 0.5 * dt * acc[i][0];
 	vel[i][1] += 0.5 * dt * acc[i][1];
 	vel[i][2] += 0.5 * dt * acc[i][2];
       }
-      if (specs.quench_always || atom_is_fixed[i])
-	vel[i][0] = vel[i][1] = vel[i][2] = 0.0;
+      */
+      if (specs.quench_always || specs.ext_relax || atom_is_fixed[i]){
+	vel[i][0] = 0.0;
+	vel[i][1] = 0.0;
+	vel[i][2] = 0.0;
+      }
+      else {
+	vel[i][0] += td1;
+	vel[i][1] += td2;
+	vel[i][2] += td3;
+      }
 
 
+      // CM:
       if (sys_single_elem){
 	mass_cm += mass1;
 	vel_cm[0] += mass1 * vel[i][0];
@@ -1267,7 +1299,7 @@ void MDSystem::relax(void){
        Pressure control.
        ---------------------------------------------------------------------- */
     if (periodic){
-      if (specs.use_Pcontrol && !specs.fixed_geometry){
+      if (specs.use_Pcontrol){ // && !specs.fixed_geometry){
 	// control_P();
 	// Requires that P has been calculated earlier!
 
@@ -1548,7 +1580,7 @@ void MDSystem::relax(void){
     /* ----------------------------------------------------------------------
        Temperature control:
        ---------------------------------------------------------------------- */
-    if (specs.use_Tcontrol && specs.heating_allowed){
+    if (specs.use_Tcontrol){ // && specs.heating_allowed){
       // control_T();
       // Requires that T has been calculated earlier!
       lambda = 1.0;
@@ -1632,7 +1664,7 @@ void MDSystem::relax(void){
     }
 
 
-    if (specs.fixed_geometry) break;
+    //if (specs.fixed_geometry) break;
     if (time >= specs.tend) break;
 
     time += dt;

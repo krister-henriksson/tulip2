@@ -10,7 +10,6 @@ r0 = 1.5          # Desired bond distance in dimer
 w_r0 = 0.0001
 Ec       = -0.123
 w_Ec     = 0.0068
-option: no_heating
 
 
 
@@ -21,9 +20,9 @@ file     = in/tetra.lat
 elements = W H
 Emix     = 0.1
 w_Emix     = 0.001
-option: no_heating
 
-
+option: ext_relax
+option: quench_always
 
 
 LAT
