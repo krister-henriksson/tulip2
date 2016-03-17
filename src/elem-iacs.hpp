@@ -34,6 +34,7 @@ private:
   Vector<double> mreflat_a;
   Vector<double> mreflat_b;
   Vector<double> mreflat_c;
+  Vector<double> mreflat_r0;
   Vector<double> mreflat_bpa;
   Vector<double> mreflat_cpa;
 
@@ -50,6 +51,7 @@ public:
   double & reflat_a(std::string s);
   double & reflat_b(std::string s);
   double & reflat_c(std::string s);
+  double & reflat_r0(std::string s);
   double & reflat_bpa(std::string s);
   double & reflat_cpa(std::string s);
 
@@ -59,6 +61,7 @@ public:
   double & reflat_a(int typei);
   double & reflat_b(int typei);
   double & reflat_c(int typei);
+  double & reflat_r0(int typei);
   double & reflat_bpa(int typei);
   double & reflat_cpa(int typei);
 

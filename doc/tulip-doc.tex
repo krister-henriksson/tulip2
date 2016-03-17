@@ -1177,10 +1177,28 @@ cpa           = ...
 # Dimer bond distance (only for dimers):
 # r0          = ...
 
-# Angles (radians):
+# Angles (degrees):
 angle_ab      = ...
 angle_ac      = ...
 angle_bc      = ...
+
+
+# Bond lenghts:
+bl   1 2      = ...  # Here '1' refers to the first atom in the LAT file,
+bl   1 3      = ...  # '2' refers to the second atom, etc.
+bl   1 4      = ...
+w_bl 1 2      = ...  # Weight. Note the indices!
+u_bl 1 3      = ...  # Uncertainty. Note the indices!
+# etc
+
+# Bond angles (degrees) A-B-C:
+# Center atom is B. The angle is between the vectors A-B and C-B.
+ba   1 2 3    = ...
+ba   2 3 4    = ...
+w_ba 1 2 3    = ...  # Weight. Note the indices!
+u_ba 2 3 4    = ...  # Uncertainty. Note the indices!
+# etc
+
 
 # Atomic volume (cubic Angstroms):
 Vatom         = ...
@@ -1452,19 +1470,19 @@ mds_bpc_scale = 50.0  scaling constant, usually on the order of bulk modulus (GP
 Format of LAT file:
 
 \begin{Verbatim}[fontsize=\relsize{-1},frame=single]
-Comment                      Arbitrary comment.
-  S                          Overall scaling constant.
-a1 a2 a3  optional-string    Components of the first primitive vector U1.
-b1 b2 b3  optional-string    Components of the second primitive vector U2.
-c1 c2 c3  optional-string    Components of the third primitive vector U3.
-  format                     internal or direct
-  Nbasis                     number of basis vectors
-E1  B11  B12  B13 constr1    Element name and vector components of first basis atom.
-E2  B21  B22  B23 constr2    Element name and vector components of second basis atom.
+Comment                        Arbitrary comment.
+  S                            Overall scaling constant.
+a1 a2 a3  optional-string      Components of the first primitive vector U1.
+b1 b2 b3  optional-string      Components of the second primitive vector U2.
+c1 c2 c3  optional-string      Components of the third primitive vector U3.
+  format                       internal or direct
+  Nbasis                       number of basis vectors
+E1  B11  B12  B13  constr1     Element name, coordinates, constraint(s)
+E2  B21  B22  B23  constr2     ...
 ...
 \end{Verbatim}
 
-The real primitive vectors are
+The actual primitive vectors are
 
 \begin{equation}
 \mathbf{v}_i = S \mathbf{u}_i
@@ -1918,7 +1936,7 @@ $\widetilde{\mathbf{b}} = \widetilde{\mathbf{v}_2}$:
 \widetilde{\gamma} &=&
 = \arccos \left(
 { \widetilde{\mathbf{L}_1} \cdot \widetilde{\mathbf{L}_2} \over \widetilde{L_1} \widetilde{L_2} }
-\right) \cdot 1/(2 \pi) \cdot 360
+\right) \cdot {1\over 2\pi} \cdot 360^\circ
 \end{eqnarray}
 
 Angle $\widetilde{\beta}$ (in degrees), i.e.
@@ -1930,7 +1948,7 @@ $\widetilde{\mathbf{c}} = \widetilde{\mathbf{v}_3}$:
 \widetilde{\beta} &=&
 = \arccos \left(
 { \widetilde{\mathbf{L}_1} \cdot \widetilde{\mathbf{L}_3} \over \widetilde{L_1} \widetilde{L_3} }
-\right) \cdot 1/(2 \pi) \cdot 360
+\right) \cdot {1\over 2\pi} \cdot 360^\circ
 \end{eqnarray}
 
 Angle $\widetilde{\alpha}$ (in degrees), i.e.
@@ -1942,8 +1960,11 @@ $\widetilde{\mathbf{c}} = \widetilde{\mathbf{v}_3}$:
 \widetilde{\alpha} &=&
 = \arccos \left(
 { \widetilde{\mathbf{L}_2} \cdot \widetilde{\mathbf{L}_3} \over \widetilde{L_2} \widetilde{L_3} }
-\right) \cdot 1/(2 \pi) \cdot 360
+\right) \cdot {1\over 2\pi} \cdot 360^\circ
 \end{eqnarray}
+
+Bond lenghts are bond angles are calculated using the actual atomic positions
+in the last MDS frame, taking any periodic boundary conditions into account.
 
 Atomic volume (cubic \AA{}ngstr\"oms):
 

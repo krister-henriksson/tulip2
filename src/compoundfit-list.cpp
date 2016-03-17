@@ -129,6 +129,8 @@ CompoundListFit::CompoundListFit(Elements & el,
   opts.push_back("P_max");
   opts.push_back("displmax");
   opts.push_back("displ_max");
+  opts.push_back("bl");
+  opts.push_back("ba");
 
   opts_special.resize(0);
   opts_special.push_back("C");
@@ -166,7 +168,20 @@ CompoundListFit::CompoundListFit(Elements & el,
       // Since we are reading this compound from a file, it is not a reference compound:
       compounds[ilat].mds_specs.is_ref_comp = false;
 
+      compounds[ilat].prop_readin.bondlen.resize(0);
+      compounds[ilat].prop_readin.bondlen_a1.resize(0);
+      compounds[ilat].prop_readin.bondlen_a2.resize(0);
+      compounds[ilat].prop_use.bondlen = false;
+      compounds[ilat].prop_w.bondlen.resize(0);
+      compounds[ilat].prop_u.bondlen.resize(0);
 
+      compounds[ilat].prop_readin.bondangle.resize(0);
+      compounds[ilat].prop_readin.bondangle_a1.resize(0);
+      compounds[ilat].prop_readin.bondangle_a2.resize(0);
+      compounds[ilat].prop_readin.bondangle_a3.resize(0);
+      compounds[ilat].prop_use.bondangle = false;
+      compounds[ilat].prop_w.bondangle.resize(0);
+      compounds[ilat].prop_u.bondangle.resize(0);
     }
 
 
@@ -277,7 +292,6 @@ CompoundListFit::CompoundListFit(Elements & el,
 	     args[0]=="Ecoh_delta_ref_comp"){
       compounds[ilat].Ecoh_delta_refcomp = bool_in_string(args[1]);
     }
-
 
 
 
@@ -536,6 +550,163 @@ CompoundListFit::CompoundListFit(Elements & el,
 	else if (ot==2) { compounds[ilat].prop_w.angle_bc = td; compounds[ilat].use_w.angle_bc = true;  compounds[ilat].use_u.angle_bc = false; }
 	else if (ot==3) { compounds[ilat].prop_u.angle_bc = td; compounds[ilat].use_w.angle_bc = false; compounds[ilat].use_u.angle_bc = true; }
       }
+
+
+
+
+
+      else if (match=="bl"){
+	if (ot==1){
+	  if (ns<4) aborterror("bl property requires a total of 3 values to work with. Detected only "
+			       + tostring(ns) + ".");
+	  int a1,a2;
+	  double bl;
+	  strbuf.str(args[1]); strbuf >> a1; strbuf.clear();
+	  strbuf.str(args[2]); strbuf >> a2; strbuf.clear();
+	  strbuf.str(args[3]); strbuf >> bl; strbuf.clear();
+
+	  compounds[ilat].prop_readin.bondlen_a1.push_back(a1);
+	  compounds[ilat].prop_readin.bondlen_a2.push_back(a2);
+	  compounds[ilat].prop_readin.bondlen.push_back(bl);
+	  compounds[ilat].prop_use.bondlen = true;
+	  // Default:
+	  compounds[ilat].prop_w.bondlen.push_back( 1.0);
+	  compounds[ilat].prop_u.bondlen.push_back(-1.0);
+	  compounds[ilat].use_w.bondlen.push_back(true);
+	  compounds[ilat].use_u.bondlen.push_back(false);
+	}
+	else if (ot==2) {
+	  if (ns<4) aborterror("w_bl property requires a total of 3 values to work with. Detected only "
+			       + tostring(ns) + ".");
+	  int a1,a2;
+	  double bl;
+	  strbuf.str(args[1]); strbuf >> a1; strbuf.clear();
+	  strbuf.str(args[2]); strbuf >> a2; strbuf.clear();
+	  strbuf.str(args[3]); strbuf >> bl; strbuf.clear();
+	  // Find the correct bondlen:
+	  int n = compounds[ilat].prop_readin.bondlen.size();
+	  for (int i=0; i<n; ++i){
+	    if ( (a1==compounds[ilat].prop_readin.bondlen_a1[i]
+		  && a2==compounds[ilat].prop_readin.bondlen_a2[i]) ||
+		 (a2==compounds[ilat].prop_readin.bondlen_a1[i]
+		  && a1==compounds[ilat].prop_readin.bondlen_a2[i]) ){
+	      compounds[ilat].prop_w.bondlen[i] = bl;
+	      compounds[ilat].use_w.bondlen[i]  = true;
+	      compounds[ilat].prop_u.bondlen[i] = -1.0;
+	      compounds[ilat].use_u.bondlen[i]  = false;
+	      break;
+	    }
+	  }
+	}
+	else if (ot==3) {
+	  if (ns<4) aborterror("u_bl property requires a total of 3 values to work with. Detected only "
+			       + tostring(ns) + ".");
+	  int a1,a2;
+	  double bl;
+	  strbuf.str(args[1]); strbuf >> a1; strbuf.clear();
+	  strbuf.str(args[2]); strbuf >> a2; strbuf.clear();
+	  strbuf.str(args[3]); strbuf >> bl; strbuf.clear();
+	  // Find the correct bondlen:
+	  int n = compounds[ilat].prop_readin.bondlen.size();
+	  for (int i=0; i<n; ++i){
+	    if ( (a1==compounds[ilat].prop_readin.bondlen_a1[i]
+		  && a2==compounds[ilat].prop_readin.bondlen_a2[i]) ||
+		 (a2==compounds[ilat].prop_readin.bondlen_a1[i]
+		  && a1==compounds[ilat].prop_readin.bondlen_a2[i]) ){
+	      compounds[ilat].prop_w.bondlen[i] = -1.0;
+	      compounds[ilat].use_w.bondlen[i]  = false;
+	      compounds[ilat].prop_u.bondlen[i] = bl;
+	      compounds[ilat].use_u.bondlen[i]  = true;
+	      break;
+	    }
+	  }
+	}
+      }
+
+      else if (match=="ba"){
+	if (ot==1){
+	  if (ns<4) aborterror("ba property requires a total of 4 values to work with. Detected only "
+			       + tostring(ns) + ".");
+	  int a1,a2,a3;
+	  double bl;
+	  strbuf.str(args[1]); strbuf >> a1; strbuf.clear();
+	  strbuf.str(args[2]); strbuf >> a2; strbuf.clear();
+	  strbuf.str(args[3]); strbuf >> a3; strbuf.clear();
+	  strbuf.str(args[4]); strbuf >> bl; strbuf.clear();
+
+	  compounds[ilat].prop_readin.bondangle_a1.push_back(a1);
+	  compounds[ilat].prop_readin.bondangle_a2.push_back(a2);
+	  compounds[ilat].prop_readin.bondangle_a3.push_back(a3);
+	  compounds[ilat].prop_readin.bondangle.push_back(bl);
+	  compounds[ilat].prop_use.bondangle = true;
+	  // Default:
+	  compounds[ilat].prop_w.bondangle.push_back( 1.0);
+	  compounds[ilat].prop_u.bondangle.push_back(-1.0);
+	  compounds[ilat].use_w.bondangle.push_back(true);
+	  compounds[ilat].use_u.bondangle.push_back(false);
+	}
+	else if (ot==2) {
+	  if (ns<4) aborterror("w_ba property requires a total of 4 values to work with. Detected only "
+			       + tostring(ns) + ".");
+	  int a1,a2,a3;
+	  double bl;
+	  strbuf.str(args[1]); strbuf >> a1; strbuf.clear();
+	  strbuf.str(args[2]); strbuf >> a2; strbuf.clear();
+	  strbuf.str(args[3]); strbuf >> a3; strbuf.clear();
+	  strbuf.str(args[4]); strbuf >> bl; strbuf.clear();
+	  // Find the correct bondangle:
+	  int n = compounds[ilat].prop_readin.bondangle.size();
+	  for (int i=0; i<n; ++i){
+	    if ( (a2==compounds[ilat].prop_readin.bondangle_a2[i]) &&
+		 ( (a1==compounds[ilat].prop_readin.bondangle_a1[i] &&
+		    a3==compounds[ilat].prop_readin.bondangle_a3[i])
+		   ||
+		   (a3==compounds[ilat].prop_readin.bondangle_a1[i] &&
+		    a1==compounds[ilat].prop_readin.bondangle_a3[i])
+		   ) ){
+	      compounds[ilat].prop_w.bondangle[i] = bl;
+	      compounds[ilat].use_w.bondangle[i]  = true;
+	      compounds[ilat].prop_u.bondangle[i] = -1.0;
+	      compounds[ilat].use_u.bondangle[i]  = false;
+	      break;
+	    }
+	  }
+	}
+	else if (ot==3) {
+	  if (ns<4) aborterror("u_ba property requires a total of 4 values to work with. Detected only "
+			       + tostring(ns) + ".");
+	  int a1,a2,a3;
+	  double bl;
+	  strbuf.str(args[1]); strbuf >> a1; strbuf.clear();
+	  strbuf.str(args[2]); strbuf >> a2; strbuf.clear();
+	  strbuf.str(args[3]); strbuf >> a3; strbuf.clear();
+	  strbuf.str(args[4]); strbuf >> bl; strbuf.clear();
+	  // Find the correct bondangle:
+	  int n = compounds[ilat].prop_readin.bondangle.size();
+	  for (int i=0; i<n; ++i){
+	    if ( (a2==compounds[ilat].prop_readin.bondangle_a2[i]) &&
+		 ( (a1==compounds[ilat].prop_readin.bondangle_a1[i] &&
+		    a3==compounds[ilat].prop_readin.bondangle_a3[i])
+		   ||
+		   (a3==compounds[ilat].prop_readin.bondangle_a1[i] &&
+		    a1==compounds[ilat].prop_readin.bondangle_a3[i])
+		   ) ){
+	      compounds[ilat].prop_w.bondangle[i] = -1.0;
+	      compounds[ilat].use_w.bondangle[i]  = false;
+	      compounds[ilat].prop_u.bondangle[i] = bl;
+	      compounds[ilat].use_u.bondangle[i]  = true;
+	      break;
+	    }
+	  }
+	}
+      }
+
+
+
+
+
+
+
       else if (match=="V0" || match=="Vat" || match=="Vatom"){
 	if (ot==1){
 	  compounds[ilat].prop_readin.Vatom = td;
@@ -610,6 +781,10 @@ CompoundListFit::CompoundListFit(Elements & el,
 	else if (ot==2) { compounds[ilat].prop_w.displmax = td; compounds[ilat].use_w.displmax = true;  compounds[ilat].use_u.displmax = false; }
 	else if (ot==3) { compounds[ilat].prop_u.displmax = td; compounds[ilat].use_w.displmax = false; compounds[ilat].use_u.displmax = true; }
       }
+
+
+
+
 
 
       // Special parameters:
@@ -688,6 +863,19 @@ CompoundListFit::CompoundListFit(Elements & el,
      Debugging of settings:
      ----------------------------------------------------------------------------- */
   for (ilat=0; ilat<compounds.size(); ++ilat){
+
+
+    // **************************************************
+    // Memory allocation:
+    // **************************************************
+    if (compounds[ilat].prop_use.bondlen)
+      compounds[ilat].prop_pred.bondlen.resize( compounds[ilat].prop_readin.bondlen.size() );
+
+    if (compounds[ilat].prop_use.bondangle)
+      compounds[ilat].prop_pred.bondangle.resize( compounds[ilat].prop_readin.bondangle.size() );
+    // **************************************************
+    // **************************************************
+
 
 
     if (compounds[ilat].Ecoh_delta_refcomp) nEcohref++;
@@ -915,6 +1103,21 @@ CompoundListFit::CompoundListFit(Elements & el,
     if (compounds[ilat].prop_use.angle_bc && compounds[ilat].use_w.angle_bc)
       wsum += abs( compounds[ilat].prop_w.angle_bc );
 
+    if (compounds[ilat].prop_use.bondlen){
+      int n = compounds[ilat].prop_readin.bondlen.size();
+      for (int i=0; i<n; ++i){
+	if (compounds[ilat].use_w.bondlen[i])
+	  wsum += abs( compounds[ilat].prop_w.bondlen[i] );
+      }
+    }
+    if (compounds[ilat].prop_use.bondangle){
+      int n = compounds[ilat].prop_readin.bondangle.size();
+      for (int i=0; i<n; ++i){
+	if (compounds[ilat].use_w.bondangle[i])
+	  wsum += abs( compounds[ilat].prop_w.bondangle[i] );
+      }
+    }
+
     if (compounds[ilat].prop_use.Vatom && compounds[ilat].use_w.Vatom)
       wsum += abs( compounds[ilat].prop_w.Vatom );
 
@@ -989,6 +1192,21 @@ CompoundListFit::CompoundListFit(Elements & el,
 
     if (compounds[ilat].prop_use.angle_bc && compounds[ilat].use_w.angle_bc)
       compounds[ilat].prop_w.angle_bc *= wsum;
+
+    if (compounds[ilat].prop_use.bondlen){
+      int n = compounds[ilat].prop_readin.bondlen.size();
+      for (int i=0; i<n; ++i){
+	if (compounds[ilat].use_w.bondlen[i])
+	  compounds[ilat].prop_w.bondlen[i] *= wsum;
+      }
+    }
+    if (compounds[ilat].prop_use.bondangle){
+      int n = compounds[ilat].prop_readin.bondangle.size();
+      for (int i=0; i<n; ++i){
+	if (compounds[ilat].use_w.bondangle[i])
+	  compounds[ilat].prop_w.bondangle[i] *= wsum;
+      }
+    }
 
     if (compounds[ilat].prop_use.Vatom && compounds[ilat].use_w.Vatom)
       compounds[ilat].prop_w.Vatom *= wsum;

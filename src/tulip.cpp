@@ -904,6 +904,36 @@ int main(int argc, char *argv[]){
       }
     }
 
+    if (complistfit.compounds[i].prop_use.bondlen){
+      int n = complistfit.compounds[i].prop_readin.bondlen.size();
+      for (int k=0; k<n; ++k){
+	DY.push_back(complistfit.compounds[i].prop_readin.bondlen[k]);
+	if (complistfit.compounds[i].use_u.bondlen[k]){
+	  DUY.push_back(complistfit.compounds[i].prop_u.bondlen[k]);
+	  DWY.push_back(-1.0);
+	}
+	else {
+	  DUY.push_back(-1.0);
+	  DWY.push_back(complistfit.compounds[i].prop_w.bondlen[k]);
+	}
+      }
+    }
+    if (complistfit.compounds[i].prop_use.bondangle){
+      int n = complistfit.compounds[i].prop_readin.bondangle.size();
+      for (int k=0; k<n; ++k){
+	DY.push_back(complistfit.compounds[i].prop_readin.bondangle[k]);
+	if (complistfit.compounds[i].use_u.bondangle[k]){
+	  DUY.push_back(complistfit.compounds[i].prop_u.bondangle[k]);
+	  DWY.push_back(-1.0);
+	}
+	else {
+	  DUY.push_back(-1.0);
+	  DWY.push_back(complistfit.compounds[i].prop_w.bondangle[k]);
+	}
+      }
+    }
+
+
     if (complistfit.compounds[i].prop_use.Vatom){ DY.push_back(complistfit.compounds[i].prop_readin.Vatom);
       if (complistfit.compounds[i].use_u.Vatom){
 	DUY.push_back(complistfit.compounds[i].prop_u.Vatom);
@@ -1098,7 +1128,7 @@ int main(int argc, char *argv[]){
 
 
     Vector<CompoundStructureFit> cmpref(1, CompoundStructureFit());;
-    double a,b,c;
+    double a,b,c,r0;
 
     // ###############################################################
     // Create from generic model:
@@ -1106,8 +1136,15 @@ int main(int argc, char *argv[]){
     a = potinfo.elem.reflat_a(sref);
     b = potinfo.elem.reflat_b(sref);
     c = potinfo.elem.reflat_c(sref);
-    cmpref[0].create_from_model(elem,latref,sref,sref, a,b,c);
-
+    r0 = potinfo.elem.reflat_r0(sref);
+    {
+      double td1=a, td2=b, td3=c;
+      if (a<0){
+	td3 = td2 = td1 = r0/sqrt(3.0);
+      }
+      cmpref[0].create_from_model(elem,latref,sref,sref, td1,td2,td3);
+    }
+    
 
 
 
@@ -1124,6 +1161,7 @@ int main(int argc, char *argv[]){
     std::cout << "                     b: " << b << std::endl;
     std::cout << "                     c: " << c << std::endl;
     std::cout << "                => c/a: " << c/a << std::endl;
+    std::cout << "                    r0: " << r0 << std::endl;
     std::cout << "  Use internal format?: " << cmpref[0].use_int << std::endl;
     std::cout << "  Direction vector 1  : " 
 	 << format("%15.10f ") % cmpref[0].u1_vec[0]
@@ -1152,6 +1190,9 @@ int main(int argc, char *argv[]){
     cmpref[0].prop_readin.c = c;
     cmpref[0].prop_use.c = true;
 
+    cmpref[0].prop_readin.r0 = r0;
+    cmpref[0].prop_use.r0 = true;
+
     cmpref[0].prop_use.Ecoh = true;
 
     cmpref[0].prop_use.B = true;
@@ -1171,7 +1212,7 @@ int main(int argc, char *argv[]){
 
     if (!cmpref[0].pbc[0] || !cmpref[0].pbc[1] || !cmpref[0].pbc[2]){
       if (cmpref[0].nbasis==2)
-	cmpref[0].prop_use.r0 = true;
+	//cmpref[0].prop_use.r0 = true;
 
       cmpref[0].prop_use.B  = false;
       cmpref[0].prop_use.Bp = false;
@@ -1204,6 +1245,7 @@ int main(int argc, char *argv[]){
     std::cout << "  Lattice parameter a     : " << format("%15.10f") % cmpref[0].prop_pred.a << std::endl;
     std::cout << "  Lattice parameter b     : " << format("%15.10f") % cmpref[0].prop_pred.b << std::endl;
     std::cout << "  Lattice parameter c     : " << format("%15.10f") % cmpref[0].prop_pred.c << std::endl;
+    //std::cout << "  Bond length       r0    : " << format("%15.10f") % cmpref[0].prop_pred.r0 << std::endl;
     std::cout << "  Cohesive energy   Ecoh  : " << format("%15.10f") % cmpref[0].prop_pred.Ecoh
 	 << " for element index " << potinfo.elem.name2idx(sref)
 	 << " having atom type " << potinfo.elem.atomtype(sref)

@@ -205,8 +205,10 @@ void CompoundStructure::create_from_model(Elements & el,
 
     for (i=0; i<nbasis; ++i) basis_elems[i] = elem1;
     i=0; basis_vecs[i] = Vector3<double>(0.0);
-    i=1; basis_vecs[i] = Vector3<double>(0.0); basis_vecs[i][0] = 1.0; // bond axis in X direction
-
+    i=1; basis_vecs[i] = Vector3<double>(0.0);
+    basis_vecs[i][0] = 1.0; // bond axis in space-diagonal direction
+    basis_vecs[i][1] = 1.0; // bond axis in space-diagonal direction
+    basis_vecs[i][2] = 1.0; // bond axis in space-diagonal direction
   }
   else if (crystalname=="DIM2"){
     nelem = 2;
@@ -225,9 +227,10 @@ void CompoundStructure::create_from_model(Elements & el,
     i=1; basis_elems[i] = elem2;
 
     i=0; basis_vecs[i] = Vector3<double>(0.0);
-    i=1; basis_vecs[i] = Vector3<double>(0.0); basis_vecs[i][0] = 1.0; // bond axis in X direction
-
-
+    i=1; basis_vecs[i] = Vector3<double>(0.0);
+    basis_vecs[i][0] = 1.0; // bond axis in space-diagonal direction
+    basis_vecs[i][1] = 1.0; // bond axis in space-diagonal direction
+    basis_vecs[i][2] = 1.0; // bond axis in space-diagonal direction
   }
   // ---------------------------------------------------------------------------
   else if (crystalname=="BCC-P"){

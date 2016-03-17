@@ -71,6 +71,9 @@ CompoundPropertiesUse::CompoundPropertiesUse()
   Pmax = false;
   displmax = false;
   frc = false;
+
+  bondlen   = false;
+  bondangle = false;
 }
 
 
@@ -87,11 +90,6 @@ void CompoundPropertiesUse::check_and_fix(){
   if (r0)
     a=b=c=bpa=cpa=Vatom=angle_ab=angle_ac=angle_bc=0;
 }
-
-
-
-
-
 
 
 
@@ -273,6 +271,12 @@ int CompoundStructureFit::NData(){
   if (prop_use.displmax) N++;
   if (prop_use.frc){
     N += 3.0 * basis_elems.size();
+  }
+  if (prop_use.bondlen){
+    N += prop_readin.bondlen.size();
+  }
+  if (prop_use.bondangle){
+    N += prop_readin.bondangle.size();
   }
 
   return N;

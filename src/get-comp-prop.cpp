@@ -163,6 +163,16 @@ Vector<double> get_comp_prop(ParamPot & param, Vector<CompoundStructureFit> & DX
     if (cmpfit.prop_use.B) MDY.push_back(cmpfit.prop_pred.B);
     if (cmpfit.prop_use.Bp) MDY.push_back(cmpfit.prop_pred.Bp);
 
+    if (cmpfit.prop_use.bondlen){
+      int n = cmpfit.prop_pred.bondlen.size();
+      for (int i=0; i<n; ++i) MDY.push_back(cmpfit.prop_pred.bondlen[i]);
+    }
+    if (cmpfit.prop_use.bondangle){
+      int n = cmpfit.prop_pred.bondangle.size();
+      for (int i=0; i<n; ++i) MDY.push_back(cmpfit.prop_pred.bondangle[i]);
+    }
+
+
     for (k=0; k<6; ++k)
       for (p=0; p<6; ++p)
 	if (cmpfit.prop_use.C.elem(k,p)) MDY.push_back(cmpfit.prop_pred.C.elem(k,p));

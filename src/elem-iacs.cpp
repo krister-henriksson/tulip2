@@ -43,6 +43,7 @@ void Elements::add_elem(std::string name){
     mreflat_a.resize(m);   mreflat_a[m-1] = -1.0;
     mreflat_b.resize(m);   mreflat_b[m-1] = -1.0;
     mreflat_c.resize(m);   mreflat_c[m-1] = -1.0;
+    mreflat_r0.resize(m);   mreflat_r0[m-1] = -1.0;
     mreflat_bpa.resize(m); mreflat_bpa[m-1] = -1.0;
     mreflat_cpa.resize(m); mreflat_cpa[m-1] = -1.0;
     
@@ -92,6 +93,9 @@ double & Elements::reflat_b(std::string s){
 double & Elements::reflat_c(std::string s){
   return mreflat_c[name2idx(s)];
 }
+double & Elements::reflat_r0(std::string s){
+  return mreflat_r0[name2idx(s)];
+}
 double & Elements::reflat_bpa(std::string s){
   return mreflat_bpa[name2idx(s)];
 }
@@ -123,6 +127,9 @@ double & Elements::reflat_b(int i){
 }
 double & Elements::reflat_c(int i){
   return mreflat_c[i];
+}
+double & Elements::reflat_r0(int i){
+  return mreflat_r0[i];
 }
 double & Elements::reflat_bpa(int i){
   return mreflat_bpa[i];

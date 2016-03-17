@@ -528,6 +528,52 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
 
+
+    if (cmpfit.prop_use.bondlen){
+      int n = cmpfit.prop_readin.bondlen.size();
+      for (int i=0; i<n; ++i){
+	td1 = cmpfit.prop_pred.bondlen[i];
+	td2 = cmpfit.prop_readin.bondlen[i];
+	tb1 = cmpfit.use_u.bondlen[i];
+	tb2 = cmpfit.use_w.bondlen[i];
+	td3 = cmpfit.prop_u.bondlen[i];
+	td4 = cmpfit.prop_w.bondlen[i];
+
+	std::ostringstream sstream;
+	sstream << format("%15s") % cmpfit.name;
+	compstr = "Compound: " + sstream.str() + " : ";
+
+	propstr = compstr + "Bond length "
+	  + tostring(cmpfit.prop_readin.bondlen_a1[i]) + "-"
+	  + tostring(cmpfit.prop_readin.bondlen_a2[i]) + "                       : ";
+	print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
+      }
+    }
+    if (cmpfit.prop_use.bondangle){
+      int n = cmpfit.prop_readin.bondangle.size();
+      for (int i=0; i<n; ++i){
+	td1 = cmpfit.prop_pred.bondangle[i];
+	td2 = cmpfit.prop_readin.bondangle[i];
+	tb1 = cmpfit.use_u.bondangle[i];
+	tb2 = cmpfit.use_w.bondangle[i];
+	td3 = cmpfit.prop_u.bondangle[i];
+	td4 = cmpfit.prop_w.bondangle[i];
+
+	std::ostringstream sstream;
+	sstream << format("%15s") % cmpfit.name;
+	compstr = "Compound: " + sstream.str() + " : ";
+
+	propstr = compstr + "Bond angle (degrees) "
+	  + tostring(cmpfit.prop_readin.bondangle_a1[i]) + "-"
+	  + tostring(cmpfit.prop_readin.bondangle_a2[i]) + "-"
+	  + tostring(cmpfit.prop_readin.bondangle_a3[i]) + "            : ";
+	print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
+      }
+    }
+
+
+
+
     if (cmpfit.prop_use.Vatom){
       td1 = cmpfit.prop_pred.Vatom;
       td2 = cmpfit.prop_readin.Vatom;

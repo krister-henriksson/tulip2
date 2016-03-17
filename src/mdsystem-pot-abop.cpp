@@ -164,9 +164,11 @@ double MDSystem::force_ABOP(){
 
       rcut_all.elem(i,j)=p_potinfo->pot_ABOP[ivecij].rcut();
 
-      if (p_potinfo->pot_ABOP[ivecij].rcs.name=="tersoff"
+      if (p_potinfo->pot_ABOP[ivecij].rcs.name=="tersoff"){
+	/*
 	  &&
 	  p_potinfo->pot_ABOP[ivecij].rcs.mode=="cut"){
+	*/
 	rcs_all.elem(i,j).tersoff = true;
 	rcs_all.elem(i,j).R    = p_potinfo->pot_ABOP[ivecij].get_parval("R");
 	rcs_all.elem(i,j).D    = p_potinfo->pot_ABOP[ivecij].get_parval("D");
@@ -272,15 +274,16 @@ double MDSystem::force_ABOP(){
   Vector< Vector3<double> > abop_dpos_ij(nijmax, Vector3<double>(0) );
 
 
-
   for (i=0; i<nat; ++i){
-    ijp = 0;
     typei = itype[i]; //elem.name2idx( matter[i] );
 
-    // jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
-    // Loop over j
-    // jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
-
+    /* ########################################################################
+       ########################################################################
+       Loop over all neighbors of a given atom: Establish some pairwise properties
+       and save them into arrays.
+       ########################################################################
+       ########################################################################
+    */
     // Initialize:
     for (ij=0; ij<nijmax; ij++){
       abop_is_neigh_ij[ij]=false;
@@ -290,10 +293,11 @@ double MDSystem::force_ABOP(){
       abop_dpos_ij[ij][1]=0;
       abop_dpos_ij[ij][2]=0;
     }
-
     ijh = -1;
     for (ij=0; ij<neighborcollection[i].size(); ij++){
       ijh++;
+
+      // Default: This neighbor is not inside cutoff sphere:
       abop_is_neigh_ij[ijh] = false;
 
       j = neighborcollection[i][ij];
@@ -312,6 +316,7 @@ double MDSystem::force_ABOP(){
       if (rij > rcutij) continue;
       /* ################################################################### */
 
+      // If we made it here, then this neighbor is inside cutoff sphere:
       abop_is_neigh_ij[ijh] = true;
       abop_dpos_ij[ijh]     = dposij;
 
@@ -354,6 +359,7 @@ double MDSystem::force_ABOP(){
 	  fcij = 0.0;  dfcij = 0.0;
 	  abop_fc_ij[ijh]  = fcij;
 	  abop_dfc_ij[ijh] = dfcij;
+	  abop_is_neigh_ij[ijh] = false;
 	  continue;
 	}
 	else {
@@ -374,6 +380,7 @@ double MDSystem::force_ABOP(){
 	  fcij  = 0.0;  dfcij = 0.0;
 	  abop_fc_ij[ijh]  = fcij;
 	  abop_dfc_ij[ijh] = dfcij;
+	  abop_is_neigh_ij[ijh] = false;
 	  continue;
 	}
 	else {
@@ -395,6 +402,8 @@ double MDSystem::force_ABOP(){
     // 'Is neighbor?', dpos, fc/dfc saved into vectors for all neighbors ijh.
 
 
+
+
     // jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
     // Loop over j
     // jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
@@ -408,6 +417,8 @@ double MDSystem::force_ABOP(){
       j = neighborcollection[i][ij];
       typej = itype[j]; //elem.name2idx( matter[j] );
 
+
+
       /*
       Vector3<double> tv1;
       get_atom_distance_vec(pos[i], pos[j], tv1);
@@ -419,6 +430,14 @@ double MDSystem::force_ABOP(){
       rij    = dposij.magn();
       fcij   = abop_fc_ij[ijh];
       dfcij  = abop_dfc_ij[ijh];
+
+      /*
+      std::cout << "Pair " << i << " " << j << " types " << typei << " " << typej
+		<< " elements " << matter[i] << " " << matter[j]
+		<< " distance " << rij
+		<< " fcij " << fcij << std::endl;
+      */
+
 
 
       /* ############################ cutoff/screening ############################ */
@@ -555,6 +574,11 @@ double MDSystem::force_ABOP(){
       
 
 
+
+
+
+
+
       // ################################################################
       // Bond order factor bij:
       // ################################################################
@@ -576,6 +600,7 @@ double MDSystem::force_ABOP(){
 
 	k = neighborcollection[i][ik];
 	if (k==j) continue;
+	if (k==i) continue;
 	
 
 	typek = itype[k]; //elem.name2idx( matter[k] );
@@ -611,6 +636,10 @@ double MDSystem::force_ABOP(){
 	/* ################################################################### */
 
 	
+
+
+
+
 
 	r0ik = abop_params_all.elem(typei,typek).r0;
 
@@ -769,7 +798,7 @@ double MDSystem::force_ABOP(){
 
       */
 
-
+    
 
 
 

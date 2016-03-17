@@ -280,17 +280,42 @@ void CompoundStructureFit::getprop(ParamPot & param){
   
   if (prop_use.angle_ab)
     prop_pred.angle_ab = acos( (bdir_fin[0]        * bdir_fin[1]) /
-				      (bdir_fin[0].magn() * bdir_fin[1].magn())
-				      )/(2*PI) * 360.0;
+			       (bdir_fin[0].magn() * bdir_fin[1].magn())
+			       )/(2*PI) * 360.0;
   if (prop_use.angle_ac)
     prop_pred.angle_ac = acos( (bdir_fin[0]        * bdir_fin[2]) /
-				      (bdir_fin[0].magn() * bdir_fin[2].magn())
-				      )/(2*PI) * 360.0;
+			       (bdir_fin[0].magn() * bdir_fin[2].magn())
+			       )/(2*PI) * 360.0;
   if (prop_use.angle_bc)
     prop_pred.angle_bc = acos( (bdir_fin[1]        * bdir_fin[2]) /
-				      (bdir_fin[1].magn() * bdir_fin[2].magn())
-				      )/(2*PI) * 360.0;
-    
+			       (bdir_fin[1].magn() * bdir_fin[2].magn())
+			       )/(2*PI) * 360.0;
+  
+  if (prop_use.bondlen){
+    int n = prop_readin.bondlen.size();
+    for (int i=0; i<n; ++i){
+      int a1 = prop_readin.bondlen_a1[i];
+      int a2 = prop_readin.bondlen_a2[i];
+      Vector3<double> dpos;
+      mds.get_atom_distance_vec(mds.pos[a1-1], mds.pos[a2-1], dpos);
+      prop_pred.bondlen[i] = dpos.magn();
+    }
+  }
+  if (prop_use.bondangle){
+    int n = prop_readin.bondangle.size();
+    for (int i=0; i<n; ++i){
+      int a1 = prop_readin.bondangle_a1[i];
+      int a2 = prop_readin.bondangle_a2[i];
+      int a3 = prop_readin.bondangle_a3[i];
+      Vector3<double> dpos1, dpos2;
+      mds.get_atom_distance_vec(mds.pos[a1-1], mds.pos[a2-1], dpos1);
+      mds.get_atom_distance_vec(mds.pos[a3-1], mds.pos[a2-1], dpos2);
+
+      prop_pred.bondangle[i] = acos( dpos1 * dpos2 / (dpos1.magn() * dpos2.magn()) )/(2*PI) * 360.0;
+    }
+  }
+
+
   if (prop_use.Vatom)
     prop_pred.Vatom = mds.vol/mds.natoms();
 

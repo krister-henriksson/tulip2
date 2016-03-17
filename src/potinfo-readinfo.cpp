@@ -131,6 +131,15 @@ void PotentialInformation::read_info(string filename){
       strbuf.str(args[3]); strbuf >> td; strbuf.clear();
       elem.reflat_c(ts) = td;
     }
+    else if (args[0]=="r0"){
+      /* Specify reference lattice parameter r0. TWO species expected. */
+      strbuf.str(args[1]); strbuf >> ts; strbuf.clear();
+      strbuf.str(args[3]); strbuf >> td; strbuf.clear();
+      elem.reflat_r0(ts) = td;
+      elem.reflat_a(ts) = -1;
+      elem.reflat_b(ts) = -1;
+      elem.reflat_c(ts) = -1;
+    }
     else if (args[0]=="bpa"){
       /* Specify reference lattice parameter ratio b/a. TWO species expected. */
       strbuf.str(args[1]); strbuf >> ts; strbuf.clear();
@@ -907,16 +916,20 @@ void PotentialInformationFit::read_info_fit(string filename){
       aborterror("ERROR: Reference lattice for species " + ts +
 		 " has not been specified. Exiting.");
     }
-    if (elem.reflat_a(ts)<0)
-      aborterror("Error: Lattice parameter a for reference lattice " + ts + " " +
+    if (elem.reflat_a(ts)<0 && elem.reflat_r0(ts)<0)
+      aborterror("Error: Lattice parameter a or dimer bond length r0 for reference lattice " + ts + " " +
 		 "is missing. Exiting.");
-    
-    if (elem.reflat_bpa(ts)>0) elem.reflat_b(ts) = elem.reflat_bpa(ts) * elem.reflat_a(ts);
-    if (elem.reflat_cpa(ts)>0) elem.reflat_c(ts) = elem.reflat_cpa(ts) * elem.reflat_a(ts);
 
-    if (elem.reflat_bpa(ts)<0) elem.reflat_bpa(ts) = elem.reflat_b(ts)/elem.reflat_a(ts);
-    if (elem.reflat_cpa(ts)<0) elem.reflat_cpa(ts) = elem.reflat_c(ts)/elem.reflat_a(ts);
+    if (elem.reflat_a(ts)>0){
+      if (elem.reflat_bpa(ts)>0) elem.reflat_b(ts) = elem.reflat_bpa(ts) * elem.reflat_a(ts);
+      if (elem.reflat_cpa(ts)>0) elem.reflat_c(ts) = elem.reflat_cpa(ts) * elem.reflat_a(ts);
+
+      if (elem.reflat_bpa(ts)<0) elem.reflat_bpa(ts) = elem.reflat_b(ts)/elem.reflat_a(ts);
+      if (elem.reflat_cpa(ts)<0) elem.reflat_cpa(ts) = elem.reflat_c(ts)/elem.reflat_a(ts);
+    }
+
   }
+
 
 
 

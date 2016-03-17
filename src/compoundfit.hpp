@@ -67,6 +67,9 @@ public:
   bool displmax;
   bool frc;
 
+  bool bondlen;
+  bool bondangle;
+
   CompoundPropertiesUse();
 
   void check_and_fix();
@@ -96,6 +99,14 @@ public:
   double displmax;
   Vector< Vector3<double> > frc;
 
+  Vector< double > bondlen;
+  Vector< int >    bondlen_a1;
+  Vector< int >    bondlen_a2;
+  Vector< double > bondangle;
+  Vector< int >    bondangle_a1;
+  Vector< int >    bondangle_a2;
+  Vector< int >    bondangle_a3;
+
   CompoundProperties();
 } ;
 
@@ -123,6 +134,9 @@ public:
   bool displmax;
   bool frc;
 
+  Vector<bool> bondlen;
+  Vector<bool> bondangle;
+  
   CompoundPropertiesUseUncertainties();
 } ;
 
@@ -148,6 +162,9 @@ public:
   bool Pmax;
   bool displmax;
   bool frc;
+
+  Vector<bool> bondlen;
+  Vector<bool> bondangle;
 
   CompoundPropertiesUseWeights();
 } ;
@@ -177,6 +194,9 @@ public:
   double displmax;
   Vector< Vector3<double> > frc;
 
+  Vector< double > bondlen;
+  Vector< double > bondangle;
+
   CompoundPropertiesUncertainties();
 } ;
 
@@ -203,6 +223,9 @@ public:
   double Pmax;
   double displmax;
   Vector< Vector3<double> > frc;
+
+  Vector< double > bondlen;
+  Vector< double > bondangle;
 
   CompoundPropertiesWeights();
 } ;
