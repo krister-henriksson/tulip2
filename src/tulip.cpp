@@ -1191,7 +1191,9 @@ int main(int argc, char *argv[]){
     cmpref[0].prop_use.c = true;
 
     cmpref[0].prop_readin.r0 = r0;
-    cmpref[0].prop_use.r0 = true;
+    cmpref[0].prop_use.r0 = false;
+    if (cmpref[0].name=="DIM1" || cmpref[0].name=="DIM2")
+      cmpref[0].prop_use.r0 = true;
 
     cmpref[0].prop_use.Ecoh = true;
 
@@ -1228,6 +1230,12 @@ int main(int argc, char *argv[]){
 
     // MD settings for reference compounds:
     cmpref[0].mds_specs = potinfo.specs_prop.mds_specs_ref;
+    cmpref[0].mds_specs.use_Tcontrol = true;
+    if (cmpref[0].mds_specs.btc_tau<0) cmpref[0].mds_specs.btc_tau *= -1;
+    if (fp_is_small( cmpref[0].mds_specs.btc_tau )) cmpref[0].mds_specs.btc_tau = 100.0;
+    cmpref[0].mds_specs.use_Pcontrol = true;
+    if (cmpref[0].mds_specs.bpc_tau<0) cmpref[0].mds_specs.bpc_tau *= -1;
+    if (fp_is_small( cmpref[0].mds_specs.bpc_tau )) cmpref[0].mds_specs.bpc_tau = 100.0;
 
 
     latsymm(cmpref);

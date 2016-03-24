@@ -1184,8 +1184,7 @@ void MDSystem::relax(void){
       std::cout << "V prefactor = " << td << std::endl;
     */
 
-    P = 0.0;
-
+    P = Px = Py = Pz = 0.0;
     // calc_P();
 
 
@@ -1259,6 +1258,11 @@ void MDSystem::relax(void){
       }
     }
     */
+    Px = stresstensor_xyz.elem(0,0) = W.elem(0,0);  /* Unit now: GPa. */
+    Py = stresstensor_xyz.elem(1,1) = W.elem(1,1);  /* Unit now: GPa. */
+    Pz = stresstensor_xyz.elem(2,2) = W.elem(2,2);  /* Unit now: GPa. */
+    P = 1.0/3.0 * (Px + Py + Pz);
+
 
 
     //std::cout << "Stress tensor (skew system): " << stresstensor_abc << std::endl;
@@ -1655,8 +1659,8 @@ void MDSystem::relax(void){
       printf("time %15.5e  nat %d  Ecoh %10.5f  T %10.5f  Fmax %12.5e  P %12.5e  "
 	     "Px Py Pz  %12.5e %12.5e %12.5e    box1 box2 box3  %12.5e %12.5e %12.5e  Vol_at %12.5e\n",
 	     //	     "vxcm vyxm vzcm  %12.5e %12.5e %12.5e\n",
-	     time, nat, Ep_tot/nat, T, F_max, P,
-	     stresstensor_xyz.elem(0,0), stresstensor_xyz.elem(1,1),stresstensor_xyz.elem(2,2),
+	     time, nat, Ep_tot/nat, T, F_max,
+	     P, Px, Py, Pz,
 	     boxlen[0], boxlen[1], boxlen[2],
 	     vol_atom );
       //vel_cm[0], vel_cm[1], vel_cm[2] );

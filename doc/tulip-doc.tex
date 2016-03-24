@@ -831,13 +831,13 @@ atomtype(Cr) = 2
 atomtype(C)  = 3
 
 
-# Masses
+# Masses ...........................................................................
 mass(Fe) = 55.8470
 mass(Cr) = 51.9961
 mass(C ) = 12.0110
 
 
-# Reference lattices:
+# Reference lattices ...............................................................
 lat(Cr, Cr) = skip   BCC  Calc. for this will be skipped, we will have Ecoh(Cr)=0.0.
 lat(Fe, Fe) = BCC
 lat(C,  C ) = GRA
@@ -848,20 +848,24 @@ lat(C,  C ) = GRA
 # The ...-P versions refer to alternate structures with
 # non-Cartesian primitive vectors.
 
+# Lattice parameters of reference lattices ........................................
 a(Cr, Cr)  = 2.87
 a(Fe, Fe)  = 2.87
-#########################################################################
-# Use accurate values for C, otherwise the graphite might explode due
-# to massive pressure!!! Also, use small enough time step!!!
-#########################################################################
+  # Use accurate values for C, otherwise the graphite might explode due
+  # to massive pressure!!! Also, use small enough time step!!!
 a(C,  C )   = 1.46   rNN for graphite (GRA)      DIA: 3.55647765821
 c(C,  C )   = 6.689
 # Also possible:
 # bpa(C, C) = ...
 # cpa(C, C) = ...
+##################################################################################
+### If reference lattice is DIM1 or DIM2 then do not use a(...)=... For e.g. H use
+# r0(H, H) = 0.8
+### i.e. use 'r0' instead of 'a' !!!
+##################################################################################
 
 
-# Interaction types:
+# Interaction types ...............................................................
 iac(Fe, Fe) = ABOP
 iac(Cr, Cr) = ABOP
 iac(C,  C ) = ABOP
@@ -870,11 +874,11 @@ iac(Fe, C ) = ABOP   symmetric
 iac(Cr, C ) = ABOP   symmetric
 
 
-# Fit this interaction? The interaction must be analytical.
+# Fit this interaction? The interaction must be analytical. ......................
 fit(Fe, Cr) = yes    symmetric
 
 
-# Repulsive potentials (ZBL):
+# Repulsive potentials (ZBL) .....................................................
 
 use_rep_core( Fe, Fe ) = yes
 use_rep_core( Cr, Cr ) = yes
@@ -883,7 +887,7 @@ use_rep_core( Fe, Cr ) = yes
 use_rep_core( Fe, C  ) = yes
 use_rep_core( Cr, C  ) = yes
 
-# Parameters for fixed interactions
+# Parameters for fixed interactions ..............................................
 
 potpar( Fe, Fe ):D0 = 1.5
 potpar( Fe, Fe ):r0 = 2.29
@@ -902,8 +906,6 @@ potpar( Fe, Fe ):m = 48
 potpar( Fe, Fe ):rcut = 3.3
 potpar( Fe, Fe ):rmin = 3.0
 potpar( Fe, Fe ):rmax = 3.3
-
-
 
 
 potpar(Cr, Cr ):D0 = 4.04222081
@@ -963,7 +965,7 @@ potpar( Cr, C  ):bfermi = 8
 potpar( Cr, C  ):rfermi = 1.2
 
 
-# Parameters for fittable interactions
+# Parameters for fittable interactions ............................................
 
      potpar( Fe, Cr ):D0 = 3.48049488
 min: potpar( Fe, Cr ):D0 = 0.1
@@ -1017,7 +1019,7 @@ max: potpar( Fe, Cr ):rfermi = 5
 
 
 
-# ABOP alpha and omega parameters
+# ABOP alpha and omega parameters .....................................................
 
 ################################################################
 ##
@@ -1395,8 +1397,8 @@ name     = dimer
 file     = in/dimer.lat
 elements = W H
 
-r0 = 1.5                    Desired bond distance in dimer
-w_r0 = 0.0001               weight
+r0       = 1.5                    Desired bond distance in dimer
+w_r0     = 0.0001               weight
 
 Ecoh     = -0.123
 u_Ecoh   = 0.0068           uncertainty (w and u can be freely mixed

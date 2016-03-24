@@ -928,6 +928,13 @@ void PotentialInformationFit::read_info_fit(string filename){
       if (elem.reflat_cpa(ts)<0) elem.reflat_cpa(ts) = elem.reflat_c(ts)/elem.reflat_a(ts);
     }
 
+    if (elem.reflat(ts)=="DIM1" || elem.reflat(ts)=="DIM2"){
+      if (elem.reflat_a(ts)>0){
+	aborterror("Error: Reference lattice for element " + ts + " is a dimer, but lattice parameter a "
+		   + "has been given. Please provide r0 instead. Exiting.");
+      }
+    }
+
   }
 
 

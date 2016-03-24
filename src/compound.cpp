@@ -176,7 +176,7 @@ void CompoundStructure::create_from_model(Elements & el,
   int i;
 
   crystalname = name_in;
-  name = crystalname + "-" + elem1;
+  name = crystalname;
   elemnames[0] = elem1;
   use_readin_structure = false;
 
