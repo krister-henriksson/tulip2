@@ -58,7 +58,9 @@ using boost::format;
 MDSystem::MDSystem()
   : AtomSystem(),
     stresstensor_xyz(0.0),
-    stresstensor_abc(0.0)
+    stresstensor_abc(0.0),
+    pos_CM(0),
+    vel_CM(0)
 {
   name = "none";
   p_potinfo = 0;
@@ -76,8 +78,8 @@ MDSystem::MDSystem()
   Ek.cap(100);
   dpos.cap(100);
   pos_int_tmp.cap(100);
-  pos_int_ini.cap(100);
-  pos_int_fin.cap(100);
+  dpos_ini.cap(100);
+  dpos_fin.cap(100);
 
   atom_is_fixed.cap(100);
   atom_freedir.cap(100);
@@ -96,8 +98,8 @@ MDSystem::MDSystem()
   Ek.resize(0);
   dpos.resize(0);
   pos_int_tmp.resize(0);
-  pos_int_ini.resize(0);
-  pos_int_fin.resize(0);
+  dpos_ini.resize(0);
+  dpos_fin.resize(0);
 
   rcut_max = dt = T = T_at_quench_start = P = Px = Py = Pz = 0;
   Ep_tot = Ek_tot = P_max = F_max = displ_max = 0;
@@ -377,5 +379,67 @@ void MDSystem::transform_cell(const MatrixSq3<double> & alpha_cart,
 
 
 
+void MDSystem::get_CM_pos(void){
+  handle_pbc_of_positions();
+  get_CM_vec(pos_CM, 1);
+}
 
+void MDSystem::get_CM_vel(void){
+  get_CM_vec(vel_CM, 2);
+}
+
+void MDSystem::get_CM_vec(Vector3<double> & vec, const int mode){
+  vec[0] = 0.0;
+  vec[1] = 0.0;
+  vec[2] = 0.0;
+
+  double mass_cm = 0.0;
+  double mass;
+
+  mass = elem.mass(matter[0]);
+
+  if (mode==1){
+    if (sys_single_elem){
+      for (int i=0; i<natoms(); ++i){
+	mass_cm += mass;
+	vec[0] += mass * pos[i][0];
+	vec[1] += mass * pos[i][1];
+	vec[2] += mass * pos[i][2];
+      }
+    }
+    else {
+      for (int i=0; i<natoms(); ++i){
+	mass = elem.mass( itype[i] ); //elem.name2idx(matter[i]);
+	mass_cm += mass;
+	vec[0] += mass * pos[i][0];
+	vec[1] += mass * pos[i][1];
+	vec[2] += mass * pos[i][2];
+      }
+    }
+  }
+  else if (mode==2){
+    if (sys_single_elem){
+      for (int i=0; i<natoms(); ++i){
+	mass_cm += mass;
+	vec[0] += mass * vel[i][0];
+	vec[1] += mass * vel[i][1];
+	vec[2] += mass * vel[i][2];
+      }
+    }
+    else {
+      for (int i=0; i<natoms(); ++i){
+	mass = elem.mass( itype[i] ); //elem.name2idx(matter[i]);
+	mass_cm += mass;
+	vec[0] += mass * vel[i][0];
+	vec[1] += mass * vel[i][1];
+	vec[2] += mass * vel[i][2];
+      }
+    }
+  }
+
+  vec[0] /= mass_cm;
+  vec[1] /= mass_cm;
+  vec[2] /= mass_cm;
+  
+}
 

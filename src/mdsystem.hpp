@@ -97,9 +97,12 @@ public:
   Vector<double> Ek;
   Vector< Vector3<double> > dpos;
   Vector< Vector3<double> > pos_int_tmp;
-  Vector< Vector3<double> > pos_int_ini;
-  Vector< Vector3<double> > pos_int_fin;
- 
+  Vector< Vector3<double> > dpos_ini;
+  Vector< Vector3<double> > dpos_fin;
+
+  Vector3<double> pos_CM;
+  Vector3<double> vel_CM;
+
 
 public:
   MDSystem();
@@ -156,6 +159,12 @@ public:
 
   void get_virials(int nat, MatrixSq3<double> & W,
 		   double mux=1.0, double muy=1.0, double muz=1.0);
+
+
+  void get_CM_pos();
+  void get_CM_vel();
+
+  void get_CM_vec(Vector3<double> & vec, const int mode);
 
 } ;
 

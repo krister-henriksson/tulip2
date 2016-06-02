@@ -139,6 +139,8 @@ $\star \qquad \star \qquad \star$%
 
 \usepackage{parskip}
 
+\usepackage{framed}
+
 
 
 
@@ -172,7 +174,7 @@ of different phases and lattices.
 
 The program \textsc{TULIP} tries to fit a interatomic potential
 to \eg given physical properties of compounds \etc. Physical properties are
-for instance lattice parameters, cohesive energy, bulk modulus and
+for instance lattice parameters, cohesive energy (a negative value), bulk modulus and
 elastic constants.
 
 Input is essentially an initial guess for potential parameters,
@@ -190,34 +192,95 @@ can be selected.
 
 \section{Source code}
 
-0. Prerequisites: Install the \verb+spglib+ package from
-\verb+http://spglib.sourceforge.net/+ in a standard location and
-remember the location of installed files.
+{\large \bf Part 1:}
+(a) Download and unpack the \verb+spglib+ package
+from \verb+http://spglib.sourceforge.net/+.
+Enter \verb+spglib+ directory and issue configure command,
+all on one line and without the backslashes \verb+\+:
 
-1. Local users only: Download the \verb+libutils+ source code into a folder:
+\begin{framed}
+\begin{verbatim}
+./configure CC=gcc \
+  CFLAGS='-Wall -W -ansi -pedantic -std=c90 -g' \
+  --prefix=$HOME
+\end{verbatim}
+\end{framed}
 
-\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+Here \verb+--prefix+ specifies a common prefix for all subsequent directories
+such as \verb+include+ and \verb+lib+. If you are root and want a systemwide
+installation specify \eg \verb+--prefix=/usr/local+. As a common user you
+can just use the example configure version above,
+which instructs the installation script to place header files into
+\verb+$HOME/include+ and the compiled library file into \verb+$HOME/lib+.
+
+(b) Then issue the \verb+make+ command to compile the package:
+
+\begin{framed}
+\begin{verbatim}
+make
+\end{verbatim}
+\end{framed}
+
+Also try \verb+make check+ to check if compilation is OK.
+
+(c) Finally issue the \verb+make install+ command to install the header files and
+compiled library into their specified locations:
+
+\begin{framed}
+\begin{verbatim}
+make install
+\end{verbatim}
+\end{framed}
+
+The output suggests how to modify your environment variables so that the library
+can be found when compiling sources that need it. If you are running bash, this
+means generally that you need to add the following lines to your \verb+.bashrc+ file:
+
+\begin{framed}
+\begin{verbatim}
+export LD_LIBRARY_PATH=\$HOME/lib:${LD_LIBRARY_PATH}
+export LD_RUN_PATH=\$HOME/lib:${LD_RUN_PATH}
+\end{verbatim}
+\end{framed}
+
+Note that this assumes you used \verb+--prefix=$HOME+ in the configuration
+command at the beginning!
+
+{\large \bf Part 2:}
+Download the \verb+libutils+ source code into a folder:
+
+\begin{framed}
+\begin{verbatim}
 git clone /home/phys-data/people/koehenri/repos/libutils.git
-\end{Verbatim}
+\end{verbatim}
+\end{framed}
 
 The \verb+libutils+ directory will be created. Descend into it and
 follow the instructions in the Readme file to make and install the
 library.
 
-2. Local users only: Download the \verb+tulip2+ source code into a folder:
+{\large \bf Part 3:}
+Download the \verb+tulip2+ source code into a folder:
 
-\begin{Verbatim}[fontsize=\relsize{-1},frame=single]
+\begin{framed}
+\begin{verbatim}
 git clone /home/phys-data/people/koehenri/repos/tulip2.git
-\end{Verbatim}
+\end{verbatim}
+\end{framed}
 
 The \verb+tulip2+ directory will be created. Descend into it and
 follow the instructions in the Readme file to make and install the
 fitting code.
 
-3. The static version \verb+tulip_static+ can be copied to other
+{\large \bf Part 4, optional:}
+The static version \verb+tulip_static+ can be copied to remote
 computer systems having the same architecture and be run there
-without any additional effort. The shared library version requires
-adding the \verb+libutils+ library to the library path.
+without any additional effort. This is much simpler than trying to
+compile everything on the remote machine.
+The shared library version requires adding the \verb+libutils+ library
+to the library path, \eg specifying the \verb+\$LD...+ environment
+variables mentioned above.
+
 
 \stars
 
@@ -559,6 +622,31 @@ F(r) = 1/(1 + e^{-b_f(r-r_f)})
 \end{equation}
 
 and $b_f, r_f$ are parameters that need to be supplied.
+This modified potential is now
+
+\begin{eqnarray}
+V &=& {1 \over 2} \sum_i \sum_{j} (1-F(r_{ij})) V_{\mathrm{rep}}(r_{ij})
+\\
+& & + {1 \over 2} \sum_i \sum_{j} f_{c,ij} \left( F(r) V_{R,ij} - B_{ij} F(r) V_{A,ij} \right)
+\\
+&\equiv & 
+{1 \over 2} \sum_i \sum_{j} \left(
+V_{\mathrm{pair}}(r_{ij})
++ f_{c,ij} \left( \widetilde{V}_{R,ij} - B_{ij} \widetilde{V}_{A,ij} \right) \right)
+\label{eq:aboprep}
+\end{eqnarray}
+
+\textbf{Note:} The neighbor inspection is tied to the cutoff radius of a pair of
+atoms, the strength of the repulsive potential is not checked.
+Make sure by tuning the Fermi parameters that 
+$V_{\mathrm{pair}}(r_{ij})$ also diminishes rapidly enough when approaching
+the cutoff distance!
+
+For example, for a certain Fe-Fe potential the Fermi function at the cutoff is
+$F(r=3.35) = 0.000948196644354$, and the repulsive potential is
+$V_{\mathrm{rep}}(r=3.36) = 0.183887401359$, yielding
+$V_{\mathrm{pair}}(r_{ij}) = (1-F(r)) V_{\mathrm{rep}}(r) \sim 10^{-4}$.
+
 
 \stars
 
@@ -843,7 +931,7 @@ lat(Fe, Fe) = BCC
 lat(C,  C ) = GRA
 
 # Supported ref. lattices:
-# DIM1 (homomer), DIM2 (heteromer), SC, BCC, BCC-P, FCC, FCC-P,
+# ATOM, DIM1 (homomer), DIM2 (heteromer), SC, BCC, BCC-P, FCC, FCC-P,
 # DIA, HCP, GRA, GRP (graphene)
 # The ...-P versions refer to alternate structures with
 # non-Cartesian primitive vectors.
@@ -1205,6 +1293,10 @@ u_ba 2 3 4    = ...  # Uncertainty. Note the indices!
 # Atomic volume (cubic Angstroms):
 Vatom         = ...
 
+# Cohesive energy:
+Ecoh          = ...   Definition: Total potential energy divided by
+                      the number of atoms in the simulation box.
+                      Is negative.
 # This compound should be considered ground/reference state when calculating
 # cohesive energies:
 Ecoh_delta_refcomp = true
@@ -1212,6 +1304,7 @@ Ecoh_delta_refcomp = true
 
 # Change in cohesive energy relative to reference:
 Ecoh_delta    = ...  (>0.0, i.e. more unstable than reference)
+# Should not be used for a compound where 'Ecoh' is used!
 
 # Formation energy Ef in 'mixing energy' Emix = Ef/natoms form:
 Emix          = ...

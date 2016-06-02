@@ -245,11 +245,11 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
     std::cout << "spglib: hall number         : " << p_spg_dataset->hall_number << std::endl;
     std::cout << "spglib: international symbol: " << p_spg_dataset->international_symbol << std::endl;
     std::cout << "spglib: hall symbol         : " << p_spg_dataset->hall_symbol << std::endl;
-    std::cout << "spglib: setting             : " << p_spg_dataset->setting << std::endl;
+    std::cout << "spglib: choice              : " << p_spg_dataset->choice << std::endl;
     fout << "spglib: hall number         : " << p_spg_dataset->hall_number << std::endl;
     fout << "spglib: international symbol: " << p_spg_dataset->international_symbol << std::endl;
     fout << "spglib: hall symbol         : " << p_spg_dataset->hall_symbol << std::endl;
-    fout << "spglib: setting             : " << p_spg_dataset->setting << std::endl;
+    fout << "spglib: choice              : " << p_spg_dataset->choice << std::endl;
     
     SpglibSpacegroupType spg_type = spg_get_spacegroup_type(p_spg_dataset->hall_number);
     std::cout << "spglib: international symbol (full) : " << spg_type.international_full << std::endl;
@@ -307,7 +307,7 @@ void latsymm(Vector<CompoundStructureFit> & cmplist){
 
 
 
-    char c = p_spg_dataset->setting[0];
+    char c = p_spg_dataset->choice[0];
     bool ax_is_small = fp_is_small_tol(lattice.avec[0], tol);
     bool ay_is_small = fp_is_small_tol(lattice.avec[1], tol);
     bool az_is_small = fp_is_small_tol(lattice.avec[2], tol);

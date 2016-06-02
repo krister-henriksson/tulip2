@@ -1,0 +1,45 @@
+
+
+
+LAT  <= triggers readin of new compound data
+
+name     = atom
+file     = in/atom.lat
+elements = W X
+r0 = 1.5          # Desired bond distance in dimer
+w_r0 = 0.0001
+Ec       = -0.123
+w_Ec     = 0.0068
+
+
+
+LAT  <= triggers readin of new compound data
+
+name     = tetra
+file     = in/tetra.lat
+elements = W X
+Emix     = 0.1
+w_Emix     = 0.001
+
+option: ext_relax
+option: quench_always
+
+
+LAT
+
+name     = octa
+file     = in/octa.lat
+elements = W X
+Emix     = 0.1
+w_Emix   = 0.001
+
+# Compound-specific MD options, overrides any others specifed elsewhere:
+mds_Tstart    = 10.0
+mds_btc_T0    = 0.0
+mds_btc_tau   = 100.0
+mds_bpc_P0    = 0.0
+mds_bpc_tau   = 100.0
+mds_bpc_scale = 100.0 # On the order of the bulk modulus (GPa).
+mds_tend      = 1000.0
+
+

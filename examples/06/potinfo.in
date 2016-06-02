@@ -1,0 +1,204 @@
+
+
+# Number of elements:
+nelem = 2
+
+
+# Element names:
+elem(1) = W
+elem(2) = X
+
+
+mass( W ) = 183.85
+mass( X ) = 4.0
+
+
+# Reference lattices:
+lat( W,   W  ) = BCC
+lat( X , X ) = ATOM
+
+a( W, W ) = 3.15
+r0( X, X ) = 0.8
+
+
+# Interaction types:
+iac( W,  W  ) = ABOP
+iac( X, X ) = ABOP
+iac( W,  X ) = ABOP
+
+
+# Fit this interaction? The interaction must be analytical.
+fit( W, X ) = yes
+
+
+use_rep_core( X, X ) = true
+use_rep_core( W,  W  ) = true
+use_rep_core( W,  X ) = true
+
+
+# Parameters
+
+potpar( X, X ):D0 = 4.7509
+potpar( X, X ):r0 = 0.74144
+potpar( X, X ):beta = 1.9436
+potpar( X, X ):S = 2.3432
+potpar( X, X ):gamma = 12.33
+potpar( X, X ):c = 0.0
+potpar( X, X ):d = 1.0
+potpar( X, X ):h = 1.0
+potpar( X, X ):cutscr = tersoff
+potpar( X, X ):R = 1.4
+potpar( X, X ):D = 0.3
+potpar( X, X ):bfermi = 15
+potpar( X, X ):rfermi = 0.35
+
+
+potpar(W, W ):D0 = 2.87454
+potpar(W, W ):r0 = 2.38631
+potpar(W, W ):beta = 1.33682
+potpar(W, W ):S = 1.25348
+potpar(W, W ):gamma = 0.00083879
+potpar(W, W ):c = 0.850284
+potpar(W, W ):d = 0.144317
+potpar(W, W ):h = -0.36846
+potpar(W, W ):cutscr = tersoff
+potpar(W, W ):R = 4.13158
+potpar(W, W ):D = 0.93018
+potpar(W, W ):bfermi = 12
+potpar(W, W ):rfermi = 1.3
+
+
+
+# Parameters for fittable interaction:
+
+    potpar( W, X ):D0        =  2.7
+min:potpar( W, X ):D0 =  1.0
+max:potpar( W, X ):D0 = 10.0
+
+    potpar( W, X ):r0        = 1.7
+min:potpar( W, X ):r0 = 1
+max:potpar( W, X ):r0 = 3.0
+
+    potpar( W, X ):beta        =  1.5
+min:potpar( W, X ):beta =  1.0
+max:potpar( W, X ):beta =  5.0
+
+    potpar( W, X ):S         = 1.2
+min:potpar( W, X ):S  = 1.1
+max:potpar( W, X ):S  = 5.0
+
+    potpar( W, X ):gamma        =  0.0054
+min:potpar( W, X ):gamma =   500.0
+max:potpar( W, X ):gamma =   500.0
+
+    potpar( W, X ):c         =   1.8
+min:potpar( W, X ):c  =   500.0
+max:potpar( W, X ):c  =   500.0 
+
+    potpar( W, X ):d         =   0.8
+min:potpar( W, X ):d  =   500.0
+max:potpar( W, X ):d  =   500.0
+
+    potpar( W, X ):h         =   0.4
+min:potpar( W, X ):h  =   1.1
+max:potpar( W, X ):h  =   1.1
+
+    potpar( W, X ):cutscr = tersoff
+
+    potpar( W, X ):R         = 2.15
+min:potpar( W, X ):R  = 2.0
+max:potpar( W, X ):R  = 2.0
+
+    potpar( W, X ):D         = 0.20
+min:potpar( W, X ):D  = 1.0
+max:potpar( W, X ):D  = 1.0
+
+potpar(W, X ):bfermi = 7
+potpar(W, X ):rfermi = 0.5
+
+
+
+
+# ABOP alpha and omega parameters
+
+################################################################
+##
+##  NOTE: There are NO ABOP alpha, omega, 2mu parameters used by default.
+##        Only the specified ones are used.
+##        Defaults: alpha=2mu=0.0 and omega=1.0 as constants.
+##
+##        If an omega parameter is specified it is taken as an
+##        independent parameter (non-Brenner form), otherwise
+##        it is constructed from alpha parameters, if they are
+##        specified, as
+##
+##          "omega_ijk" = exp( alpha_ijk*(r0_ij - r0_ik) )
+##
+################################################################
+
+
+# Fixed:
+
+abop_alpha(X, X, X) = 4.0
+abop_omega(X, X, X) = 1.0
+
+abop_alpha(W, W, W) = 0.0
+abop_omega(W, W, W) = 1.0
+
+
+
+# Fittable:
+
+    abop_alpha(     W, X, X ) =  0.0
+min:abop_alpha( W, X, X ) =   1.0
+max:abop_alpha( W, X, X ) =   1.0
+
+    abop_alpha(     X, W, X ) =  0.0
+min:abop_alpha( X, W, X ) =   1.0
+max:abop_alpha( X, W, X ) =   1.0
+
+    abop_alpha(     X, X, W ) =  0.0
+min:abop_alpha( X, X, W ) =   1.0
+max:abop_alpha( X, X, W ) =   1.0
+
+    abop_alpha(     W, W, X ) =  0.0
+min:abop_alpha( W, W, X ) =   1.0
+max:abop_alpha( W, W, X ) =   1.0
+
+    abop_alpha(     W, X, W ) =  0.451823d0
+min:abop_alpha( W, X, W ) =   1.0
+max:abop_alpha( W, X, W ) =   1.0
+
+    abop_alpha(     X, W, W ) =  0.0
+min:abop_alpha( X, W, W ) =   1.0
+max:abop_alpha( X, W, W ) =   1.0
+
+
+
+
+    abop_omega(     W, X, X ) =  1.0
+min:abop_omega( W, X, X ) =   1.0
+max:abop_omega( W, X, X ) =   1.0
+
+    abop_omega(     X, W, X ) =  1.0
+min:abop_omega( X, W, X ) =   1.0
+max:abop_omega( X, W, X ) =   1.0
+
+    abop_omega(     X, X, W ) =  1.0
+min:abop_omega( X, X, W ) =   1.0
+max:abop_omega( X, X, W ) =   1.0
+
+    abop_omega(     W, W, X ) =  1.0
+min:abop_omega( W, W, X ) =   1.0
+max:abop_omega( W, W, X ) =   1.0
+
+    abop_omega(     W, X, W ) =  1.0
+min:abop_omega( W, X, W ) =   1.0
+max:abop_omega( W, X, W ) =   1.0
+
+    abop_omega(     X, W, W ) =  1.0
+min:abop_omega( X, W, W ) =   1.0
+max:abop_omega( X, W, W ) =   1.0
+
+
+

@@ -194,7 +194,22 @@ void CompoundStructure::create_from_model(Elements & el,
 
 
 
-  if (crystalname=="DIM1"){
+  if (crystalname=="ATOM"){
+    csystem = "none";
+    pbc = Vector3<bool>(false);
+
+    nbasis = 1;
+    basis_types.resize(nbasis);
+    basis_elems.resize(nbasis);
+    basis_vecs.resize(nbasis);
+
+    for (i=0; i<nbasis; ++i) basis_elems[i] = elem1;
+    i=0; basis_vecs[i] = Vector3<double>(0.0);
+    basis_vecs[i][0] = 0.0;
+    basis_vecs[i][1] = 0.0;
+    basis_vecs[i][2] = 0.0;
+  }
+  else if (crystalname=="DIM1"){
     csystem = "none";
     pbc = Vector3<bool>(false);
 

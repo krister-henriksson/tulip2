@@ -108,17 +108,26 @@ void PotentialInformation::read_reppot(void){
       pot_Reppot[ivec].elemname2 = elem.idx2name(i2);
 
 
-      int Nr_rep = nlines;
-      if (! fp_is_small(rmin)) Nr_rep++; // first r value is not 0
+      /* ***************************************************************************
+	 Make sure the minimum r value rmin is larger than zero. Else V(rmin) will
+	 be infinite, which will cause problems.
+	 *************************************************************************** */
 
+      int Nr_rep = nlines;
+      bool skip_first_value = false;
+      if (fp_is_small(rmin)){
+	skip_first_value = true;
+	Nr_rep--; // first r value is 0, discard this
+      }
+      // Allocate memory:
       pot_Reppot[ivec].Nr_rep = Nr_rep;
       pot_Reppot[ivec].r_rep.resize(Nr_rep);
       pot_Reppot[ivec].V_rep.resize(Nr_rep);
       pot_Reppot[ivec].d2_V_rep.resize(Nr_rep);
 
 
-      k = 0;
-      if (! fp_is_small(rmin)) k++; // first r value is not 0
+      k=0;
+      if (skip_first_value) k=-1;
 
       fp.open(filename.c_str());
 
@@ -128,6 +137,8 @@ void PotentialInformation::read_reppot(void){
 	if (ns==0 && fp) continue;
 
 	if (ns>=2){
+	  if (k==-1 && skip_first_value) { k=0; continue; }
+
 	  strbuf.str(args[0]);
 	  strbuf >>   pot_Reppot[ivec].r_rep[k];
 	  strbuf.clear();
@@ -146,7 +157,7 @@ void PotentialInformation::read_reppot(void){
       fp.clear();
 
 
-
+#if 0
       if (! fp_is_small(rmin)){ // first r value is not 0
 	pot_Reppot[ivec].r_rep[0] = 0.0;
 
@@ -157,7 +168,7 @@ void PotentialInformation::read_reppot(void){
 		    - a * (pot_Reppot[ivec].r_rep[1] + pot_Reppot[ivec].r_rep[2]) );
 	pot_Reppot[ivec].V_rep[0] = a * pot_Reppot[ivec].r_rep[0] + b;
       }
-
+#endif
 
               
       /* Get the spline table: */
@@ -177,7 +188,7 @@ void PotentialInformation::read_reppot(void){
       dr = pot_Reppot[ivec].r_rep[ pot_Reppot[ivec].Nr_rep-1 ] /
 	(3 * pot_Reppot[ivec].Nr_rep);
 
-      r = 0.0;
+      r = rmin;
       while (r <= pot_Reppot[ivec].r_rep[ pot_Reppot[ivec].Nr_rep-1 ]){
 	fpo << r << " "
 	    << splint(pot_Reppot[ivec].r_rep,

@@ -102,6 +102,8 @@ double MDSystem::force_ABOP(){
   double V1, dV1, fermi, dfermi, bfermi, rfermi;
   double VRij,VAij,bij,Chiij,gijk,c2,d2,cost,hcost,hcost2,alphaijk,twomuik;
   double pij;
+  double Vpairij, dVpairij;
+
 
   //double eps = std::numeric_limits<double>::epsilon();
   double VRij_r, VAij_r, dVRij_r, dVAij_r;
@@ -272,6 +274,8 @@ double MDSystem::force_ABOP(){
   Vector<double> abop_fc_ij(nijmax, 0.0);
   Vector<double> abop_dfc_ij(nijmax, 0.0);
   Vector< Vector3<double> > abop_dpos_ij(nijmax, Vector3<double>(0) );
+
+  Vpairij = dVpairij = 0.0;
 
 
   for (i=0; i<nat; ++i){
@@ -482,18 +486,28 @@ double MDSystem::force_ABOP(){
 	if (ivec_reppot<0) break;
 
 	Nr = p_potinfo->pot_Reppot[ivec_reppot].r_rep.size();
-	td = p_potinfo->pot_Reppot[ivec_reppot].r_rep[Nr-1];
+	double rcut_reppot = p_potinfo->pot_Reppot[ivec_reppot].r_rep[Nr-1];
 
 	bfermi = abop_params_all.elem(typei,typej).bfermi;
 	rfermi = abop_params_all.elem(typei,typej).rfermi;
 	//bfermi = p_potinfo->pot_Reppot[ivec_reppot].bfermi;
 	//rfermi = p_potinfo->pot_Reppot[ivec_reppot].rfermi;
+
+	//std::cout << "bfermi rfermi " << bfermi << " " << rfermi << std::endl;
+
 	  
 	td = exp(- bfermi * (rij - rfermi));
 	fermi  = 1.0/(1.0 + td);
 	dfermi = fermi*fermi * bfermi * td;
 
-	if (rij < td){
+	if (rij > rcut_reppot){
+	  // reppot ended already, assume 0.0
+	  fermi  = 1.0;
+	  dfermi = 0.0;
+	  V1  = 0.0;
+	  dV1 = 0.0;
+	}
+	else {
 	  V1 = splint(p_potinfo->pot_Reppot[ivec_reppot].r_rep,
 		      p_potinfo->pot_Reppot[ivec_reppot].V_rep,
 		      p_potinfo->pot_Reppot[ivec_reppot].d2_V_rep,
@@ -504,11 +518,7 @@ double MDSystem::force_ABOP(){
 			  p_potinfo->pot_Reppot[ivec_reppot].d2_V_rep,
 			  rij);
 	}
-	else {
-	  // reppot ended already, assume 0.0
-	  V1  = 0.0;
-	  dV1 = 0.0;
-	}
+
 
 
 	  
@@ -518,20 +528,32 @@ double MDSystem::force_ABOP(){
 	//
 	//              df=df+dfermi*(cpair+cmany)
 	  
-	
+
+
+	Vpairij  = (1.0 - fermi) * V1;
+	dVpairij = -dfermi * V1 + (1.0 - fermi) * dV1;
+
+	VRij_r = fermi * VRij;
+	VAij_r = fermi * VAij;
+	  
+	dVRij_r = dVRij * fermi + VRij * dfermi;
+	dVAij_r = dVAij * fermi + VAij * dfermi;
+
+	/*	
 	VRij_r = (1.0 - fermi) * V1 + fermi * VRij;
 	VAij_r = (1.0 - fermi) * V1 + fermi * VAij;
 	  
 	dVRij_r = dV1 * (1-fermi) - V1 * dfermi  +  dVRij * fermi + VRij * dfermi;
 	dVAij_r = dV1 * (1-fermi) - V1 * dfermi  +  dVAij * fermi + VAij * dfermi;
-	  
+	*/
+
 	VRij = VRij_r;
 	VAij = VAij_r;
 	  
 	dVRij = dVRij_r;
 	dVAij = dVAij_r;
       }
-
+    
     
 
 
@@ -814,9 +836,9 @@ double MDSystem::force_ABOP(){
       // ################################################################
       Epij = 0.0;
       if (pair_ij_tersoff || pair_ij_perriot_cut) // cutoff
-	Epij = 0.5 * fcij * (VRij - bij * VAij);
+	Epij = 0.5 * Vpairij + 0.5 * fcij * (VRij - bij * VAij);
       else if (pair_ij_perriot_scr) // screening
-	Epij = 0.5 * Kij * (VRij - bij * VAij);
+	Epij = 0.5 * Vpairij + 0.5 * Kij * (VRij - bij * VAij);
       
       Ep[i] += Epij;
       Ep_tot_local += Epij;
@@ -839,13 +861,15 @@ double MDSystem::force_ABOP(){
       for (p=0; p<3; ++p) frc_ij[p]=0.0;
       if (pair_ij_tersoff || pair_ij_perriot_cut){
 	for (p=0; p<3; ++p){
-	  frc_ij[p] = - 0.5 * ( dfcij * VRij + fcij * dVRij
-				- bij * dfcij * VAij - bij * fcij * dVAij) * dposij[p]/rij;
+	  frc_ij[p] = -0.5 * dVpairij * dposij[p]/rij
+	    - 0.5 * ( dfcij * VRij + fcij * dVRij
+		      - bij * dfcij * VAij - bij * fcij * dVAij) * dposij[p]/rij;
 	}
       }
       else if (pair_ij_perriot_scr){
 	for (p=0; p<3; ++p){
-	  frc_ij[p] = - 0.5 * Kij * ( dVRij - bij * dVAij) * dposij[p]/rij;
+	  frc_ij[p] = -0.5 * dVpairij * dposij[p]/rij
+	    - 0.5 * Kij * ( dVRij - bij * dVAij) * dposij[p]/rij;
 	}
       }
           

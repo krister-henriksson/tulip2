@@ -186,14 +186,9 @@ void get_ini_fit_data(ParamPot & param,
     mds.specs.tend = mds.specs.tstart = 0.0;
     mds.relax();
 
+
+
     // std::cout << "1 mds.rcut " << mds.rcut << " and mds.rcut_max " << mds.rcut_max << std::endl;
-
-    // Remove potential energy contributions from known interactions:
-    int nat = mds.natoms();
-    double Ep = mds.calc_potential_energy();
-    std::cout << "Energy from system: " << Ep << std::endl;
-    Ep_list[iDX] = nat * cmpfit.prop_readin.Ecoh - Ep;
-
 
     // *******************************************************
     // Get bond distances and neighbor counts
@@ -212,6 +207,33 @@ void get_ini_fit_data(ParamPot & param,
 
     // std::cout << "3 mds.rcut " << mds.rcut << " and mds.rcut_max " << mds.rcut_max << std::endl;
     mds.get_bond_angle_list( bondangle_list[iDX], name1, name2, rcutii, rcutjj, rcutij );
+
+
+
+    // Remove potential energy contributions from known interactions:
+    int nat = mds.natoms();
+    double Ep = mds.calc_potential_energy();
+    std::cout << "Energy from system: " << Ep << std::endl;
+    if (cmpfit.prop_use.Ecoh)
+      Ep_list[iDX] = nat * cmpfit.prop_readin.Ecoh - Ep;
+    else if (cmpfit.prop_use.Emix){
+      // Energy of formation: cmpfit.prop_readin.Emix * nat
+      // Ef = Etot - n1*Ecoh1 - n2*Ecoh2 - ...
+      // => Etot = Ef + sum_i ni * Ecohi
+      Ep_list[iDX] = nat * cmpfit.prop_readin.Emix
+	+ nat1[iDX] * param.p_potinfo->Ecoh_ref[ typei ]
+	+ nat2[iDX] * param.p_potinfo->Ecoh_ref[ typej ]
+	- Ep;
+    }
+    else
+      aborterror("Make initial fit: Error: Ecoh or Emix not used for compound "
+		 + cmpfit.name + "! Cannot obtain readin potential energy! Exiting.");
+
+
+
+
+
+
   }
 
 

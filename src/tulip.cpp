@@ -1213,7 +1213,7 @@ int main(int argc, char *argv[]){
     cmpref[0].prop_use.frc = false;
 
     if (!cmpref[0].pbc[0] || !cmpref[0].pbc[1] || !cmpref[0].pbc[2]){
-      if (cmpref[0].nbasis==2)
+      if (cmpref[0].nbasis <= 2)
 	//cmpref[0].prop_use.r0 = true;
 
       cmpref[0].prop_use.B  = false;

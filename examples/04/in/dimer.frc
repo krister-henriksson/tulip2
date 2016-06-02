@@ -1,2 +1,2 @@
-Fe  -0.1 0.0 0.0  1.0
-Fe   0.1 0.0 0.0  1.0
+  -0.1  0.0  0.0   1.0  1.0  1.0    # Fx Fy Fz ax ay az, where 'a' are either weights or uncertainties,
+   0.1  0.0  0.0   1.0  1.0  1.0    # the choice is specified in the geometry file.

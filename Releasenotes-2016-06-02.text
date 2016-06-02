@@ -1,0 +1,17 @@
+
+
+Latest release, June 2, 2016.
+
+Most important changes:
+
+  1/4. Updated spglib related code due to changes in the spglib library itself (as
+of version 1.9).
+
+  2/4. Added reference configuration ATOM to the list. Suitable for e.g. fitting mixed
+interactions with inert gases. An example directory has been added.
+
+  3/4. Fixed a somewhat serious bug in the joining of the ZBL and normal potentials: Previously
+the ZBL contribution has been too small. This will affect configurations with very short bonds.
+
+  4/4. Manual has been updated, especially the part concerning installation.
+

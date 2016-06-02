@@ -115,6 +115,12 @@ void MDSystem::relax(void){
   std::string fmt, fmtf = "%12.6f", fmte = "%12.6e";
 
 
+  pos_CM[0] = 0.0;
+  pos_CM[1] = 0.0;
+  pos_CM[2] = 0.0;
+  vel_CM[0] = 0.0;
+  vel_CM[1] = 0.0;
+  vel_CM[2] = 0.0;
 
 
 
@@ -189,8 +195,8 @@ void MDSystem::relax(void){
   Ep.resize(nat);
   Ek.resize(nat);
   dpos.resize(nat);
-  pos_int_ini.resize(nat);
-  pos_int_fin.resize(nat);
+  dpos_ini.resize(nat);
+  dpos_fin.resize(nat);
 
   if (specs_common.debug_forces){
     frc_num.resize(nat);
@@ -199,8 +205,8 @@ void MDSystem::relax(void){
 
 
 
-  double vel_cm[3], mass_cm;
-  vel_cm[0] = vel_cm[1] = vel_cm[2] = mass_cm = 0.0;
+  double mass_cm=0;
+  Vector3<double> pos_CM_ini, pos_CM_fin;
 
   // Memory allocation:
   for (i=0; i<nat; ++i){
@@ -211,13 +217,10 @@ void MDSystem::relax(void){
     Ek[i] = 0.0;
     Ep[i] = 0.0;
     dpos[i] = Vector3<double>(0.0);
-    pos_int_ini[i] = Vector3<double>(0.0);
-    pos_int_fin[i] = Vector3<double>(0.0);
+
+    dpos_ini[i] = Vector3<double>(0.0);
+    dpos_fin[i] = Vector3<double>(0.0);
     // --------------------------------------------------
-    get_coords_cart2skew(pos[i], pos_int_ini[i], -1);
-    pos_int_ini[i][0] /= boxlen[0];
-    pos_int_ini[i][1] /= boxlen[1];
-    pos_int_ini[i][2] /= boxlen[2];
     // --------------------------------------------------
     if (specs_common.debug_forces)
       frc_num[i] = Vector3<double>(0);
@@ -243,34 +246,30 @@ void MDSystem::relax(void){
 
     if (sys_single_elem){
       mass_cm += mass1;
-      vel_cm[0] += mass1 * vel[i][0];
-      vel_cm[1] += mass1 * vel[i][1];
-      vel_cm[2] += mass1 * vel[i][2];
     }
     else {
       double massi = elem.mass( n2i );
       mass_cm += massi;
-      vel_cm[0] += massi * vel[i][0];
-      vel_cm[1] += massi * vel[i][1];
-      vel_cm[2] += massi * vel[i][2];
     }
 
     nspecies[ n2i ]++;
   }
   //std::cout << "MD system vectors resized to correct sizes." << std::endl;
 
+  update_box_geometry();
 
-
-
-  vel_cm[0] /= mass_cm;
-  vel_cm[1] /= mass_cm;
-  vel_cm[2] /= mass_cm;
+  get_CM_pos();
+  pos_CM_ini = pos_CM;
+  for (i=0; i<nat; ++i)
+    get_atom_distance_vec(pos[i], pos_CM_ini, dpos_ini[i]);
+  
+  get_CM_vel();
 
 #pragma omp parallel for schedule(static)
   for (i=0; i<nat; ++i){
-    vel[i][0] -= vel_cm[0];
-    vel[i][1] -= vel_cm[1];
-    vel[i][2] -= vel_cm[2];
+    vel[i][0] -= vel_CM[0];
+    vel[i][1] -= vel_CM[1];
+    vel[i][2] -= vel_CM[2];
   }
   // Center of mass velocity has now been removed.
 
@@ -550,7 +549,6 @@ void MDSystem::relax(void){
 
 
 
-    mass_cm = vel_cm[0] = vel_cm[1] = vel_cm[2] = 0.0;
     for (i=0; i<nat; ++i){
 
       double td1 = dt * vel[i][0] + 0.5 * dt*dt * acc[i][0];
@@ -637,22 +635,6 @@ void MDSystem::relax(void){
 	vel[i][1] += td2;
 	vel[i][2] += td3;
       }
-
-      // CM:
-      if (sys_single_elem){
-	mass_cm += mass1;
-	vel_cm[0] += mass1 * vel[i][0];
-	vel_cm[1] += mass1 * vel[i][1];
-	vel_cm[2] += mass1 * vel[i][2];
-      }
-      else {
-	double massi = elem.mass( elem.name2idx( matter[i] ) );
-	mass_cm += massi;
-	vel_cm[0] += massi * vel[i][0];
-	vel_cm[1] += massi * vel[i][1];
-	vel_cm[2] += massi * vel[i][2];
-      }
-
 	
       frc[i][0] = frc[i][1] = frc[i][2] = 0.0;
 
@@ -660,15 +642,14 @@ void MDSystem::relax(void){
 
     }
 
-    vel_cm[0] /= mass_cm;
-    vel_cm[1] /= mass_cm;
-    vel_cm[2] /= mass_cm;
+    if ( !specs.quench_always && !specs.ext_relax)
+      get_CM_vel();
 
 #pragma omp parallel for schedule(static)
     for (i=0; i<nat; ++i){
-      vel[i][0] -= vel_cm[0];
-      vel[i][1] -= vel_cm[1];
-      vel[i][2] -= vel_cm[2];
+      vel[i][0] -= vel_CM[0];
+      vel[i][1] -= vel_CM[1];
+      vel[i][2] -= vel_CM[2];
     }
 
 
@@ -791,8 +772,36 @@ void MDSystem::relax(void){
     /* ######################################################################
        Get numerical forces
        ###################################################################### */
+    // Analytical forces will be calculated after this step.
     if (specs_common.debug_forces){
-      // Analytical forces will be calculated after this step.
+
+      double minx, miny, minz;
+      for (i=0; i<nat; ++i){
+	if (i==0){
+	  minx = pos[i][0];
+	  miny = pos[i][1];
+	  minz = pos[i][2];
+	}
+	else if (i>0){
+	  if (pos[i][0] < minx) minx = pos[i][0];
+	  if (pos[i][1] < miny) miny = pos[i][1];
+	  if (pos[i][2] < minz) minz = pos[i][2];
+	}
+      }
+      if (minx < 0) minx *= -1;
+      if (miny < 0) miny *= -1;
+      if (minz < 0) minz *= -1;
+
+      // Backup all positions, and add a constant to all coordinates
+      // to make all coordinates positive:
+      Vector< Vector3<double> > all_pos_bak(nat);
+      for (i=0; i<nat; ++i){
+	all_pos_bak[i] = pos[i];
+	pos[i][0] += minx + 10.0;
+	pos[i][1] += miny + 10.0;
+	pos[i][2] += minz + 10.0;
+      }
+
       Vector3<double> pos_bak(0);
       double t, d, Ep1, Ep2;
 
@@ -804,12 +813,11 @@ void MDSystem::relax(void){
       // Numerical derivative of potential energy wrt displacement is the numerical force.
       for (i=0; i<nat; ++i){
 	std::cout << " " << i; std::cout.flush();
-	pos_bak[0] = pos[i][0];
-	pos_bak[1] = pos[i][1];
-	pos_bak[2] = pos[i][2];
-
 	//std::cout << "debug_forces: Made it here 01, atom " << i << std::endl;
 	for (int k=0; k<3; ++k){
+	  // Backup before changing this particular position:
+	  pos_bak[k] = pos[i][k];
+
 	  //std::cout << " " << k;
 	  d = abs(pos[i][k]);
 	  //d = (d < eps) ? t : t*d;
@@ -825,11 +833,17 @@ void MDSystem::relax(void){
 	  //std::cout << " done ";
 	  frc_num[i][k] = - (Ep2 - Ep1)/(2.0*d);
 
-	  //std::cout << " reset ";
+	  // Reset this particular position:
 	  pos[i][k] = pos_bak[k]; // reset
 	}
       }
       std::cout << std::endl;
+
+      // Reset all positions:
+      for (i=0; i<nat; ++i){
+	pos[i] = all_pos_bak[i];
+      }
+
     }
 
     //std::cout << "made it here 05.5" << std::endl;
@@ -1023,7 +1037,7 @@ void MDSystem::relax(void){
 
     //correct();
 
-    mass_cm = vel_cm[0] = vel_cm[1] = vel_cm[2] = 0.0;
+
     for (i=0; i<nat; ++i){
       int n2i = itype[i];
       double td = 1.0 / elem.mass( n2i ) * 1.60217653 / 1.660538782 * 0.01;
@@ -1063,36 +1077,19 @@ void MDSystem::relax(void){
 	vel[i][2] += td3;
       }
 
-
-      // CM:
-      if (sys_single_elem){
-	mass_cm += mass1;
-	vel_cm[0] += mass1 * vel[i][0];
-	vel_cm[1] += mass1 * vel[i][1];
-	vel_cm[2] += mass1 * vel[i][2];
-      }
-      else {
-	double massi = elem.mass( n2i );
-	mass_cm += massi;
-	vel_cm[0] += massi * vel[i][0];
-	vel_cm[1] += massi * vel[i][1];
-	vel_cm[2] += massi * vel[i][2];
-      }
-
     }
 
 
 
     Ek_tot = 0.0;
 
-    vel_cm[0] /= mass_cm;
-    vel_cm[1] /= mass_cm;
-    vel_cm[2] /= mass_cm;
+    if ( !specs.quench_always && !specs.ext_relax)
+      get_CM_vel();
 
     for (i=0; i<nat; ++i){
-      vel[i][0] -= vel_cm[0];
-      vel[i][1] -= vel_cm[1];
-      vel[i][2] -= vel_cm[2];
+      vel[i][0] -= vel_CM[0];
+      vel[i][1] -= vel_CM[1];
+      vel[i][2] -= vel_CM[2];
 
       if (sys_single_elem)
 	Ek_tot += mass1 * ( vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2] );	
@@ -1815,39 +1812,19 @@ void MDSystem::relax(void){
      Compare initial positions with relaxed positions.
      Ignore changes in the overall box size.
      ------------------------------------------------------------- */
+
+  update_box_geometry();
+
+  get_CM_pos();
+  pos_CM_fin = pos_CM;
+  Vector3<double> ddpos(0);
   for (i=0; i<nat; ++i){
-
-    get_coords_cart2skew(pos[i], pos_int_fin[i], -1);
-
-    pos_int_fin[i][0] /= boxlen[0];
-    pos_int_fin[i][1] /= boxlen[1];
-    pos_int_fin[i][2] /= boxlen[2];
-
-
-    tv1[0] = pos_int_fin[i][0] - pos_int_ini[i][0];
-    while (pbc[0] && (tv1[0] <  -0.5)) tv1[0] += 1;
-    while (pbc[0] && (tv1[0] >=  0.5)) tv1[0] -= 1;
-    tv1[0] *= boxlen[0];
-
-    tv1[1] = pos_int_fin[i][1] - pos_int_ini[i][1];
-    while (pbc[1] && (tv1[1] <  -0.5)) tv1[1] += 1;
-    while (pbc[1] && (tv1[1] >=  0.5)) tv1[1] -= 1;
-    tv1[1] *= boxlen[1];
-
-    tv1[2] = pos_int_fin[i][2] - pos_int_ini[i][2];
-    while (pbc[2] && (tv1[2] <  -0.5)) tv1[2] += 1;
-    while (pbc[2] && (tv1[2] >=  0.5)) tv1[2] -= 1;
-    tv1[2] *= boxlen[2];
-
-
-    get_coords_skew2cart(tv1, tv2, -1);
-    td = tv2.magn();
+    get_atom_distance_vec(pos[i], pos_CM_fin, dpos_fin[i]);
+    get_atom_distance_vec(dpos_fin[i], dpos_ini[i], ddpos);
+    td = ddpos.magn();
     if (i==0 || (i>0 && (td>displ_max))) displ_max = td;
   }
 
-
-
-  update_box_geometry();
 
     
   return;
