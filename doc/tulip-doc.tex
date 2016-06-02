@@ -238,8 +238,8 @@ means generally that you need to add the following lines to your \verb+.bashrc+ 
 
 \begin{framed}
 \begin{verbatim}
-export LD_LIBRARY_PATH=\$HOME/lib:${LD_LIBRARY_PATH}
-export LD_RUN_PATH=\$HOME/lib:${LD_RUN_PATH}
+export LD_LIBRARY_PATH=$HOME/lib:${LD_LIBRARY_PATH}
+export LD_RUN_PATH=$HOME/lib:${LD_RUN_PATH}
 \end{verbatim}
 \end{framed}
 
@@ -259,6 +259,10 @@ The \verb+libutils+ directory will be created. Descend into it and
 follow the instructions in the Readme file to make and install the
 library.
 
+Make sure to set the environment variables mentioned above so that
+the library can be found by tulip!
+
+
 {\large \bf Part 3:}
 Download the \verb+tulip2+ source code into a folder:
 
@@ -272,14 +276,13 @@ The \verb+tulip2+ directory will be created. Descend into it and
 follow the instructions in the Readme file to make and install the
 fitting code.
 
-{\large \bf Part 4, optional:}
-The static version \verb+tulip_static+ can be copied to remote
+A static and a dynamic version of tulip is created.
+To use the default dynamic one the environment variables
+mentioned above must be set! The static version
+\verb+tulip_static+ can be used as is and also be copied to remote
 computer systems having the same architecture and be run there
 without any additional effort. This is much simpler than trying to
 compile everything on the remote machine.
-The shared library version requires adding the \verb+libutils+ library
-to the library path, \eg specifying the \verb+\$LD...+ environment
-variables mentioned above.
 
 
 \stars
@@ -645,7 +648,7 @@ the cutoff distance!
 For example, for a certain Fe-Fe potential the Fermi function at the cutoff is
 $F(r=3.35) = 0.000948196644354$, and the repulsive potential is
 $V_{\mathrm{rep}}(r=3.36) = 0.183887401359$, yielding
-$V_{\mathrm{pair}}(r_{ij}) = (1-F(r)) V_{\mathrm{rep}}(r) \sim 10^{-4}$.
+$V_{\mathrm{pair}}(r_{ij}) = §(1-F(r)) V_{\mathrm{rep}}(r) \sim 10^{-4}$.
 
 
 \stars
