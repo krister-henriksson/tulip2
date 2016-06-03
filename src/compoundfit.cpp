@@ -65,6 +65,7 @@ CompoundPropertiesUse::CompoundPropertiesUse()
   Ecoh = false;
   Ecoh_delta = false;
   Emix = false;
+  Eform = false;
   B = false;
   Bp = false;
   Fmax = false;
@@ -110,6 +111,7 @@ CompoundProperties::CompoundProperties()
   Ecoh = 0;
   Ecoh_delta = 0;
   Emix = 0;
+  Eform = 0;
   B = 0;
   Bp = 0;
   Fmax = 0;
@@ -133,6 +135,7 @@ CompoundPropertiesUseUncertainties::CompoundPropertiesUseUncertainties()
   Ecoh = false;
   Ecoh_delta = false;
   Emix = false;
+  Eform = false;
   B = false;
   Bp = false;
   Fmax = false;
@@ -157,6 +160,7 @@ CompoundPropertiesUseWeights::CompoundPropertiesUseWeights()
   Ecoh = true;
   Ecoh_delta = false;
   Emix = true;
+  Eform = true;
   B = true;
   Bp = true;
   Fmax = true;
@@ -181,6 +185,7 @@ CompoundPropertiesUncertainties::CompoundPropertiesUncertainties()
   Ecoh = 0.1;
   Ecoh_delta = 0.1;
   Emix = 0.1;
+  Eform = 0.1;
   B = 0.1;
   Bp = 0.1;
   Fmax = 0.1;
@@ -204,6 +209,7 @@ CompoundPropertiesWeights::CompoundPropertiesWeights()
   Ecoh = 1;
   Ecoh_delta = 1;
   Emix = 1;
+  Eform = 1;
   B = 1;
   Bp = 1;
   Fmax = 1;
@@ -261,6 +267,7 @@ int CompoundStructureFit::NData(){
   if (prop_use.Ecoh) N++;
   if (prop_use.Ecoh_delta) N++;
   if (prop_use.Emix) N++;
+  if (prop_use.Eform) N++;
   if (prop_use.B) N++;
   if (prop_use.Bp) N++;
   for (int k=0; k<6; ++k)

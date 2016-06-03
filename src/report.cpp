@@ -637,6 +637,21 @@ void report_prop(Vector<CompoundStructureFit> & DX,
       propstr = compstr + "Mixing energy Emix                    : ";
       print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
     }
+    if (cmpfit.prop_use.Eform){
+      td1 = cmpfit.prop_pred.Eform;
+      td2 = cmpfit.prop_readin.Eform;
+      tb1 = cmpfit.use_u.Eform;
+      tb2 = cmpfit.use_w.Eform;
+      td3 = cmpfit.prop_u.Eform;
+      td4 = cmpfit.prop_w.Eform;
+
+      std::ostringstream sstream;
+      sstream << format("%15s") % cmpfit.name;
+      compstr = "Compound: " + sstream.str() + " : ";
+
+      propstr = compstr + "Formation energy Eform                   : ";
+      print_prop_readin_pred_comp(fout, firsttime, tb1, tb2, propstr, td1, td2, td3, td4);
+    }
 
     if (cmpfit.prop_use.B){
       td1 = cmpfit.prop_pred.B;

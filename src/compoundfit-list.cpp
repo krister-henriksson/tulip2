@@ -119,7 +119,9 @@ CompoundListFit::CompoundListFit(Elements & el,
   opts.push_back("Eat");
   opts.push_back("Eat_delta");
   opts.push_back("Emix");
-  opts.push_back("B");
+  opts.push_back("Em");
+  opts.push_back("Eform");
+  opts.push_back("Ef");
   opts.push_back("B");
   opts.push_back("Bp");
   opts.push_back("dB/dP");
@@ -732,7 +734,7 @@ CompoundListFit::CompoundListFit(Elements & el,
 	else if (ot==3) { compounds[ilat].prop_u.Ecoh_delta = td; compounds[ilat].use_w.Ecoh_delta = false; compounds[ilat].use_u.Ecoh_delta = true; }
       }
 
-      else if (match=="Emix"){
+      else if (match=="Emix" || match=="Em"){
 	if (ot==1){
 	  compounds[ilat].prop_readin.Emix = td;
 	  compounds[ilat].prop_use.Emix    = true;
@@ -740,6 +742,16 @@ CompoundListFit::CompoundListFit(Elements & el,
 	else if (ot==2) { compounds[ilat].prop_w.Emix = td; compounds[ilat].use_w.Emix = true;  compounds[ilat].use_u.Emix = false; }
 	else if (ot==3) { compounds[ilat].prop_u.Emix = td; compounds[ilat].use_w.Emix = false; compounds[ilat].use_u.Emix = true; }
       }
+      else if (match=="Eform" || match=="Ef"){
+	if (ot==1){
+	  compounds[ilat].prop_readin.Eform = td;
+	  compounds[ilat].prop_use.Eform    = true;
+	}
+	else if (ot==2) { compounds[ilat].prop_w.Eform = td; compounds[ilat].use_w.Eform = true;  compounds[ilat].use_u.Eform = false; }
+	else if (ot==3) { compounds[ilat].prop_u.Eform = td; compounds[ilat].use_w.Eform = false; compounds[ilat].use_u.Eform = true; }
+      }
+
+
       else if (match=="B"){
 	if (ot==1){
 	  compounds[ilat].prop_readin.B = td;
@@ -885,6 +897,12 @@ CompoundListFit::CompoundListFit(Elements & el,
 	compounds[ilat].prop_use.Ecoh_delta)
       aborterror("ERROR: Both Ecoh and Ecoh_delta are used for compound "
 		 + compounds[ilat].name + ". At most one of these can be used!");
+
+    if (compounds[ilat].prop_use.Emix &&
+	compounds[ilat].prop_use.Eform)
+      aborterror("ERROR: Both Emix and Eform are used for compound "
+		 + compounds[ilat].name + ". At most one of these can be used!");
+
 
     if (compounds[ilat].mds_specs.ext_relax){
       compounds[ilat].prop_use.displmax = false;
@@ -1130,6 +1148,9 @@ CompoundListFit::CompoundListFit(Elements & el,
     if (compounds[ilat].prop_use.Emix && compounds[ilat].use_w.Emix)
       wsum += abs( compounds[ilat].prop_w.Emix );
 
+    if (compounds[ilat].prop_use.Eform && compounds[ilat].use_w.Eform)
+      wsum += abs( compounds[ilat].prop_w.Eform );
+
     if (compounds[ilat].prop_use.B && compounds[ilat].use_w.B)
       wsum += abs( compounds[ilat].prop_w.B );
 
@@ -1219,6 +1240,9 @@ CompoundListFit::CompoundListFit(Elements & el,
 
     if (compounds[ilat].prop_use.Emix && compounds[ilat].use_w.Emix)
       compounds[ilat].prop_w.Emix *= wsum;
+
+    if (compounds[ilat].prop_use.Eform && compounds[ilat].use_w.Eform)
+      compounds[ilat].prop_w.Eform *= wsum;
 
     if (compounds[ilat].prop_use.B && compounds[ilat].use_w.B)
       compounds[ilat].prop_w.B *= wsum;

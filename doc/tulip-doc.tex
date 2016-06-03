@@ -179,7 +179,7 @@ elastic constants.
 
 Input is essentially an initial guess for potential parameters,
 a list of compounds and their desired properties
-(lattice parameters, cohesive energy, mixing energy, bulk modulus,
+(lattice parameters, cohesive energy, mixing energy, formation energy, bulk modulus,
 elastic constants, ...), and technical specifications to guide the fitting.
 Using the parametrization, compounds are relaxed in a molecular
 dynamics (MD) simulation (MDS), and then the specified physical properties
@@ -1312,6 +1312,10 @@ Ecoh_delta    = ...  (>0.0, i.e. more unstable than reference)
 # Formation energy Ef in 'mixing energy' Emix = Ef/natoms form:
 Emix          = ...
 
+# Formation energy Eform:
+Eform         = ...
+# Use either Emix or Eform for a given compound, not both!
+
 # Bulk modulus B (GPa):
 B             = ...
 
@@ -2085,8 +2089,8 @@ $\widetilde{E_P}$ is the potential energy of the compound, and
 $\widetilde{E_{\mathrm{coh}}^{\mathrm{ref}}}$ is the cohesive energy of the reference
 compound, if used.
 
-Formation energies are read in and calculated as ''mixing energies'',
-which is simply the formation energy normalized with the number of atoms
+Formation energies can either be used as-is or as ''mixing energies''.
+The mixing energy is simply the formation energy normalized with the number of atoms
 in the cell. Hence the mixing energy (eVs) is:
 
 \begin{eqnarray}
@@ -2098,6 +2102,17 @@ Here $N(s)$ is the number of atoms of species $s$ in the compound, and
 $\widetilde{E_{\mathrm{coh}}(s)}$ is the cohesive energy of the ground state of species $s$.
 Parametrization for species $s$ must be given.
 For instance, if $s$ is C, then ground state might be GRA (graphite).
+
+The mixing energy form automatically accounts for any compound duplication
+(periodic copies of the original) that might occur if the cell is too small
+to be relaxed as is.
+
+If the regular formation energy is used the code keeps track of any
+duplication of the original compound in order to present the formation
+energy with respect to the number of atoms in the original compound.
+
+
+
 
 
 Bulk modulus $B$ (GPa) and its pressure derivative $B'(P)$ is calculated from

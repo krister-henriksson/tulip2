@@ -59,6 +59,7 @@ public:
   bool Ecoh;
   bool Ecoh_delta;
   bool Emix;
+  bool Eform;
   bool B;
   bool Bp;
   Matrix<bool> C;
@@ -91,6 +92,7 @@ public:
   double Ecoh;
   double Ecoh_delta;
   double Emix;
+  double Eform;
   double B;
   double Bp;
   Matrix<double> C;
@@ -126,6 +128,7 @@ public:
   bool Ecoh;
   bool Ecoh_delta;
   bool Emix;
+  bool Eform;
   bool B;
   bool Bp;
   Matrix<bool> C;
@@ -155,6 +158,7 @@ public:
   bool Ecoh;
   bool Ecoh_delta;
   bool Emix;
+  bool Eform;
   bool B;
   bool Bp;
   Matrix<bool> C;
@@ -186,6 +190,7 @@ public:
   double Ecoh;
   double Ecoh_delta;
   double Emix;
+  double Eform;
   double B;
   double Bp;
   Matrix<double> C;
@@ -216,6 +221,7 @@ public:
   double Ecoh;
   double Ecoh_delta;
   double Emix;
+  double Eform;
   double B;
   double Bp;
   Matrix<double> C;

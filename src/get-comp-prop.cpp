@@ -160,6 +160,7 @@ Vector<double> get_comp_prop(ParamPot & param, Vector<CompoundStructureFit> & DX
 
 
     if (cmpfit.prop_use.Emix) MDY.push_back(cmpfit.prop_pred.Emix);
+    if (cmpfit.prop_use.Eform) MDY.push_back(cmpfit.prop_pred.Eform);
     if (cmpfit.prop_use.B) MDY.push_back(cmpfit.prop_pred.B);
     if (cmpfit.prop_use.Bp) MDY.push_back(cmpfit.prop_pred.Bp);
 

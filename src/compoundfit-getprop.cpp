@@ -349,6 +349,32 @@ void CompoundStructureFit::getprop(ParamPot & param){
     prop_pred.Emix /= mds.natoms();
   }
 
+  if (prop_use.Eform){
+    prop_pred.Eform = mds.Ep_tot;
+    //cout << "Total potential energy of compound is " << mds.Ep_tot << endl;
+
+    // Number of different elements present:
+    Vector<int> npres(mds.elem.nelem(), 0);
+    for (j=0; j<mds.natoms(); ++j){
+      int k = param.p_potinfo->elem.name2idx( mds.matter[j] );
+      ++(npres[k]);
+    }
+    for (j=0; j<mds.elem.nelem(); ++j){
+      std::string nname = param.p_potinfo->elem.idx2name(j);
+      cout << "Found " << npres[j] << " atoms with element index " << j
+	   << " with name " << nname
+	   << " and MD type " << param.p_potinfo->elem.atomtype( nname )
+	   << " each with cohesive energy " << param.p_potinfo->Ecoh_ref[ j ] << endl;
+      
+      prop_pred.Eform -= npres[j] * param.p_potinfo->Ecoh_ref[ j ];
+    }
+    // The formation energy should be with respect to the original number
+    // of atoms in the compound!
+    prop_pred.Eform /= (1.0 * mds.N[0] * mds.N[1] * mds.N[2]);
+  }
+
+
+
   prop_pred.Fmax = mds.F_max;
   prop_pred.Pmax = mds.P_max;
   prop_pred.displmax = mds.displ_max;

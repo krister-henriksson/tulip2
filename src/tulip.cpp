@@ -978,6 +978,17 @@ int main(int argc, char *argv[]){
       }
     }
 
+    if (complistfit.compounds[i].prop_use.Eform){ DY.push_back(complistfit.compounds[i].prop_readin.Eform);
+      if (complistfit.compounds[i].use_u.Eform){
+	DUY.push_back(complistfit.compounds[i].prop_u.Eform);
+	DWY.push_back(-1.0);
+      }
+      else {
+	DUY.push_back(-1.0);
+	DWY.push_back(complistfit.compounds[i].prop_w.Eform);
+      }
+    }
+
     if (complistfit.compounds[i].prop_use.B){ DY.push_back(complistfit.compounds[i].prop_readin.B);
       if (complistfit.compounds[i].use_u.B){
 	DUY.push_back(complistfit.compounds[i].prop_u.B);

@@ -225,8 +225,17 @@ void get_ini_fit_data(ParamPot & param,
 	+ nat2[iDX] * param.p_potinfo->Ecoh_ref[ typej ]
 	- Ep;
     }
+    else if (cmpfit.prop_use.Eform){
+      // Energy of formation: cmpfit.prop_readin.Emix * nat
+      // Ef = Etot - n1*Ecoh1 - n2*Ecoh2 - ...
+      // => Etot = Ef + sum_i ni * Ecohi
+      Ep_list[iDX] = cmpfit.prop_readin.Eform
+	+ nat1[iDX] * param.p_potinfo->Ecoh_ref[ typei ]
+	+ nat2[iDX] * param.p_potinfo->Ecoh_ref[ typej ]
+	- Ep;
+    }
     else
-      aborterror("Make initial fit: Error: Ecoh or Emix not used for compound "
+      aborterror("Make initial fit: Error: Ecoh or Emix or Eform not used for compound "
 		 + cmpfit.name + "! Cannot obtain readin potential energy! Exiting.");
 
 
