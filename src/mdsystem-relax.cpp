@@ -265,7 +265,6 @@ void MDSystem::relax(void){
   
   get_CM_vel();
 
-#pragma omp parallel for schedule(static)
   for (i=0; i<nat; ++i){
     vel[i][0] -= vel_CM[0];
     vel[i][1] -= vel_CM[1];
@@ -442,7 +441,7 @@ void MDSystem::relax(void){
   if (sys_single_elem){
     double td1 = 0.5 * mass1 * 1.660538782/1.60217653 * 100;
     int nc = myomp_get_chunksize(sizeof(double));
-#pragma omp parallel for schedule(static, nc)
+
     for (i=0; i<nat; ++i){
       double td2 = vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2];
       Ek[i] = td1 * td2;
@@ -451,7 +450,7 @@ void MDSystem::relax(void){
   else {
     double td1 = 0.5 * 1.660538782/1.60217653 * 100;
     int nc = myomp_get_chunksize(sizeof(double));
-#pragma omp parallel for schedule(static, nc)
+
     for (i=0; i<nat; ++i){
       int n2i = elem.name2idx( matter[i] );
       double td2 = vel[i][0]*vel[i][0] + vel[i][1]*vel[i][1] + vel[i][2]*vel[i][2];
@@ -645,7 +644,6 @@ void MDSystem::relax(void){
     if ( !specs.quench_always && !specs.ext_relax)
       get_CM_vel();
 
-#pragma omp parallel for schedule(static)
     for (i=0; i<nat; ++i){
       vel[i][0] -= vel_CM[0];
       vel[i][1] -= vel_CM[1];
@@ -710,26 +708,7 @@ void MDSystem::relax(void){
     */
 
     //std::cout << "made it here 03" << std::endl;
-    //check_timestep();
-    
 
-
-    dt_candidate[0] = dmax;
-    if (dt_v_max > 0.0)
-      dt_candidate[0] = specs.max_dr / dt_v_max;
-    dt_candidate[1] = dmax;
-    if (dt_F_max > 0.0 && dt_v_max > 0.0)
-      dt_candidate[1] = specs.max_dE / (dt_F_max * dt_v_max);
-    if (dt_a_max > 0.0)
-      dt_candidate[2] = sqrt(2.0 * specs.max_dr / dt_a_max);
-    dt_candidate[3] = 1.1 * dt;
-    dt_candidate[4] = specs.max_dt;
-
-    // Find smallest choice for dt:
-    for (int k=0; k<5; ++k){
-      if (k==0 || (k>0 && dt_candidate[k]<dt)) dt=dt_candidate[k];
-    }
-    //std::cout << "dt now: " << dt << std::endl;
 
 
     //std::cout << "made it here 04" << std::endl;
@@ -747,7 +726,6 @@ void MDSystem::relax(void){
       /* Update neighbor list. */
       get_all_neighborcollections( specs_common.report_step );
 
-#pragma omp parallel for schedule(static)
       for (i=0; i<nat; ++i){
 	dpos[i][0] = 0.0;
 	dpos[i][1] = 0.0;
@@ -1136,8 +1114,9 @@ void MDSystem::relax(void){
     */
 
     //std::cout << "made it here 07" << std::endl;
-    //check_timestep();
 
+
+    //check_timestep();
 
     dt_candidate[0] = dmax;
     if (dt_v_max > 0.0)
@@ -1154,7 +1133,10 @@ void MDSystem::relax(void){
     for (int k=0; k<5; ++k){
       if (k==0 || (k>0 && dt_candidate[k]<dt)) dt=dt_candidate[k];
     }
-    //std::cout << "time step now: " << dt << std::endl;
+    //std::cout << "dt now: " << dt << std::endl;
+
+
+
 
     //std::cout << "made it here 08" << std::endl;
 
@@ -1343,8 +1325,7 @@ void MDSystem::relax(void){
 	  fflush(stdout);
 	}
 
-	//#pragma omp parallel for schedule(static)
-	//#pragma omp parallel for schedule(static)
+
 	for (i=0; i<nat; ++i){
 	  pos[i][0] *= mu[0];
 	  pos[i][1] *= mu[1];
@@ -1589,7 +1570,6 @@ void MDSystem::relax(void){
 	lambda = sqrt( 1.0 + (dt / specs.btc_tau) * (specs.btc_T0/T - 1.0) );
 	
 	/* Change velocities: */
-#pragma omp parallel for schedule(static)
 	for (i=0; i<nat; ++i){
 	  vel[i][0] *= lambda;
 	  vel[i][1] *= lambda;
@@ -1621,7 +1601,6 @@ void MDSystem::relax(void){
 	td = 1.0; if (! fp_is_small(T)) td = Tnew / T;
 	td = sqrt(td);
 
-#pragma omp parallel for schedule(static)
 	for (i=0; i<nat; ++i){
 	  vel[i][0] *= td;
 	  vel[i][1] *= td;

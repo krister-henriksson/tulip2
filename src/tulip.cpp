@@ -161,7 +161,7 @@ int main(int argc, char *argv[]){
     else if (string(argv[i])=="-dfitprop2"){ debug_fit_prop[2] = true; }
     else if (string(argv[i])=="-dfitprop3"){ debug_fit_prop[3] = true; }
     else if (string(argv[i])=="-dfitprop4"){ debug_fit_prop[4] = true; }
-
+    
     else if (string(argv[i])=="-dfitpot0"){ debug_fit_pot[0] = true; }
     else if (string(argv[i])=="-dfitpot1"){ debug_fit_pot[1] = true; }
     else if (string(argv[i])=="-dfitpot2"){ debug_fit_pot[2] = true; }
@@ -252,19 +252,17 @@ int main(int argc, char *argv[]){
     std::cout << "                        parametrizations at their normal values." << std::endl;
     std::cout << "" << std::endl;
 
-#if 0
     std::cout << "" << std::endl;
     std::cout << "     -omp               Request maximal number of threads ("
-	 << omp_info.nt_max() << ") for any OpenMP parts." << std::endl;
+	      << omp_info.nt_max() << ") for any OpenMP parts." << std::endl;
     std::cout << "     -omp_nt num        Request 'num' number of threads for any OpenMP parts. Default: "
-	 << omp_info.nt_use() << std::endl;
+	      << omp_info.nt_use() << std::endl;
     std::cout << "" << std::endl;
-#endif
-
+    
     return 0;
   }
 
-
+  
 
 
 
@@ -1111,7 +1109,7 @@ int main(int argc, char *argv[]){
   potinfo.Ecoh_ref.resize(nref);
   for (iref=0; iref<nref; ++iref) potinfo.Ecoh_ref[iref] = 0;
 
-
+  Vector<int> irefs(0);
 
   for (iref=0; iref<nref; ++iref){
     std::string sref = potinfo.elem.idx2name(iref);
@@ -1127,8 +1125,6 @@ int main(int argc, char *argv[]){
       continue;
     }
 
-
-
     if (potinfo.is_fittable(sref,sref)){
       std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       std::cout << "Elemental combination " << sref << "-" << sref << " is to be fitted."
@@ -1136,6 +1132,19 @@ int main(int argc, char *argv[]){
       std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
       continue;
     }
+
+    irefs.push_back(iref);
+  }
+  int nrefs=irefs.size();
+
+
+  // #pragma omp for schedule(dynamic,1) private(iref)
+  for (int ir=0; ir<nrefs; ++ir){
+    iref = irefs[ir];
+
+    std::string sref = potinfo.elem.idx2name(iref);
+    std::string latref = potinfo.elem.reflat(sref);
+
 
 
     Vector<CompoundStructureFit> cmpref(1, CompoundStructureFit());;
@@ -1159,7 +1168,8 @@ int main(int argc, char *argv[]){
 
 
 
-
+    // #pragma omp critical
+    {
     std::cout << "Reference compound " << iref+1 << " of " << nref << std::endl;
     std::cout << "  Name                : " << cmpref[0].name << std::endl;
     std::cout << "  PBC                 : " << cmpref[0].pbc[0] << " "
@@ -1187,7 +1197,7 @@ int main(int argc, char *argv[]){
 	 << format("%15.10f ") % cmpref[0].u3_vec[1]
 	 << format("%15.10f")  % cmpref[0].u3_vec[2] << std::endl;
     std::cout << "  Number of basis atoms: " << cmpref[0].nbasis << std::endl;
-
+    }
 
 
 
@@ -1259,7 +1269,11 @@ int main(int argc, char *argv[]){
     // Calculate properties:
     get_comp_prop(param, cmpref);
 
+    potinfo.Ecoh_ref[ potinfo.elem.name2idx(sref) ] = cmpref[0].prop_pred.Ecoh;
+
     // Report:
+    // #pragma omp critical
+    {
     std::cout << "Properties of reference compound for element " << sref << ":" << std::endl;
     std::cout << "  Lattice parameter a     : " << format("%15.10f") % cmpref[0].prop_pred.a << std::endl;
     std::cout << "  Lattice parameter b     : " << format("%15.10f") % cmpref[0].prop_pred.b << std::endl;
@@ -1269,9 +1283,12 @@ int main(int argc, char *argv[]){
 	 << " for element index " << potinfo.elem.name2idx(sref)
 	 << " having atom type " << potinfo.elem.atomtype(sref)
 	 << std::endl;
+    }
 
-    potinfo.Ecoh_ref[ potinfo.elem.name2idx(sref) ] = cmpref[0].prop_pred.Ecoh;
 
+
+    // #pragma omp critical
+    {
     if (cmpref[0].prop_use.r0)
       std::cout << "  Dimer bond lenght r0    : " << format("%15.10f") % cmpref[0].prop_pred.r0 << std::endl;
 
@@ -1311,7 +1328,7 @@ int main(int argc, char *argv[]){
 
 
     std::cout << "--------------------------------------------------------------------------" << std::endl;
-
+    }
 
 
 

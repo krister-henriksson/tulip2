@@ -277,7 +277,19 @@ double MDSystem::force_ABOP(){
 
   Vpairij = dVpairij = 0.0;
 
+  /* ########################################################################
+     ########################################################################
 
+    OpenMP considerations: Inside loop over atoms forces resulting from i-j interaction
+    will be added to atom i as well as atom j. One thread will handle atom i and in
+    general atom j will be handled by a different thread. In order to e.g. assign
+    force contributions safely to i as well as j we would need a 'critical' section
+    --- effectively a barrier --- around the block where atom j is given a force
+    contribution. Will this slow down all the threads???
+
+    ########################################################################
+    ########################################################################
+   */
   for (i=0; i<nat; ++i){
     typei = itype[i]; //elem.name2idx( matter[i] );
 
@@ -612,6 +624,7 @@ double MDSystem::force_ABOP(){
       ijkp = 0;
       ijkh = -1;
       Chiij = 0.0;
+
       for (ik=0; ik<neighborcollection[i].size(); ik++){
 	ijkh++;
 	

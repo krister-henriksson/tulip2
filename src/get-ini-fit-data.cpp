@@ -136,14 +136,23 @@ void get_ini_fit_data(ParamPot & param,
 
   std::string ts1, ts2;
 
+
+  std::cout << "Made it here 2 001" << std::endl;
+
   Vector<double>        Ep_list(sizeDX);
   Vector<int>           nat1(sizeDX);
   Vector<int>           nat2(sizeDX);
   Vector<int>           nbonds_list(sizeDX);
+  Vector<int>           nbonds_list12(sizeDX);
+  Vector<int>           nbonds_list21(sizeDX);
   Vector<BondData>      bond_list(sizeDX);
+  Vector<BondData>      bond_list12(sizeDX);
+  Vector<BondData>      bond_list21(sizeDX);
   Vector<BondAngleData> bondangle_list(sizeDX);
 
 
+
+  std::cout << "Made it here 2 002" << std::endl;
 
 
   // Loop through compounds:
@@ -187,6 +196,7 @@ void get_ini_fit_data(ParamPot & param,
     mds.relax();
 
 
+    std::cout << "Made it here 2 003" << std::endl;
 
     // std::cout << "1 mds.rcut " << mds.rcut << " and mds.rcut_max " << mds.rcut_max << std::endl;
 
@@ -199,15 +209,22 @@ void get_ini_fit_data(ParamPot & param,
     // std::cout << "2 mds.rcut " << mds.rcut << " and mds.rcut_max " << mds.rcut_max << std::endl;
 
     mds.get_bond_list( bond_list[iDX],
+		       bond_list12[iDX],
+		       bond_list21[iDX],
 		       name1, name2,
 		       nat1[iDX], nat2[iDX],
 		       nbonds_list[iDX],
+		       nbonds_list12[iDX],
+		       nbonds_list21[iDX],
 		       rcutij );
     //mds.get_bond_list( bond_dist_list[iDX], bond_num_list[iDX], name1[i], name2[j], n12 );
+
+    std::cout << "Made it here 2 004" << std::endl;
 
     // std::cout << "3 mds.rcut " << mds.rcut << " and mds.rcut_max " << mds.rcut_max << std::endl;
     mds.get_bond_angle_list( bondangle_list[iDX], name1, name2, rcutii, rcutjj, rcutij );
 
+    std::cout << "Made it here 2 005" << std::endl;
 
 
     // Remove potential energy contributions from known interactions:
@@ -309,31 +326,70 @@ void get_ini_fit_data(ParamPot & param,
     std::ofstream fout2;
     fout2.open(dumpfile2.c_str());
 
-    if (bond_list[iDX].dist.size()==0){
-      std::cout << "No bond distances at all! Trying next compound ..." << std::endl;
-      continue;
-    }
-    
-    double nba;
-    for (k=0; k<bond_list[iDX].dist.size(); ++k){
-      if (bond_list[iDX].ndist[k]==0){
-	std::cout << "No bond distances of length " << bond_list[iDX].dist[k]
-		  << " ! Trying next bond distance ..." << std::endl;
+
+    if (name1 == name2){
+      if (bond_list[iDX].dist.size()==0){
+	std::cout << "No bond distances at all! Trying next compound ..." << std::endl;
 	continue;
       }
-
-      // nba = bond_list[iDX].ndist[k]/(0.5*(nat1[iDX]+nat2[iDX]));
-      // nba = bond_list[iDX].ndist[k]/(nbonds_list[iDX]);
-      
-      std::cout << format("%20.10f") % bond_list[iDX].dist[k]  << "  "
-		<< format("%20.10f") % bond_list[iDX].ndist[k] << std::endl;
-      fout << format("%20.10f") % bond_list[iDX].dist[k] << "  "
-	   << format("%20.10f") % bond_list[iDX].ndist[k]
-	   << format("%20s")    % DX[iDX].name
-	   << std::endl;
-      fout2 << format("%20.10f") % bond_list[iDX].dist[k]  << "  "
-	    << format("%20.10f") % bond_list[iDX].ndist[k] << std::endl;
+      for (k=0; k<bond_list[iDX].dist.size(); ++k){
+	if (bond_list[iDX].ndist[k]==0){
+	  std::cout << "No bond distances of length " << bond_list[iDX].dist[k]
+		    << " ! Trying next bond distance ..." << std::endl;
+	  continue;
+	}
+	// nba = bond_list[iDX].ndist[k]/(0.5*(nat1[iDX]+nat2[iDX]));
+	// nba = bond_list[iDX].ndist[k]/(nbonds_list[iDX]);
+	std::cout << format("%20.10f") % bond_list[iDX].dist[k]  << "  "
+		  << format("%20.10f") % bond_list[iDX].ndist[k] << std::endl;
+	fout << format("%20.10f") % bond_list[iDX].dist[k] << "  "
+	     << format("%20.10f") % bond_list[iDX].ndist[k]
+	     << format("%20s")    % DX[iDX].name
+	     << std::endl;
+	fout2 << format("%20.10f") % bond_list[iDX].dist[k]  << "  "
+	      << format("%20.10f") % bond_list[iDX].ndist[k] << std::endl;
+      }
     }
+    else {
+      if (bond_list12[iDX].dist.size()==0 && bond_list21[iDX].dist.size()==0){
+	std::cout << "No bond distances at all! Trying next compound ..." << std::endl;
+	continue;
+      }
+      for (k=0; k<bond_list12[iDX].dist.size(); ++k){
+	if (bond_list12[iDX].ndist[k]==0){
+	  std::cout << "No bond distances of length " << bond_list12[iDX].dist[k]
+		    << " ! Trying next bond distance ..." << std::endl;
+	  continue;
+	}
+	std::cout << format("%20.10f") % bond_list12[iDX].dist[k]  << "  "
+		  << format("%20.10f") % bond_list12[iDX].ndist[k] << std::endl;
+	fout << format("%20.10f") % bond_list12[iDX].dist[k] << "  "
+	     << format("%20.10f") % bond_list12[iDX].ndist[k]
+	     << format("%20s")    % DX[iDX].name
+	     << std::endl;
+	fout2 << format("%20.10f") % bond_list12[iDX].dist[k]  << "  "
+	      << format("%20.10f") % bond_list12[iDX].ndist[k] << std::endl;
+      }
+      for (k=0; k<bond_list21[iDX].dist.size(); ++k){
+	if (bond_list21[iDX].ndist[k]==0){
+	  std::cout << "No bond distances of length " << bond_list21[iDX].dist[k]
+		    << " ! Trying next bond distance ..." << std::endl;
+	  continue;
+	}
+	std::cout << format("%20.10f") % bond_list21[iDX].dist[k]  << "  "
+		  << format("%20.10f") % bond_list21[iDX].ndist[k] << std::endl;
+	fout << format("%20.10f") % bond_list21[iDX].dist[k] << "  "
+	     << format("%20.10f") % bond_list21[iDX].ndist[k]
+	     << format("%20s")    % DX[iDX].name
+	     << std::endl;
+	fout2 << format("%20.10f") % bond_list21[iDX].dist[k]  << "  "
+	      << format("%20.10f") % bond_list21[iDX].ndist[k] << std::endl;
+      }
+    }
+
+
+
+
     fout2.close();
     fout2.clear();
   }
@@ -351,20 +407,52 @@ void get_ini_fit_data(ParamPot & param,
   std::cout << "---------------------------------" << std::endl;
 
   for (iDX=0; iDX<sizeDX; ++iDX){
-    if (bond_list[iDX].dist.size()==0) continue;
+    if (name1==name2 && bond_list[iDX].dist.size()==0) continue;
+    if (name1!=name2
+	&& bond_list12[iDX].dist.size()==0
+	&& bond_list21[iDX].dist.size()==0) continue;
 
     int nbonds = 0, nbonds_k=0;
     double rb = 0.0;
-    for (k=0; k<bond_list[iDX].dist.size(); ++k){
-      nbonds_k  = bond_list[iDX].ndist[k];
-      nbonds   += nbonds_k;
-      rb       += nbonds_k * bond_list[iDX].dist[k];
+
+    if (name1==name2){
+      for (k=0; k<bond_list[iDX].dist.size(); ++k){
+	nbonds_k  = bond_list[iDX].ndist[k];
+	nbonds   += nbonds_k;
+	rb       += nbonds_k * bond_list[iDX].dist[k];
+      }
+    }
+    else {
+      for (k=0; k<bond_list12[iDX].dist.size(); ++k){
+	nbonds_k  = bond_list12[iDX].ndist[k];
+	nbonds   += nbonds_k;
+	rb       += nbonds_k * bond_list12[iDX].dist[k];
+      }
+      for (k=0; k<bond_list21[iDX].dist.size(); ++k){
+	nbonds_k  = bond_list21[iDX].ndist[k];
+	nbonds   += nbonds_k;
+	rb       += nbonds_k * bond_list21[iDX].dist[k];
+      }
     }
     if (nbonds==0) continue;
     rb /= nbonds;
     double Vb = Ep_list[iDX] / nbonds;
 
-    double nb = nbonds_list[iDX] * 1.0/ (nat1[iDX] + nat2[iDX]);
+
+    double nb;
+    if (name1==name2)
+      nb = nbonds_list[iDX] * 1.0/(nat1[iDX] + nat2[iDX]);
+    else
+      nb = (nbonds_list12[iDX] + nbonds_list21[iDX]) * 1.0/(nat1[iDX] + nat2[iDX]);
+
+    /*
+    if (name1==name2)
+      printf("name1-name2: %s-%s  nbonds_list: %d  nat1: %d  nat2: %d\n",
+	     name1.c_str(), name2.c_str(), nbonds_list[iDX], nat1[iDX], nat2[iDX]);
+    else
+      printf("name1-name2: %s-%s  nbonds_list12: %d  nbonds_list12: %d  nat1: %d  nat2: %d\n",
+	     name1.c_str(), name2.c_str(), nbonds_list12[iDX], nbonds_list21[iDX], nat1[iDX], nat2[iDX]);
+    */
 
     // std::cout << "sum_k bond_list[iDX].ndist[k] = " << nbonds << " nbonds_list[iDX] = " << nbonds_list[iDX] << std::endl;
 

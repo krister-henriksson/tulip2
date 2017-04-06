@@ -40,7 +40,7 @@ EXE_STATIC    := bin/tulip_static
 EXECUTABLES    = $(EXE_DYNAMIC) $(EXE_STATIC)
 
 
-.PHONY: default dynamic static dirs note clean
+.PHONY: default dynamic static dirs note clean tarball
 
 
 SRC    := $(wildcard src/*.cpp)
@@ -53,6 +53,20 @@ REBUILDABLES = $(OBJECTS) $(EXECUTABLES)
 
 
 default: dirs note dynamic static
+
+tarball:
+	-rm -rf tartulip2 tartulip2.tar*
+	mkdir -p tartulip2/src
+	mkdir -p tartulip2/doc
+	cp src/*.?pp tartulip2/src/
+	cp doc/*.pdf tartulip2/doc/
+	cp -r examples tartulip2/
+	cp Makefile README Releasenotes* tartulip2/
+	tar fcv tartulip2.tar tartulip2/*
+	gzip tartulip2.tar
+	rm -rf tartulip2
+
+
 
 
 install: default

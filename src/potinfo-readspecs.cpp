@@ -27,7 +27,7 @@ using boost::format;
 
 
 void PotentialInformationFit::read_specs(std::string filename){
-  std::ifstream fp;
+
   std::string line;
   std::vector<std::string> args;
   std::istringstream strbuf;
@@ -41,7 +41,7 @@ void PotentialInformationFit::read_specs(std::string filename){
   std::cout << "Reading specifications ... " << std::endl;
 
 
-
+  std::ifstream fp;
   fp.open(filename.c_str());
   if (!fp)
     aborterror("Error: Could not find file " + filename + ". Exiting.");
@@ -52,6 +52,7 @@ void PotentialInformationFit::read_specs(std::string filename){
     utils::get_line(fp, line);
     ns = utils::get_substrings( line, args, "\t :,()[]=");
     if (ns==0 && fp) continue;
+
 
     c=0;
     if      (args[0]=="prop") c=1;
