@@ -2221,6 +2221,11 @@ selected. Things are complicated due to the possibility that the box size can ch
 if an atom does not move relative to its neighbors, i.e. it does not get displaced,
 any change in the box size will give a nonzero value for the maximum displacement.
 
+The current implementation for \verb+displmax+ calculates internal positions from
+the Cartesian versions at start and end, taking the boundary conditions into consideration,
+then subtracts these from each other, and finally calculates the Cartesian version.
+Different box sizes at start and at end still affect the calculation.
+
 
 
 
