@@ -1,0 +1,6 @@
+#! /bin/bash
+
+tar fcv tartulip2.tar doc examples Makefile R* src/*.?pp
+rm -f tartulip2.tar.gz
+gzip tartulip2.tar
+

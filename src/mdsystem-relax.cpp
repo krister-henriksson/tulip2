@@ -259,7 +259,12 @@ void MDSystem::relax(void){
 
   get_CM_pos();
   pos_CM_ini = pos_CM;
-  for (i=0; i<nat; ++i) get_coords_cart2skew(pos[i], posint_ini[i]);
+  for (i=0; i<nat; ++i){
+    get_coords_cart2skew(pos[i], posint_ini[i]);
+    posint_ini[i][0] /= boxlen[0];
+    posint_ini[i][1] /= boxlen[1];
+    posint_ini[i][2] /= boxlen[2];
+  }
   //get_atom_distance_vec(pos[i], pos_CM_ini, dpos_ini[i]);
   
   get_CM_vel();
@@ -1799,7 +1804,15 @@ void MDSystem::relax(void){
 
   for (i=0; i<nat; ++i){
     get_coords_cart2skew(pos[i], posint_fin[i]);
+    posint_fin[i][0] /= boxlen[0];
+    posint_fin[i][1] /= boxlen[1];
+    posint_fin[i][2] /= boxlen[2];
+
     ddpos_int = posint_fin[i] - posint_ini[i];
+    ddpos_int[0] *= boxlen[0];
+    ddpos_int[1] *= boxlen[1];
+    ddpos_int[2] *= boxlen[2];
+
     get_coords_skew2cart(ddpos_int, ddpos);
     td = ddpos.magn();
     if (i==0 || (i>0 && (td>displ_max))) displ_max = td;

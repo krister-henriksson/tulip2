@@ -2215,16 +2215,17 @@ The predicted forces are always obtained from the last MDS time step.
 
 The first two deprecated properties \verb+Fmax+ and \verb+Pmax+ are calculated in the
 last MDS step. The absolute values of all force and pressure components of all atoms are
-inspected, and the largest values are chosen. For the calculation of \verb+displmax+
-the initial and final positions are compared, for all atoms, and the largest value
-selected. Things are complicated due to the possibility that the box size can change:
-if an atom does not move relative to its neighbors, i.e. it does not get displaced,
-any change in the box size will give a nonzero value for the maximum displacement.
+inspected, and the largest values are chosen.
 
-The current implementation for \verb+displmax+ calculates internal positions from
-the Cartesian versions at start and end, taking the boundary conditions into consideration,
-then subtracts these from each other, and finally calculates the Cartesian version.
-Different box sizes at start and at end still affect the calculation.
+For the calculation of \verb+displmax+ the initial and final Cartesian coordinates
+are converted into box coordinates (BC), i.e. the coordinate system that is read in
+from the compound information file. This coordinate system can be skewed, i.e. non-Cartesian.
+From these initial and final box coordinates it is straightforward to divide away the
+box lengths to get size-independent box coordinates (SIBC).
+These SIBC are then subtracted from each other, and the resulting coordinates are
+converted back to Cartesian coordinates. This yields a Cartesian displacement vector
+and hence a Cartesian distance for each atom in the MDS cell. The largest distance
+is chosen for the value of \verb+displmax+.
 
 
 

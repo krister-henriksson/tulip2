@@ -9,13 +9,10 @@ and corrector phases. The remaining control step takes place after the corrector
 phase.
 
   2/2. Changed the calculation of the maximum displacement displmax for compounds.
-The Cartesian initial and final positions are converted to internal (skew) coordinates,
-these coordinates are subtracted from each other, and the resulting coordinates are
-converted back to Cartesian form. The displacement vector with the largest magnitude
-is set equal to displmax. The boundary conditions are taken into account during
-the conversion to and from skew coordinates. Note that significant box size changes
-occurring between initial and final positions will affect the displmax value. Even if
-all atoms remain fixed with respect to their neighbors, i.e. they are not displaced,
-a change in box sizes will give a nonzero displmax value.
-
+The Cartesian initial and final positions are converted to internal (skew) coordinates
+with initial and final box sizes divided away. These coordinates are subtracted
+from each other and the final box sizes are multiplied in. The resulting coordinates
+are converted back to Cartesian form, so that maximum Cartesian displacement in
+the simulation cell can be determined. The principle behind this is that significant
+changes in the box sizes should not be the primary factor behind the atomic displacements.
 
