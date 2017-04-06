@@ -78,8 +78,8 @@ MDSystem::MDSystem()
   Ek.cap(100);
   dpos.cap(100);
   pos_int_tmp.cap(100);
-  dpos_ini.cap(100);
-  dpos_fin.cap(100);
+  posint_ini.cap(100);
+  posint_fin.cap(100);
 
   atom_is_fixed.cap(100);
   atom_freedir.cap(100);
@@ -98,8 +98,8 @@ MDSystem::MDSystem()
   Ek.resize(0);
   dpos.resize(0);
   pos_int_tmp.resize(0);
-  dpos_ini.resize(0);
-  dpos_fin.resize(0);
+  posint_ini.resize(0);
+  posint_fin.resize(0);
 
   rcut_max = dt = T = T_at_quench_start = P = Px = Py = Pz = 0;
   Ep_tot = Ek_tot = P_max = F_max = displ_max = 0;

@@ -195,9 +195,8 @@ void MDSystem::relax(void){
   Ep.resize(nat);
   Ek.resize(nat);
   dpos.resize(nat);
-  dpos_ini.resize(nat);
-  dpos_fin.resize(nat);
-
+  posint_ini.resize(nat);
+  posint_fin.resize(nat);
   if (specs_common.debug_forces){
     frc_num.resize(nat);
   }
@@ -218,8 +217,8 @@ void MDSystem::relax(void){
     Ep[i] = 0.0;
     dpos[i] = Vector3<double>(0.0);
 
-    dpos_ini[i] = Vector3<double>(0.0);
-    dpos_fin[i] = Vector3<double>(0.0);
+    posint_ini[i] = Vector3<double>(0.0);
+    posint_fin[i] = Vector3<double>(0.0);
     // --------------------------------------------------
     // --------------------------------------------------
     if (specs_common.debug_forces)
@@ -260,8 +259,8 @@ void MDSystem::relax(void){
 
   get_CM_pos();
   pos_CM_ini = pos_CM;
-  for (i=0; i<nat; ++i)
-    get_atom_distance_vec(pos[i], pos_CM_ini, dpos_ini[i]);
+  for (i=0; i<nat; ++i) get_coords_cart2skew(pos[i], posint_ini[i]);
+  //get_atom_distance_vec(pos[i], pos_CM_ini, dpos_ini[i]);
   
   get_CM_vel();
 
@@ -1796,14 +1795,24 @@ void MDSystem::relax(void){
 
   get_CM_pos();
   pos_CM_fin = pos_CM;
-  Vector3<double> ddpos(0);
+  Vector3<double> ddpos(0), ddpos_int(0);
+
+  for (i=0; i<nat; ++i){
+    get_coords_cart2skew(pos[i], posint_fin[i]);
+    ddpos_int = posint_fin[i] - posint_ini[i];
+    get_coords_skew2cart(ddpos_int, ddpos);
+    td = ddpos.magn();
+    if (i==0 || (i>0 && (td>displ_max))) displ_max = td;
+  }
+
+  /*
   for (i=0; i<nat; ++i){
     get_atom_distance_vec(pos[i], pos_CM_fin, dpos_fin[i]);
     get_atom_distance_vec(dpos_fin[i], dpos_ini[i], ddpos);
     td = ddpos.magn();
     if (i==0 || (i>0 && (td>displ_max))) displ_max = td;
   }
-
+  */
 
     
   return;

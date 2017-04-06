@@ -97,8 +97,8 @@ public:
   Vector<double> Ek;
   Vector< Vector3<double> > dpos;
   Vector< Vector3<double> > pos_int_tmp;
-  Vector< Vector3<double> > dpos_ini;
-  Vector< Vector3<double> > dpos_fin;
+  Vector< Vector3<double> > posint_ini;
+  Vector< Vector3<double> > posint_fin;
 
   Vector3<double> pos_CM;
   Vector3<double> vel_CM;
